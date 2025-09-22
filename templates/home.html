@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}בעלי מקצוע בקליק - מוצאים בעלי מקצוע איכותיים באזורכם{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>מוצאים בעלי מקצוע איכותיים באזורכם</h1>
+        <p>פלטפורמה המחברת בין לקוחות לבעלי מקצוע מוסמכים ואמינים - חשמלאים, שרברבים, שיפוצים ועוד</p>
+        
+        <div class="search-box">
+            <form class="search-form" method="GET" action="{{ url_for('professionals_listing', lang=lang) }}">
+                <select id="profession" name="category" class="search-input">
+                    <option value="">בחר מקצוע</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="city" name="city" placeholder="עיר או אזור" class="search-input">
+                <button type="submit" class="btn btn-primary">חפש בעלי מקצוע</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories">
+    <div class="container">
+        <h2>קטגוריות פופולריות</h2>
+        <div class="categories-grid">
+            {% for category in categories %}
+            <a href="{{ url_for('professionals_listing', lang=lang, category=category.id) }}" class="category-card">
+                <div class="category-icon">
+                    <!-- SVG Icon placeholder -->
+                    <span>🔧</span>
+                </div>
+                <h3>{{ category.name }}</h3>
+                <p>מוצאים {{ category.name }} מקצועי באזורכם</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us" style="padding: 4rem 0; background: white;">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2>למה לבחור בנו?</h2>
+            <p style="color: var(--text-light); font-size: 1.1rem;">אנחנו מבטיחים שירות איכותי ואמין</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="width: 80px; height: 80px; background: var(--primary-orange); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white;">✓</div>
+                <h3>בעלי מקצוע מאומתים</h3>
+                <p style="color: var(--text-light);">כל בעלי המקצוע עברו אימות ובדיקת רקע יסודית</p>
+            </div>
+            
+            <div style="text-align: center; padding: 2rem;">
+                <div style="width: 80px; height: 80px; background: var(--primary-orange); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white;">⭐</div>
+                <h3>ביקורות אמיתות</h3>
+                <p style="color: var(--text-light);">ביקורות אמיתות מלקוחות אמיתיים</p>
+            </div>
+            
+            <div style="text-align: center; padding: 2rem;">
+                <div style="width: 80px; height: 80px; background: var(--primary-orange); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white;">🚀</div>
+                <h3>מענה מהיר</h3>
+                <p style="color: var(--text-light);">קבלו הצעות מחיר תוך דקות ספורות</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section style="background: var(--background-light); padding: 4rem 0; text-align: center;">
+    <div class="container">
+        <h2>מוכנים למצוא את בעל המקצוע המושלם?</h2>
+        <p style="margin: 1rem 0 2rem; color: var(--text-light); font-size: 1.1rem;">קבלו הצעות מחיר מבעלי מקצוע איכותיים באזורכם</p>
+        <a href="{{ url_for('request_quote', lang=lang) }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">קבל הצעות מחיר עכשיו</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block structured_data %}
+{{ super() }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "בעלי מקצוע בקליק",
+    "url": "{{ request.url_root }}",
+    "description": "פלטפורמה המחברת בין לקוחות לבעלי מקצוע איכותיים",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ url_for('professionals_listing', lang=lang, _external=True) }}?category={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+{% endblock %}

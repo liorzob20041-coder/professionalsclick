@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'he' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}בעלי מקצוע בקליק - ProfessionalsClick{% endblock %}</title>
+    <meta name="description" content="{% block description %}פלטפורמה המחברת בין לקוחות לבעלי מקצוע איכותיים באזורכם - חשמלאים, שרברבים, שיפוצים ועוד{% endblock %}">
+    
+    <!-- SEO Meta Tags -->
+    <link rel="canonical" href="{{ request.url }}">
+    <meta property="og:title" content="{% block og_title %}בעלי מקצוע בקליק{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}פלטפורמה המחברת בין לקוחות לבעלי מקצוע איכותיים{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    
+    <!-- Hreflang for multi-language support -->
+    <link rel="alternate" hreflang="he" href="{{ url_for(request.endpoint, lang='he', **request.view_args or {}) }}">
+    <link rel="alternate" hreflang="en" href="{{ url_for(request.endpoint, lang='en', **request.view_args or {}) }}">
+    <link rel="alternate" hreflang="ru" href="{{ url_for(request.endpoint, lang='ru', **request.view_args or {}) }}">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="lang-{{ lang }}">
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="{{ url_for('home', lang=lang) }}" class="logo">
+                        <span class="logo-text">בעלי מקצוע בקליק</span>
+                    </a>
+                </div>
+                
+                <div class="nav-menu">
+                    <ul class="nav-links">
+                        <li><a href="{{ url_for('home', lang=lang) }}">דף הבית</a></li>
+                        <li><a href="{{ url_for('professionals_listing', lang=lang) }}">בעלי מקצוע</a></li>
+                        <li><a href="{{ url_for('request_quote', lang=lang) }}" class="btn btn-primary">קבל הצעות מחיר</a></li>
+                    </ul>
+                    
+                    <!-- Language Switcher -->
+                    <div class="language-switcher">
+                        <select onchange="changeLanguage(this.value)">
+                            <option value="he" {{ 'selected' if lang == 'he' else '' }}>עברית</option>
+                            <option value="en" {{ 'selected' if lang == 'en' else '' }}>English</option>
+                            <option value="ru" {{ 'selected' if lang == 'ru' else '' }}>Русский</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>בעלי מקצוע בקליק</h3>
+                    <p>הפלטפורמה המובילה לחיבור בין לקוחות לבעלי מקצוע איכותיים</p>
+                </div>
+                <div class="footer-section">
+                    <h4>קטגוריות</h4>
+                    <ul>
+                        <li><a href="{{ url_for('professionals_listing', lang=lang, category='electrician') }}">חשמלאים</a></li>
+                        <li><a href="{{ url_for('professionals_listing', lang=lang, category='plumber') }}">שרברבים</a></li>
+                        <li><a href="{{ url_for('professionals_listing', lang=lang, category='renovator') }}">שיפוצים</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>צור קשר</h4>
+                    <p>טלפון: 03-1234567</p>
+                    <p>מייל: info@professionalsclick.co.il</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 בעלי מקצוע בקליק. כל הזכויות שמורות.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Structured Data -->
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "בעלי מקצוע בקליק",
+        "description": "פלטפורמה המחברת בין לקוחות לבעלי מקצוע איכותיים",
+        "url": "{{ request.url_root }}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IL"
+        }
+    }
+    </script>
+    {% endblock %}
+</body>
+</html>

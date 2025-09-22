@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>ניהול בקשות בעלי מקצוע</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f1115;--panel:#171a1f;--ink:#e6edf3;--muted:#9aa4b2;
+      --line:#232a36;--ok:#16a34a;--warn:#f59e0b;--err:#ef4444;--btn:#243045;--btn2:#1f6feb;
+    }
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    h1{font-size:20px;margin:18px 12px}
+    a{color:#7cc3ff;text-decoration:none}
+    .wrap{max-width:1200px;margin:0 auto;padding:0 12px 24px}
+
+    .admin-toolbar{display:flex;gap:10px;margin:6px 0 18px 0;flex-wrap:wrap}
+    .tool{display:inline-block;padding:8px 12px;border-radius:8px;background:#0ea5e9;color:#fff}
+    .tool.secondary{background:#6b7280}
+
+    .flash-list{list-style:none;padding:0;margin:0 0 14px 0}
+    .flash-list li{padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#122331}
+    .flash-list li[data-color="red"]{background:#2a1515}
+    .flash-list li[data-color="green"]{background:#152a1a}
+
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    thead th{font-size:13px;color:var(--muted);text-align:right;padding:6px 10px}
+    tbody tr{background:var(--panel);border:1px solid var(--line)}
+    tbody td{vertical-align:top;padding:12px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    tbody td:first-child{border-right:1px solid var(--line);border-top-right-radius:12px;border-bottom-right-radius:12px}
+    tbody td:last-child{border-left:1px solid var(--line);border-top-left-radius:12px;border-bottom-left-radius:12px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace}
+    .muted{color:var(--muted)}
+    .badge{
+      display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-inline-start:6px;
+      border:1px solid #314056;background:#1a2231;color:#cfe3ff
+    }
+    .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+    .status.ready{color:#d1fae5;background:#0b2a1b;border-color:#1b3f2b}
+    .status.err{color:#fee2e2;background:#3a1212;border-color:#6b1b1b}
+    .status.na{color:#cbd5e1;background:#0f172a;border-color:#1f2937}
+
+    .thumb{display:flex;gap:10px;align-items:flex-start}
+    .thumb img{width:72px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+    .name{font-weight:700;margin:0 0 4px 0}
+    .pill{display:inline-block;background:#0f1520;border:1px solid #283144;padding:2px 8px;border-radius:999px;font-size:12px;color:#cbd6e2;margin-inline-start:6px}
+
+    .text-block{max-width:480px}
+    .text-block .text{
+      display:-webkit-box;-webkit-box-orient:vertical;line-clamp:1;-webkit-line-clamp:1;overflow:hidden
+    }
+    .text-block.open .text{line-clamp:none;-webkit-line-clamp:initial;overflow:visible;white-space:normal}
+    .toggle-link{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;font-size:12px;color:#7cc3ff;margin-top:4px}
+
+    .ai-sec-title{margin:6px 0 4px;font-size:12px;color:#cfe3ff;font-weight:700}
+    .ai-meta{font-size:12px;color:#cbd5e1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
+    .ai-meta .kv{background:#0f1520;border:1px solid #283144;border-radius:999px;padding:2px 8px}
+
+    .actions form{display:inline-block;margin:4px 4px 0}
+    .btn{background:var(--btn);color:var(--ink);border:1px solid #2b3240;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
+    .btn.primary{background:var(--btn2);border-color:#2c67c0}
+    .btn.ok{background:#1b5e20;border-color:#2e7d32}
+    .btn.danger{background:#7a1b1b;border-color:#9a2a2a}
+    .btn.warn{background:#7a4c00;border-color:#9a6700}
+    .checkbox{font-size:13px;color:#cbd5e1;margin-inline-end:8px}
+    @media (max-width:920px){.hide-md{display:none}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ניהול בקשות בעלי מקצוע</h1>
+
+  <nav class="admin-toolbar">
+    <a class="tool" href="{{ url_for('analysis_index') }}">דשבורד אנליטיקס</a>
+    <a class="tool secondary" href="{{ url_for('analysis_monthly') }}">דוח חודשי</a>
+    <a class="tool secondary" href="{{ url_for('analysis_all_time') }}">כל הזמנים</a>
+    <a class="tool secondary" href="{{ url_for('admin_logout') }}">התנתקות</a>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-list">
+        {% for category, message in messages %}
+          {% set color = 'green' if category == 'success' else 'red' %}
+          <li class="msg-item" data-color="{{ color|e }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if not pending_list %}
+    <p class="muted">אין פנדינג כרגע.</p>
+  {% else %}
+    <table>
+      <thead>
+        <tr>
+          <th>שם</th>
+          <th class="hide-md">תחום</th>
+          <th>איזור</th>
+          <th class="hide-md">טלפון</th>
+          <th>וותק</th>
+          <th>טיוטת AI</th>
+          <th>פעולות</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in pending_list %}
+        <tr>
+          <!-- שם + תמונה/תגיות -->
+          <td>
+            <div class="thumb">
+              {% if item.image_filename %}
+                <img alt="" src="{{ url_for('img_proxy', filename=item.image_filename, w=160, h=120, fit='cover', format='auto', q=80) }}">
+              {% endif %}
+              <div>
+                <div class="name">
+                  {{ item.company_name or item.name or 'ללא שם' }}
+                  {% if item.offers_emergency %}<span class="badge">חירום 24/7</span>{% endif %}
+                </div>
+                <div class="muted mono">{{ item.phone or '—' }}</div>
+                {% if item.sub_services %}
+                  <div class="muted" style="margin-top:4px">תתי־תחומים: {{ item.sub_services|length }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+
+          <td class="hide-md">
+            {{ item.field or '—' }}
+          </td>
+
+          <td>
+            {{ item.get('area') or item.get('base_city') or '—' }}
+            {% if item.work_radius %}
+              <span class="pill">רדיוס {{ item.work_radius }} ק״מ</span>
+            {% endif %}
+          </td>
+
+          <td class="hide-md mono">{{ item.phone or '—' }}</td>
+
+          <td>{{ item.experience or 0 }} שנים</td>
+
+          <!-- טיוטת AI + דפדוף וריאנטים -->
+          <td>
+            {% set ai_status = item.get('ai_status') %}
+            <div style="margin-bottom:6px">
+              {% if ai_status == 'ready' %}
+                <span class="status ready">מוכן</span>
+              {% elif ai_status == 'error' %}
+                <span class="status err">שגיאה</span>
+              {% else %}
+                <span class="status na">טרם הופעל</span>
+              {% endif %}
+            </div>
+
+            <div class="ai-meta">
+              {% if item.get('ai_variant_used') %}
+                <span class="kv">וריאנט: <span class="mono">{{ item.ai_variant_used }}</span></span>
+              {% endif %}
+              {% if item.get('ai_variant_cursor') is not none %}
+                <span class="kv">מונה פרומפט: #{{ (item.ai_variant_cursor or 0) + 1 }}</span>
+              {% endif %}
+              {% if item.get('ai_variants_exhausted') %}
+                <span class="kv">מצב: כל הוריאנטים בשימוש (exhausted)</span>
+              {% endif %}
+            </div>
+
+            {% if ai_status == 'ready' %}
+              <div class="ai-sec-title">תיאור קצר (כרטיס):</div>
+              <div class="text-block" id="ai-short-{{ loop.index0 }}">
+                <div class="text">
+                  {{ item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '—' }}
+                </div>
+                <button class="toggle-link" type="button" onclick="toggleBlock('ai-short-{{ loop.index0 }}', this)">הצג הכל</button>
+              </div>
+
+              <div class="ai-sec-title">תיאור מלא (פרופיל):</div>
+              <div class="text-block" id="ai-full-{{ loop.index0 }}">
+                <div class="text">{{ item.get('ai_draft_bio_full') or item.get('ai_draft_bio') or '—' }}</div>
+                <button class="toggle-link" type="button" onclick="toggleBlock('ai-full-{{ loop.index0 }}', this)">הצג הכל</button>
+              </div>
+
+              <div class="ai-sec-title">שירותים:</div>
+              <div class="text-block" id="svc-{{ loop.index0 }}">
+                <div class="text">
+                  {% if item.get('ai_draft_services_sentence') %}
+                    {{ item['ai_draft_services_sentence'] }}
+                  {% else %}
+                    {% set svc_list = item.get('sub_services') or [] %}
+                    {{ svc_list and (svc_list|join(', ')) or '—' }}
+                  {% endif %}
+                </div>
+                <button class="toggle-link" type="button" onclick="toggleBlock('svc-{{ loop.index0 }}', this)">הצג הכל</button>
+              </div>
+            {% elif ai_status == 'error' %}
+              <em class="muted">שגיאה ביצירת טיוטה</em>
+            {% else %}
+              <em class="muted">אין טיוטה</em>
+            {% endif %}
+
+            <!-- פעולות דפדוף וריאנטים -->
+            <div class="actions">
+              <form action="{{ url_for('admin_ai_generate', index=loop.index0) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn">⚙️ פרומפט הבא</button>
+              </form>
+              <form action="{{ url_for('admin_ai_generate', index=loop.index0) }}?reset=1" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn warn">↺ אפס ודלג</button>
+              </form>
+            </div>
+
+            <!-- תיאור מקורי -->
+            <div style="margin-top:8px">
+              <div class="ai-sec-title">תיאור מקורי (מהטופס):</div>
+              <div class="text-block" id="orig-{{ loop.index0 }}">
+                <div class="text">{{ item.get('description') or '—' }}</div>
+                <button class="toggle-link" type="button" onclick="toggleBlock('orig-{{ loop.index0 }}', this)">הצג הכל</button>
+              </div>
+            </div>
+          </td>
+
+          <!-- פעולות אישור/דחייה -->
+          <td>
+            <form action="{{ url_for('approve_professional', index=loop.index0) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <label class="checkbox">
+                <input type="checkbox" name="use_ai" value="1" {% if item.get('ai_status') != 'ready' %}disabled{% endif %}>
+                השתמש בטיוטת AI
+              </label>
+              <button type="submit" class="btn ok">אשר</button>
+            </form>
+            <form action="{{ url_for('delete_pending', index=loop.index0) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn danger">דחה</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+
+<script>
+  function toggleBlock(id, btn){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var isOpen = el.classList.toggle('open');
+    btn.textContent = isOpen ? 'הסתר' : 'הצג הכל';
+  }
+</script>
+</body>
+</html>

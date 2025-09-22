@@ -1,0 +1,1239 @@
+{
+  "category": "plumbing",
+  "base_price": [200, 350],
+  "result_note": {
+    "en": "The shown price is an estimated range based on your answers and common industry practice. The final price is determined on site according to access to piping, problem severity, required equipment/parts, and working conditions."
+  },
+  "jobs": [
+    {
+      "id": "clog",
+      "label": { "en": "Clog" },
+      "subtypes": [
+        {
+          "id": "sink",
+          "label": { "en": "Sink" },
+          "base_price": [260, 420],
+          "result_note": { "en": "Sink jobs may involve removing a trap/garbage disposer which can slightly increase cost." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "en": "What does it look like?" },
+              "options": [
+                { "value": "slow",     "label": { "en": "Water drains slowly" },          "delta": [0, 0] },
+                { "value": "standing", "label": { "en": "Standing water / overflow" },    "delta": [80, 140] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                     "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "disposal",
+              "text": { "en": "Is there a garbage disposer?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [50, 90] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [15, 30] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "toilet",
+          "label": { "en": "Toilet" },
+          "base_price": [300, 480],
+          "result_note": { "en": "If removal/reinstallation is required, the price will increase accordingly." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "en": "When you flush — what happens?" },
+              "options": [
+                { "value": "slow",     "label": { "en": "Drains slowly" },                "delta": [0, 0] },
+                { "value": "backup",   "label": { "en": "Water rises/overflows" },        "delta": [90, 140] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                     "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "plunger",
+              "text": { "en": "Tried a plunger?" },
+              "options": [
+                { "value": "no",       "label": { "en": "Haven’t tried" },                "delta": [0, 0] },
+                { "value": "yes",      "label": { "en": "Tried and didn’t work" },        "delta": [40, 60] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                     "delta": [10, 20] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower",
+          "label": { "en": "Shower/Bath" },
+          "base_price": [260, 400],
+          "result_note": { "en": "May require removing the drain cover — depends on access." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "en": "What does it look like?" },
+              "options": [
+                { "value": "slow",     "label": { "en": "Water drains slowly" },          "delta": [0, 0] },
+                { "value": "standing", "label": { "en": "Standing water / overflow" },    "delta": [70, 120] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                     "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "grate",
+              "text": { "en": "Can the drain cover/grate be opened easily?" },
+              "options": [
+                { "value": "easy",    "label": { "en": "Yes, opens easily" },             "delta": [0, 0] },
+                { "value": "hard",    "label": { "en": "No / stuck — needs removal" },    "delta": [60, 100] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [25, 50] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "main",
+          "label": { "en": "Main line / Sewer" },
+          "base_price": [650, 1000],
+          "result_note": { "en": "A main-line clog often requires a long auger/jetter and an exterior cleanout access point." },
+          "questions": [
+            {
+              "id": "how_many",
+              "text": { "en": "How many fixtures at home aren’t draining?" },
+              "options": [
+                { "value": "one",     "label": { "en": "One fixture" },                   "delta": [0, 0] },
+                { "value": "multi",   "label": { "en": "Two or more" },                   "delta": [150, 250] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "en": "Is there an exterior cleanout/access point?" },
+              "options": [
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [0, 0] },
+                { "value": "no",      "label": { "en": "No" },                            "delta": [120, 180] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [80, 140] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "cistern",
+      "label": { "en": "Cistern / Toilet tank (repair/replace)" },
+      "subtypes": [
+        {
+          "id": "exposed",
+          "label": { "en": "Exposed (external tank)" },
+          "base_price": [240, 380],
+          "result_note": { "en": "Parts (mechanism/float) may be required at additional cost." },
+          "questions": [
+            {
+              "id": "symptom",
+              "text": { "en": "Main issue?" },
+              "options": [
+                { "value": "running",   "label": { "en": "Water constantly flows into the bowl" }, "delta": [60, 110] },
+                { "value": "slow_fill", "label": { "en": "Slow fill / doesn’t fill" },              "delta": [30, 70] },
+                { "value": "button",    "label": { "en": "Button/mechanism stuck/broken" },         "delta": [40, 90] },
+                { "value": "unknown",   "label": { "en": "Not sure" },                              "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "en": "Need new parts as well?" },
+              "options": [
+                { "value": "no",         "label": { "en": "No — likely adjustment/cleaning only" }, "delta": [0, 0] },
+                { "value": "yes_basic",  "label": { "en": "Yes — basic mechanism/float" },          "delta": [80, 160] },
+                { "value": "yes_quality","label": { "en": "Yes — quality/brand part" },             "delta": [140, 240] },
+                { "value": "unknown",    "label": { "en": "Not sure" },                              "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "concealed",
+          "label": { "en": "Concealed" },
+          "base_price": [380, 650],
+          "result_note": { "en": "May require removing the flush plate/front; OEM brand parts can increase cost." },
+          "questions": [
+            {
+              "id": "brand",
+              "text": { "en": "Known brand?" },
+              "options": [
+                { "value": "geberit", "label": { "en": "Geberit / premium brand" },       "delta": [60, 120] },
+                { "value": "generic", "label": { "en": "Generic/unknown" },               "delta": [0, 0] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [30, 90] }
+              ]
+            },
+            {
+              "id": "symptom",
+              "text": { "en": "Main issue?" },
+              "options": [
+                { "value": "running",  "label": { "en": "Water flows into bowl" },        "delta": [60, 120] },
+                { "value": "fill",     "label": { "en": "Doesn’t fill / slow fill" },     "delta": [40, 90] },
+                { "value": "button",   "label": { "en": "Button/flushplate faulty" },     "delta": [50, 120] },
+                { "value": "leak_out", "label": { "en": "Leak outside the wall / to floor" }, "delta": [120, 220] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "en": "Need new parts as well?" },
+              "options": [
+                { "value": "no",            "label": { "en": "No — likely adjustment/cleaning only" }, "delta": [0, 0] },
+                { "value": "yes_basic",     "label": { "en": "Yes — seals/aftermarket float" },        "delta": [120, 220] },
+                { "value": "yes_original",  "label": { "en": "Yes — OEM part" },                       "delta": [200, 350] },
+                { "value": "unknown",       "label": { "en": "Not sure" },                              "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "faucet",
+      "label": { "en": "Faucet / Mixer" },
+      "subtypes": [
+        {
+          "id": "sink_faucet",
+          "label": { "en": "Sink faucet (kitchen/bath)" },
+          "base_price": [240, 380],
+          "result_note": { "en": "Does not include supplying a faucet unless the supply option is selected." },
+          "questions": [
+            {
+              "id": "supply",
+              "text": { "en": "Are you supplying the faucet?" },
+              "options": [
+                { "value": "client",  "label": { "en": "Yes — faucet on site (no extra)" },     "delta": [0, 0] },
+                { "value": "basic",   "label": { "en": "No — supply basic faucet (+₪180–₪280)" }, "delta": [180, 280] },
+                { "value": "quality", "label": { "en": "No — supply quality/brand faucet (+₪320–₪520)" }, "delta": [320, 520] },
+                { "value": "unknown", "label": { "en": "Not sure" },                             "delta": [200, 360] }
+              ]
+            },
+            {
+              "id": "fit",
+              "text": { "en": "Do holes/connections match the new faucet?" },
+              "options": [
+                { "value": "yes",     "label": { "en": "Yes (no extra)" },                       "delta": [0, 0] },
+                { "value": "adapter", "label": { "en": "Need adapters/risers (+₪40–₪90)" },      "delta": [40, 90] },
+                { "value": "unknown", "label": { "en": "Not sure" },                             "delta": [30, 70] }
+              ]
+            },
+            {
+              "id": "valves",
+              "text": { "en": "Condition of shutoff valves under the sink?" },
+              "options": [
+                { "value": "ok",      "label": { "en": "OK (no extra)" },                        "delta": [0, 0] },
+                { "value": "replace", "label": { "en": "Need replacement (+₪100–₪180)" },        "delta": [100, 180] },
+                { "value": "unknown", "label": { "en": "Not sure" },                             "delta": [50, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal", "label": { "en": "During regular hours (no extra)" },        "delta": [0, 0] },
+                { "value": "evening","label": { "en": "Evening/Weekend (×1.5)" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower_exposed",
+          "label": { "en": "Tub/Shower mixer (exposed)" },
+          "base_price": [280, 450],
+          "questions": [
+            {
+              "id": "centers",
+              "text": { "en": "Need to adjust center-to-center spacing?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No, fits" },                   "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes, adjust S-connectors" },   "delta": [60, 120] },
+                { "value": "unknown", "label": { "en": "Not sure" },                   "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "supply",
+              "text": { "en": "Who supplies the mixer?" },
+              "options": [
+                { "value": "client",  "label": { "en": "Client supplies" },            "delta": [0, 0] },
+                { "value": "basic",   "label": { "en": "Supply basic mixer" },         "delta": [220, 360] },
+                { "value": "quality", "label": { "en": "Supply quality/brand mixer" }, "delta": [380, 650] },
+                { "value": "unknown", "label": { "en": "Not sure" },                   "delta": [250, 450] }
+              ]
+            },
+            {
+              "id": "leak_wall",
+              "text": { "en": "Leak at the wall connection?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                         "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — needs sealing/repair" }, "delta": [80, 150] },
+                { "value": "unknown", "label": { "en": "Not sure" },                   "delta": [40, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal","label": { "en": "During regular hours" },          "delta": [0, 0] },
+                { "value": "evening","label": { "en": "Evening/Weekend" },              "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower_concealed",
+          "label": { "en": "Concealed shower valve (in-wall)" },
+          "base_price": [600, 1100],
+          "result_note": { "en": "Full body replacement may require wall chasing/tile work." },
+          "questions": [
+            {
+              "id": "scope",
+              "text": { "en": "Scope of work?" },
+              "options": [
+                { "value": "trim_only", "label": { "en": "Replace trim/cartridge only" }, "delta": [0, 0] },
+                { "value": "full_body", "label": { "en": "Replace full valve body" },     "delta": [400, 800] },
+                { "value": "unknown",   "label": { "en": "Not sure" },                    "delta": [200, 500] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "en": "Known brand?" },
+              "options": [
+                { "value": "premium", "label": { "en": "Premium/original brand" },        "delta": [100, 250] },
+                { "value": "generic", "label": { "en": "Generic/unknown" },               "delta": [0, 0] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [50, 150] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "en": "Is wall chasing/tile cutting required?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — tile work" },               "delta": [200, 400] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [120, 250] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal","label": { "en": "During regular hours" },            "delta": [0, 0] },
+                { "value": "evening","label": { "en": "Evening/Weekend" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "boiler",
+      "label": { "en": "Water heater" },
+      "subtypes": [
+        {
+          "id": "electric_service",
+          "label": { "en": "Electric heater — repair (element/thermostat)" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "access",
+              "text": { "en": "Heater access?" },
+              "options": [
+                { "value": "easy",    "label": { "en": "Easy (closet/utility room)" },    "delta": [0, 0] },
+                { "value": "roof",    "label": { "en": "On roof / challenging access" },  "delta": [90, 180] },
+                { "value": "unknown", "label": { "en": "Not sure" },                       "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "part",
+              "text": { "en": "What likely needs replacement?" },
+              "options": [
+                { "value": "thermostat", "label": { "en": "Thermostat" },                 "delta": [120, 200] },
+                { "value": "element",    "label": { "en": "Heating element" },            "delta": [180, 280] },
+                { "value": "both",       "label": { "en": "Element + thermostat" },       "delta": [280, 420] },
+                { "value": "unknown",    "label": { "en": "Not sure" },                   "delta": [160, 260] }
+              ]
+            },
+            {
+              "id": "leak",
+              "text": { "en": "Any signs of heater leakage?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes (may require replacement)" }, "delta": [200, 400] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal","label": { "en": "During regular hours" },            "delta": [0, 0] },
+                { "value": "evening","label": { "en": "Evening/Weekend" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "solar_service",
+          "label": { "en": "Solar heater — repair/maintenance" },
+          "base_price": [450, 750],
+          "questions": [
+            {
+              "id": "access",
+              "text": { "en": "Roof access?" },
+              "options": [
+                { "value": "easy",    "label": { "en": "Easy (elevator/roof door)" },     "delta": [0, 0] },
+                { "value": "hard",    "label": { "en": "Stairs/challenging access" },     "delta": [120, 200] },
+                { "value": "unknown", "label": { "en": "Not sure" },                       "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "scope",
+              "text": { "en": "What seems required?" },
+              "options": [
+                { "value": "nr_valve",  "label": { "en": "Relief/check valve" },          "delta": [120, 200] },
+                { "value": "insulation","label": { "en": "Pipe/connection insulation" },  "delta": [150, 300] },
+                { "value": "controller","label": { "en": "Controller/switch/electrical" }, "delta": [250, 450] },
+                { "value": "unknown",   "label": { "en": "Not sure" },                     "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal","label": { "en": "During regular hours" },            "delta": [0, 0] },
+                { "value": "evening","label": { "en": "Evening/Weekend" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "replacement",
+          "label": { "en": "Heater replacement (remove old + install)" },
+          "base_price": [500, 800],
+          "result_note": { "en": "Hardware price (the heater itself) depends on size and brand. Price includes labor; disposal of old heater is extra." },
+          "questions": [
+            {
+              "id": "size",
+              "text": { "en": "What tank size do you want?" },
+              "options": [
+                { "value": "80",      "label": { "en": "80 L (supply)" },                 "delta": [1200, 1800] },
+                { "value": "120",     "label": { "en": "120 L (supply)" },                "delta": [1500, 2300] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [1300, 2000] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "en": "Desired quality level?" },
+              "options": [
+                { "value": "basic",   "label": { "en": "Basic" },                         "delta": [0, 0] },
+                { "value": "quality", "label": { "en": "Brand/quality" },                 "delta": [200, 400] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "location",
+              "text": { "en": "Heater location" },
+              "options": [
+                { "value": "closet",  "label": { "en": "Closet/utility room" },           "delta": [0, 0] },
+                { "value": "roof",    "label": { "en": "Roof/difficult access" },         "delta": [150, 300] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "disposal",
+              "text": { "en": "Dispose of the old heater?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — include disposal" },        "delta": [80, 150] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal","label": { "en": "During regular hours" },            "delta": [0, 0] },
+                { "value": "evening","label": { "en": "Evening/Weekend" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "leak",
+      "label": { "en": "Leak detection/repair" },
+      "subtypes": [
+        {
+          "id": "hidden_wall",
+          "label": { "en": "Hidden wall dampness/leak" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "diagnostics",
+              "text": { "en": "Need detection with thermal camera/equipment?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — advanced detection" },      "delta": [250, 450] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "en": "Are the areas accessible?" },
+              "options": [
+                { "value": "easy",    "label": { "en": "Yes" },                           "delta": [0, 0] },
+                { "value": "behind",  "label": { "en": "Behind cabinet/built-in" },       "delta": [100, 180] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "open_close",
+              "text": { "en": "Is localized wall opening/patching required?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes (localized patch)" },         "delta": [150, 280] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ceiling",
+          "label": { "en": "Ceiling dampness" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "source",
+              "text": { "en": "Suspected source?" },
+              "options": [
+                { "value": "neighbor", "label": { "en": "Neighbor above" },               "delta": [0, 0] },
+                { "value": "roof",     "label": { "en": "Water ingress from roof" },      "delta": [80, 160] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                     "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "tools",
+              "text": { "en": "Need detection equipment/ladder?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [120, 200] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "visible",
+          "label": { "en": "Visible leak from fitting/pipe" },
+          "base_price": [250, 420],
+          "questions": [
+            {
+              "id": "type",
+              "text": { "en": "Where is the leak from?" },
+              "options": [
+                { "value": "flex",    "label": { "en": "Flexible hose / angle valve" },   "delta": [60, 120] },
+                { "value": "rigid",   "label": { "en": "Rigid pipe / soldered" },         "delta": [120, 220] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "en": "Need to replace parts?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes (gaskets/fittings)" },        "delta": [60, 140] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [50, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "pipe_burst",
+      "label": { "en": "Pipe burst / replace section" },
+      "subtypes": [
+        {
+          "id": "location",
+          "label": { "en": "Burst location" },
+          "base_price": [450, 800],
+          "questions": [
+            {
+              "id": "where",
+              "text": { "en": "Where is it?" },
+              "options": [
+                { "value": "wall",    "label": { "en": "Inside wall" },                   "delta": [150, 300] },
+                { "value": "floor",   "label": { "en": "In floor/under tile" },           "delta": [220, 380] },
+                { "value": "cabinet", "label": { "en": "Under sink / in cabinet" },       "delta": [60, 120] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "length",
+              "text": { "en": "Section length to replace (estimate)" },
+              "options": [
+                { "value": "short",   "label": { "en": "Up to 0.5 m" },                   "delta": [0, 0] },
+                { "value": "medium",  "label": { "en": "0.5–1.5 m" },                     "delta": [120, 220] },
+                { "value": "long",    "label": { "en": "More than 1.5 m" },               "delta": [220, 380] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "material",
+              "text": { "en": "Pipe material?" },
+              "options": [
+                { "value": "pex",     "label": { "en": "PEX/plastic" },                   "delta": [0, 0] },
+                { "value": "copper",  "label": { "en": "Copper" },                        "delta": [80, 150] },
+                { "value": "galv",    "label": { "en": "Old galvanized" },                "delta": [120, 200] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "en": "Need to open/patch tiles?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — cutting/patching" },        "delta": [160, 300] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "toilet_install",
+      "label": { "en": "New toilet installation" },
+      "subtypes": [
+        {
+          "id": "floor_mounted",
+          "label": { "en": "Floor-mounted toilet" },
+          "base_price": [380, 650],
+          "questions": [
+            {
+              "id": "remove_old",
+              "text": { "en": "Remove old toilet?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [80, 160] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "seal",
+              "text": { "en": "Do you have a seal/wax ring?" },
+              "options": [
+                { "value": "client",  "label": { "en": "Yes" },                           "delta": [0, 0] },
+                { "value": "supply",  "label": { "en": "No — supply via us" },            "delta": [40, 80] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "valve",
+              "text": { "en": "Condition of shutoff valve near toilet?" },
+              "options": [
+                { "value": "ok",      "label": { "en": "OK" },                            "delta": [0, 0] },
+                { "value": "replace", "label": { "en": "Replace" },                       "delta": [90, 160] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wall_hung",
+          "label": { "en": "Wall-hung toilet (with concealed cistern)" },
+          "base_price": [700, 1100],
+          "questions": [
+            {
+              "id": "tile",
+              "text": { "en": "Need hole/tile adjustments?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [200, 400] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "en": "Original brand/accessories?" },
+              "options": [
+                { "value": "generic", "label": { "en": "Generic" },                       "delta": [0, 0] },
+                { "value": "premium", "label": { "en": "Brand/original" },                "delta": [120, 220] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "sink_install",
+      "label": { "en": "Sink installation" },
+      "subtypes": [
+        {
+          "id": "vanity",
+          "label": { "en": "Countertop/above-counter sink (vanity)" },
+          "base_price": [420, 700],
+          "questions": [
+            {
+              "id": "mixer",
+              "text": { "en": "Install a mixer as well?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [120, 200] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [90, 160] }
+              ]
+            },
+            {
+              "id": "siphon",
+              "text": { "en": "Trap/PEX — need us to supply?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No, already have" },              "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — supply" },                  "delta": [80, 160] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "drill",
+              "text": { "en": "Need drilling/fitting in cabinet?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                           "delta": [60, 120] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "undermount",
+          "label": { "en": "Undermount sink (under countertop)" },
+          "base_price": [480, 800],
+          "result_note": { "en": "Stonework/special adhesive work not included." },
+          "questions": [
+            {
+              "id": "kit",
+              "text": { "en": "Need kit/special brackets?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — supply/install" },          "delta": [120, 200] },
+                { "value": "unknown", "label": { "en": "Not sure" },                      "delta": [100, 180] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "trap",
+      "label": { "en": "Trap / drain replacement" },
+      "subtypes": [
+        {
+          "id": "sink_trap",
+          "label": { "en": "Sink trap" },
+          "base_price": [180, 300],
+          "questions": [
+            {
+              "id": "shape",
+              "text": { "en": "Special type/shape?" },
+              "options": [
+                { "value": "standard", "label": { "en": "Standard" },    "delta": [0, 0] },
+                { "value": "special",  "label": { "en": "Decor/slim" },  "delta": [40, 80] },
+                { "value": "unknown",  "label": { "en": "Not sure" },    "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "material",
+              "text": { "en": "Trap material?" },
+              "options": [
+                { "value": "plastic", "label": { "en": "Plastic" },      "delta": [0, 0] },
+                { "value": "chrome",  "label": { "en": "Chrome/metal" }, "delta": [30, 70] },
+                { "value": "unknown", "label": { "en": "Not sure" },     "delta": [20, 50] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },      "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "floor_trap",
+          "label": { "en": "Floor drain box/trap" },
+          "base_price": [240, 400],
+          "result_note": { "en": "Includes localized removal/sealing; extensive chasing/tiling may increase cost." },
+          "questions": [
+            {
+              "id": "diameter",
+              "text": { "en": "Approximate outlet diameter?" },
+              "options": [
+                { "value": "50",      "label": { "en": "Ø50 mm" },      "delta": [0, 0] },
+                { "value": "75",      "label": { "en": "Ø75 mm" },      "delta": [40, 80] },
+                { "value": "unknown", "label": { "en": "Not sure" },    "delta": [20, 60] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "en": "Need tile/grout cutting/adjustment?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },          "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },         "delta": [80, 150] },
+                { "value": "unknown", "label": { "en": "Not sure" },    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "en": "Accessibility to location?" },
+              "options": [
+                { "value": "easy",    "label": { "en": "Easy" },        "delta": [0, 0] },
+                { "value": "hard",    "label": { "en": "Limited/tight access" }, "delta": [60, 120] },
+                { "value": "unknown", "label": { "en": "Not sure" },    "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },     "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bathtub_trap",
+          "label": { "en": "Bathtub drain / click-clack" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "mechanism",
+              "text": { "en": "Which mechanism?" },
+              "options": [
+                { "value": "plug",     "label": { "en": "Regular plug" },        "delta": [0, 0] },
+                { "value": "pop_up",   "label": { "en": "Click-clack / pop-up" }, "delta": [60, 110] },
+                { "value": "unknown",  "label": { "en": "Not sure" },             "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "access_panel",
+              "text": { "en": "Accessible service panel?" },
+              "options": [
+                { "value": "yes",     "label": { "en": "Yes" },                    "delta": [0, 0] },
+                { "value": "no",      "label": { "en": "No — difficult access" },  "delta": [80, 150] },
+                { "value": "unknown", "label": { "en": "Not sure" },               "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },        "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "washer_trap",
+          "label": { "en": "Washing machine drain / standpipe" },
+          "base_price": [200, 320],
+          "questions": [
+            {
+              "id": "standpipe",
+              "text": { "en": "Need a standpipe/raised drain?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                      "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — supply+install" },    "delta": [80, 150] },
+                { "value": "unknown", "label": { "en": "Not sure" },                "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "adapter",
+              "text": { "en": "Need adapter/seal for spout?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                      "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — adapter/seal" },      "delta": [40, 80] },
+                { "value": "unknown", "label": { "en": "Not sure" },                "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                 "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },         "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "pressure",
+      "label": { "en": "Pressure issues / pipe noise" },
+      "subtypes": [
+        {
+          "id": "low_pressure",
+          "label": { "en": "Low water pressure" },
+          "base_price": [250, 400],
+          "questions": [
+            {
+              "id": "scope",
+              "text": { "en": "Where is it noticed?" },
+              "options": [
+                { "value": "single",  "label": { "en": "Single fixture" },           "delta": [0, 0] },
+                { "value": "whole",   "label": { "en": "Entire apartment" },         "delta": [80, 160] },
+                { "value": "unknown", "label": { "en": "Not sure" },                 "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "regulator",
+              "text": { "en": "Replace pressure regulator (if needed)?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — incl. supply" },        "delta": [350, 600] },
+                { "value": "unknown", "label": { "en": "Not sure" },                  "delta": [220, 380] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                   "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },           "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "water_hammer",
+          "label": { "en": "Water hammer / pipe noise" },
+          "base_price": [300, 520],
+          "questions": [
+            {
+              "id": "arrestor",
+              "text": { "en": "Install water-hammer arrestor?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — incl. supply" },        "delta": [220, 380] },
+                { "value": "unknown", "label": { "en": "Not sure" },                  "delta": [150, 280] }
+              ]
+            },
+            {
+              "id": "secure",
+              "text": { "en": "Need to secure/anchor piping?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes" },                       "delta": [120, 220] },
+                { "value": "unknown", "label": { "en": "Not sure" },                  "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                   "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },           "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "main_valve",
+      "label": { "en": "Main valve replacement / apartment shutoff" },
+      "subtypes": [
+        {
+          "id": "apartment_main",
+          "label": { "en": "Apartment main valve" },
+          "base_price": [280, 480],
+          "questions": [
+            {
+              "id": "condition",
+              "text": { "en": "Pipe/thread condition?" },
+              "options": [
+                { "value": "ok",      "label": { "en": "OK" },                          "delta": [0, 0] },
+                { "value": "galv",    "label": { "en": "Galvanized / needs threading" }, "delta": [120, 220] },
+                { "value": "unknown", "label": { "en": "Not sure" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "en": "Access to valve (meter box)?" },
+              "options": [
+                { "value": "easy",    "label": { "en": "Easy" },                         "delta": [0, 0] },
+                { "value": "hard",    "label": { "en": "Small/deep box" },               "delta": [60, 120] },
+                { "value": "unknown", "label": { "en": "Not sure" },                     "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "valve_type",
+              "text": { "en": "Preferred valve type?" },
+              "options": [
+                { "value": "ball",    "label": { "en": "Ball/butterfly (recommended)" }, "delta": [0, 0] },
+                { "value": "gate",    "label": { "en": "Gate/needle (alternative)" },    "delta": [-20, 0] },
+                { "value": "unknown", "label": { "en": "Not sure" },                     "delta": [0, 0] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "Urgency" },
+              "options": [
+                { "value": "normal",  "label": { "en": "Regular" },                      "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },              "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "appliance",
+      "label": { "en": "Appliance hookup (dishwasher/washing machine)" },
+      "subtypes": [
+        {
+          "id": "dishwasher",
+          "label": { "en": "Dishwasher" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "splitter",
+              "text": { "en": "Need a water splitter (Y) at the sink?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                              "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — supply + install" },          "delta": [40, 80] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "drain",
+              "text": { "en": "Drain connection method?" },
+              "options": [
+                { "value": "branch",   "label": { "en": "Existing branch at siphon" },      "delta": [0, 0] },
+                { "value": "disposer", "label": { "en": "Garbage disposer inlet" },         "delta": [30, 70] },
+                { "value": "drill",    "label": { "en": "Need to drill/fit new spigot" },   "delta": [60, 120] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                        "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "distance",
+              "text": { "en": "Distance from sink/cold-water point" },
+              "options": [
+                { "value": "near",    "label": { "en": "Up to ~1.5 m" },                     "delta": [0, 0] },
+                { "value": "medium",  "label": { "en": "1.5–3 m" },                          "delta": [60, 120] },
+                { "value": "far",     "label": { "en": "Over 3 m (extensions)" },            "delta": [100, 180] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "cabinet",
+              "text": { "en": "Need to drill cabinet/counter for hoses?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — drilling/fitting" },           "delta": [60, 120] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },             "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "washing_machine",
+          "label": { "en": "Washing machine" },
+          "base_price": [200, 340],
+          "questions": [
+            {
+              "id": "location",
+              "text": { "en": "Machine location?" },
+              "options": [
+                { "value": "laundry",  "label": { "en": "Laundry nook/utility room" },       "delta": [0, 0] },
+                { "value": "bathroom", "label": { "en": "Bathroom" },                        "delta": [20, 60] },
+                { "value": "balcony",  "label": { "en": "Balcony/exterior" },                "delta": [60, 120] },
+                { "value": "unknown",  "label": { "en": "Not sure" },                        "delta": [30, 80] }
+              ]
+            },
+            {
+              "id": "standpipe",
+              "text": { "en": "Need a standpipe/raised drain?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — supply + install" },           "delta": [80, 150] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "adapter",
+              "text": { "en": "Need adapter/seal for drain spout?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — adapter/seal" },               "delta": [40, 80] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "hoses",
+              "text": { "en": "Supply new water hoses?" },
+              "options": [
+                { "value": "client",  "label": { "en": "No — provided by client" },          "delta": [0, 0] },
+                { "value": "basic",   "label": { "en": "Yes — basic set" },                  "delta": [60, 120] },
+                { "value": "quality", "label": { "en": "Yes — quality/long hoses" },         "delta": [90, 160] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "levelling",
+              "text": { "en": "Need leveling/anti-vibration pads?" },
+              "options": [
+                { "value": "no",      "label": { "en": "No" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "en": "Yes — include pads/leveling" },      "delta": [40, 90] },
+                { "value": "unknown", "label": { "en": "Not sure" },                         "delta": [30, 70] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "en": "When do you need us on site?" },
+              "options": [
+                { "value": "normal",  "label": { "en": "During regular hours" },             "delta": [0, 0] },
+                { "value": "evening", "label": { "en": "Evening/Weekend" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

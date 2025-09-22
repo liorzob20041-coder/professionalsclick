@@ -1,0 +1,1239 @@
+{
+  "category": "plumbing",
+  "base_price": [200, 350],
+  "result_note": {
+    "he": "המחיר המוצג הוא טווח משוער לפי התשובות והמקובל בענף. המחיר הסופי נקבע בשטח לפי גישה לצנרת, חומרת הבעיה, ציוד/חלקים נדרשים ותנאי עבודה."
+  },
+  "jobs": [
+    {
+      "id": "clog",
+      "label": { "he": "סתימה" },
+      "subtypes": [
+        {
+          "id": "sink",
+          "label": { "he": "כיור" },
+          "base_price": [260, 420],
+          "result_note": { "he": "בכיור עשויות להיות עבודות פירוק סיפון/מטחנה שמייקרות מעט." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "he": "איך זה נראה?" },
+              "options": [
+                { "value": "slow",     "label": { "he": "מים יורדים לאט" },          "delta": [0, 0] },
+                { "value": "standing", "label": { "he": "מים עומדים/הצפה" },          "delta": [80, 140] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                 "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "disposal",
+              "text": { "he": "יש מטחנת אשפה בכיור?" },
+              "options": [
+                { "value": "no",      "label": { "he": "אין" },                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "יש" },                         "delta": [50, 90] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                  "delta": [15, 30] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },              "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "toilet",
+          "label": { "he": "אסלה" },
+          "base_price": [300, 480],
+          "result_note": { "he": "אם נדרש פירוק והרכבה – המחיר יעלה בהתאם." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "he": "כשמושכים מים — מה קורה?" },
+              "options": [
+                { "value": "slow",     "label": { "he": "יורד לאט" },                  "delta": [0, 0] },
+                { "value": "backup",   "label": { "he": "המים עולים/מציפים" },        "delta": [90, 140] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                  "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "plunger",
+              "text": { "he": "ניסיתם פומפה?" },
+              "options": [
+                { "value": "no",       "label": { "he": "לא ניסינו" },                 "delta": [0, 0] },
+                { "value": "yes",      "label": { "he": "ניסינו ולא עבד" },            "delta": [40, 60] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                  "delta": [10, 20] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },              "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower",
+          "label": { "he": "מקלחת/אמבט" },
+          "base_price": [260, 400],
+          "result_note": { "he": "ייתכן צורך בפירוק כיסוי ניקוז – תלוי בגישה." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "he": "איך זה נראה?" },
+              "options": [
+                { "value": "slow",     "label": { "he": "מים יורדים לאט" },            "delta": [0, 0] },
+                { "value": "standing", "label": { "he": "מים עומדים/הצפה" },           "delta": [70, 120] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                  "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "grate",
+              "text": { "he": "אפשר לפתוח את כיסוי/רשת הניקוז בקלות?" },
+              "options": [
+                { "value": "easy",    "label": { "he": "כן, נפתח בקלות" },             "delta": [0, 0] },
+                { "value": "hard",    "label": { "he": "לא / תקוע – צריך פירוק" },     "delta": [60, 100] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [25, 50] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },              "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "main",
+          "label": { "he": "קו ראשי/ביוב" },
+          "base_price": [650, 1000],
+          "result_note": { "he": "סתימה בקו ראשי לרוב דורשת ספירלה ארוכה/ביובית ונקודת גישה חיצונית." },
+          "questions": [
+            {
+              "id": "how_many",
+              "text": { "he": "כמה נקודות בבית לא מתנקזות?" },
+              "options": [
+                { "value": "one",     "label": { "he": "נקודה אחת" },                  "delta": [0, 0] },
+                { "value": "multi",   "label": { "he": "שתיים ומעלה" },                "delta": [150, 250] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "he": "יש נקודת גישה/ניקוז בחוץ?" },
+              "options": [
+                { "value": "yes",     "label": { "he": "כן" },                         "delta": [0, 0] },
+                { "value": "no",      "label": { "he": "אין" },                        "delta": [120, 180] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [80, 140] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },              "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "cistern",
+      "label": { "he": "תיקון/החלפת ניאגרה" },
+      "subtypes": [
+        {
+          "id": "exposed",
+          "label": { "he": "גלויה (מיכל חיצוני)" },
+          "base_price": [240, 380],
+          "result_note": { "he": "ייתכן צורך בחלקים (מנגנון/מצוף) בתוספת עלות." },
+          "questions": [
+            {
+              "id": "symptom",
+              "text": { "he": "מה הבעיה העיקרית?" },
+              "options": [
+                { "value": "running",   "label": { "he": "מים זורמים כל הזמן לאסלה" }, "delta": [60, 110] },
+                { "value": "slow_fill", "label": { "he": "מילוי איטי/לא מתמלא" },      "delta": [30, 70] },
+                { "value": "button",    "label": { "he": "כפתור/מנגנון תקוע/שבור" },   "delta": [40, 90] },
+                { "value": "unknown",   "label": { "he": "לא בטוח/ה" },                 "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "he": "צריך גם חלקים חדשים?" },
+              "options": [
+                { "value": "no",         "label": { "he": "לא, כנראה רק כיוון/ניקוי" },       "delta": [0, 0] },
+                { "value": "yes_basic",  "label": { "he": "כן, מנגנון/מצוף בסיסי" },          "delta": [80, 160] },
+                { "value": "yes_quality","label": { "he": "כן, חלק איכות/מותג" },            "delta": [140, 240] },
+                { "value": "unknown",    "label": { "he": "לא בטוח/ה" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },              "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "concealed",
+          "label": { "he": "סמויה" },
+          "base_price": [380, 650],
+          "result_note": { "he": "לעיתים נדרש פירוק חזית/כפתור; חלקים מקוריים של מותגים עשויים לייקר." },
+          "questions": [
+            {
+              "id": "brand",
+              "text": { "he": "המותג ידוע?" },
+              "options": [
+                { "value": "geberit", "label": { "he": "גבריט/מותג פרימיום" },         "delta": [60, 120] },
+                { "value": "generic", "label": { "he": "כללי/לא ידוע" },                "delta": [0, 0] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [30, 90] }
+              ]
+            },
+            {
+              "id": "symptom",
+              "text": { "he": "מה הבעיה העיקרית?" },
+              "options": [
+                { "value": "running",  "label": { "he": "מים זורמים לאסלה" },          "delta": [60, 120] },
+                { "value": "fill",     "label": { "he": "לא מתמלא/מילוי איטי" },        "delta": [40, 90] },
+                { "value": "button",   "label": { "he": "כפתור/חזית תקולים" },         "delta": [50, 120] },
+                { "value": "leak_out", "label": { "he": "נזילה מחוץ לקיר/לרצפה" },      "delta": [120, 220] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                  "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "he": "צריך גם חלקים חדשים?" },
+              "options": [
+                { "value": "no",            "label": { "he": "לא, כנראה רק כיוון/ניקוי" },    "delta": [0, 0] },
+                { "value": "yes_basic",     "label": { "he": "כן, אטמים/מצוף תחליפי" },      "delta": [120, 220] },
+                { "value": "yes_original",  "label": { "he": "כן, חלק מקורי יצרן" },         "delta": [200, 350] },
+                { "value": "unknown",       "label": { "he": "לא בטוח/ה" },                  "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },              "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                  "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "faucet",
+      "label": { "he": "ברז/מיקסר" },
+      "subtypes": [
+        {
+          "id": "sink_faucet",
+          "label": { "he": "ברז כיור (מטבח/אמבט)" },
+          "base_price": [240, 380],
+          "result_note": { "he": "לא כולל אספקת ברז אלא אם נבחרה אפשרות אספקה." },
+          "questions": [
+            {
+              "id": "supply",
+              "text": { "he": "את/ה מספק/ת את הברז?" },
+              "options": [
+                { "value": "client",  "label": { "he": "כן, יש ברז מוכן (ללא תוספת)" },         "delta": [0, 0] },
+                { "value": "basic",   "label": { "he": "לא – ברז בסיסי דרכי (+₪180–₪280)" },     "delta": [180, 280] },
+                { "value": "quality", "label": { "he": "לא – ברז איכות/מותג (+₪320–₪520)" },     "delta": [320, 520] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                             "delta": [200, 360] }
+              ]
+            },
+            {
+              "id": "fit",
+              "text": { "he": "החורים/חיבורים תואמים לברז החדש?" },
+              "options": [
+                { "value": "yes",     "label": { "he": "כן (ללא תוספת)" },                       "delta": [0, 0] },
+                { "value": "adapter", "label": { "he": "צריך מתאמים/שנורקלים (+₪40–₪90)" },       "delta": [40, 90] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                             "delta": [30, 70] }
+              ]
+            },
+            {
+              "id": "valves",
+              "text": { "he": "מצב ברזי ניתוק מתחת לכיור?" },
+              "options": [
+                { "value": "ok",      "label": { "he": "תקינים (ללא תוספת)" },                   "delta": [0, 0] },
+                { "value": "replace", "label": { "he": "צריך להחליף (+₪100–₪180)" },             "delta": [100, 180] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                             "delta": [50, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal", "label": { "he": "בשעות רגילות (ללא תוספת)" },              "delta": [0, 0] },
+                { "value": "evening","label": { "he": "ערב/סופ״ש (×1.5)" },                      "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower_exposed",
+          "label": { "he": "מיקסר אמבט/מקלחת (חיצוני)" },
+          "base_price": [280, 450],
+          "questions": [
+            {
+              "id": "centers",
+              "text": { "he": "צריך התאמות ברווח בין החיבורים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא, מתאים" },                   "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן, התאמת מחברי S" },           "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "supply",
+              "text": { "he": "מישהו מספק את המיקסר?" },
+              "options": [
+                { "value": "client",  "label": { "he": "לקוח/ה מספק/ת" },               "delta": [0, 0] },
+                { "value": "basic",   "label": { "he": "ספק מיקסר בסיסי" },             "delta": [220, 360] },
+                { "value": "quality", "label": { "he": "ספק מיקסר איכות/מותג" },        "delta": [380, 650] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [250, 450] }
+              ]
+            },
+            {
+              "id": "leak_wall",
+              "text": { "he": "יש נזילה מהחיבור בקיר?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                          "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן, צריך טיפול/אטימה" },       "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [40, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal","label": { "he": "בשעות רגילות" },                  "delta": [0, 0] },
+                { "value": "evening","label": { "he": "ערב/סופ״ש" },                    "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower_concealed",
+          "label": { "he": "ברז אינטרפוץ (סמוי)" },
+          "base_price": [600, 1100],
+          "result_note": { "he": "החלפת גוף אינטרפוץ לעיתים דורשת עבודת חציבה/אריחים." },
+          "questions": [
+            {
+              "id": "scope",
+              "text": { "he": "מה היקף העבודה?" },
+              "options": [
+                { "value": "trim_only", "label": { "he": "החלפת חזית/מנגנון בלבד" },     "delta": [0, 0] },
+                { "value": "full_body", "label": { "he": "החלפת גוף מלא" },              "delta": [400, 800] },
+                { "value": "unknown",   "label": { "he": "לא בטוח/ה" },                   "delta": [200, 500] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "he": "מותג ידוע?" },
+              "options": [
+                { "value": "premium", "label": { "he": "מותג פרימיום/מקורי" },           "delta": [100, 250] },
+                { "value": "generic", "label": { "he": "כללי/לא ידוע" },                 "delta": [0, 0] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [50, 150] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "he": "נדרשת חציבה/חיתוך באריח?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן, עבודת אריחים" },            "delta": [200, 400] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [120, 250] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal","label": { "he": "בשעות רגילות" },                   "delta": [0, 0] },
+                { "value": "evening","label": { "he": "ערב/סופ״ש" },                     "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "boiler",
+      "label": { "he": "דוד מים" },
+      "subtypes": [
+        {
+          "id": "electric_service",
+          "label": { "he": "דוד חשמל – תיקון (גוף חימום/תרמוסטט)" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "access",
+              "text": { "he": "גישה לדוד?" },
+              "options": [
+                { "value": "easy",    "label": { "he": "קלה (ארון/חדר שירות)" },       "delta": [0, 0] },
+                { "value": "roof",    "label": { "he": "על גג/גישה מאתגרת" },          "delta": [90, 180] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "part",
+              "text": { "he": "מה כנראה צריך להחליף?" },
+              "options": [
+                { "value": "thermostat", "label": { "he": "תרמוסטט" },                   "delta": [120, 200] },
+                { "value": "element",    "label": { "he": "גוף חימום" },                 "delta": [180, 280] },
+                { "value": "both",       "label": { "he": "גוף+תרמוסטט" },              "delta": [280, 420] },
+                { "value": "unknown",    "label": { "he": "לא בטוח/ה" },                 "delta": [160, 260] }
+              ]
+            },
+            {
+              "id": "leak",
+              "text": { "he": "יש סימני נזילה מהדוד?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                          "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (יתכן צורך בהחלפה)" },       "delta": [200, 400] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal","label": { "he": "בשעות רגילות" },                   "delta": [0, 0] },
+                { "value": "evening","label": { "he": "ערב/סופ״ש" },                     "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "solar_service",
+          "label": { "he": "דוד שמש – תיקון/תחזוקה" },
+          "base_price": [450, 750],
+          "questions": [
+            {
+              "id": "access",
+              "text": { "he": "גישה לגג?" },
+              "options": [
+                { "value": "easy",    "label": { "he": "קלה (מעלית/דלת גג)" },         "delta": [0, 0] },
+                { "value": "hard",    "label": { "he": "מדרגות/עלייה מאתגרת" },        "delta": [120, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "scope",
+              "text": { "he": "מה נדרש לדעתך?" },
+              "options": [
+                { "value": "nr_valve",  "label": { "he": "שסתום בטחון/אל חוזר" },       "delta": [120, 200] },
+                { "value": "insulation","label": { "he": "בידוד צנרת/חיבורים" },        "delta": [150, 300] },
+                { "value": "controller","label": { "he": "בקר/מפסק/חשמל" },             "delta": [250, 450] },
+                { "value": "unknown",   "label": { "he": "לא בטוח/ה" },                  "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal","label": { "he": "בשעות רגילות" },                   "delta": [0, 0] },
+                { "value": "evening","label": { "he": "ערב/סופ״ש" },                     "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "replacement",
+          "label": { "he": "החלפת דוד (פירוק ישן+התקנה)" },
+          "base_price": [500, 800],
+          "result_note": { "he": "המחיר לחומרה (הדוד עצמו) תלוי נפח ומותג. המחיר כולל עבודה; פינוי דוד ישן בתוספת." },
+          "questions": [
+            {
+              "id": "size",
+              "text": { "he": "איזה נפח תרצו?" },
+              "options": [
+                { "value": "80",      "label": { "he": "80 ליטר (אספקה)" },            "delta": [1200, 1800] },
+                { "value": "120",     "label": { "he": "120 ליטר (אספקה)" },           "delta": [1500, 2300] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                   "delta": [1300, 2000] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "he": "רמת איכות רצויה?" },
+              "options": [
+                { "value": "basic",   "label": { "he": "בסיסי" },                        "delta": [0, 0] },
+                { "value": "quality", "label": { "he": "מותג/איכות" },                   "delta": [200, 400] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "location",
+              "text": { "he": "מיקום הדוד" },
+              "options": [
+                { "value": "closet",  "label": { "he": "ארון/חדר שירות" },              "delta": [0, 0] },
+                { "value": "roof",    "label": { "he": "גג/גישה קשה" },                 "delta": [150, 300] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "disposal",
+              "text": { "he": "פינוי הדוד הישן?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן, כולל פינוי" },               "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "מתי צריך הגעה?" },
+              "options": [
+                { "value": "normal","label": { "he": "בשעות רגילות" },                   "delta": [0, 0] },
+                { "value": "evening","label": { "he": "ערב/סופ״ש" },                     "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "leak",
+      "label": { "he": "איתור/תיקון נזילה" },
+      "subtypes": [
+        {
+          "id": "hidden_wall",
+          "label": { "he": "רטיבות/נזילה נסתרת בקיר" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "diagnostics",
+              "text": { "he": "נדרש איתור עם מצלמה תרמית/ציוד?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן, איתור מתקדם" },              "delta": [250, 450] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "he": "האזורים נגישים?" },
+              "options": [
+                { "value": "easy",    "label": { "he": "כן" },                           "delta": [0, 0] },
+                { "value": "behind",  "label": { "he": "מאחורי ארון/מובנה" },           "delta": [100, 180] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "open_close",
+              "text": { "he": "פתיחה/סגירה נקודתית של קיר נדרשת?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (טלאי נקודתי)" },            "delta": [150, 280] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ceiling",
+          "label": { "he": "רטיבות בתקרה" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "source",
+              "text": { "he": "מקור משוער?" },
+              "options": [
+                { "value": "neighbor", "label": { "he": "שכן מעל" },                    "delta": [0, 0] },
+                { "value": "roof",     "label": { "he": "חדירת מים מהגג" },             "delta": [80, 160] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "tools",
+              "text": { "he": "צריך ציוד איתור/סולם?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [120, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "visible",
+          "label": { "he": "נזילה גלויה מחיבור/צינור" },
+          "base_price": [250, 420],
+          "questions": [
+            {
+              "id": "type",
+              "text": { "he": "מאיפה הנזילה?" },
+              "options": [
+                { "value": "flex",    "label": { "he": "צינור גמיש/ברז זוויתי" },       "delta": [60, 120] },
+                { "value": "rigid",   "label": { "he": "צנרת קשיחה/הלחמה" },            "delta": [120, 220] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "he": "צריך להחליף חלקים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (אטמים/מחברים)" },           "delta": [60, 140] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [50, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "pipe_burst",
+      "label": { "he": "פיצוץ/החלפת קטע צינור" },
+      "subtypes": [
+        {
+          "id": "location",
+          "label": { "he": "מיקום הפיצוץ" },
+          "base_price": [450, 800],
+          "questions": [
+            {
+              "id": "where",
+              "text": { "he": "איפה זה?" },
+              "options": [
+                { "value": "wall",    "label": { "he": "בתוך קיר" },                     "delta": [150, 300] },
+                { "value": "floor",   "label": { "he": "ברצפה/מתחת לאריח" },            "delta": [220, 380] },
+                { "value": "cabinet", "label": { "he": "מתחת לכיור/בארון" },            "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "length",
+              "text": { "he": "אורך קטע להחלפה (הערכה)" },
+              "options": [
+                { "value": "short",   "label": { "he": "עד 0.5 מ׳" },                    "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "0.5–1.5 מ׳" },                   "delta": [120, 220] },
+                { "value": "long",    "label": { "he": "יותר מ־1.5 מ׳" },                "delta": [220, 380] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "material",
+              "text": { "he": "חומר הצינור?" },
+              "options": [
+                { "value": "pex",     "label": { "he": "PEX/פלסטיק" },                   "delta": [0, 0] },
+                { "value": "copper",  "label": { "he": "נחושת" },                        "delta": [80, 150] },
+                { "value": "galv",    "label": { "he": "מגולוון ישן" },                  "delta": [120, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "he": "צריך פתיחת/סגירת אריחים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – חיתוך/טלאי" },              "delta": [160, 300] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "toilet_install",
+      "label": { "he": "התקנת אסלה חדשה" },
+      "subtypes": [
+        {
+          "id": "floor_mounted",
+          "label": { "he": "אסלה עומדת" },
+          "base_price": [380, 650],
+          "questions": [
+            {
+              "id": "remove_old",
+              "text": { "he": "צריך לפרק אסלה ישנה?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [80, 160] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "seal",
+              "text": { "he": "יש אטם/טבעת שיוף?" },
+              "options": [
+                { "value": "client",  "label": { "he": "כן, יש" },                       "delta": [0, 0] },
+                { "value": "supply",  "label": { "he": "לא – אספקה דרכי" },             "delta": [40, 80] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "valve",
+              "text": { "he": "מצב ברז ניתוק ליד אסלה?" },
+              "options": [
+                { "value": "ok",      "label": { "he": "תקין" },                         "delta": [0, 0] },
+                { "value": "replace", "label": { "he": "להחליף" },                       "delta": [90, 160] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wall_hung",
+          "label": { "he": "אסלה תלויה (עם ניאגרה סמויה)" },
+          "base_price": [700, 1100],
+          "questions": [
+            {
+              "id": "tile",
+              "text": { "he": "נדרשת התאמת חורים/אריחים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [200, 400] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "he": "מותג/אביזרים מקוריים?" },
+              "options": [
+                { "value": "generic", "label": { "he": "כללי" },                         "delta": [0, 0] },
+                { "value": "premium", "label": { "he": "מותג/מקורי" },                  "delta": [120, 220] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "sink_install",
+      "label": { "he": "התקנת כיור" },
+      "subtypes": [
+        {
+          "id": "vanity",
+          "label": { "he": "כיור על/מונח (ארונית)" },
+          "base_price": [420, 700],
+          "questions": [
+            {
+              "id": "mixer",
+              "text": { "he": "להתקין גם מיקסר?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [120, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [90, 160] }
+              ]
+            },
+            {
+              "id": "siphon",
+              "text": { "he": "סיפון/PEX – צריך אספקה?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא, יש" },                       "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן, אספקה" },                    "delta": [80, 160] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "drill",
+              "text": { "he": "צריך קדיחה/התאמה בארון?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "undermount",
+          "label": { "he": "כיור תחתון (מתחת לשיש)" },
+          "base_price": [480, 800],
+          "result_note": { "he": "עבודות שיש/הדבקה מיוחדת אינן כלולות." },
+          "questions": [
+            {
+              "id": "kit",
+              "text": { "he": "צריך קיט/מחברים מיוחדים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – אספקה/התקנה" },            "delta": [120, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [100, 180] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                   "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "trap",
+      "label": { "he": "החלפת סיפון/שוחה" },
+      "subtypes": [
+        {
+          "id": "sink_trap",
+          "label": { "he": "סיפון כיור" },
+          "base_price": [180, 300],
+          "questions": [
+            {
+              "id": "shape",
+              "text": { "he": "סוג/צורה מיוחדת?" },
+              "options": [
+                { "value": "standard", "label": { "he": "סטנדרטי" }, "delta": [0, 0] },
+                { "value": "special",  "label": { "he": "מעוצב/צר" }, "delta": [40, 80] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" }, "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "material",
+              "text": { "he": "חומר הסיפון?" },
+              "options": [
+                { "value": "plastic", "label": { "he": "פלסטיק" }, "delta": [0, 0] },
+                { "value": "chrome",  "label": { "he": "כרום/מתכתי" }, "delta": [30, 70] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [20, 50] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "floor_trap",
+          "label": { "he": "קופסת ניקוז/רצפה" },
+          "base_price": [240, 400],
+          "result_note": { "he": "כולל פירוק/אטימה נקודתית; חציבה/אריחים מורכבים עשויים לייקר." },
+          "questions": [
+            {
+              "id": "diameter",
+              "text": { "he": "קוטר משוער של היציאה?" },
+              "options": [
+                { "value": "50",      "label": { "he": "Ø50 מ״מ" }, "delta": [0, 0] },
+                { "value": "75",      "label": { "he": "Ø75 מ״מ" }, "delta": [40, 80] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [20, 60] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "he": "צריך התאמה/חיתוך באריח/רובה?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" }, "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" }, "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "he": "נגישות למיקום?" },
+              "options": [
+                { "value": "easy",    "label": { "he": "נוחה" }, "delta": [0, 0] },
+                { "value": "hard",    "label": { "he": "גישה מוגבלת/צפוף" }, "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bathtub_trap",
+          "label": { "he": "סיפון אמבטיה / קליק-קלאק" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "mechanism",
+              "text": { "he": "איזה מנגנון?" },
+              "options": [
+                { "value": "plug",     "label": { "he": "פקק רגיל" }, "delta": [0, 0] },
+                { "value": "pop_up",   "label": { "he": "קליק-קלאק/פופ-אפ" }, "delta": [60, 110] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" }, "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "access_panel",
+              "text": { "he": "יש פתח שירות נגיש?" },
+              "options": [
+                { "value": "yes",     "label": { "he": "כן" }, "delta": [0, 0] },
+                { "value": "no",      "label": { "he": "לא – גישה קשה" }, "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "washer_trap",
+          "label": { "he": "ניקוז מכונת כביסה / סטנדפייפ" },
+          "base_price": [200, 320],
+          "questions": [
+            {
+              "id": "standpipe",
+              "text": { "he": "נדרש סטנדפייפ/הגבהה לניקוז?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" }, "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – אספקה+התקנה" }, "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "adapter",
+              "text": { "he": "צריך מתאם/איטום לפייה?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" }, "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – מתאם/אטם" }, "delta": [40, 80] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" }, "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "pressure",
+      "label": { "he": "בעיות לחץ/רעש בצנרת" },
+      "subtypes": [
+        {
+          "id": "low_pressure",
+          "label": { "he": "לחץ מים נמוך" },
+          "base_price": [250, 400],
+          "questions": [
+            {
+              "id": "scope",
+              "text": { "he": "איפה מורגש?" },
+              "options": [
+                { "value": "single",  "label": { "he": "נקודה אחת" },                   "delta": [0, 0] },
+                { "value": "whole",   "label": { "he": "בכל הדירה" },                   "delta": [80, 160] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "regulator",
+              "text": { "he": "להחליף וסת לחץ (אם נדרש)?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – כולל אספקה" },              "delta": [350, 600] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [220, 380] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "water_hammer",
+          "label": { "he": "מכות מים/רעש בצנרת" },
+          "base_price": [300, 520],
+          "questions": [
+            {
+              "id": "arrestor",
+              "text": { "he": "להתקין בולם מכות מים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – כולל אספקה" },              "delta": [220, 380] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [150, 280] }
+              ]
+            },
+            {
+              "id": "secure",
+              "text": { "he": "צריך קיבוע/עיגון צנרת?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [120, 220] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "main_valve",
+      "label": { "he": "החלפת ברז ראשי/ברז דירה" },
+      "subtypes": [
+        {
+          "id": "apartment_main",
+          "label": { "he": "ברז ראשי בדירה" },
+          "base_price": [280, 480],
+          "questions": [
+            {
+              "id": "condition",
+              "text": { "he": "מצב הצנרת/השחלה?" },
+              "options": [
+                { "value": "ok",      "label": { "he": "תקין" },                         "delta": [0, 0] },
+                { "value": "galv",    "label": { "he": "מגולוון/דורש השחלה" },          "delta": [120, 220] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "he": "גישה לברז (קופסת מד מים)?" },
+              "options": [
+                { "value": "easy",    "label": { "he": "נוחה" },                        "delta": [0, 0] },
+                { "value": "hard",    "label": { "he": "קופסה קטנה/עמוקה" },            "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "valve_type",
+              "text": { "he": "סוג הברז הרצוי?" },
+              "options": [
+                { "value": "ball",    "label": { "he": "כדורי/פרפר (מומלץ)" },          "delta": [0, 0] },
+                { "value": "gate",    "label": { "he": "שיבר/מחט (תחליפי)" },           "delta": [-20, 0] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [0, 0] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "appliance",
+      "label": { "he": "חיבור מדיח/מכונת כביסה" },
+      "subtypes": [
+        {
+          "id": "dishwasher",
+          "label": { "he": "מדיח כלים" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "splitter",
+              "text": { "he": "צריך מפצל/ברז נוסף?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – כולל אספקה" },              "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "drill",
+              "text": { "he": "צריך קדיחה בארון/שיש למעבר צנרת?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן" },                           "delta": [60, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "trap",
+              "text": { "he": "חיבור לניקוז דורש מתאם?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – מתאם לניקוז" },             "delta": [50, 100] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [50, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "washing_machine",
+          "label": { "he": "מכונת כביסה" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "faucet",
+              "text": { "he": "צריך להחליף/להוסיף ברז הזנה?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – אספקה+התקנה" },            "delta": [80, 160] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "drain",
+              "text": { "he": "מרחק לניקוז דורש הארכה?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – צינור/מתאם" },              "delta": [50, 100] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [50, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "backflow",
+      "label": { "he": "מניעת זרימה חוזרת" },
+      "subtypes": [
+        {
+          "id": "garden",
+          "label": { "he": "גינה/השקיה" },
+          "base_price": [450, 800],
+          "result_note": { "he": "היתרים/בדיקות תקופתיות אינם כלולים במחיר." },
+          "questions": [
+            {
+              "id": "device",
+              "text": { "he": "סוג ההתקן הנדרש?" },
+              "options": [
+                { "value": "basic",   "label": { "he": "בסיסי – אספקה+התקנה" },        "delta": [320, 520] },
+                { "value": "quality", "label": { "he": "איכות/מותג – אספקה+התקנה" },   "delta": [520, 800] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [420, 650] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "he": "נגישות לאזור ההתקנה" },
+              "options": [
+                { "value": "easy",    "label": { "he": "נוחה" },                        "delta": [0, 0] },
+                { "value": "hard",    "label": { "he": "גישה מוגבלת/חפירה קלה" },      "delta": [100, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                    "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" }, "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

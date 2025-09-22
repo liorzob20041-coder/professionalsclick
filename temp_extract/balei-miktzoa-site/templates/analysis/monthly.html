@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>דוח חודשי — {{ month }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+    header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+    h1 { margin:0 0 8px; }
+    form.month-picker { display:flex; gap:8px; align-items:center; }
+    select, button, input[type="text"], input[type="search"] { padding:8px 10px; border:1px solid #ccc; border-radius:8px; }
+    .summary { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:16px 0 8px; }
+    .sum-box { border:1px solid #ddd; border-radius:10px; padding:12px; background:#fafafa; text-align:center; }
+    .sum-box h3 { margin:0 0 6px; font-size:16px; }
+    .sum-box .val { font-size:20px; font-weight:700; }
+    .tools { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap: wrap; }
+    .tools input[type="text"] { min-width: 260px; }
+    table { width:100%; border-collapse: collapse; margin-top:8px; }
+    th, td { border:1px solid #e0e0e0; padding:8px 10px; text-align:right; }
+    th { background:#f6f6f6; position: sticky; top: 0; }
+    tfoot td { background:#fbfbfb; font-weight:700; }
+    .empty { margin:20px 0; color:#666; }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#eef; }
+    .muted { color:#666; font-size:12px; }
+    .spacer { flex:1; }
+    .links a { margin-inline-start: 10px; text-decoration: none; color:#0077cc; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>דוח חודשי — <span class="pill">{{ month }}</span></h1>
+      <div style="color:#666">צפיות, שיחות, ו-WhatsApp לפי עובד</div>
+    </div>
+
+    <!-- טופס חודש + חיפוש (צד שרת) -->
+    <form class="month-picker" method="get" action="{{ url_for('analysis_monthly') }}">
+      <label for="month">בחר חודש:</label>
+      <select id="month" name="month">
+        {% for m in months %}
+          <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="q">חיפוש:</label>
+      <input id="q" name="q" type="text" placeholder="שם / תחום / עיר..." value="{{ q or '' }}" />
+
+      <button type="submit">הצג</button>
+      {% if q %}
+        <a href="{{ url_for('analysis_monthly', month=month) }}" style="margin-inline-start:8px;">נקה חיפוש</a>
+      {% endif %}
+    </form>
+  </header>
+
+  <section class="summary">
+    <div class="sum-box">
+      <h3>סה״כ צפיות</h3>
+      <div class="val">{{ totals.views }}</div>
+    </div>
+    <div class="sum-box">
+      <h3>סה״כ שיחות</h3>
+      <div class="val">{{ totals.calls }}</div>
+    </div>
+    <div class="sum-box">
+      <h3>סה״כ WhatsApp</h3>
+      <div class="val">{{ totals.wa }}</div>
+    </div>
+  </section>
+
+  <div class="tools">
+    <div class="muted">
+      {% if q %}התוצאות הרלוונטיות לחיפוש “{{ q }}” מוקפצות לראש הרשימה.{% else %}הטבלה ממוינת לפי סה״כ קליקים ואז צפיות.{% endif %}
+    </div>
+    <div class="spacer"></div>
+    <button type="button" onclick="exportCSV()">ייצוא CSV</button>
+    <div class="links">
+      <a href="{{ url_for('analysis_index') }}">אינדקס</a>
+      <a href="{{ url_for('admin_analysis_all', q=q) }}">כל הזמנים</a>
+      <a href="{{ url_for('admin') }}">← חזרה לאדמין בקשות</a>
+    </div>
+  </div>
+
+  {% if rows and rows|length %}
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th>מזהה</th>
+        <th>שם</th>
+        <th>תחום</th>
+        <th>עיר</th>
+        <th>צפיות</th>
+        <th>שיחות</th>
+        <th>WhatsApp</th>
+        <th>CTR שיחות %</th>
+        <th>CTR וואטסאפ %</th>
+        <th>סה״כ קליקים</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.worker_id }}</td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.field }}</td>
+        <td>{{ r.city }}</td>
+        <td>{{ r.views }}</td>
+        <td>{{ r.calls }}</td>
+        <td>{{ r.wa }}</td>
+        <td>{{ '%.1f' % r.ctr_call }}</td>
+        <td>{{ '%.1f' % r.ctr_wa }}</td>
+        <td>{{ r.total_clicks }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4">סה״כ</td>
+        <td>{{ totals.views }}</td>
+        <td>{{ totals.calls }}</td>
+        <td>{{ totals.wa }}</td>
+        <td colspan="3"></td>
+      </tr>
+    </tfoot>
+  </table>
+  {% else %}
+    <p class="empty">אין נתונים לחודש זה.</p>
+  {% endif %}
+
+  <script>
+    // ייצוא ל-CSV (מייצא את מה שמוצג כרגע, אחרי מיון השרת)
+    function exportCSV() {
+      const table = document.getElementById('tbl');
+      if (!table) return;
+      const lines = [];
+      const formatRow = (row) => Array.from(row.cells).map(td => {
+        const t = (td.innerText || '').replace(/\r?\n/g, ' ').trim();
+        return `"${t.replace(/"/g, '""')}"`;
+      }).join(',');
+      // כותרת
+      lines.push(formatRow(table.tHead.rows[0]));
+      // שורות
+      Array.from(table.tBodies[0].rows).forEach(tr => lines.push(formatRow(tr)));
+
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'analytics-month-{{ month }}.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

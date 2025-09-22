@@ -1,0 +1,346 @@
+[
+  {
+    "company_name": "ליאור אינסטלציה",
+    "name": "רינת זובריצקי",
+    "field": "חשמלאים",
+    "field_en": "electricians",
+    "field_ru": "электрик",
+    "base_city": "תל אביב",
+    "work_radius": 5,
+    "active_cities": [
+      "תל אביב"
+    ],
+    "phone": "0523502921",
+    "experience": 12,
+    "description": "עדרעדגעכדעכגד",
+    "reviews": "",
+    "image_filename": "",
+    "work_blocks": [],
+    "worker_id": "1"
+  },
+  {
+    "company_name": "ליאור אינסטלציה",
+    "name": "רינת זובריצקי",
+    "field": "חשמלאים",
+    "field_en": "electricians",
+    "field_ru": "электрик",
+    "base_city": "תל אביב",
+    "work_radius": 5,
+    "active_cities": [
+      "תל אביב"
+    ],
+    "phone": "0523502921",
+    "experience": 12,
+    "description": "כששזדכשכשדכ",
+    "reviews": "",
+    "image_filename": "",
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "worker_id": "2"
+  },
+  {
+    "company_name": "ליאור אינסטלציה",
+    "name": "רינת זובריצקי",
+    "field": "שיפוצים",
+    "field_en": "Renovations",
+    "field_ru": "ремонт",
+    "base_city": "תל אביב",
+    "work_radius": 5,
+    "active_cities": [
+      "תל אביב"
+    ],
+    "phone": "0523502921",
+    "experience": 12,
+    "description": "כגשקכשכשכ",
+    "reviews": "",
+    "image_filename": "upload_pending/mom.jpg",
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "worker_id": "3"
+  },
+  {
+    "company_name": "ליאור אינסטלציה",
+    "name": "רינת זובריצקי",
+    "field": "שיפוצים",
+    "field_en": "Renovations",
+    "field_ru": "ремонт",
+    "base_city": "ירושלים",
+    "work_radius": 5,
+    "active_cities": [
+      "ירושלים"
+    ],
+    "phone": "0523502921",
+    "experience": 12,
+    "description": "עיגריעגרעיגרעערעגעדגעדגערד",
+    "reviews": "",
+    "image_filename": "upload_pending/mom.jpg",
+    "video_url": null,
+    "video_local": "upload_pending/videos/20250818_185707_WhatsApp_Video_2025-08-18_at_18.54.00.mp4",
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "worker_id": "4"
+  },
+  {
+    "company_name": "ליאור אינסטלציה",
+    "name": "רינת זובריצקי",
+    "field": "שיפוצים",
+    "field_en": "Renovations",
+    "field_ru": "ремонт",
+    "base_city": "תל אביב",
+    "work_radius": 30,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "נתניה",
+      "ראשון לציון"
+    ],
+    "phone": "0523502921",
+    "experience": 12,
+    "description": "cshev",
+    "reviews": "",
+    "image_filename": "",
+    "video_url": null,
+    "video_local": null,
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 20,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "worker_id": "5"
+  },
+  {
+    "company_name": "אלקטרו-אורי – חשמלאי מוסמך",
+    "name": "אורי כהן",
+    "field": "חשמלאי",
+    "field_en": "חשמלאי",
+    "field_ru": "חשמלאי",
+    "base_city": "תל אביב",
+    "work_radius": 20,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "ראשון לציון"
+    ],
+    "phone": "0521234567",
+    "experience": 9,
+    "description": "תיקוני חשמל מהירים, לוחות חשמל, נקודות ותאורה חכמה. הגעה מהיום-להיום, אחריות מלאה ועמידה בלוחות זמנים.",
+    "reviews": "",
+    "image_filename": "upload_pending/photo2.jpg",
+    "video_url": null,
+    "video_local": "upload_pending/videos/20250903_214803_20250818_185707_WhatsApp_Video_2025-08-18_at_18.54.00.mp4",
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 18,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי"
+        ]
+      }
+    ],
+    "worker_id": "6"
+  },
+  {
+    "company_name": "אלקטרו-אורי – חשמלאי מוסמך",
+    "name": "אורי כהן",
+    "field": "חשמלאים",
+    "field_en": "Electricians",
+    "field_ru": "электрики",
+    "base_city": "תל אביב",
+    "work_radius": 5,
+    "active_cities": [
+      "תל אביב"
+    ],
+    "phone": "0521234567",
+    "experience": 9,
+    "description": "תיקוני חשמל מהירים, לוחות חשמל, נקודות ותאורה חכמה. הגעה מהיום-להיום, אחריות מלאה ועמידה בלוחות זמנים.",
+    "reviews": "",
+    "image_filename": "upload_pending/photo2.jpg",
+    "video_url": null,
+    "video_local": "upload_pending/videos/20250904_150728_20250903_214803_20250818_185707_WhatsApp_Video_2025-08-18_at_18.54.00.mp4",
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 18,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי"
+        ]
+      }
+    ],
+    "worker_id": "7"
+  },
+  {
+    "company_name": "יאן קבלנות",
+    "name": "יאן זובריצקי",
+    "field": "שיפוצים",
+    "field_en": "Renovations",
+    "field_ru": "ремонт",
+    "base_city": "פתח תקווה",
+    "work_radius": 30,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "נתניה",
+      "ראשון לציון"
+    ],
+    "phone": "054-4460522",
+    "experience": 35,
+    "description": "יאן בנייה ושיפוצים מתמחים בכל עבודות הבנייה, שיפוצים של וילות וגם של דירות מבטיחים עמידה בזמנים ומחירים מצוינים ",
+    "reviews": "",
+    "image_filename": "upload_pending/17571049341553833104972830953158.jpg",
+    "video_url": null,
+    "video_local": "upload_pending/videos/20250905_234309_20250905_234238.mp4",
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי"
+        ]
+      }
+    ],
+    "worker_id": "8"
+  },
+  {
+    "company_name": "אלקטרו-אורי – חשמלאי מוסמך",
+    "name": "אורי כהן",
+    "field": "אינסטלטורים",
+    "field_en": "Plumbers",
+    "field_ru": "сантехники",
+    "base_city": "תל אביב",
+    "work_radius": 30,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "נתניה",
+      "ראשון לציון"
+    ],
+    "phone": "052-1234567",
+    "experience": 12,
+    "description": "אורי כהן, אינסטלטור בעל 12 שנות ניסיון, מספק מגוון שירותים ב אזורי תל אביב, פתח תקווה ונתניה. בין השאר הוא מתמחה בפתיחת סתימות, איתור נזילות ותיקון פיצוצי צנרת.",
+    "reviews": "",
+    "image_filename": "",
+    "video_url": null,
+    "video_local": null,
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "sub_services": [
+      "פתיחת סתימות",
+      "איתור נזילות",
+      "התקנת כלים סניטריים",
+      "החלפת צנרת",
+      "תיקון פיצוצי צנרת",
+      "התקנת ברזים ומקלחונים"
+    ],
+    "offers_emergency": true,
+    "ai_draft_bio": "אורי כהן הוא אינסטלטור עם 12 שנות ניסיון. הוא מתמחה בפתיחת סתימות, איתור נזילות והתקנת כלים סניטריים. שירות חירום זמין 24/7.",
+    "ai_draft_highlights": [
+      "אמינות",
+      "מומחיות",
+      "שירות 24/7"
+    ],
+    "ai_draft_seo_title": "אינסטלטור בתל אביב – אורי כהן",
+    "ai_status": "ready",
+    "ai_updated_at": "2025-09-21T10:00:09Z",
+    "ai_model": "gemma2:9b-instruct-q4_K_S",
+    "ai_error": "Invalid control character at: line 2 column 51 (char 52)",
+    "ai_draft_services_sentence": "השרותים כוללים: פתיחת סתימות, איתור נזילות, התקנת כלים סניטריים, החלפת צנרת, תיקון פיצוצי צנרת, התקנת ברזים ומקלחונים",
+    "ai_draft_services": [
+      "פתיחת סתימות",
+      "איתור נזילות",
+      "התקנת כלים סניטריים",
+      "החלפת צנרת",
+      "תיקון פיצוצי צנרת",
+      "התקנת ברזים ומקלחונים"
+    ],
+    "ai_style": "מוקפד ומדויק",
+    "ai_draft_bio_short": "אורי כהן הוא אינסטלטור עם 12 שנות ניסיון. הוא מתמחה בפתיחת סתימות, איתור נזילות והתקנת כלים סניטריים. שירות חירום זמין 24/7.",
+    "ai_draft_bio_full": "אורי כהן, אינסטלטור בעל 12 שנות ניסיון, מספק מגוון שירותים ב אזורי תל אביב, פתח תקווה ונתניה. בין השאר הוא מתמחה בפתיחת סתימות, איתור נזילות ותיקון פיצוצי צנרת.",
+    "worker_id": "9",
+    "bio_short": "אורי כהן הוא אינסטלטור עם 12 שנות ניסיון. הוא מתמחה בפתיחת סתימות, איתור נזילות והתקנת כלים סניטריים. שירות חירום זמין 24/7.",
+    "bio_full": "אורי כהן, אינסטלטור בעל 12 שנות ניסיון, מספק מגוון שירותים ב אזורי תל אביב, פתח תקווה ונתניה. בין השאר הוא מתמחה בפתיחת סתימות, איתור נזילות ותיקון פיצוצי צנרת.",
+    "services_sentence": "השרותים כוללים: פתיחת סתימות, איתור נזילות, התקנת כלים סניטריים, החלפת צנרת, תיקון פיצוצי צנרת, התקנת ברזים ומקלחונים",
+    "services_list": [
+      "פתיחת סתימות",
+      "איתור נזילות",
+      "התקנת כלים סניטריים",
+      "החלפת צנרת",
+      "תיקון פיצוצי צנרת",
+      "התקנת ברזים ומקלחונים"
+    ],
+    "seo_title": "אינסטלטור בתל אביב – אורי כהן"
+  }
+]

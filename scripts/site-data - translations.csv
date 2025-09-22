@@ -1,0 +1,59 @@
+key,he,en,ru
+homepage.choose_field_placeholder,תחום:,Field:,Сфера:
+homepage.choose_area_placeholder,אזור:,Area:,Район:
+homepage.choose_area,אזור:,Area:,Район:
+homepage.choose_field,תחום:,Field:,Сфера:
+homepage.start_search,התחל חיפוש,Start search,Начать поиск
+homepage.hero_title,מוצאים בעל מקצוע אמין במהירות,Find a trusted pro fast,Найдите надежного мастера быстро
+homepage.hero_points.1,✔️ רק בעלי מקצוע מאומתים,✔️ Only verified professionals,✔️ Только проверенные мастера
+homepage.hero_points.2,✔️ שקיפות במחירים,✔️ Transparent pricing,✔️ Прозрачные цены
+homepage.hero_points.3,✔️ ליווי עד סיום העבודה,✔️ Support until job completion,✔️ Сопровождение до завершения работ
+homepage.hero_img_main_alt,תמונה ראשית של בעל מקצוע בעבודה,Main image: professional at work,Основное фото: мастер за работой
+homepage.hero_img_alt_b,תמונה מתחלפת של צוות מקצועי,Alternate slide: professional team,Слайд: профессиональная команда
+homepage.why_us_title,למה לבחור בנו,Why choose us,Почему выбирают нас
+homepage.features.1,רק בעלי מקצוע מאומתים,Only verified professionals,Только проверенные мастера
+homepage.features.2,שקיפות במחירים,Transparent pricing,Прозрачные цены
+homepage.features.3,ליווי עד סיום העבודה,Support until job completion,Сопровождение до завершения работ
+homepage.features.4,זמינות מהירה,Fast availability,Быстрая доступность
+homepage.popular_fields_title,תחומים פופולריים,Popular fields,Популярные направления
+homepage.popular_fields.plumbers,אינסטלטורים,Plumbers,Сантехники
+homepage.popular_fields.electricians,חשמלאים,Electricians,Электрики
+homepage.popular_fields.renovations,שיפוצים,Renovations,Ремонт
+homepage.popular_fields.locksmiths,מנעולנים,Locksmiths,Слесари
+city_tel_aviv,תל אביב,Tel Aviv,Тель-Авив
+city_jerusalem,ירושלים,Jerusalem,Иерусалим
+city_haifa,חיפה,Haifa,Хайфа
+city_beer_sheva,באר שבע,Beer Sheva,Беэр-Шева
+homepage.gallery_title,גלריית עבודות,Project gallery,Галерея работ
+homepage.gallery.img1_alt,סלון לאחר שיפוץ מקצועי,Living room after professional renovation,Гостиная после профессионального ремонта
+homepage.gallery.img2_alt,לחיצת יד עם לקוח מרוצה,Handshake with a happy client,Рукопожатие с довольным клиентом
+homepage.gallery.img3_alt,לוגו בעלי מקצוע בקליק,Pros in a Click logo,Логотип «Мастера в клик»
+homepage.whatsapp_messages.1,שלום! איך אפשר לעזור?,Hi! How can we help?,Здравствуйте! Чем можем помочь?
+homepage.whatsapp_messages.2,אני צריך בעל מקצוע זמין היום.,I need a pro available today.,Нужен мастер на сегодня.
+homepage.whatsapp_messages.3,אין בעיה — נאתר לך מישהו מתאים.,No problem — we'll find a good match.,Без проблем — подберем подходящего мастера.
+homepage.whatsapp_messages.4,תשלח/י לי תחום ועיר.,Please send the field and city.,Пришлите направление и город.
+homepage.whatsapp_messages.5,"שיפוצים, תל אביב.","Renovations, Tel Aviv.","Ремонт, Тель-Авив."
+homepage.whatsapp_messages.6,"קיבלתי, חוזר/ת אליך עם פרטים.","Got it, I'll get back to you.","Принято, вернемся с деталями."
+homepage.contact_title,צרו קשר,Contact us,Свяжитесь с нами
+homepage.full_name,שם מלא,Full name,Полное имя
+homepage.email,אימייל,Email,Эл. почта
+homepage.your_message,ההודעה שלך,Your message,Ваше сообщение
+homepage.send_message,שלח הודעה,Send message,Отправить сообщение
+homepage.whatsapp_help,צריכים עזרה? דברו איתנו בוואטסאפ,Need help? Chat on WhatsApp,Нужна помощь? Напишите в WhatsApp
+homepage.whatsapp_alt,צ'אט בוואטסאפ,WhatsApp chat,Чат в WhatsApp
+homepage.price_list_title,מחירון עבודות נפוצות,Popular jobs price list,Прайс популярных работ
+homepage.price_list.col_job,סוג עבודה,Type of job,Вид работы
+homepage.price_list.col_price,מחיר משוער,Estimated price,Ориентировочная цена
+homepage.price_list.plumbing,אינסטלציה,Plumbing,Сантехника
+homepage.price_list.plumbing_price,₪200 – ₪500,₪200 – ₪500,₪200 – ₪500
+homepage.price_list.electric,חשמל,Electric,Электрика
+homepage.price_list.electric_price,₪300 – ₪800,₪300 – ₪800,₪300 – ₪800
+homepage.price_list.renovations,שיפוצים,Renovations,Ремонт
+homepage.price_list.renovations_price,"₪400 – ₪1,000","₪400 – ₪1,000","₪400 – ₪1,000"
+homepage.price_list.locksmith,מנעולנות,Locksmith,Слесарные работы
+homepage.price_list.locksmith_price,₪150 – ₪350,₪150 – ₪350,₪150 – ₪350
+homepage.price_list.note,*המחירים מוערכים בלבד ועשויים להשתנות בהתאם להיקף העבודה.,*Prices are estimates and may vary by scope.,*Цены ориентировочные и зависят от объема работ.
+footer.terms,תנאי שימוש,Terms of use,Условия использования
+footer.privacy,מדיניות פרטיות,Privacy policy,Политика конфиденциальности
+footer.accessibility,נגישות,Accessibility,Доступность
+footer.copyright,© 2025 בעלי מקצוע בקליק. כל הזכויות שמורות.,© 2025 Pros in a Click. All rights reserved.,© 2025 Мастера в клик. Все права защищены.

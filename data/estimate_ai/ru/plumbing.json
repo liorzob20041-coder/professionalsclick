@@ -1,0 +1,1238 @@
+{
+  "category": "plumbing",
+  "base_price": [200, 350],
+  "result_note": {
+    "ru": "Показанная цена — ориентировочный диапазон на основе ваших ответов и распространённой отраслевой практики. Окончательная стоимость определяется на месте с учётом доступа к трубам, сложности проблемы, необходимого оборудования/запчастей и условий работы."
+  },
+  "jobs": [
+    {
+      "id": "clog",
+      "label": { "ru": "Засор" },
+      "subtypes": [
+        {
+          "id": "sink",
+          "label": { "ru": "Раковина" },
+          "base_price": [260, 420],
+          "result_note": { "ru": "Работы по раковине могут включать снятие сифона/измельчителя, что немного увеличивает стоимость." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "ru": "Как это выглядит?" },
+              "options": [
+                { "value": "slow",     "label": { "ru": "Вода уходит медленно" },             "delta": [0, 0] },
+                { "value": "standing", "label": { "ru": "Стоячая вода / перелив" },           "delta": [80, 140] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                     "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "disposal",
+              "text": { "ru": "Есть измельчитель (garbage disposer)?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                              "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                               "delta": [50, 90] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                     "delta": [15, 30] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                   "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "toilet",
+          "label": { "ru": "Унитаз" },
+          "base_price": [300, 480],
+          "result_note": { "ru": "Если требуется демонтаж/обратная установка, стоимость увеличится соответственно." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "ru": "При смывe — что происходит?" },
+              "options": [
+                { "value": "slow",     "label": { "ru": "Уходит медленно" },                 "delta": [0, 0] },
+                { "value": "backup",   "label": { "ru": "Вода поднимается / переливается" }, "delta": [90, 140] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                    "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "plunger",
+              "text": { "ru": "Пробовали вантуз?" },
+              "options": [
+                { "value": "no",       "label": { "ru": "Не пробовал(а)" },                  "delta": [0, 0] },
+                { "value": "yes",      "label": { "ru": "Пробовал(а), не помогло" },         "delta": [40, 60] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                    "delta": [10, 20] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                   "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower",
+          "label": { "ru": "Душ/ванна" },
+          "base_price": [260, 400],
+          "result_note": { "ru": "Может потребоваться снятие решётки/крышки трапа — зависит от доступа." },
+          "questions": [
+            {
+              "id": "severity",
+              "text": { "ru": "Как это выглядит?" },
+              "options": [
+                { "value": "slow",     "label": { "ru": "Вода уходит медленно" },            "delta": [0, 0] },
+                { "value": "standing", "label": { "ru": "Стоячая вода / перелив" },          "delta": [70, 120] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                    "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "grate",
+              "text": { "ru": "Решётку/крышку трапа можно легко снять?" },
+              "options": [
+                { "value": "easy",    "label": { "ru": "Да, снимается легко" },              "delta": [0, 0] },
+                { "value": "hard",    "label": { "ru": "Нет / закисла — требуется снятие" }, "delta": [60, 100] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                     "delta": [25, 50] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                   "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "main",
+          "label": { "ru": "Основной стояк / канализация" },
+          "base_price": [650, 1000],
+          "result_note": { "ru": "Часто требуется длинный трос/гидродинамика и наружная ревизия (cleanout)." },
+          "questions": [
+            {
+              "id": "how_many",
+              "text": { "ru": "Сколько сантехприборов дома не отводят воду?" },
+              "options": [
+                { "value": "one",     "label": { "ru": "Один прибор" },                      "delta": [0, 0] },
+                { "value": "multi",   "label": { "ru": "Два и более" },                      "delta": [150, 250] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                     "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "ru": "Есть наружная ревизия/точка доступа?" },
+              "options": [
+                { "value": "yes",     "label": { "ru": "Да" },                               "delta": [0, 0] },
+                { "value": "no",      "label": { "ru": "Нет" },                              "delta": [120, 180] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                     "delta": [80, 140] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                   "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "cistern",
+      "label": { "ru": "Бачок унитаза (ремонт/замена)" },
+      "subtypes": [
+        {
+          "id": "exposed",
+          "label": { "ru": "Наружный бачок" },
+          "base_price": [240, 380],
+          "result_note": { "ru": "Могут потребоваться запчасти (механизм/поплавок) за дополнительную плату." },
+          "questions": [
+            {
+              "id": "symptom",
+              "text": { "ru": "Основная проблема?" },
+              "options": [
+                { "value": "running",   "label": { "ru": "Вода постоянно поступает в чашу" }, "delta": [60, 110] },
+                { "value": "slow_fill", "label": { "ru": "Медленно набирается / не набирается" }, "delta": [30, 70] },
+                { "value": "button",    "label": { "ru": "Кнопка/механизм заедает/сломался" }, "delta": [40, 90] },
+                { "value": "unknown",   "label": { "ru": "Не уверен(а)" },                      "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "ru": "Нужны новые запчасти?" },
+              "options": [
+                { "value": "no",         "label": { "ru": "Нет — вероятно, достаточно регулировки/чистки" }, "delta": [0, 0] },
+                { "value": "yes_basic",  "label": { "ru": "Да — базовый механизм/поплавок" },                "delta": [80, 160] },
+                { "value": "yes_quality","label": { "ru": "Да — качественная/брендовая деталь" },            "delta": [140, 240] },
+                { "value": "unknown",    "label": { "ru": "Не уверен(а)" },                                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                 "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "concealed",
+          "label": { "ru": "Скрытый бачок" },
+          "base_price": [380, 650],
+          "result_note": { "ru": "Может потребоваться снятие панели смыва/клавиши; оригинальные детали (OEM) увеличивают стоимость." },
+          "questions": [
+            {
+              "id": "brand",
+              "text": { "ru": "Известный бренд?" },
+              "options": [
+                { "value": "geberit", "label": { "ru": "Geberit / премиум-бренд" },   "delta": [60, 120] },
+                { "value": "generic", "label": { "ru": "Нефирменный/неизвестный" },   "delta": [0, 0] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },              "delta": [30, 90] }
+              ]
+            },
+            {
+              "id": "symptom",
+              "text": { "ru": "Основная проблема?" },
+              "options": [
+                { "value": "running",  "label": { "ru": "Вода подтекает в чашу" },     "delta": [60, 120] },
+                { "value": "fill",     "label": { "ru": "Не набирается / медленно" },  "delta": [40, 90] },
+                { "value": "button",   "label": { "ru": "Неисправна кнопка/панель" },  "delta": [50, 120] },
+                { "value": "leak_out", "label": { "ru": "Протечка из стены / на пол" }, "delta": [120, 220] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },               "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "ru": "Нужны новые запчасти?" },
+              "options": [
+                { "value": "no",            "label": { "ru": "Нет — вероятно, достаточно регулировки/чистки" }, "delta": [0, 0] },
+                { "value": "yes_basic",     "label": { "ru": "Да — уплотнения/неоригинальный поплавок" },       "delta": [120, 220] },
+                { "value": "yes_original",  "label": { "ru": "Да — оригинальная деталь (OEM)" },                "delta": [200, 350] },
+                { "value": "unknown",       "label": { "ru": "Не уверен(а)" },                                   "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                 "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "faucet",
+      "label": { "ru": "Смеситель / кран" },
+      "subtypes": [
+        {
+          "id": "sink_faucet",
+          "label": { "ru": "Смеситель для раковины (кухня/ванная)" },
+          "base_price": [240, 380],
+          "result_note": { "ru": "Поставка смесителя не включена, если не выбрана опция поставки." },
+          "questions": [
+            {
+              "id": "supply",
+              "text": { "ru": "Кто предоставляет смеситель?" },
+              "options": [
+                { "value": "client",  "label": { "ru": "Клиент — смеситель на месте (без доплат)" },              "delta": [0, 0] },
+                { "value": "basic",   "label": { "ru": "Нужно поставить базовый смеситель (+₪180–₪280)" },        "delta": [180, 280] },
+                { "value": "quality", "label": { "ru": "Нужно поставить качественный/брендовый смеситель (+₪320–₪520)" }, "delta": [320, 520] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                                         "delta": [200, 360] }
+              ]
+            },
+            {
+              "id": "fit",
+              "text": { "ru": "Отверстия/подводы соответствуют новому смесителю?" },
+              "options": [
+                { "value": "yes",     "label": { "ru": "Да (без доплат)" },                "delta": [0, 0] },
+                { "value": "adapter", "label": { "ru": "Нужны переходники/эксцентрики (+₪40–₪90)" }, "delta": [40, 90] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [30, 70] }
+              ]
+            },
+            {
+              "id": "valves",
+              "text": { "ru": "Состояние запорных кранов под раковиной?" },
+              "options": [
+                { "value": "ok",      "label": { "ru": "Нормально (без доплат)" },         "delta": [0, 0] },
+                { "value": "replace", "label": { "ru": "Требуется замена (+₪100–₪180)" },  "delta": [100, 180] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [50, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal", "label": { "ru": "В рабочие часы (без доплат)" },      "delta": [0, 0] },
+                { "value": "evening","label": { "ru": "Вечером/в выходные (×1.5)" },        "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower_exposed",
+          "label": { "ru": "Смеситель для ванны/душа (наружный)" },
+          "base_price": [280, 450],
+          "questions": [
+            {
+              "id": "centers",
+              "text": { "ru": "Нужно подогнать межосевое расстояние?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет, подходит" },                  "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да, регулировка эксцентриков" },   "delta": [60, 120] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "supply",
+              "text": { "ru": "Кто предоставляет смеситель?" },
+              "options": [
+                { "value": "client",  "label": { "ru": "Клиент предоставляет" },           "delta": [0, 0] },
+                { "value": "basic",   "label": { "ru": "Поставить базовый смеситель" },    "delta": [220, 360] },
+                { "value": "quality", "label": { "ru": "Поставить качественный/брендовый" }, "delta": [380, 650] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [250, 450] }
+              ]
+            },
+            {
+              "id": "leak_wall",
+              "text": { "ru": "Течёт на соединении со стеной?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — требуется герметизация/ремонт" }, "delta": [80, 150] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [40, 100] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal","label": { "ru": "В рабочие часы" },                   "delta": [0, 0] },
+                { "value": "evening","label": { "ru": "Вечером/в выходные" },              "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shower_concealed",
+          "label": { "ru": "Скрытый смеситель (в стене)" },
+          "base_price": [600, 1100],
+          "result_note": { "ru": "Замена корпуса может потребовать штробление/работы с плиткой." },
+          "questions": [
+            {
+              "id": "scope",
+              "text": { "ru": "Объём работ?" },
+              "options": [
+                { "value": "trim_only", "label": { "ru": "Смена накладок/картриджа" },   "delta": [0, 0] },
+                { "value": "full_body", "label": { "ru": "Замена всего корпуса" },       "delta": [400, 800] },
+                { "value": "unknown",   "label": { "ru": "Не уверен(а)" },               "delta": [200, 500] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "ru": "Известный бренд?" },
+              "options": [
+                { "value": "premium", "label": { "ru": "Премиум/оригинальный бренд" },   "delta": [100, 250] },
+                { "value": "generic", "label": { "ru": "Нефирменный/неизвестный" },      "delta": [0, 0] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                 "delta": [50, 150] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "ru": "Нужно ли штробление/резка плитки?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                          "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — работы по плитке" },        "delta": [200, 400] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                 "delta": [120, 250] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal","label": { "ru": "В рабочие часы" },                  "delta": [0, 0] },
+                { "value": "evening","label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "boiler",
+      "label": { "ru": "Водонагреватель" },
+      "subtypes": [
+        {
+          "id": "electric_service",
+          "label": { "ru": "Электрический — ремонт (ТЭН/термостат)" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "access",
+              "text": { "ru": "Доступ к бойлеру?" },
+              "options": [
+                { "value": "easy",    "label": { "ru": "Лёгкий (кладовка/хозблок)" },       "delta": [0, 0] },
+                { "value": "roof",    "label": { "ru": "На крыше / сложный доступ" },       "delta": [90, 180] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                    "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "part",
+              "text": { "ru": "Что, вероятно, нужно заменить?" },
+              "options": [
+                { "value": "thermostat", "label": { "ru": "Термостат" },                   "delta": [120, 200] },
+                { "value": "element",    "label": { "ru": "Нагревательный элемент (ТЭН)" }, "delta": [180, 280] },
+                { "value": "both",       "label": { "ru": "ТЭН + термостат" },             "delta": [280, 420] },
+                { "value": "unknown",    "label": { "ru": "Не уверен(а)" },                "delta": [160, 260] }
+              ]
+            },
+            {
+              "id": "leak",
+              "text": { "ru": "Есть признаки протечки бойлера?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да (возможна замена бойлера)" },   "delta": [200, 400] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal","label": { "ru": "В рабочие часы" },                    "delta": [0, 0] },
+                { "value": "evening","label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "solar_service",
+          "label": { "ru": "Солнечный — ремонт/обслуживание" },
+          "base_price": [450, 750],
+          "questions": [
+            {
+              "id": "access",
+              "text": { "ru": "Доступ на крышу?" },
+              "options": [
+                { "value": "easy",    "label": { "ru": "Лёгкий (лифт/люк)" },               "delta": [0, 0] },
+                { "value": "hard",    "label": { "ru": "Только лестница / сложный доступ" }, "delta": [120, 200] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                    "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "scope",
+              "text": { "ru": "Что требуется?" },
+              "options": [
+                { "value": "nr_valve",  "label": { "ru": "Клапан сброса/обратный" },       "delta": [120, 200] },
+                { "value": "insulation","label": { "ru": "Теплоизоляция труб/соединений" }, "delta": [150, 300] },
+                { "value": "controller","label": { "ru": "Контроллер/выключатель/электрика" }, "delta": [250, 450] },
+                { "value": "unknown",   "label": { "ru": "Не уверен(а)" },                  "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal","label": { "ru": "В рабочие часы" },                    "delta": [0, 0] },
+                { "value": "evening","label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "replacement",
+          "label": { "ru": "Замена бойлера (демонтаж + монтаж)" },
+          "base_price": [500, 800],
+          "result_note": { "ru": "Стоимость самого бойлера зависит от объёма и бренда. Цена включает работу; вывоз старого бойлера оплачивается отдельно." },
+          "questions": [
+            {
+              "id": "size",
+              "text": { "ru": "Какой объём бака нужен?" },
+              "options": [
+                { "value": "80",      "label": { "ru": "80 л (с поставкой)" },             "delta": [1200, 1800] },
+                { "value": "120",     "label": { "ru": "120 л (с поставкой)" },            "delta": [1500, 2300] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [1300, 2000] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "ru": "Желаемый уровень качества?" },
+              "options": [
+                { "value": "basic",   "label": { "ru": "Базовый" },                        "delta": [0, 0] },
+                { "value": "quality", "label": { "ru": "Брендовый/качественный" },         "delta": [200, 400] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "location",
+              "text": { "ru": "Расположение бойлера" },
+              "options": [
+                { "value": "closet",  "label": { "ru": "Кладовка/хозблок" },               "delta": [0, 0] },
+                { "value": "roof",    "label": { "ru": "Крыша/сложный доступ" },           "delta": [150, 300] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "disposal",
+              "text": { "ru": "Вывезти старый бойлер?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — включить вывоз" },            "delta": [80, 150] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal","label": { "ru": "В рабочие часы" },                    "delta": [0, 0] },
+                { "value": "evening","label": { "ru": "Вечером/в выходные" },               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "leak",
+      "label": { "ru": "Поиск/устранение протечек" },
+      "subtypes": [
+        {
+          "id": "hidden_wall",
+          "label": { "ru": "Скрытое увлажнение/протечка в стене" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "diagnostics",
+              "text": { "ru": "Нужно обследование тепловизором/прибором?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — расширенная диагностика" },   "delta": [250, 450] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "ru": "Есть ли доступ к зонам?" },
+              "options": [
+                { "value": "easy",    "label": { "ru": "Да" },                             "delta": [0, 0] },
+                { "value": "behind",  "label": { "ru": "За шкафом/встроенной мебелью" },   "delta": [100, 180] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "open_close",
+              "text": { "ru": "Нужно локальное вскрытие/заделка стены?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да (локальная заделка)" },         "delta": [150, 280] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [100, 200] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ceiling",
+          "label": { "ru": "Влажность/подтёки на потолке" },
+          "base_price": [300, 500],
+          "questions": [
+            {
+              "id": "source",
+              "text": { "ru": "Предполагаемый источник?" },
+              "options": [
+                { "value": "neighbor", "label": { "ru": "Соседи сверху" },                 "delta": [0, 0] },
+                { "value": "roof",     "label": { "ru": "Протечки с крыши" },              "delta": [80, 160] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                  "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "tools",
+              "text": { "ru": "Нужны приборы/стремянка?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                             "delta": [120, 200] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "visible",
+          "label": { "ru": "Видимая течь из фитинга/трубы" },
+          "base_price": [250, 420],
+          "questions": [
+            {
+              "id": "type",
+              "text": { "ru": "Откуда течёт?" },
+              "options": [
+                { "value": "flex",    "label": { "ru": "Гибкая подводка / угловой кран" }, "delta": [60, 120] },
+                { "value": "rigid",   "label": { "ru": "Жёсткая труба / пайка" },          "delta": [120, 220] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [80, 150] }
+              ]
+            },
+            {
+              "id": "parts",
+              "text": { "ru": "Нужно заменить детали?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да (прокладки/фитинги)" },         "delta": [60, 140] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [50, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "pipe_burst",
+      "label": { "ru": "Прорыв трубы / замена участка" },
+      "subtypes": [
+        {
+          "id": "location",
+          "label": { "ru": "Место прорыва" },
+          "base_price": [450, 800],
+          "questions": [
+            {
+              "id": "where",
+              "text": { "ru": "Где находится?" },
+              "options": [
+                { "value": "wall",    "label": { "ru": "Внутри стены" },                   "delta": [150, 300] },
+                { "value": "floor",   "label": { "ru": "В полу/под плиткой" },             "delta": [220, 380] },
+                { "value": "cabinet", "label": { "ru": "Под раковиной / в шкафу" },        "delta": [60, 120] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "length",
+              "text": { "ru": "Длина заменяемого участка (оценка)" },
+              "options": [
+                { "value": "short",   "label": { "ru": "До 0.5 м" },                       "delta": [0, 0] },
+                { "value": "medium",  "label": { "ru": "0.5–1.5 м" },                      "delta": [120, 220] },
+                { "value": "long",    "label": { "ru": "Более 1.5 м" },                    "delta": [220, 380] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "material",
+              "text": { "ru": "Материал трубы?" },
+              "options": [
+                { "value": "pex",     "label": { "ru": "PEX/пластик" },                    "delta": [0, 0] },
+                { "value": "copper",  "label": { "ru": "Медь" },                           "delta": [80, 150] },
+                { "value": "galv",    "label": { "ru": "Старая оцинковка" },               "delta": [120, 200] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "ru": "Нужно вскрывать/подрезать плитку?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — резка/заделка" },             "delta": [160, 300] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [120, 220] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "toilet_install",
+      "label": { "ru": "Установка нового унитаза" },
+      "subtypes": [
+        {
+          "id": "floor_mounted",
+          "label": { "ru": "Напольный унитаз" },
+          "base_price": [380, 650],
+          "questions": [
+            {
+              "id": "remove_old",
+              "text": { "ru": "Демонтировать старый унитаз?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                             "delta": [80, 160] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "seal",
+              "text": { "ru": "Есть уплотнительное кольцо/воск?" },
+              "options": [
+                { "value": "client",  "label": { "ru": "Да" },                             "delta": [0, 0] },
+                { "value": "supply",  "label": { "ru": "Нет — поставить через нас" },      "delta": [40, 80] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "valve",
+              "text": { "ru": "Состояние запорного крана рядом с унитазом?" },
+              "options": [
+                { "value": "ok",      "label": { "ru": "Нормально" },                      "delta": [0, 0] },
+                { "value": "replace", "label": { "ru": "Требуется замена" },               "delta": [90, 160] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wall_hung",
+          "label": { "ru": "Подвесной унитаз (со скрытым бачком)" },
+          "base_price": [700, 1100],
+          "questions": [
+            {
+              "id": "tile",
+              "text": { "ru": "Нужна подрезка/подгонка отверстий/плитки?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                             "delta": [200, 400] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "brand",
+              "text": { "ru": "Оригинальный бренд/аксессуары?" },
+              "options": [
+                { "value": "generic", "label": { "ru": "Нефирменный" },                    "delta": [0, 0] },
+                { "value": "premium", "label": { "ru": "Бренд/оригинал" },                 "delta": [120, 220] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "sink_install",
+      "label": { "ru": "Монтаж раковины" },
+      "subtypes": [
+        {
+          "id": "vanity",
+          "label": { "ru": "Накладная/столешенная раковина (тумба)" },
+          "base_price": [420, 700],
+          "questions": [
+            {
+              "id": "mixer",
+              "text": { "ru": "Установить также смеситель?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                             "delta": [120, 200] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [90, 160] }
+              ]
+            },
+            {
+              "id": "siphon",
+              "text": { "ru": "Сифон/PEX — требуется поставка?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет, уже есть" },                  "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — поставить" },                 "delta": [80, 160] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "drill",
+              "text": { "ru": "Нужно сверление/подгонка в шкафчике?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                             "delta": [60, 120] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "undermount",
+          "label": { "ru": "Врезная раковина (под столешницу)" },
+          "base_price": [480, 800],
+          "result_note": { "ru": "Каменные работы/специальные клеи не включены." },
+          "questions": [
+            {
+              "id": "kit",
+              "text": { "ru": "Нужен комплект/спецкронштейны?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                            "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — поставить/установить" },      "delta": [120, 200] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [100, 180] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                        "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },             "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "trap",
+      "label": { "ru": "Сифон / замена трапа" },
+      "subtypes": [
+        {
+          "id": "sink_trap",
+          "label": { "ru": "Сифон раковины" },
+          "base_price": [180, 300],
+          "questions": [
+            {
+              "id": "shape",
+              "text": { "ru": "Особый тип/форма?" },
+              "options": [
+                { "value": "standard", "label": { "ru": "Стандартный" },   "delta": [0, 0] },
+                { "value": "special",  "label": { "ru": "Декоративный/узкий" }, "delta": [40, 80] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },   "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "material",
+              "text": { "ru": "Материал сифона?" },
+              "options": [
+                { "value": "plastic", "label": { "ru": "Пластик" },       "delta": [0, 0] },
+                { "value": "chrome",  "label": { "ru": "Хром/металл" },   "delta": [30, 70] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },  "delta": [20, 50] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },       "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "floor_trap",
+          "label": { "ru": "Половой трап/короб" },
+          "base_price": [240, 400],
+          "result_note": { "ru": "Включает локальный демонтаж/герметизацию; большие объёмы штробления/плитки увеличат стоимость." },
+          "questions": [
+            {
+              "id": "diameter",
+              "text": { "ru": "Примерный диаметр выпуска?" },
+              "options": [
+                { "value": "50",      "label": { "ru": "Ø50 мм" },        "delta": [0, 0] },
+                { "value": "75",      "label": { "ru": "Ø75 мм" },        "delta": [40, 80] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },  "delta": [20, 60] }
+              ]
+            },
+            {
+              "id": "tile",
+              "text": { "ru": "Нужно подрезать плитку/шов?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },           "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },            "delta": [80, 150] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },  "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "ru": "Доступность точки работ?" },
+              "options": [
+                { "value": "easy",    "label": { "ru": "Лёгкий" },        "delta": [0, 0] },
+                { "value": "hard",    "label": { "ru": "Ограниченный/тесный доступ" }, "delta": [60, 120] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },  "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },       "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" }, "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bathtub_trap",
+          "label": { "ru": "Слив ванны / click-clack" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "mechanism",
+              "text": { "ru": "Какой механизм?" },
+              "options": [
+                { "value": "plug",     "label": { "ru": "Обычная пробка" },        "delta": [0, 0] },
+                { "value": "pop_up",   "label": { "ru": "Click-clack / pop-up" },  "delta": [60, 110] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },          "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "access_panel",
+              "text": { "ru": "Есть сервисный люк/доступ?" },
+              "options": [
+                { "value": "yes",     "label": { "ru": "Да" },                       "delta": [0, 0] },
+                { "value": "no",      "label": { "ru": "Нет — трудный доступ" },     "delta": [80, 150] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },             "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                  "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },       "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "washer_trap",
+          "label": { "ru": "Слив стиральной машины / стояк" },
+          "base_price": [200, 320],
+          "questions": [
+            {
+              "id": "standpipe",
+              "text": { "ru": "Нужен стояк/поднятый слив?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — поставка+монтаж" },       "delta": [80, 150] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },               "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "adapter",
+              "text": { "ru": "Нужна втулка/уплотнение для патрубка?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — адаптер/уплотнение" },    "delta": [40, 80] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },               "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                    "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },         "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "pressure",
+      "label": { "ru": "Проблемы с давлением / шум в трубах" },
+      "subtypes": [
+        {
+          "id": "low_pressure",
+          "label": { "ru": "Низкое давление воды" },
+          "base_price": [250, 400],
+          "questions": [
+            {
+              "id": "scope",
+              "text": { "ru": "Где ощущается?" },
+              "options": [
+                { "value": "single",  "label": { "ru": "Один прибор" },                   "delta": [0, 0] },
+                { "value": "whole",   "label": { "ru": "Вся квартира" },                  "delta": [80, 160] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                  "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "regulator",
+              "text": { "ru": "Заменить редуктор давления (при необходимости)?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — с поставкой" },              "delta": [350, 600] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                  "delta": [220, 380] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },            "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "water_hammer",
+          "label": { "ru": "Гидроудары / шум труб" },
+          "base_price": [300, 520],
+          "questions": [
+            {
+              "id": "arrestor",
+              "text": { "ru": "Установить компенсатор гидроудара?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — с поставкой" },              "delta": [220, 380] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                  "delta": [150, 280] }
+              ]
+            },
+            {
+              "id": "secure",
+              "text": { "ru": "Нужно закрепить/заанкерить трубопровод?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                           "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да" },                            "delta": [120, 220] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                  "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                       "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },            "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "main_valve",
+      "label": { "ru": "Замена главного крана / перекрытие квартиры" },
+      "subtypes": [
+        {
+          "id": "apartment_main",
+          "label": { "ru": "Кран ввода в квартиру" },
+          "base_price": [280, 480],
+          "questions": [
+            {
+              "id": "condition",
+              "text": { "ru": "Состояние трубы/резьбы?" },
+              "options": [
+                { "value": "ok",      "label": { "ru": "Нормально" },                      "delta": [0, 0] },
+                { "value": "galv",    "label": { "ru": "Оцинковка / нужна новая резьба" }, "delta": [120, 220] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "ru": "Доступ к крану (короб счётчика)?" },
+              "options": [
+                { "value": "easy",    "label": { "ru": "Лёгкий" },                         "delta": [0, 0] },
+                { "value": "hard",    "label": { "ru": "Малый/глубокий короб" },           "delta": [60, 120] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                   "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "valve_type",
+              "text": { "ru": "Предпочитаемый тип крана?" },
+              "options": [
+                { "value": "ball",    "label": { "ru": "Шаровый/«бабочка» (рекомендуется)" }, "delta": [0, 0] },
+                { "value": "gate",    "label": { "ru": "Задвижка/игольчатый (альтернатива)" }, "delta": [-20, 0] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [0, 0] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Срочность" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "Обычная" },                         "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },              "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "appliance",
+      "label": { "ru": "Подключение техники (посудомойка/стиральная машина)" },
+      "subtypes": [
+        {
+          "id": "dishwasher",
+          "label": { "ru": "Посудомоечная машина" },
+          "base_price": [220, 360],
+          "questions": [
+            {
+              "id": "splitter",
+              "text": { "ru": "Нужен Y-разветвитель на холодную воду у мойки?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — поставка + монтаж" },            "delta": [40, 80] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [30, 60] }
+              ]
+            },
+            {
+              "id": "drain",
+              "text": { "ru": "Подключение слива?" },
+              "options": [
+                { "value": "branch",   "label": { "ru": "Существующий отвод на сифоне" },    "delta": [0, 0] },
+                { "value": "disposer", "label": { "ru": "Вход измельчителя" },               "delta": [30, 70] },
+                { "value": "drill",    "label": { "ru": "Нужно сверлить/устанавливать штуцер" }, "delta": [60, 120] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                     "delta": [40, 90] }
+              ]
+            },
+            {
+              "id": "distance",
+              "text": { "ru": "Расстояние до мойки/точки холодной воды" },
+              "options": [
+                { "value": "near",    "label": { "ru": "До ~1.5 м" },                         "delta": [0, 0] },
+                { "value": "medium",  "label": { "ru": "1.5–3 м" },                           "delta": [60, 120] },
+                { "value": "far",     "label": { "ru": "Более 3 м (удлинители)" },            "delta": [100, 180] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "cabinet",
+              "text": { "ru": "Нужно сверлить шкаф/столешницу под шланги?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — сверление/подгонка" },           "delta": [60, 120] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                    "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "washing_machine",
+          "label": { "ru": "Стиральная машина" },
+          "base_price": [200, 340],
+          "questions": [
+            {
+              "id": "location",
+              "text": { "ru": "Где установлена машина?" },
+              "options": [
+                { "value": "laundry",  "label": { "ru": "Ниша/хозблок" },                     "delta": [0, 0] },
+                { "value": "bathroom", "label": { "ru": "Ванная комната" },                   "delta": [20, 60] },
+                { "value": "balcony",  "label": { "ru": "Балкон/улица" },                     "delta": [60, 120] },
+                { "value": "unknown",  "label": { "ru": "Не уверен(а)" },                      "delta": [30, 80] }
+              ]
+            },
+            {
+              "id": "standpipe",
+              "text": { "ru": "Нужен стояк/поднятый слив?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — поставка + монтаж" },            "delta": [80, 150] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "adapter",
+              "text": { "ru": "Нужна втулка/уплотнение для сливного патрубка?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — адаптер/уплотнение" },           "delta": [40, 80] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [40, 80] }
+              ]
+            },
+            {
+              "id": "hoses",
+              "text": { "ru": "Понадобятся новые шланги подачи воды?" },
+              "options": [
+                { "value": "client",  "label": { "ru": "Нет — предоставит клиент" },         "delta": [0, 0] },
+                { "value": "basic",   "label": { "ru": "Да — базовый комплект" },             "delta": [60, 120] },
+                { "value": "quality", "label": { "ru": "Да — качественные/длинные" },         "delta": [90, 160] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "levelling",
+              "text": { "ru": "Нужно выравнивание/антивибрационные опоры?" },
+              "options": [
+                { "value": "no",      "label": { "ru": "Нет" },                               "delta": [0, 0] },
+                { "value": "yes",     "label": { "ru": "Да — опоры/выравнивание" },           "delta": [40, 90] },
+                { "value": "unknown", "label": { "ru": "Не уверен(а)" },                      "delta": [30, 70] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "ru": "Когда требуется приезд мастера?" },
+              "options": [
+                { "value": "normal",  "label": { "ru": "В рабочие часы" },                    "delta": [0, 0] },
+                { "value": "evening", "label": { "ru": "Вечером/в выходные" },                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

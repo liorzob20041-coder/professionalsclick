@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}למה לבחור בנו – בעלי מקצוע בקליק{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('css/why_us.css') }}">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5W6U8VYja5eT1Q5YlYbQ9n3c7m9wqU9a1QjzO1v0xryu1uI9vZ9d0hCwq8fZxk3q8yN5w7QW9qYkM7gYH0w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta name="description" content="סינון קפדני, שקיפות במחיר וזמינות ישירה — למה לבחור בבעלי מקצוע בקליק.">
+{% endblock %}
+
+{% block content %}
+<main id="main-content" class="whyus" dir="rtl">
+  <div class="wrap">
+
+    <!-- ===================== HERO ===================== -->
+    <section class="whyus-hero" aria-labelledby="whyus-title">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1 id="whyus-title" class="hero-title">
+            <span class="h-chunk">לא מחפשים לנצח —</span>
+            <span class="h-chunk">מוצאים בעל מקצוע אמין ומהר</span>
+          </h1>
+
+          <p class="hero-sub">
+            רק בעלי מקצוע מאומתים, שקיפות במחיר וזמינות לקשר ישיר.
+          </p>
+
+          <div class="hero-ctas hero-ctas--primary-first">
+            <a class="btn btn-primary btn-xl" href="{{ url_for_lang('niches') if url_for_lang else '#' }}">
+              <i class="fa-solid fa-magnifying-glass fa-fw" aria-hidden="true"></i>
+              <span>מצא/י בעל מקצוע עכשיו</span>
+            </a>
+            <a class="btn btn-ghost" href="{{ url_for_lang('estimate') if url_for_lang else '#' }}">
+              <i class="fa-solid fa-calculator fa-fw" aria-hidden="true"></i>
+              <span>בדקו מחיר משוער</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Aside: פיצ'רים מיידיים (עם מיקרו־קופי) -->
+        <aside class="hero-aside" aria-label="מה תמצאו אצלנו">
+          <h3 class="aside-title">מה תמצאו אצלנו</h3>
+          <ul class="hero-feats" role="list">
+            <li>
+              <span class="i" aria-hidden="true"><i class="fa-solid fa-video fa-fw"></i></span>
+              <span class="t">
+                <span class="main">וידאו קצר בכל כרטיס</span>
+                <small class="feat-sub">מכירים את האדם והגישה — עוד לפני השיחה.</small>
+              </span>
+            </li>
+            <li>
+              <span class="i" aria-hidden="true"><i class="fa-solid fa-calculator fa-fw"></i></span>
+              <span class="t">
+                <span class="main">מחשבון מחיר חכם</span>
+                <small class="feat-sub">טווח מחיר לפי פרטי העבודה — בלי התחייבות.</small>
+              </span>
+            </li>
+            <li>
+              <span class="i" aria-hidden="true"><i class="fa-brands fa-whatsapp fa-fw"></i></span>
+              <span class="t">
+                <span class="main">וואטסאפ ישיר</span>
+                <small class="feat-sub">פתיחת שיחה מיידית — קצר, קשוב ולעניין.</small>
+              </span>
+            </li>
+            <li>
+              <span class="i" aria-hidden="true"><i class="fa-solid fa-language fa-fw"></i></span>
+              <span class="t">
+                <span class="main">רב־לשוני ונגיש</span>
+                <small class="feat-sub">עברית • English • Русский — לכולם.</small>
+              </span>
+            </li>
+            <li>
+              <span class="i" aria-hidden="true"><i class="fa-solid fa-shield-heart fa-fw"></i></span>
+              <span class="t">
+                <span class="main">ללא ספאם</span>
+                <small class="feat-sub">פונים רק כשמבקשים. נקודה.</small>
+              </span>
+            </li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ====== כותרת מפרידה לפני כרטיסי הערך (מחוץ ל-grid) ====== -->
+    <div class="section-head" aria-hidden="true" role="presentation">
+      <span class="kicker">למה זה עובד</span>
+      <h2>היתרונות המרכזיים</h2>
+    </div>
+
+    <!-- =============== FEATURE ROW (וידאו + מחשבון) =============== -->
+    <section class="value-features" aria-label="היתרונות המרכזיים">
+      <h2 class="sr-only">היתרונות המרכזיים</h2>
+      <article class="vf-card vf-video">
+        <div class="vf-icon"><i class="fa-solid fa-video" aria-hidden="true"></i></div>
+        <div class="vf-body">
+          <h3 class="vf-title">וידאו קצר בכל כרטיס</h3>
+          <p class="vf-desc">רואים מי עומד מאחורי השירות ומרגישים את הסגנון — לפני שמתקשרים.</p>
+        </div>
+      </article>
+
+      <article class="vf-card vf-calc">
+        <div class="vf-icon"><i class="fa-solid fa-calculator" aria-hidden="true"></i></div>
+        <div class="vf-body">
+          <h3 class="vf-title">מחשבון הצעות מחיר חכם</h3>
+          <p class="vf-desc">טווח מחיר משוער לפי סוג העבודה — כדי להיכנס לשיחה מוכנים.</p>
+          <a class="btn btn-dark vf-cta" href="{{ url_for_lang('estimate') if url_for_lang else '#' }}">
+            <span>בדקו עכשיו</span>
+            <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <!-- ====== כותרת מפרידה לפני התהליך (מחוץ ל-grid) ====== -->
+    <div class="section-head" aria-hidden="true" role="presentation">
+      <span class="kicker">איך זה עובד</span>
+      <h2>תהליך הסינון וההתאמה</h2>
+    </div>
+
+    <!-- =============== PROCESS / QUALITY (ציר זמן בנייד) =============== -->
+    <section class="whyus-bullets" aria-labelledby="whyus-bullets-title">
+      <h2 id="whyus-bullets-title" class="sr-only">תהליך הסינון וההתאמה</h2>
+      <ol class="wu-grid steps">
+        <li class="wu-card">
+          <span class="step-badge" aria-hidden="true">1</span>
+          <div class="wu-icon" aria-hidden="true"><i class="fa-solid fa-clipboard-check"></i></div>
+          <h3 class="wu-title">סינון ובקרה</h3>
+          <p class="wu-desc">בדיקה ידנית של תיק עבודות, רישיונות והמלצות — רק מאושרים נכנסים.</p>
+        </li>
+        <li class="wu-card">
+          <span class="step-badge" aria-hidden="true">2</span>
+          <div class="wu-icon" aria-hidden="true"><i class="fa-solid fa-comments"></i></div>
+          <h3 class="wu-title">שיחת איכות</h3>
+          <p class="wu-desc">שיחות עם לקוחות עבר על איכות עבודה, אמינות ותמחור.</p>
+        </li>
+        <li class="wu-card">
+          <span class="step-badge" aria-hidden="true">3</span>
+          <div class="wu-icon" aria-hidden="true"><i class="fa-solid fa-sliders"></i></div>
+          <h3 class="wu-title">התאמה מדויקת</h3>
+          <p class="wu-desc">התאמה לפי תחום, מיקום ושפה — אתם בוחרים את מי לדבר.</p>
+        </li>
+        <li class="wu-card">
+          <span class="step-badge" aria-hidden="true">4</span>
+          <div class="wu-icon" aria-hidden="true"><i class="fa-solid fa-handshake-angle"></i></div>
+          <h3 class="wu-title">ליווי עד הסגירה</h3>
+          <p class="wu-desc">אנחנו זמינים לשאלות ולעזרה גם אחרי שמוצאים.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ====== כותרת מפרידה לפני מדיניות/ערכים (מחוץ ל-grid) ====== -->
+    <div class="section-head" aria-hidden="true" role="presentation">
+      <span class="kicker">שקיפות ואחריות</span>
+      <h2>מה חשוב לנו</h2>
+    </div>
+
+    <!-- ================= ASSURANCE / POLICIES ================= -->
+    <section class="assure" aria-label="מה חשוב לנו">
+      <h2 class="sr-only">מה חשוב לנו</h2>
+      <article class="a-card">
+        <h4><i class="fa-solid fa-lock fa-fw" aria-hidden="true"></i> פרטיות ושקיפות</h4>
+        <p>בלי שיחות קרות ובלי אותיות קטנות — אתם מחליטים מתי ולמי פונים.</p>
+      </article>
+      <article class="a-card">
+        <h4><i class="fa-solid fa-universal-access fa-fw" aria-hidden="true"></i> נגישות לכולם</h4>
+        <p>שואפים לעמידה בתקן AA — חוויה נגישה וברורה לכל משתמש.</p>
+      </article>
+      <article class="a-card">
+        <h4><i class="fa-solid fa-gauge-high fa-fw" aria-hidden="true"></i> מהיר ומדויק</h4>
+        <p>חיפוש ממוקד לפי תחום+עיר, יצירת קשר מיידית — פחות זמן, יותר תכל’ס.</p>
+      </article>
+    </section>
+
+    <!-- ===================== FINAL CTA ===================== -->
+    <section class="final-cta" aria-label="מצאו בעל מקצוע עכשיו">
+      <a class="btn btn-primary" href="{{ url_for_lang('niches') if url_for_lang else '#' }}">
+        <i class="fa-solid fa-magnifying-glass fa-fw" aria-hidden="true"></i>
+        <span>מצא/י בעל מקצוע עכשיו</span>
+      </a>
+    </section>
+
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}{% endblock %}

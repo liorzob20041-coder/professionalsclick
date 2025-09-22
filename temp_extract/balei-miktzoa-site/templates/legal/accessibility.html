@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}הצהרת נגישות | בעלי מקצוע בקליק{% endblock %}
+
+{% block content %}
+<section style="padding:24px; max-width:900px; margin:auto; direction:rtl; text-align:right; background:#fff; border-radius:12px;">
+  <h1 style="margin-top:0;">הצהרת נגישות</h1>
+  <p>אנו שואפים להנגיש את האתר לכלל הציבור, כולל אנשים עם מוגבלות, בהתאם לעקרונות WCAG 2.1 ברמה AA (ככל הניתן והסביר).</p>
+
+  <h2>מה נעשה?</h2>
+  <ul>
+    <li>תמיכת מקלדת, כותרות תקניות, טקסט חלופי לתמונות, יחס ניגודיות תקין במקומות מרכזיים.</li>
+    <li>התאמות תצוגה במסכים קטנים (רספונסיביות), וקישורי “דלג לתוכן”.</li>
+  </ul>
+
+  <h2>למרות המאמצים, ייתכן שתיתקלו בבעיה</h2>
+  <p>אם מצאתם ליקוי נגישות או קושי בגלישה, נשמח לדעת ולהשתפר. אנא פנו אלינו:</p>
+  <ul>
+    <li>דרך <a href="{{ url_for('contact', lang=g.current_lang) }}">טופס יצירת קשר</a></li>
+    <li>או למייל: <a href="mailto:{{ EMAIL_ADDRESS | default('') }}">{{ EMAIL_ADDRESS | default('liorzob20041@gmail.com') }}</a></li>
+  </ul>
+
+  <p style="margin-top:24px; color:#666;">תאריך עדכון אחרון: אוגוסט 2025</p>
+</section>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}{{ _('page_contact_title') }}{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('css/contact.css') }}">
+{% endblock %}
+
+
+{% block content %}
+  {% include 'navbar.html' %}
+
+  <div class="contact-page">
+    <h1 class="contact-heading">{{ _('page_contact_heading') }}</h1>
+    <p class="contact-subtext">{{ _('page_contact_subtext') }}</p>
+
+    <div class="contact-container">
+      {# הודעת סטטוס ללקוח (מוסתרת כברירת מחדל) #}
+      <p class="clientStatus" style="display:none"></p>
+
+      <form class="contact-form" method="post" action="{{ url_for('send_message', lang=g.current_lang) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <input type="text" name="name" placeholder="{{ _('contact_name') }}" required>
+        <input type="email" name="email" placeholder="{{ _('contact_email') }}" required>
+        <textarea name="message" placeholder="{{ _('contact_message') }}" required></textarea>
+
+        <!-- Honeypot (שדה דבש) נגד ספאם - להשאיר ריק -->
+        <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"
+             aria-hidden="true">
+          <label for="website">השאר ריק</label>
+          <input type="text" id="website" name="website"
+                 autocomplete="new-password" tabindex="-1" aria-hidden="true">
+        </div>
+
+        <button type="submit">{{ _('contact_send') }}</button>
+      </form>
+
+      <div class="contact-info">
+        <p>{{ _('contact_or_whatsapp') }}</p>
+        <a href="https://wa.me/972502255368?text={{ _('homepage.whatsapp_messages.1') | urlencode }}" target="_blank" class="whatsapp-float">
+          <div class="whatsapp-label">{{ _('homepage.whatsapp_help') }}</div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="צ'אט בוואטסאפ">
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+<script>
+/* ==== Fast Submit ליצירת קשר: פידבק מיידי + שליחה ב־fetch ברקע ==== */
+(() => {
+  const form = document.querySelector('.contact-form');
+  if (!form) return;
+
+  const btn = form.querySelector('button[type="submit"]');
+  const statusEl = document.querySelector('.clientStatus');
+
+  function showStatus(ok, msg){
+    if (!statusEl) return;
+    statusEl.style.display = 'block';
+    statusEl.style.padding = '10px 12px';
+    statusEl.style.borderRadius = '10px';
+    statusEl.style.margin = '0 0 14px';
+    statusEl.style.border = '1px solid';
+    if (ok){
+      statusEl.style.background = '#e9f9ef';
+      statusEl.style.color = '#126b2e';
+      statusEl.style.borderColor = '#bfe8c9';
+    } else {
+      statusEl.style.background = '#fdecea';
+      statusEl.style.color = '#b42318';
+      statusEl.style.borderColor = '#f7c5c5';
+    }
+    statusEl.textContent = msg;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!form.reportValidity()) return;
+
+    const prev = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'שולח…';
+
+    showStatus(true, 'ההודעה נקלטה – נשלח ברקע…');
+
+    const fd = new FormData(form);
+    let done = false;
+    const soft = setTimeout(() => {
+      if (!done) showStatus(true, 'שולחים… זה יכול לקחת כמה שניות.');
+    }, 800);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: fd,
+      headers: { 'X-Requested-With': 'fetch' } // הראוט מחזיר JSON כשמזהה fetch
+    })
+    .then(async (r) => {
+      done = true; clearTimeout(soft);
+      // ננסה לקרוא JSON; אם אין, נשתמש בסטטוס HTTP
+      let data = null;
+      try { data = await r.json(); } catch(e){}
+      const ok = (data && data.ok) || (r.ok && r.status < 400);
+      if (ok) {
+        showStatus(true, 'נשלח! תודה שפנית אלינו 🙏');
+        form.reset();
+      } else {
+        showStatus(false, 'אופס — לא הצלחנו לשלוח. נסו שוב.');
+      }
+    })
+    .catch(() => {
+      done = true; clearTimeout(soft);
+      showStatus(false, 'שגיאת רשת. נסו שוב מאוחר יותר.');
+    })
+    .finally(() => {
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = prev;
+      }, 1000);
+    });
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if current_category %}
+{{ categories|selectattr('id', 'equalto', current_category)|map(attribute='name')|first }} - בעלי מקצוע בקליק
+{% else %}
+בעלי מקצוע - בעלי מקצוע בקליק
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section style="background: var(--background-light); padding: 2rem 0;">
+    <div class="container">
+        <h1>
+        {% if current_category %}
+            {{ categories|selectattr('id', 'equalto', current_category)|map(attribute='name')|first }}
+        {% else %}
+            כל בעלי המקצוע
+        {% endif %}
+        </h1>
+        <p style="color: var(--text-light);">
+        {% if professionals|length == 1 %}
+            נמצא בעל מקצוע אחד
+        {% else %}
+            נמצאו {{ professionals|length }} בעלי מקצוע
+        {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- Filters -->
+<section class="filters">
+    <div class="container">
+        <form class="filter-group" method="GET">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="category" style="font-weight: 500;">מקצוע:</label>
+                <select name="category" id="category" class="filter-select" onchange="this.form.submit()">
+                    <option value="">כל המקצועות</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {{ 'selected' if current_category == category.id else '' }}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="city" style="font-weight: 500;">עיר:</label>
+                <select name="city" id="city" class="filter-select" onchange="this.form.submit()">
+                    <option value="">כל הערים</option>
+                    <option value="תל אביב">תל אביב</option>
+                    <option value="חיפה">חיפה</option>
+                    <option value="ירושלים">ירושלים</option>
+                    <option value="באר שבע">באר שבע</option>
+                    <option value="פתח תקווה">פתח תקווה</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="sort" style="font-weight: 500;">מיון:</label>
+                <select name="sort" id="sort" class="filter-select" onchange="this.form.submit()">
+                    <option value="rating">לפי דירוג</option>
+                    <option value="reviews">לפי מספר ביקורות</option>
+                    <option value="experience">לפי ניסיון</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Professionals Grid -->
+<section style="padding: 3rem 0;">
+    <div class="container">
+        {% if professionals %}
+        <div class="professionals-grid">
+            {% for professional in professionals %}
+            <div class="professional-card">
+                <div class="professional-header">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h3 class="professional-name">{{ professional.name }}</h3>
+                            <p class="professional-company">{{ professional.company }}</p>
+                        </div>
+                        <div style="background: var(--background-light); padding: 0.5rem 0.75rem; border-radius: 20px; font-size: 0.875rem;">
+                            {{ professional.experience_years }} שנות ניסיון
+                        </div>
+                    </div>
+                    
+                    <div class="professional-rating">
+                        <span class="stars">★★★★★</span>
+                        <span style="font-weight: 500;">{{ professional.rating }}</span>
+                        <span style="color: var(--text-light);">({{ professional.reviews_count }} ביקורות)</span>
+                    </div>
+                    
+                    <p class="professional-description">{{ professional.description }}</p>
+                    
+                    <div class="professional-services">
+                        {% for service in professional.services %}
+                        <span class="service-tag">{{ service }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if professional.last_review %}
+                    <div style="background: var(--background-light); padding: 1rem; border-radius: var(--border-radius); margin-top: 1rem;">
+                        <p style="font-style: italic; color: var(--text-light); font-size: 0.9rem;">"{{ professional.last_review }}"</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="professional-footer">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 0.875rem; color: var(--text-light);">📍</span>
+                        <span style="font-size: 0.875rem;">{{ professional.city }}</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="tel:{{ professional.phone }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">📞 התקשר</a>
+                        <a href="{{ url_for('professional_profile', lang=lang, professional_id=professional.id) }}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">צפה בפרופיל</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Call to Action -->
+        <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--background-light); border-radius: var(--border-radius);">
+            <h3>לא מצאתם את מה שחיפשתם?</h3>
+            <p style="color: var(--text-light); margin: 1rem 0;">שלחו בקשה ותקבלו הצעות מחיר מבעלי מקצוע רלוונטיים</p>
+            <a href="{{ url_for('request_quote', lang=lang) }}" class="btn btn-primary">שלח בקשה להצעת מחיר</a>
+        </div>
+        
+        {% else %}
+        <div style="text-align: center; padding: 4rem 0;">
+            <h2>לא נמצאו בעלי מקצוע</h2>
+            <p style="color: var(--text-light); margin: 1rem 0;">נסו לשנות את הפילטרים או</p>
+            <a href="{{ url_for('request_quote', lang=lang) }}" class="btn btn-primary">שלחו בקשה להצעת מחיר</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block structured_data %}
+{{ super() }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "בעלי מקצוע{% if current_category %} - {{ categories|selectattr('id', 'equalto', current_category)|map(attribute='name')|first }}{% endif %}",
+    "itemListElement": [
+        {% for professional in professionals %}
+        {
+            "@type": "LocalBusiness",
+            "position": {{ loop.index }},
+            "name": "{{ professional.company }}",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "{{ professional.city }}",
+                "addressCountry": "IL"
+            },
+            "telephone": "{{ professional.phone }}",
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "{{ professional.rating }}",
+                "reviewCount": "{{ professional.reviews_count }}"
+            }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}

@@ -1,0 +1,1 @@
+2025-08-21T23:54:23.997821Z	UnicodeEncodeError('ascii', 'ehlo ליאור.home\r\n', 5, 10, 'ordinal not in range(128)')

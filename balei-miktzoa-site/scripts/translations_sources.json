@@ -1,0 +1,14 @@
+{
+  "_doc_id": "1ORUqM51tJTqPo8d4b9kS8MO9n_sywYgDstXaH4Ookgo",
+
+  "request":      { "sheet": "request" },
+  "home":         { "sheet": "home" },
+  "contact":      { "sheet": "contact" },
+  "estimate":     { "sheet": "estimate" },
+  "niches":       { "sheet": "niches" },
+  "reviews_keys": { "sheet": "reviews_keys" },
+  "why_us":       { "sheet": "why_us" },
+  "show_workers": { "sheet": "show_workers" },
+  "works":        { "sheet": "works" },
+  "price_prest":  { "sheet": "price_prest" }
+}

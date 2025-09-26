@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}תקלה באתר{% endblock %}
+{% block content %}
+  <div style="padding:40px; text-align:center;">
+    <h1>500 – אופס, משהו השתבש</h1>
+    <p>התרחשה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.</p>
+    <a href="{{ url_for('home', lang=g.current_lang) }}">חזרה לדף הבית</a>
+  </div>
+{% endblock %}

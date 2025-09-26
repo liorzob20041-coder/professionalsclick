@@ -1,0 +1,584 @@
+{
+  "category": "painting",
+  "base_price": [150, 300],
+  "result_note": {
+    "he": "הטווחים משוערים ומבוססים על עבודות צביעה נפוצות. המחיר הסופי נקבע בשטח לפי היקף העבודה, מצב הקיים, גישה/גובה, חומרי גלם נבחרים ותיאומים נלווים."
+  },
+  "jobs": [
+    {
+      "id": "interior_paint",
+      "label": { "he": "צביעת פנים – קירות/תקרות" },
+      "result_note": { "he": "כולל הכנת משטח בסיסית; תיקוני שפכטל משמעותיים יחושבו בשאלות." },
+      "subtypes": [
+        {
+          "id": "single_room",
+          "label": { "he": "חדר בודד" },
+          "base_price": [400, 900],
+          "questions": [
+            {
+              "id": "size",
+              "text": { "he": "גודל החדר (משוער)" },
+              "options": [
+                { "value": "small",   "label": { "he": "קטן (עד ~8 מ״ר)" },                        "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (9–12 מ״ר) (+₪120–₪220)" },          "delta": [120, 220] },
+                { "value": "large",   "label": { "he": "גדול (13–18 מ״ר) (+₪220–₪420)" },           "delta": [220, 420] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                               "delta": [120, 220], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "condition",
+              "text": { "he": "מצב הקירות" },
+              "options": [
+                { "value": "light",   "label": { "he": "תיקונים קלים/צביעת רענון" },               "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "סדקים/תיקונים בינוניים (+₪150–₪300)" },     "delta": [150, 300] },
+                { "value": "heavy",   "label": { "he": "שפכטל/החלקה מורחבת (+₪450–₪800)" },         "delta": [450, 800] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪150–₪300)" },                  "delta": [150, 300] }
+              ]
+            },
+            {
+              "id": "paint",
+              "text": { "he": "סוג הצבע" },
+              "options": [
+                { "value": "standard", "label": { "he": "אקרילי סטנדרטי" },                         "delta": [0, 0] },
+                { "value": "premium",  "label": { "he": "רחיץ/פרימיום (+₪60–₪140)" },               "delta": [60, 140] },
+                { "value": "anti_mold","label": { "he": "נגד עובש (אמבט/שירותים) (+₪80–₪160)" },    "delta": [80, 160] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [60, 140], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "furniture",
+              "text": { "he": "ריהוט/כיסוי" },
+              "options": [
+                { "value": "empty",    "label": { "he": "החדר ריק" },                                "delta": [0, 0] },
+                { "value": "furnished","label": { "he": "מלא/דורש כיסוי והזזה (+₪100–₪220)" },      "delta": [100, 220] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה (+₪80–₪160)" },                  "delta": [80, 160] }
+              ]
+            },
+            {
+              "id": "height",
+              "text": { "he": "גובה תקרה" },
+              "options": [
+                { "value": "standard", "label": { "he": "עד ~2.8 מ׳" },                              "delta": [0, 0] },
+                { "value": "high",     "label": { "he": "גבוה/גלריה (+₪120–₪240)" },                 "delta": [120, 240] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [60, 120], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות/זמן עבודה" },
+              "options": [
+                { "value": "normal",   "label": { "he": "בשעות רגילות" },                           "delta": [0, 0] },
+                { "value": "evening",  "label": { "he": "ערב/סופ״ש" },                               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "living_room",
+          "label": { "he": "סלון/חלל מרכזי" },
+          "base_price": [700, 1400],
+          "questions": [
+            {
+              "id": "area",
+              "text": { "he": "גודל החלל" },
+              "options": [
+                { "value": "small",   "label": { "he": "קטן (עד ~15 מ״ר)" },                         "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (16–25 מ״ר) (+₪200–₪400)" },          "delta": [200, 400] },
+                { "value": "large",   "label": { "he": "גדול (26–40 מ״ר) (+₪500–₪900)" },            "delta": [500, 900] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [200, 400], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "condition",
+              "text": { "he": "מצב קירות/תקרה" },
+              "options": [
+                { "value": "light",   "label": { "he": "תיקונים קלים" },                            "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "סדקים/תיקונים בינוניים (+₪200–₪380)" },     "delta": [200, 380] },
+                { "value": "heavy",   "label": { "he": "שפכטל/החלקה משמעותית (+₪700–₪1,200)" },     "delta": [700, 1200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪200–₪380)" },                   "delta": [200, 380] }
+              ]
+            },
+            {
+              "id": "colors",
+              "text": { "he": "מספר צבעים/גוונים" },
+              "options": [
+                { "value": "single",  "label": { "he": "גוון אחד" },                                 "delta": [0, 0] },
+                { "value": "multi",   "label": { "he": "כמה גוונים/הפרדות (+₪150–₪300)" },          "delta": [150, 300] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪120–₪240)" },                   "delta": [120, 240] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות/זמן עבודה" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },                             "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                                 "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "full_apartment",
+          "label": { "he": "דירה מלאה (קירות/תקרות – לבן/סטנדרטי)" },
+          "base_price": [1500, 2500],
+          "questions": [
+            {
+              "id": "rooms",
+              "text": { "he": "גודל הדירה (חדרים/שטח)" },
+              "options": [
+                { "value": "2r_~60",   "label": { "he": "עד 2 חדרים / ~60 מ״ר" },                  "delta": [0, 0] },
+                { "value": "3r_80",    "label": { "he": "3 חדרים / ~80 מ״ר (+₪500–₪900)" },         "delta": [500, 900] },
+                { "value": "4r_100",   "label": { "he": "4 חדרים / ~100 מ״ר (+₪900–₪1,500)" },      "delta": [900, 1500] },
+                { "value": "5r_130",   "label": { "he": "5 חדרים / ~130 מ״ר (+₪1,500–₪2,300)" },    "delta": [1500, 2300] },
+                { "value": "6r_160",   "label": { "he": "6 חדרים / ~160 מ״ר (+₪2,300–₪3,500)" },    "delta": [2300, 3500] },
+                { "value": "gt_160",   "label": { "he": "מעל ~160 מ״ר (+₪3,500–₪6,000)" },          "delta": [3500, 6000] }
+              ]
+            },
+            {
+              "id": "condition",
+              "text": { "he": "מצב קירות/תקרה בכל הדירה" },
+              "options": [
+                { "value": "light",   "label": { "he": "במצב טוב/תיקונים קלים" },                 "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "תיקונים בינוניים (+₪400–₪800)" },          "delta": [400, 800] },
+                { "value": "heavy",   "label": { "he": "שפכטל/החלקה רחבה (+₪2,500–₪5,000)" },      "delta": [2500, 5000] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪800–₪1,500)" },               "delta": [800, 1500] }
+              ]
+            },
+            {
+              "id": "wet_rooms",
+              "text": { "he": "אמבטיה/שירותים – צבע נגד עובש" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                                      "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (חומר ייעודי) (+₪200–₪400)" },           "delta": [200, 400] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                               "delta": [150, 300], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "furniture",
+              "text": { "he": "דירה ריקה או מאוכלסת" },
+              "options": [
+                { "value": "empty",    "label": { "he": "ריקה" },                                   "delta": [0, 0] },
+                { "value": "furnished","label": { "he": "מאוכלסת – כיסויים/הזזה (+₪300–₪700)" },    "delta": [300, 700] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה (+₪250–₪500)" },                 "delta": [250, 500] }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות/זמן עבודה" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },                            "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                                "multiplier": 1.5 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ceiling_only",
+          "label": { "he": "צביעת תקרה בלבד" },
+          "base_price": [200, 350],
+          "questions": [
+            {
+              "id": "area",
+              "text": { "he": "גודל התקרה" },
+              "options": [
+                { "value": "small",   "label": { "he": "חדר קטן (עד 12 מ״ר)" },                    "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "חדר רגיל (13–20 מ״ר) (+₪80–₪140)" },        "delta": [80, 140] },
+                { "value": "large",   "label": { "he": "גדול (21–35 מ״ר) (+₪160–₪260)" },           "delta": [160, 260] },
+                { "value": "hall",    "label": { "he": "חלל/סלון גדול (+₪260–₪420)" },              "delta": [260, 420] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                               "delta": [120, 220], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "mold",
+              "text": { "he": "תקרה עם עובש/כתמים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                                     "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן – טיפול/פריימר ייעודי (+₪120–₪240)" },  "delta": [120, 240] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪100–₪200)" },                 "delta": [100, 200] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "doors_wood",
+      "label": { "he": "צביעת דלתות/נגרות" },
+      "subtypes": [
+        {
+          "id": "single_door",
+          "label": { "he": "דלת עץ/צבועה (יחידה)" },
+          "base_price": [250, 450],
+          "questions": [
+            {
+              "id": "sides",
+              "text": { "he": "כמה צדדים לצבוע?" },
+              "options": [
+                { "value": "one",     "label": { "he": "צד אחד" },                               "delta": [0, 0] },
+                { "value": "both",    "label": { "he": "שני צדדים (+₪80–₪150)" },                 "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪60–₪120)" },                 "delta": [60, 120] }
+              ]
+            },
+            {
+              "id": "prep",
+              "text": { "he": "הכנה/שיוף/קילוף צבע ישן" },
+              "options": [
+                { "value": "light",   "label": { "he": "קל" },                                    "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (+₪120–₪200)" },                   "delta": [120, 200] },
+                { "value": "heavy",   "label": { "he": "מורכב/קילוף (+₪200–₪350)" },              "delta": [200, 350] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                             "delta": [120, 200], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "hardware",
+              "text": { "he": "פירוק/החזרת אביזרים (ידיות/צירים)" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                                    "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (+₪50–₪120)" },                         "delta": [50, 120] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                             "delta": [40, 100], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "multiple_doors",
+          "label": { "he": "מס׳ דלתות (כמות)" },
+          "base_price": [250, 450],
+          "questions": [
+            {
+              "id": "qty",
+              "text": { "he": "כמה דלתות?" },
+              "options": [
+                { "value": "one",    "label": { "he": "1" },            "multiplier": 1.0 },
+                { "value": "two",    "label": { "he": "2" },            "multiplier": 2.0 },
+                { "value": "three4", "label": { "he": "3–4" },          "multiplier": 3.5 },
+                { "value": "five6",  "label": { "he": "5–6" },          "multiplier": 5.0 },
+                { "value": "gt6",    "label": { "he": "מעל 6" },        "multiplier": 6.5 }
+              ]
+            },
+            {
+              "id": "finish",
+              "text": { "he": "גימור/סוג צבע" },
+              "options": [
+                { "value": "acrylic", "label": { "he": "אקרילי/מים" },                            "delta": [0, 0] },
+                { "value": "poly",    "label": { "he": "פוליאור/לכה (+₪80–₪160)" },               "delta": [80, 160] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                              "delta": [60, 120], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "metalwork",
+      "label": { "he": "צביעת מתכת – סורגים/מעקות/שער" },
+      "subtypes": [
+        {
+          "id": "railings",
+          "label": { "he": "מעקות/סורגים" },
+          "base_price": [400, 700],
+          "questions": [
+            {
+              "id": "length",
+              "text": { "he": "אורך משוער" },
+              "options": [
+                { "value": "1_3m",   "label": { "he": "1–3 מ׳" },       "multiplier": 1.0 },
+                { "value": "4_7m",   "label": { "he": "4–7 מ׳" },       "multiplier": 2.0 },
+                { "value": "8_12m",  "label": { "he": "8–12 מ׳" },      "multiplier": 3.0 },
+                { "value": "gt12m",  "label": { "he": "יותר מ־12 מ׳" }, "multiplier": 4.0 }
+              ]
+            },
+            {
+              "id": "condition",
+              "text": { "he": "מצב/חלודה" },
+              "options": [
+                { "value": "good",    "label": { "he": "תקין יחסית" },                             "delta": [0, 0] },
+                { "value": "rust",    "label": { "he": "דורש טיפול חלודה יסודי (+₪150–₪300)" },    "delta": [150, 300] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪100–₪220)" },                 "delta": [100, 220] }
+              ]
+            },
+            {
+              "id": "access",
+              "text": { "he": "גישה/גובה" },
+              "options": [
+                { "value": "easy",    "label": { "he": "נגיש" },                                    "delta": [0, 0] },
+                { "value": "height",  "label": { "he": "גובה/סולם/פיגום (+₪200–₪450)" },           "delta": [200, 450] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                               "delta": [150, 300], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gate",
+          "label": { "he": "שער/גדר מתכת" },
+          "base_price": [500, 900],
+          "questions": [
+            {
+              "id": "area",
+              "text": { "he": "שטח/אורך משוער" },
+              "options": [
+                { "value": "small",   "label": { "he": "קטן" },                                    "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (+₪250–₪450)" },                    "delta": [250, 450] },
+                { "value": "large",   "label": { "he": "גדול (+₪500–₪900)" },                      "delta": [500, 900] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                              "delta": [250, 450], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "system",
+              "text": { "he": "מערכת צבע" },
+              "options": [
+                { "value": "basic",   "label": { "he": "פריימר + 2 שכבות" },                        "delta": [0, 0] },
+                { "value": "premium", "label": { "he": "מערכת אנטי-חלודה משודרגת (+₪180–₪320)" },   "delta": [180, 320] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [120, 240], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "exterior",
+      "label": { "he": "צביעת חוץ – חזית/קירות חיצוניים" },
+      "subtypes": [
+        {
+          "id": "facade_house",
+          "label": { "he": "חזית בית פרטי/דו-משפחתי" },
+          "base_price": [2500, 4500],
+          "result_note": { "he": "הצעת מחיר כוללת לרוב הכנת תשתית, שטיפה/תיקונים והתקנת פיגומים אם נדרש (בתוספת)." },
+          "questions": [
+            {
+              "id": "area",
+              "text": { "he": "שטח חזית משוער" },
+              "options": [
+                { "value": "lt80",    "label": { "he": "עד ~80 מ״ר" },                               "delta": [0, 0] },
+                { "value": "80_140",  "label": { "he": "80–140 מ״ר (+₪1,000–₪2,000)" },              "delta": [1000, 2000] },
+                { "value": "141_220", "label": { "he": "141–220 מ״ר (+₪2,000–₪3,800)" },             "delta": [2000, 3800] },
+                { "value": "gt220",   "label": { "he": "מעל 220 מ״ר (+₪3,800–₪6,500)" },             "delta": [3800, 6500] }
+              ]
+            },
+            {
+              "id": "scaffold",
+              "text": { "he": "פיגומים/במה נדרשים?" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                                        "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (השכרה/הקמה) (+₪2,000–₪6,000)" },          "delta": [2000, 6000] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                 "delta": [1500, 4500], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "cracks",
+              "text": { "he": "תיקוני סדקים/טיח" },
+              "options": [
+                { "value": "minor",   "label": { "he": "קלים" },                                     "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוניים (+₪800–₪1,500)" },                  "delta": [800, 1500] },
+                { "value": "major",   "label": { "he": "משמעותיים (+₪1,500–₪2,800)" },               "delta": [1500, 2800] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה (+₪800–₪1,500)" },                 "delta": [800, 1500] }
+              ]
+            },
+            {
+              "id": "paint",
+              "text": { "he": "מערכת צבע" },
+              "options": [
+                { "value": "acrylic", "label": { "he": "אקרילי חוץ" },                               "delta": [0, 0] },
+                { "value": "silicone","label": { "he": "סיליקוני/דוחה מים (+₪500–₪1,500)" },         "delta": [500, 1500] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                 "delta": [400, 900], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות/זמן עבודה" },
+              "options": [
+                { "value": "normal",  "label": { "he": "בשעות רגילות" },                             "delta": [0, 0] },
+                { "value": "evening", "label": { "he": "ערב/סופ״ש" },                                 "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "plaster_skim",
+      "label": { "he": "תיקוני טיח/שפכטל והכנה לצבע" },
+      "subtypes": [
+        {
+          "id": "skim_room",
+          "label": { "he": "החלקת קירות חדר" },
+          "base_price": [900, 1600],
+          "questions": [
+            {
+              "id": "size",
+              "text": { "he": "גודל החדר" },
+              "options": [
+                { "value": "small",   "label": { "he": "קטן" },                                     "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (+₪250–₪450)" },                      "delta": [250, 450] },
+                { "value": "large",   "label": { "he": "גדול (+₪450–₪800)" },                        "delta": [450, 800] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [250, 450], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "severity",
+              "text": { "he": "רמת עבודת החלקה" },
+              "options": [
+                { "value": "light",   "label": { "he": "נקודתי/קל" },                               "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (+₪300–₪600)" },                      "delta": [300, 600] },
+                { "value": "heavy",   "label": { "he": "מלא/מסיבי (+₪700–₪1,200)" },                 "delta": [700, 1200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [300, 600], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "primer",
+              "text": { "he": "פריימר/בסיס לפני צבע" },
+              "options": [
+                { "value": "no",      "label": { "he": "לא" },                                       "delta": [0, 0] },
+                { "value": "yes",     "label": { "he": "כן (+₪120–₪220)" },                          "delta": [120, 220] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [100, 200], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "patches",
+          "label": { "he": "תיקוני טיח/שפכטל נקודתיים" },
+          "base_price": [200, 350],
+          "questions": [
+            {
+              "id": "qty",
+              "text": { "he": "כמות תיקונים" },
+              "options": [
+                { "value": "few",     "label": { "he": "1–3 נק׳ (+₪100–₪180)" },                    "delta": [100, 180] },
+                { "value": "some",    "label": { "he": "4–8 נק׳ (+₪200–₪320)" },                    "delta": [200, 320] },
+                { "value": "many",    "label": { "he": "9–15 נק׳ (+₪350–₪600)" },                   "delta": [350, 600] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [200, 320], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "height",
+              "text": { "he": "גובה/גישה" },
+              "options": [
+                { "value": "normal",  "label": { "he": "רגיל" },                                     "delta": [0, 0] },
+                { "value": "high",    "label": { "he": "גבוה/סולם (+₪80–₪150)" },                   "delta": [80, 150] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [60, 120], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "mold_treatment",
+      "label": { "he": "טיפול בעובש/צבע אמבט" },
+      "subtypes": [
+        {
+          "id": "bath_ceiling",
+          "label": { "he": "תקרת אמבטיה/שירותים" },
+          "base_price": [250, 420],
+          "questions": [
+            {
+              "id": "size",
+              "text": { "he": "גודל משוער" },
+              "options": [
+                { "value": "small",   "label": { "he": "קטן" },                                      "delta": [0, 0] },
+                { "value": "medium",  "label": { "he": "בינוני (+₪60–₪110)" },                       "delta": [60, 110] },
+                { "value": "large",   "label": { "he": "גדול (+₪110–₪200)" },                        "delta": [110, 200] },
+                { "value": "unknown", "label": { "he": "לא בטוח/ה" },                                "delta": [80, 150], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "treatment",
+              "text": { "he": "רמת טיפול" },
+              "options": [
+                { "value": "wash",     "label": { "he": "שטיפה/הסרת עובש" },                        "delta": [0, 0] },
+                { "value": "primer",   "label": { "he": "פריימר/חומר נגד עובש (+₪120–₪240)" },      "delta": [120, 240] },
+                { "value": "sealer",   "label": { "he": "איטום נקודתי/שכבת סילר (+₪160–₪300)" },    "delta": [160, 300] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [120, 240], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "room_mold",
+          "label": { "he": "חדר עם עובש בקירות" },
+          "base_price": [400, 700],
+          "questions": [
+            {
+              "id": "extent",
+              "text": { "he": "היקף העובש" },
+              "options": [
+                { "value": "wall",     "label": { "he": "קיר אחד" },                                "delta": [0, 0] },
+                { "value": "two_walls","label": { "he": "שני קירות (+₪150–₪300)" },                 "delta": [150, 300] },
+                { "value": "multi",    "label": { "he": "מס׳ קירות (+₪300–₪550)" },                 "delta": [300, 550] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [150, 300], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "cause",
+              "text": { "he": "גורם משוער" },
+              "options": [
+                { "value": "condense", "label": { "he": "עיבוי/אוורור" },                           "delta": [0, 0] },
+                { "value": "leak",     "label": { "he": "רטיבות/נזילה (דורש תיקון) (+₪200–₪400)" }, "delta": [200, 400] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [120, 240], "ui": { "silent_delta": true } }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "epoxy_floor",
+      "label": { "he": "צביעת רצפת בטון באפוקסי" },
+      "subtypes": [
+        {
+          "id": "parking_small",
+          "label": { "he": "חניה/מחסן קטן" },
+          "base_price": [900, 1500],
+          "questions": [
+            {
+              "id": "area",
+              "text": { "he": "שטח משוער" },
+              "options": [
+                { "value": "10_20",   "label": { "he": "10–20 מ״ר" },                                "delta": [0, 0] },
+                { "value": "21_40",   "label": { "he": "21–40 מ״ר (+₪400–₪700)" },                   "delta": [400, 700] },
+                { "value": "41_60",   "label": { "he": "41–60 מ״ר (+₪900–₪1,500)" },                 "delta": [900, 1500] },
+                { "value": "61_100",  "label": { "he": "61–100 מ״ר (+₪1,600–₪2,600)" },              "delta": [1600, 2600] },
+                { "value": "gt100",   "label": { "he": "מעל 100 מ״ר (+₪2,600–₪4,200)" },             "delta": [2600, 4200] }
+              ]
+            },
+            {
+              "id": "prep",
+              "text": { "he": "הכנת תשתית" },
+              "options": [
+                { "value": "clean",    "label": { "he": "ניקוי/ליטוש קל" },                         "delta": [0, 0] },
+                { "value": "grind",    "label": { "he": "ליטוש/השחזה/תיקוני סדקים (+₪500–₪1,200)" }, "delta": [500, 1200] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [300, 800], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "system",
+              "text": { "he": "מערכת אפוקסי" },
+              "options": [
+                { "value": "basic",    "label": { "he": "2 שכבות בסיסיות" },                        "delta": [0, 0] },
+                { "value": "premium",  "label": { "he": "עובי/שכבות משודרגות (+₪600–₪1,200)" },     "delta": [600, 1200] },
+                { "value": "flakes",   "label": { "he": "שבבים/אנטי-סליפ (+₪250–₪450)" },           "delta": [250, 450] },
+                { "value": "unknown",  "label": { "he": "לא בטוח/ה" },                               "delta": [400, 800], "ui": { "silent_delta": true } }
+              ]
+            },
+            {
+              "id": "urgency",
+              "text": { "he": "דחיפות/זמן עבודה" },
+              "options": [
+                { "value": "normal",   "label": { "he": "בשעות רגילות" },                           "delta": [0, 0] },
+                { "value": "evening",  "label": { "he": "ערב/סופ״ש" },                               "multiplier": 1.5 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

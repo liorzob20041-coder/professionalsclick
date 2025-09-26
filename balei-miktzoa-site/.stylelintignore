@@ -1,0 +1,4 @@
+**/vendor/**
+**/*.min.css
+static/css/base.bundle.css
+**/*.bundle.css

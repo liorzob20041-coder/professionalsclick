@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="preload" as="image" href="{{ url_for('static', filename='photo1.jpg') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/home.css') }}">
+{% endblock %}
+
+{% block title %}{{ _('homepage.seo_title') }}{% endblock %}
+
+{% block head_seo %}
+<link rel="canonical" href="{{ url_for_lang('home', lang=g.current_lang, _external=True) }}">
+
+<link rel="alternate" hreflang="he" href="{{ url_for_lang('home', lang='he', _external=True) }}">
+<link rel="alternate" hreflang="en" href="{{ url_for_lang('home', lang='en', _external=True) }}">
+<link rel="alternate" hreflang="ru" href="{{ url_for_lang('home', lang='ru', _external=True) }}">
+<link rel="alternate" hreflang="x-default" href="{{ url_for_lang('home', lang='he', _external=True) }}">
+
+<meta name="description" content="{{ _('homepage.meta_description') }}">
+<meta name="robots" content="index,follow,max-image-preview:large">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="בעלי מקצוע בקליק">
+<meta property="og:locale" content="{{ 'he_IL' if g.current_lang=='he' else ('en_US' if g.current_lang=='en' else 'ru_RU') }}">
+<meta property="og:locale:alternate" content="he_IL">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:title" content="{{ _('homepage.seo_title') }}">
+<meta property="og:description" content="{{ _('homepage.meta_description') }}">
+<meta property="og:url" content="{{ url_for_lang('home', lang=g.current_lang, _external=True) }}">
+<meta property="og:image" content="{{ static_abs('og/home-' ~ g.current_lang ~ '.jpg') }}">
+<meta property="og:image:secure_url" content="{{ static_abs('og/home-' ~ g.current_lang ~ '.jpg') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ _('homepage.og_alt_home') }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ _('homepage.seo_title') }}">
+<meta name="twitter:description" content="{{ _('homepage.meta_description') }}">
+<meta name="twitter:image" content="{{ static_abs('og/home-' ~ g.current_lang ~ '.jpg') }}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "בעלי מקצוע בקליק",
+      "url": "{{ url_for_lang('home', lang='he', _external=True) }}",
+      "logo": { "@type":"ImageObject","url":"{{ static_abs('logo.jpeg') }}","width":512,"height":512 },
+      "contactPoint": [{ "@type":"ContactPoint","contactType":"customer support","availableLanguage":["he","en","ru"],"areaServed":"IL" }],
+      "sameAs": []
+    },
+    {
+      "@type":"WebSite",
+      "name":"בעלי מקצוע בקליק",
+      "url":"{{ url_for_lang('home', lang=g.current_lang, _external=True) }}",
+      "inLanguage":"{{ g.current_lang }}",
+      "potentialAction":{
+        "@type":"SearchAction",
+        "target":"{{ request.url_root | trim('/') }}/{{ g.current_lang }}/workers/{field}/{area}",
+        "query-input":["required name=field","required name=area"]
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO — כותרת + טופס -->
+<section class="hero-split" aria-label="חיפוש בעלי מקצוע">
+  <!-- LEFT: copy + quick actions + checklist -->
+  <div class="hero-info">
+    <!-- שונה: כותרת צדדית -->
+    <h1>מוצאים בעל מקצוע אמין — בקליק</h1>
+
+    <!-- שונה: טקסט משנה -->
+    <p class="hero-lead">
+      צפו ב<strong>סרטוני עבודה אמיתיים</strong> של העובדים, קבלו <strong>מחיר מיידי</strong> במחשבון,
+      וסננו לפי שפה — כדי לבחור נכון ובביטחון.
+    </p>
+
+
+    <nav class="home-quick-inline" aria-label="פעולות מהירות">
+      <button class="hq-pill" type="button" onclick="return goToEstimate(event)">
+        <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+        <span>{{ _('homepage.quick.estimate_nav') }}</span>
+      </button>
+      <a class="hq-pill" href="#how">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        <span>{{ _('homepage.how_title') }}</span>
+      </a>
+      <!-- הוסר: כפתור 'צפו בווידאו' -->
+    </nav>
+
+    <!-- Checklist של ה־USPs -->
+    <ul class="hero-checklist" role="list" aria-label="יתרונות השירות">
+      <li class="check-item">
+        <span class="check-ico" aria-hidden="true">✓</span>
+        סרטוני עבודה אמיתיים — לפני שמזמינים
+      </li>
+      <li class="check-item">
+        <span class="check-ico" aria-hidden="true">✓</span>
+        מחשבון מחיר מיידי לפי סוג העבודה
+      </li>
+        <li class="check-item check-langs">
+          <span class="check-ico" aria-hidden="true">✓</span>
+          <span class="lang-wrap">
+            <span class="lang-label">סינון לפי שפה</span>
+            <span class="lang-line">
+              <span class="lang-chunk"><bdi lang="he">עברית</bdi></span>
+              <span class="lang-chunk"><span class="lang-sep" aria-hidden="true"> / </span><bdi lang="en">English</bdi></span>
+              <span class="lang-chunk"><span class="lang-sep" aria-hidden="true"> / </span><bdi lang="ru">Русский</bdi></span>
+            </span>
+          </span>
+        </li>
+
+
+      <li class="check-item">
+        <span class="check-ico" aria-hidden="true">✓</span>
+        ביקורות מאומתות בלבד
+      </li>
+    </ul>
+  </div>
+
+  <!-- RIGHT: visual + search panel -->
+  <div class="hero-visual">
+    <div class="hero-slides"
+         style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=1600, q=80, fit='cover', format='auto') }}');">
+      <img id="slideA" class="slide active"
+           src="{{ url_for('static', filename='photo1.jpg') }}"
+           alt="{{ _('homepage.hero_img_main_alt') }}"
+           loading="eager" fetchpriority="high" decoding="async" />
+      <img id="slideB" class="slide"
+           src="{{ url_for('static', filename='photo2.jpg') }}"
+           alt="{{ _('homepage.hero_img_alt_b') }}"
+           loading="lazy" decoding="async" />
+
+      <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
+        <!-- נשאר כמו שהוא -->
+        <h2 class="hero-title">{{ _('homepage.hero_title_overlay') }}</h2>
+        <form class="hero-search" role="search" onsubmit="return redirectToCleanURL(event)" novalidate>
+          <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
+          <div class="hs-field">
+            <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+            <input id="field" name="field" list="fields" placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
+          </div>
+
+          <label class="sr-only" for="area">{{ _('homepage.choose_area') }}</label>
+          <div class="hs-field">
+            <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+            <input id="area" name="area" list="areas" placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
+          </div>
+
+          <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
+
+          <datalist id="fields">
+            <option value="{{ _('field_renovations') }}" data-key="renovations">
+            <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
+            <option value="{{ _('field_electricians') }}" data-key="electricians">
+            <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
+          </datalist>
+          <datalist id="areas">
+            <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
+            <option value="{{ _('city_haifa') }}"      data-key="haifa">
+            <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
+            <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
+          </datalist>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY/FEATURES -->
+<section class="features" id="features" aria-label="למה לבחור בנו">
+  <div class="container">
+    <h2>{{ _('homepage.why_us_title') }}</h2>
+    <div class="feature-boxes">
+      <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i> {{ _('homepage.features.1') }}</div>
+      <div class="feature-item"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> {{ _('homepage.features.2') }}</div>
+      <div class="feature-item"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i> {{ _('homepage.features.3') }}</div>
+      <div class="feature-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> {{ _('homepage.features.4') }}</div>
+    </div>
+  </div>
+</section>
+
+<!-- POPULAR FIELDS -->
+<section class="niche-rail-wrap" id="niches" aria-label="{{ _('homepage.popular_fields_title') }}">
+  <div class="container">
+    <h2>{{ _('homepage.popular_fields_title') }}</h2>
+    <nav class="niche-rail" aria-label="{{ _('homepage.popular_fields_title') }}">
+      <button class="niche-pill" type="button"
+              data-label="{{ _('homepage.popular_fields.plumbers') }}"
+              onclick="return goToSearch(event, this.dataset.label)">
+        <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-faucet-drip"></i></span>
+        <span class="np-label">{{ _('homepage.popular_fields.plumbers') }}</span>
+      </button>
+      <button class="niche-pill" type="button"
+              data-label="{{ _('homepage.popular_fields.electricians') }}"
+              onclick="return goToSearch(event, this.dataset.label)">
+        <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
+        <span class="np-label">{{ _('homepage.popular_fields.electricians') }}</span>
+      </button>
+      <button class="niche-pill" type="button"
+              data-label="{{ _('homepage.popular_fields.renovations') }}"
+              onclick="return goToSearch(event, this.dataset.label)">
+        <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-hammer"></i></span>
+        <span class="np-label">{{ _('homepage.popular_fields.renovations') }}</span>
+      </button>
+      <button class="niche-pill" type="button"
+              data-label="{{ _('homepage.popular_fields.locksmiths') }}"
+              onclick="return goToSearch(event, this.dataset.label)">
+        <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
+        <span class="np-label">{{ _('homepage.popular_fields.locksmiths') }}</span>
+      </button>
+    </nav>
+  </div>
+</section>
+
+<!-- ESTIMATE CTA -->
+<section class="estimate-cta" id="estimate" aria-label="{{ _('homepage.quick.estimate_title') }}">
+  <div class="section-wrap">
+    <h2>{{ _('homepage.quick.estimate_title') }}</h2>
+    <p>{{ _('homepage.quick.estimate_desc') }}</p>
+    <button class="btn btn-primary" type="button" onclick="return goToEstimate(event)">
+      <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+      {{ _('homepage.quick.estimate_cta') }}
+    </button>
+  </div>
+</section>
+
+<!-- FEATURED PROS -->
+{% if featured_workers and featured_workers|length %}
+<section class="featured-pros" aria-label="בעלי מקצוע מובילים לידכם">
+  <div class="container">
+    <h2>{{ _('homepage.top_pros_title') }}</h2>
+    <div class="pros-grid">
+      {% for w in featured_workers[:8] %}
+        <a class="pro-card" href="{{ url_for_lang('worker_profile', worker_id=w.worker_id) }}">
+          <figure class="pro-media">
+            <img src="{{ w.photo_url or url_for('static', filename='placeholder-pro.jpg') }}" alt="{{ w.company_name or w.name }}" loading="lazy" decoding="async">
+          </figure>
+          <div class="pro-info">
+            <div class="pro-name">{{ w.company_name or w.name }}</div>
+            <div class="pro-meta">{{ w.field_label }} · {{ w.area_label }}</div>
+            {% if w.avg_score %}<div class="pro-rating" aria-label="{{ _('homepage.avg_rating_label') }}">⭐ {{ '%.1f'|format(w.avg_score) }}</div>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- VIDEO RAIL -->
+{% if featured_videos and featured_videos|length %}
+<section class="video-rail" id="videos" aria-label="סרטוני עבודה של בעלי מקצוע">
+  <div class="container">
+    <h2>{{ _('homepage.videos_title') }}</h2>
+    <div class="rail">
+      {% for v in featured_videos[:12] %}
+        <a class="video-chip" href="{{ url_for_lang('worker_profile', worker_id=v.worker_id) }}">
+          <img src="{{ v.thumbnail_url or url_for('static', filename='placeholder-video.jpg') }}" alt="{{ v.title or v.worker_name }}" loading="lazy" decoding="async">
+          <span class="chip-title">{{ v.title or (v.field_label ~ ' · ' ~ v.area_label) }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- HOW IT WORKS -->
+<section id="how" class="how-it-works" aria-label="איך זה עובד">
+  <div class="container">
+    <h2>{{ _('homepage.how_title') }}</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-index" aria-hidden="true">1</span>
+        <div class="step-body">
+          <h3>{{ _('homepage.how.1.title') }}</h3>
+          <p class="muted">{{ _('homepage.how.1.text') }}</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-index" aria-hidden="true">2</span>
+        <div class="step-body">
+          <h3>{{ _('homepage.how.2.title') }}</h3>
+          <p class="muted">{{ _('homepage.how.2.text') }}</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-index" aria-hidden="true">3</span>
+        <div class="step-body">
+          <h3>{{ _('homepage.how.3.title') }}</h3>
+          <p class="muted">{{ _('homepage.how.3.text') }}</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq" aria-label="שאלות נפוצות">
+  <div class="container">
+    <h2>{{ _('homepage.faq_title') }}</h2>
+    <div class="faq-list">
+      <details><summary>{{ _('homepage.faq.q1') }}</summary><p>{{ _('homepage.faq.a1') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q2') }}</summary><p>{{ _('homepage.faq.a2') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q3') }}</summary><p>{{ _('homepage.faq.a3') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q4') }}</summary><p>{{ _('homepage.faq.a4') }}</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" aria-label="{{ _('homepage.contact_title') }}">
+  <div class="container">
+    <h2>{{ _('homepage.contact_title') }}</h2>
+    <p class="clientStatus" style="display:none"></p>
+    <form class="contact-form" method="POST" action="{{ url_for_lang('send_message') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="sr-only" for="name">{{ _('homepage.full_name') }}</label>
+      <input type="text" id="name" name="name" placeholder="{{ _('homepage.full_name') }}" required autocomplete="name">
+      <label class="sr-only" for="email">{{ _('homepage.email') }}</label>
+      <input type="email" id="email" name="email" placeholder="{{ _('homepage.email') }}" required autocomplete="email">
+      <label class="sr-only" for="message">{{ _('homepage.your_message') }}</label>
+      <textarea id="message" name="message" placeholder="{{ _('homepage.your_message') }}" required></textarea>
+      <div class="honeypot" aria-hidden="true"><label for="website">אתר</label><input type="text" name="website" id="website" autocomplete="off" tabindex="-1"></div>
+      <button type="submit" class="btn btn-primary" aria-label="{{ _('homepage.send_message') }}">
+        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> {{ _('homepage.send_message') }}
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/972502255368?text={{ _('homepage.whatsapp_messages.1') | urlencode }}"
+   target="_blank"
+   class="whatsapp-float"
+   aria-label="{{ _('homepage.whatsapp_help') }}">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"
+       alt="{{ _('homepage.whatsapp_alt') }}"
+       width="48" height="48"
+       loading="lazy">
+</a>
+
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
+
+  <!-- Slider (fade) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.hero-slides .slide'));
+      if (!slides || slides.length <= 1) return;
+      var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) return;
+      slides.forEach(function (img) { if (img && !img.complete) { var pre = new Image(); pre.src = img.src; } });
+      var i = 0, DURATION = 6000, FADE_MS = 900;
+      setInterval(function () {
+        var current = slides[i];
+        i = (i + 1) % slides.length;
+        var next = slides[i];
+        if (next) next.classList.add('active');
+        setTimeout(function () { if (current) current.classList.remove('active'); }, FADE_MS + 50);
+      }, DURATION);
+    });
+  </script>
+
+  <!-- Search routing -->
+  <script>
+    (function () {
+      function convertToSlug(text) {
+        var s = (text || '').trim().toLowerCase();
+        if (typeof s.normalize === 'function') s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+        s = s.replace(/[^0-9a-z\u0590-\u05FF\u0400-\u04FF\\s_-]/g, '')
+             .replace(/[\\s_]+/g, '-')
+             .replace(/-+/g, '-')
+             .replace(/^-|-$/g, '');
+        return s;
+      }
+      window.redirectToCleanURL = function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        var form = (e && e.target && e.target.closest) ? e.target.closest('form') : document.querySelector('.hero-search');
+        var areaInput  = form ? (form.querySelector('#area')  || form.querySelector('#area_m'))  : null;
+        var fieldInput = form ? (form.querySelector('#field') || form.querySelector('#field_m')) : null;
+        var areaError  = areaInput  && areaInput.parentElement ? areaInput.parentElement.querySelector('.input-error')  : null;
+        var fieldError = fieldInput && fieldInput.parentElement ? fieldInput.parentElement.querySelector('.input-error') : null;
+        if (areaError)  areaError.textContent  = '';
+        if (fieldError) fieldError.textContent = '';
+        var areaValue  = areaInput  && areaInput.value  ? areaInput.value.trim()  : '';
+        var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
+        var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+        var msgs = {
+          he: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
+          en: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
+          ru: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" }
+        };
+        var hasError = false;
+        if (!areaValue)  { if (areaError)  areaError.textContent  = msgs[lang].area;  hasError = true; }
+        if (!fieldValue) { if (fieldError) fieldError.textContent = msgs[lang].field; hasError = true; }
+        if (hasError) return false;
+        var areaSlug  = convertToSlug(areaValue);
+        var fieldSlug = convertToSlug(fieldValue);
+        window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
+        return false;
+      };
+    })();
+    function goToSearch(e, fieldLabel){
+      if (e && e.preventDefault) e.preventDefault();
+      var form  = document.querySelector('.hero-search');
+      if (!form) { window.location.hash = '#niches'; return false; }
+      var fInp = form.querySelector('#field');
+      var aInp = form.querySelector('#area');
+      if (fieldLabel && fInp) fInp.value = fieldLabel;
+      var hasField = fInp && fInp.value && fInp.value.trim();
+      var hasArea  = aInp && aInp.value && aInp.value.trim();
+      if (hasField && hasArea){
+        return window.redirectToCleanURL({ preventDefault: function(){}, target: form });
+      }
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function(){ (!hasField && fInp ? fInp : aInp).focus(); }, 250);
+      return false;
+    }
+    function goToEstimate(e){ if (e && e.preventDefault) e.preventDefault(); var lang=(document.documentElement.getAttribute('lang')||'he').toLowerCase(); window.location.href='/' + lang + '/estimate/'; return false; }
+  </script>
+
+  <!-- Async contact submit -->
+  <script>
+  (() => {
+    const forms = document.querySelectorAll('.contact-form');
+    if (!forms.length) return;
+    forms.forEach(form => {
+      const btn = form.querySelector('button[type="submit"], .btn.btn-primary');
+      let statusEl = form.closest('#contact')?.querySelector('.clientStatus') || document.querySelector('.clientStatus');
+      if (!statusEl) {
+        statusEl = document.createElement('p');
+        statusEl.className = 'clientStatus';
+        statusEl.style.display = 'none';
+        form.parentNode.insertBefore(statusEl, form);
+      }
+      function showStatus(ok, msg){
+        statusEl.style.display = 'block';
+        statusEl.setAttribute('role', 'status');
+        statusEl.setAttribute('aria-live', 'polite');
+        statusEl.textContent = msg;
+      }
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        const prev = btn.textContent; btn.disabled = true; btn.textContent = 'שולחים…';
+        showStatus(true, 'ההודעה נקלטה — שולחים ברקע…');
+        const fd = new FormData(form); let done = false;
+        const soft = setTimeout(() => { if (!done) showStatus(true, 'שולחים… זה יכול לקחת כמה שניות.'); }, 800);
+        fetch(form.action, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'fetch' } })
+        .then(async (r) => {
+          done = true; clearTimeout(soft);
+          let data = null; try { data = await r.json(); } catch(e){}
+          const ok = (data && data.ok) || (r.ok && r.status < 400);
+          if (ok) { showStatus(true, 'נשלח! נחזור אליכם בהקדם 🙏'); form.reset(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+          else    { showStatus(false, 'לא הצלחנו לשלוח. נסו שוב או כתבו לנו ב־WhatsApp.'); }
+        })
+        .catch(() => { done = true; clearTimeout(soft); showStatus(false, 'בעיית רשת. נסו שוב מאוחר יותר.'); })
+        .finally(() => { setTimeout(() => { btn.disabled = false; btn.textContent = prev; }, 900); });
+      });
+    });
+  })();
+  </script>
+{% endblock %}

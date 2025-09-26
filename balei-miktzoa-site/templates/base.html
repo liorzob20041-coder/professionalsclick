@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="{{ g.current_lang }}" dir="{{ 'rtl' if g.current_lang == 'he' else 'ltr' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               img-src 'self' https: data: blob:;
+               connect-src 'self' https:;
+               style-src 'self' 'unsafe-inline';
+               script-src 'self' 'unsafe-inline';
+               font-src 'self' data:;
+               media-src 'self' https:;
+               frame-src 'self' https;">
+
+
+  {# --- דיפולטים כלליים: יוצגו רק אם הדף לא מזריק head_seo משלו --- #}
+  {% set default_title = _('site.default_title') if _ else 'בעלי מקצוע בקליק' %}
+  {% set default_description = _('site.default_description') if _ else 'בעלי מקצוע בקליק – מצאו בעלי מקצוע אמינים לפי עיר ותחום.' %}
+  {% set default_url = request.url if request else '' %}
+  {% set default_image = static_url('og/home-' ~ (g.current_lang or 'he') ~ '.jpg') %}
+  {% set canonical_url = request.base_url if request else default_url %}
+  {% set og_locale = 'he_IL' if g.current_lang == 'he' else ('en_US' if g.current_lang == 'en' else 'ru_RU') %}
+
+  <title>{% block title %}{{ default_title }}{% endblock %}</title>
+
+  {# --- מקום ייעודי למטא/OG/JSON-LD של הדף --- #}
+  {% block head_seo %}{% endblock %}
+
+  {# --- FALLBACKS: אם הדף לא סיפק meta description/OG, ניתן לשמור בסיס עדין --- #}
+  {% block head_fallbacks %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="he" href="{{ url_for_lang(lang='he', _external=True) }}">
+    <link rel="alternate" hreflang="en" href="{{ url_for_lang(lang='en', _external=True) }}">
+    <link rel="alternate" hreflang="ru" href="{{ url_for_lang(lang='ru', _external=True) }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url_for_lang(lang='he', _external=True) }}">
+
+    <meta name="description" content="{{ default_description }}">
+    <meta name="robots" content="{{ 'noindex, nofollow' if noindex else 'index, follow' }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="בעלי מקצוע בקליק">
+    <meta property="og:title" content="{{ default_title }}">
+    <meta property="og:description" content="{{ default_description }}">
+    <meta property="og:image" content="{{ default_image }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:locale" content="{{ og_locale }}">
+    <meta property="og:locale:alternate" content="he_IL">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:locale:alternate" content="ru_RU">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ default_title }}">
+    <meta name="twitter:description" content="{{ default_description }}">
+    <meta name="twitter:image" content="{{ default_image }}">
+
+    {# JSON-LD בסיסי; אם יש לדף עצמו גרסה ספציפית, אפשר להשאיר בנוסף #}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "{{ request.host_url | trim('/') }}/#org",
+          "name": "בעלי מקצוע בקליק",
+          "url": "{{ url_for_lang('home', lang='he', _external=True) }}",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "{{ static_url('logo.jpeg') }}",
+            "width": 512,
+            "height": 512
+          },
+          "contactPoint": [{
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "availableLanguage": ["he","en","ru"],
+            "areaServed": "IL"
+          }]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "{{ request.host_url | trim('/') }}/#website",
+          "name": "בעלי מקצוע בקליק",
+          "url": "{{ url_for_lang('home', lang=g.current_lang or 'he', _external=True) }}",
+          "inLanguage": "{{ g.current_lang or 'he' }}",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ request.url_root | trim('/') }}/{{ g.current_lang or 'he' }}/workers/{field}/{area}",
+            "query-input": ["required name=field","required name=area"]
+          }
+        }
+      ]
+    }
+    </script>
+  {% endblock %}
+
+  {# --- קישורי CSS/נכסים --- #}
+  <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/base.bundle.css') }}">
+
+
+  {# --- Fallback ל-iOS/Safari: @import אינליין (נטען גם כש-link נתקע) --- #}
+  <style id="ios-css-import-fallback">
+    @import "{{ static_rel('css/style.css') }}";
+    @import "{{ static_rel('css/navbar.css') }}";
+  </style>
+
+  {# --- למקרה ש-JS כבוי --- #}
+  <noscript>
+    <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('css/navbar.css') }}">
+  </noscript>
+
+
+
+
+  <!-- === Image/Asset Debug HUD (universal) === -->
+  <script id="asset-debug-hud">
+  (function () {
+    if (!(/[?&]debug=img(&|$)/.test(location.search) || localStorage.getItem('show_img_debug') === '1')) { return; }
+    var p = location.pathname || "";
+    if (p.startsWith("/admin") || p.startsWith("/api/") || p.startsWith("/static/")) return;
+    function hud(){
+      var box = document.createElement("div");
+      box.style.position = "fixed";
+      box.style.bottom = "12px";
+      box.style.left = "12px";
+      box.style.zIndex = "2147483647";
+      box.style.font = "12px/1.4 -apple-system, BlinkMacSystemFont, Segoe UI, Arial";
+      box.style.background = "rgba(0,0,0,.85)";
+      box.style.color = "#fff";
+      box.style.borderRadius = "12px";
+      box.style.padding = "10px 12px";
+      box.style.maxWidth = "94vw";
+      box.style.maxHeight = "45vh";
+      box.style.boxShadow = "0 6px 18px rgba(0,0,0,.25)";
+      var header = document.createElement("div");
+      header.style.display = "flex";
+      header.style.alignItems = "center";
+      header.style.gap = "8px";
+      var btn = document.createElement("button");
+      btn.textContent = "IMG Debug";
+      btn.style.padding = "6px 10px";
+      btn.style.borderRadius = "8px";
+      btn.style.border = "0";
+      btn.style.cursor = "pointer";
+      var percent = document.createElement("span");
+      percent.textContent = "…";
+      percent.style.fontWeight = "700";
+      var toggle = document.createElement("button");
+      toggle.textContent = "Show";
+      toggle.style.padding = "6px 10px";
+      toggle.style.borderRadius = "8px";
+      toggle.style.border = "0";
+      toggle.style.cursor = "pointer";
+      var body = document.createElement("div");
+      body.style.display = "none";
+      body.style.marginTop = "6px";
+      body.style.maxHeight = "32vh";
+      body.style.overflow = "auto";
+      toggle.addEventListener("click", function(){
+        var open = body.style.display !== "none";
+        body.style.display = open ? "none" : "block";
+        toggle.textContent = open ? "Show" : "Hide";
+      });
+      var hdr = document.createElement("div");
+      hdr.style.display = "flex";
+      hdr.style.alignItems = "center";
+      hdr.style.gap = "8px";
+      header.append(btn, percent, toggle);
+      box.append(header, body);
+      document.documentElement.appendChild(box);
+      return { percent, body, btn };
+    }
+    function row(url, status, note){
+      var line = document.createElement("div");
+      line.style.display = "flex";
+      line.style.alignItems = "center";
+      line.style.gap = "8px";
+      line.style.padding = "6px 0";
+      line.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+      var dot = document.createElement("span");
+      dot.textContent = "●";
+      dot.style.fontSize = "14px";
+      dot.style.lineHeight = "1";
+      if (status === "ok") dot.style.color = "#61d26f";
+      else if (status === "ct-bad") dot.style.color = "#ffa742";
+      else dot.style.color = "#ff5e5e";
+      var urlEl = document.createElement("code");
+      urlEl.textContent = url;
+      urlEl.style.whiteSpace = "pre-wrap";
+      var noteEl = document.createElement("span");
+      noteEl.textContent = note || "";
+      noteEl.style.opacity = "0.8";
+      line.append(dot, urlEl);
+      if (note) {
+        var spacer = document.createElement("span");
+        spacer.textContent = " – ";
+        spacer.style.opacity = ".5";
+        line.append(spacer, noteEl);
+      }
+      return line;
+    }
+    function abs(u){ try { return new URL(u, location.href).href; } catch(e){ return u; } }
+    function unique(arr){ return Array.from(new Set(arr)); }
+    function collectImages(){
+      var list = Array.from(document.images || []);
+      return list.map(function(el){
+        var srcAttr = el.getAttribute("src") || "";
+        var src = el.currentSrc || srcAttr || "";
+        return abs(src || "");
+      }).filter(Boolean);
+    }
+    function head(url){
+      return fetch(url, { method: "GET", cache: "no-store", mode: "same-origin" })
+        .then(function(r){
+          return { ok: r.ok, status: r.status, ct: (r.headers.get("content-type") || "").toLowerCase() };
+        })
+        .catch(function(e){ return { ok:false, status:null, ct:null, err:String(e && e.message || e) }; });
+    }
+    function probe(url){
+      return new Promise(function(resolve){
+        var img = new Image();
+        var bust = (url.indexOf("?") === -1 ? "?" : "&") + "_dbg=" + Date.now();
+        img.onload  = function(){ resolve({ url, loaded:true, w:img.naturalWidth, h:img.naturalHeight }); };
+        img.onerror = function(){ resolve({ url, loaded:false, w:0, h:0 }); };
+        try { img.decoding = "async"; } catch(e){}
+        img.src = url + bust;
+      });
+    }
+    var ui = hud();
+    window.addEventListener("load", async function(){
+      var urls = unique(collectImages());
+      if (!urls.length) {
+        ui.percent.textContent = "0%";
+        ui.body.append(row("(no <img> in DOM)", "ct-bad", ""));
+        return;
+      }
+      var okCount = 0;
+      for (var i=0; i<urls.length; i++){
+        var url = urls[i];
+        var pr = await probe(url);
+        var hd = await head(url);
+        var status = "ok";
+        var note = "";
+        if (!pr.loaded) {
+          status = "fail";
+          note = "onerror — status=" + (hd.status ?? "n/a") + " ct=" + ((hd.ct || "n/a"));
+        } else if (!(hd.ct || "").startsWith("image/")) {
+          status = "ct-bad";
+          note = "status=" + (hd.status ?? "n/a") + " ct=" + ((hd.ct || "n/a"));
+        } else {
+          note = "status=" + (hd.status ?? "n/a") + " ct=" + ((hd.ct || "n/a"));
+        }
+        if (status === "ok") okCount++;
+        ui.body.append(row(url, status, note));
+        ui.percent.textContent = Math.round(okCount / urls.length * 100) + "%";
+      }
+    });
+  })();
+  </script>
+
+  {# --- “מציל” ל-iOS --- #}
+  <script>
+  (function () {
+    var ua = navigator.userAgent || "";
+    var isiOS = /iP(hone|od|ad)/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+    if (!isiOS) return;
+    function sheetLoadedContains(pathFrag) {
+      try {
+        return Array.from(document.styleSheets).some(function (s) {
+          return s.href && s.href.indexOf(pathFrag) !== -1 && s.cssRules && s.cssRules.length > 0;
+        });
+      } catch (e) {
+        return Array.from(document.styleSheets).some(function (s) {
+          return s.href && s.href.indexOf(pathFrag) !== -1;
+        });
+      }
+    }
+    function reinject(href) {
+      var l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = href + (href.indexOf("?") > -1 ? "&" : "?") + "ios_bust=" + Date.now();
+      document.head.appendChild(l);
+    }
+    window.addEventListener("load", function () {
+      var s1 = "{{ static_rel('css/style.css') }}";
+      var s2 = "{{ static_rel('css/navbar.css') }}";
+      setTimeout(function () {
+        if (!sheetLoadedContains("css/style.css"))  reinject(s1);
+        if (!sheetLoadedContains("css/navbar.css")) reinject(s2);
+        setTimeout(function(){
+          try { var f = document.getElementById("ios-css-import-fallback"); if (f) f.remove(); } catch(_){ }
+        }, 800);
+      }, 300);
+    });
+  })();
+  </script>
+
+  <link rel="icon" type="image/x-icon" href="{{ static_rel('icons/favicon.ico') }}">
+
+  {% block extra_head %}{% endblock %}
+
+  <style id="ac-open-guard">
+    body.ac-open a { pointer-events: none !important; }
+  </style>
+
+<link rel="preload" as="image"
+      href="{{ url_for('static', filename='flags/israel-flag-png-large.png', v=ASSET_VER) }}">
+<link rel="preload" as="image"
+      href="{{ url_for('static', filename='photo1.jpg', v=ASSET_VER) }}">
+
+</head>
+<body>
+
+<iframe src="{{ url_for('warmup', v=ASSET_VER) }}"
+        style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;"
+        tabindex="-1" aria-hidden="true"></iframe>
+
+<div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
+  <img src="{{ url_for('static', filename='flags/israel-flag-png-large.png', v=ASSET_VER) }}"
+       loading="eager" decoding="async" fetchpriority="high" alt="">
+  <img src="{{ url_for('static', filename='photo1.jpg', v=ASSET_VER) }}"
+       loading="eager" decoding="async" fetchpriority="high" alt="">
+</div>
+
+  <!-- קישור דילוג לתוכן -->
+  <a href="#main-content" class="skip-link">דלג לתוכן המרכזי</a>
+
+  <!-- ====== כפתור ⋮ ותפריט צד (מובייל) ====== -->
+  <button class="kebab-btn" id="kebabBtn"
+          aria-controls="mobileMenu"
+          aria-expanded="false"
+          aria-label="{{ _('open_menu') if _ else 'Open menu' }}">
+  </button>
+
+<!-- כפתור סגירה שמופיע רק כשהתפריט פתוח -->
+<button class="menu-close-btn" id="menuCloseTop"
+        aria-label="{{ _('close_menu') if _ else 'Close menu' }}"></button>
+
+
+    <!-- כפתור חיפוש בשורת העליונה -->
+  <a class="search-btn"
+     href="{{ url_for_lang('home') }}?focus=search"
+     aria-label="{{ _('search') if _ else 'חיפוש' }}">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+  </a>
+
+
+  <aside class="mobile-drawer" id="mobileMenu"
+         role="dialog" aria-modal="true"
+         aria-label="{{ _('main_menu') if _ else 'Main menu' }}"
+         aria-hidden="true" tabindex="-1">
+
+
+    <nav class="mobile-nav">
+      <ul>
+        <li><a href="{{ url_for_lang('home') }}">{{ _('nav_home') }}</a></li>
+        <li><a href="{{ url_for_lang('why_us') }}">{{ _('nav_why_us') }}</a></li>
+        <li><a href="{{ url_for_lang('works') }}">{{ _('nav_works') }}</a></li>
+        <li><a href="{{ url_for_lang('niches') }}">{{ _('nav_niches') }}</a></li>
+        <li><a href="{{ url_for_lang('contact') }}">{{ _('nav_contact') }}</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="backdrop" id="backdrop" hidden></div>
+
+<div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
+  <button class="lang-chip" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="בחר שפה">
+    <span class="lang-code">{{ (g.current_lang or 'he')|upper }}</span>
+    <i class="fa-solid fa-globe" aria-hidden="true"></i>
+  </button>
+
+
+  <ul id="language-list" role="menu">
+    <li>
+      <a href="{{ url_for_lang(lang='he') }}" role="menuitem">
+        <img src="{{ static_rel('flags/israel-flag-png-large.png') }}" width="28" height="20" alt="Israel">
+        עברית
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for_lang(lang='en') }}" role="menuitem">
+        <img src="{{ static_rel('flags/united-states-of-america-flag-png-large.png') }}" width="20" height="14" alt="USA" style="margin-right:6px;">
+        English
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for_lang(lang='ru') }}" role="menuitem">
+        <img src="{{ static_rel('flags/russia-flag-png-large.png') }}" width="20" height="14" alt="Russia" style="margin-right:6px;">
+        Русский
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+
+<!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
+<nav class="topbar-rail" role="navigation" aria-label="מותג">
+  <div class="rail">
+    <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}">
+      <img class="tb-logo-strip"
+        src="{{ static_rel('branding/logo-strip-he@2x.jpeg') }}"
+        alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
+        decoding="async" fetchpriority="high">
+
+      <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
+    </a>
+  </div>
+</nav>
+
+  <main id="main-content">
+    {% block content %}{% endblock %}
+
+    {% block flash %}
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="flash-stack" role="status" aria-live="polite">
+          {% for category, text in messages %}
+            <div class="flash flash-{{ category|default('info') }}">
+              <button class="close" type="button" aria-label="סגור" onclick="this.parentElement.remove()">×</button>
+              {{ text }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% endblock %}
+  </main>
+
+  {% block extra_scripts %}
+  <script>
+  function toggleLanguageList() {
+    const list = document.getElementById('language-list');
+    const btn = list.previousElementSibling;
+    const isShown = list.classList.toggle('show');
+    btn.setAttribute('aria-expanded', isShown);
+  }
+  document.addEventListener('click', function(event) {
+    const switcher = document.querySelector('.language-switcher');
+    const list = document.getElementById('language-list');
+    if (!switcher.contains(event.target)) {
+      list.classList.remove('show');
+      switcher.querySelector('button').setAttribute('aria-expanded', false);
+    }
+  });
+  </script>
+
+  <script>
+  (function () {
+    function sendEvent(eventName, workerId) {
+      try {
+        const payload = JSON.stringify({ event: String(eventName), worker_id: String(workerId) });
+        if (navigator.sendBeacon) {
+          const blob = new Blob([payload], { type: 'application/json' });
+          navigator.sendBeacon('/api/track', blob);
+        } else {
+          fetch('/api/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true
+          });
+        }
+      } catch (e) { /* no-op */ }
+    }
+    window.trackEvent = sendEvent;
+    document.addEventListener('click', function (e) {
+      const el = e.target.closest('[data-track]');
+      if (!el) return;
+      const type = el.getAttribute('data-track');
+      const wid  = el.getAttribute('data-worker') || el.dataset.worker;
+      if (!wid) return;
+      if (type === 'call') window.trackEvent('click_call', wid);
+      if (type === 'wa')   window.trackEvent('click_whatsapp', wid);
+    }, { capture: true });
+  })();
+  </script>
+
+  <!-- ===== JS לתפריט המובייל (⋮) ===== -->
+  <script>
+  let __acSuppressNextClick = false;
+  function __acEatNextClick(ev){
+    if (!__acSuppressNextClick) return;
+    __acSuppressNextClick = false;
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+  }
+  document.addEventListener('click',     __acEatNextClick, true);
+  document.addEventListener('pointerup', __acEatNextClick, true);
+  document.addEventListener('touchend',  __acEatNextClick, { capture:true, passive:false });
+
+  (function () {
+    function debounce(fn, ms) {
+      let t;
+      return function (...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms || 150); };
+    }
+    function ensureNoopDatalist() {
+      if (!document.getElementById('nooptions')) {
+        const dl = document.createElement('datalist');
+        dl.id = 'nooptions';
+        document.body.appendChild(dl);
+      }
+    }
+    function ensureList(input) {
+      let box = input._acBox;
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'ac-list';
+        Object.assign(box.style, {
+          position: 'fixed',
+          left: '0px',
+          top: '0px',
+          background: '#fff',
+          border: '1px solid rgba(0,0,0,0.12)',
+          borderRadius: '10px',
+          boxShadow: '0 8px 22px rgba(0,0,0,0.1)',
+          zIndex: 2147483647,
+          display: 'none',
+          maxHeight: '260px',
+          overflow: 'auto',
+          padding: '6px',
+          pointerEvents: 'auto',
+          userSelect: 'none'
+        });
+        document.body.appendChild(box);
+        input._acBox = box;
+      }
+      return box;
+    }
+    function positionList(input, list) {
+      const r = input.getBoundingClientRect();
+      const gap = 6;
+      const spaceBelow = window.innerHeight - r.bottom - gap;
+      const spaceAbove = r.top - gap;
+      const openUp = (spaceBelow < 140 && spaceAbove > spaceBelow);
+      const maxH = Math.min(260, Math.max(140, openUp ? spaceAbove : spaceBelow));
+      list.style.maxHeight = maxH + 'px';
+      list.style.width = r.width + 'px';
+      list.style.left = r.left + 'px';
+      const wantedH = Math.min(list.scrollHeight || maxH, maxH);
+      list.style.top = openUp ? (r.top - gap - wantedH) + 'px'
+                              : (r.bottom + gap) + 'px';
+    }
+    function attachAutocomplete(input, type) {
+      if (!input) return;
+      const originalList = input.getAttribute('list') || '';
+      input.dataset.origList = originalList;
+      function disableNativeDatalist() {
+        if (input.getAttribute('list') !== 'nooptions') input.setAttribute('list', 'nooptions');
+      }
+      input.setAttribute('autocomplete', 'off');
+      const list = ensureList(input);
+      list.addEventListener('mousedown',  e => { e.preventDefault(); e.stopPropagation(); }, true);
+      list.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); }, { capture:true, passive:false });
+      let items = [];
+      let idx = -1;
+      function clearList() {
+        list.innerHTML = '';
+        list.style.display = 'none';
+        items = [];
+        idx = -1;
+        document.body.classList.remove('ac-open');
+      }
+      function render(results) {
+        list.innerHTML = '';
+        list.style.display = 'none';
+        idx = -1;
+        items = Array.isArray(results) ? results.slice(0, 8) : [];
+        if (!items.length) {
+          document.body.classList.remove('ac-open');
+          return;
+        }
+        items.forEach((it, i) => {
+          const row = document.createElement('div');
+          row.className = 'ac-item';
+          row.dataset.idx = String(i);
+          Object.assign(row.style, { padding: '10px 12px', borderRadius: '8px', cursor: 'pointer' });
+          row.textContent = it.label || it.value || '';
+          list.appendChild(row);
+        });
+        list.style.display = 'block';
+        positionList(input, list);
+        document.body.classList.add('ac-open');
+      }
+      function highlight() {
+        [...list.children].forEach((el, i) => {
+          el.style.background = (i === idx) ? 'rgba(242,153,74,0.12)' : 'transparent';
+          el.style.fontWeight  = (i === idx) ? '700' : '400';
+        });
+      }
+      function select(i) {
+        if (i < 0 || i >= items.length) return;
+        const val = items[i].label || items[i].value || '';
+        input.value = val;
+        input.setAttribute('value', val);
+        input.focus({ preventScroll: true });
+        try { const end = val.length; input.setSelectionRange(end, end); } catch(_) {}
+        input.dispatchEvent(new Event('input',  { bubbles:true }));
+        input.dispatchEvent(new Event('change', { bubbles:true }));
+        if (window.__acSuppressNextClick !== undefined) window.__acSuppressNextClick = true;
+        requestAnimationFrame(() => clearList());
+      }
+      function fetchSuggestions(q = '') {
+        const url = new URL('/api/suggest', window.location.origin);
+        url.searchParams.set('q', q);
+        url.searchParams.set('type', type);
+        const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+        url.searchParams.set('lang', lang);
+        fetch(url.toString(), { credentials: 'same-origin' })
+          .then(r => r.json())
+          .then(data => { items = (data && data.results) ? data.results : []; render(items); })
+          .catch(() => {});
+      }
+      const doFetch = debounce(() => {
+        disableNativeDatalist();
+        const q = (input.value || '').trim();
+        fetchSuggestions(q);
+      }, 140);
+      input.addEventListener('input', doFetch);
+      input.addEventListener('focus', () => { disableNativeDatalist(); fetchSuggestions(''); });
+      input.addEventListener('keydown', (e) => {
+        const total = list.children.length;
+        if (!total) return;
+        if (e.key === 'ArrowDown') { idx = (idx + 1) % total; highlight(); e.preventDefault(); }
+        else if (e.key === 'ArrowUp') { idx = (idx - 1 + total) % total; highlight(); e.preventDefault(); }
+        else if (e.key === 'Enter')   { if (idx >= 0) { e.preventDefault(); select(idx); } }
+        else if (e.key === 'Escape')  { clearList(); }
+      });
+      document.addEventListener('click', (e) => {
+        if (e.target !== input && !list.contains(e.target)) clearList();
+      });
+      const delegatedPick = (ev) => {
+        const el = ev.target.closest && ev.target.closest('.ac-item');
+        if (!el || !list.contains(el)) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        const i = parseInt(el.dataset.idx, 10);
+        select(isNaN(i) ? -1 : i);
+      };
+      list.addEventListener('pointerdown', delegatedPick, true);
+      list.addEventListener('click',       delegatedPick, true);
+      list.addEventListener('touchstart',  delegatedPick, { capture:true, passive:false });
+      function syncPos() { if (list.style.display !== 'none') positionList(input, list); }
+      window.addEventListener('scroll', syncPos, true);
+      window.addEventListener('resize', syncPos);
+    }
+    function init() {
+      ensureNoopDatalist();
+      const area = document.getElementById('area');
+      const field = document.getElementById('field');
+      attachAutocomplete(area, 'area');
+      attachAutocomplete(field, 'field');
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+  </script>
+
+<script>
+(function () {
+  const btn         = document.getElementById('kebabBtn');     // ההמבורגר
+  const drawer      = document.getElementById('mobileMenu');   // התפריט
+  const closeBtn    = document.getElementById('closeDrawer');  // X שבתוך המגירה (אם יש)
+  const backdrop    = document.getElementById('backdrop');
+  const closeTopBtn = document.getElementById('menuCloseTop'); // X העליון החדש
+
+  if (!btn || !drawer || !backdrop) return;
+
+  // מצב התחלתי: ההמבורגר נראה, ה-X העליון מוסתר
+  if (closeTopBtn) closeTopBtn.style.display = 'none';
+
+  let lastFocus = null;
+
+  function firstFocusable() {
+    const sel = 'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+    return Array.from(drawer.querySelectorAll(sel)).find(el => !el.disabled && el.offsetParent !== null);
+  }
+
+  function openDrawer() {
+    lastFocus = document.activeElement;
+    drawer.classList.add('open');
+    drawer.removeAttribute('aria-hidden');
+    btn.setAttribute('aria-expanded', 'true');
+    backdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('menu-open');
+
+    // הצג רק X עליון, הסתר המבורגר
+    btn.style.display = 'none';
+    if (closeTopBtn) closeTopBtn.style.display = 'inline-flex';
+
+    const f = firstFocusable(); if (f) f.focus({ preventScroll:true });
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    backdrop.hidden = true;
+    document.body.style.overflow = '';
+    document.body.classList.remove('menu-open');
+
+    // החזר המבורגר, הסתר X עליון
+    btn.style.display = '';
+    if (closeTopBtn) closeTopBtn.style.display = 'none';
+
+    if (lastFocus) { try { lastFocus.focus(); } catch(_){} }
+  }
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    openDrawer();
+  });
+
+  btn.addEventListener('pointerdown', function (e) {
+    if (window.__acSuppressNextClick) {
+      e.preventDefault(); e.stopPropagation();
+      window.__acSuppressNextClick = false;
+      openDrawer();
+    }
+  }, true);
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeDrawer();
+    });
+  }
+
+  if (closeTopBtn) {
+    closeTopBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      closeDrawer();
+    });
+  }
+
+  backdrop.addEventListener('click', closeDrawer);
+
+  drawer.addEventListener('click', function (e) {
+    if (e.target.closest('a')) closeDrawer();
+  });
+
+  drawer.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeDrawer(); return; }
+    if (e.key !== 'Tab') return;
+    const focusables = Array.from(drawer.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])'))
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+})();
+</script>
+
+
+
+<script id="asset-diag-hud">
+(function(){
+  /* Hidden by default — enable with ?debug=asset or localStorage.setItem('show_asset_diag','1') */
+  if (!(/[?&]debug=asset(&|$)/.test(location.search) ||
+         localStorage.getItem('show_asset_diag') === '1')) { return; }
+
+  function abs(u){ try { return new URL(u, location.href).href; } catch(e){ return u; }
+  }
+  function relFromStatic(u){
+    try{
+      var url = new URL(u, location.href);
+      if (!url.pathname.startsWith("/static/")) return null;
+      return url.pathname.replace(/^\/static\//,"");
+    }catch(e){ return null; }
+  }
+  function infoRow(k,v){
+    var d=document.createElement("div");
+    d.style.fontFamily="monospace";
+    d.style.fontSize="11px";
+    d.style.opacity=".9";
+    d.textContent = k + ": " + v;
+    return d;
+  }
+  function mkBox(){
+    var box = document.createElement("div");
+    box.style.position="fixed";
+    box.style.right="12px";
+    box.style.bottom="12px";
+    box.style.zIndex="2147483647";
+    box.style.background="rgba(0,0,0,.9)";
+    box.style.color="#fff";
+    box.style.borderRadius="12px";
+    box.style.padding="10px";
+    box.style.maxWidth="94vw";
+    box.style.maxHeight="55vh";
+    box.style.overflow="auto";
+    box.style.boxShadow="0 10px 28px rgba(0,0,0,.35)";
+    var h = document.createElement("div");
+    h.style.display="flex"; h.style.gap="8px"; h.style.alignItems="center";
+    var title = document.createElement("strong"); title.textContent="Asset Diag";
+    var tgl = document.createElement("button"); tgl.textContent="Show"; tgl.style.padding="4px 8px"; tgl.style.borderRadius="8px"; tgl.style.border="0";
+    var pct = document.createElement("span"); pct.textContent="…"; pct.style.fontWeight="700";
+    var body = document.createElement("div"); body.style.display="none"; body.style.marginTop="6px";
+    tgl.onclick=function(){ var open=body.style.display!=="none"; body.style.display=open?"none":"block"; tgl.textContent=open?"Show":"Hide"; };
+    h.append(title,pct,tgl);
+    box.append(h,body);
+    document.documentElement.appendChild(box);
+    return {pct, body};
+  }
+  function statusDot(ok, mid){
+    var s = document.createElement("span");
+    s.textContent = "●";
+    s.style.marginRight="6px";
+    s.style.fontSize="14px";
+    s.style.color = ok ? "#61d26f" : (mid ? "#ffa742" : "#ff5e5e");
+    return s;
+  }
+  window.addEventListener("load", async function(){
+    var ui = mkBox();
+    var imgs = Array.from(document.images||[]);
+    if (!imgs.length){ ui.pct.textContent="0%"; ui.body.append(infoRow("note","no <img> in DOM")); return; }
+    var ok=0;
+    for (let el of imgs){
+      let src = el.currentSrc || el.getAttribute("src") || "";
+      if (!src) continue;
+      let line = document.createElement("div");
+      line.style.borderBottom="1px dashed rgba(255,255,255,.15)";
+      line.style.padding="6px 0";
+      let loaded = await new Promise(res=>{
+        let t = new Image();
+        t.onload = ()=>res(true);
+        t.onerror= ()=>res(false);
+        try{ t.decoding="async"; }catch(_){}
+        let bust = (src.indexOf("?")==-1?"?":"&")+"_dbg="+Date.now();
+        t.src = src + bust;
+      });
+      let note="", mid=false;
+      if (relFromStatic(src)){
+        let rel = relFromStatic(src);
+        try{
+          let r = await fetch(`/api/diag-static?path=${encodeURIComponent(rel)}`, {credentials:"same-origin", cache:"no-store"});
+          let j = await r.json();
+          if (!j.exists){ note = "missing file"; }
+          else if (j.is_image_openable === false){ note = "PIL cannot open (corrupt?)"; }
+          else if (!j.mimetype_guess || !j.mimetype_guess.startsWith("image/")){
+            note = "mimetype_guess="+(j.mimetype_guess||"n/a"); mid = true;
+          }
+        }catch(e){ note = "diag-static failed"; }
+      } else if (src.indexOf("/img/")>=0){
+        try{
+          let u = new URL(src, location.href);
+          let file = u.pathname.split("/img/")[1] || "";
+          let params = new URLSearchParams(u.search);
+          params.set("file", file);
+          let r = await fetch(`/api/diag-img-proxy?${params.toString()}`, {credentials:"same-origin", cache:"no-store"});
+          let j = await r.json();
+          note = "proxy ct=" + (j.decision && j.decision.content_type);
+        }catch(e){ note = "diag-img-proxy failed"; }
+      } else {
+        try{
+          let u = new URL(src, location.href);
+          note = "external host: " + u.host;
+          mid = true;
+        }catch(_){}
+      }
+      line.append(statusDot(loaded, mid));
+      let code = document.createElement("code"); code.textContent = src; code.style.whiteSpace="pre-wrap";
+      line.append(code);
+      if (note){
+        let sp=document.createElement("span"); sp.style.opacity=".8"; sp.style.marginLeft="8px"; sp.textContent="— "+note;
+        line.append(sp);
+      }
+      ui.body.append(line);
+      if (loaded) ok++;
+      ui.pct.textContent = Math.round(ok/imgs.length*100) + "%";
+    }
+  });
+})();
+</script>
+
+
+<script>
+(function () {
+  const urls = [
+    "{{ url_for('static', filename='flags/israel-flag-png-large.png', v=ASSET_VER) }}",
+    "{{ url_for('static', filename='photo1.jpg', v=ASSET_VER) }}"
+  ];
+  function ping(u) {
+    fetch(u, { cache: "reload", credentials: "same-origin" })
+      .catch(() => {
+        const img = new Image();
+        img.decoding = "async";
+        img.loading = "eager";
+        img.referrerPolicy = "no-referrer";
+        img.src = u + (u.includes('?') ? '&' : '?') + '_warm=' + Date.now();
+      });
+  }
+  window.addEventListener('load', function () {
+    urls.forEach(ping);
+    setTimeout(() => urls.forEach(ping), 3000);
+    setTimeout(() => urls.forEach(ping), 10000);
+  });
+})();
+</script>
+
+  <script>
+    (function(){
+      function autoHide(){
+        var list = document.querySelectorAll('.flash-stack .flash');
+        list.forEach(function(el){
+          setTimeout(function(){
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+          }, 6000);
+        });
+      }
+      window.addEventListener('load', autoHide);
+    })();
+  </script>
+
+<script id="topbar-autohide-js-2025-09">
+(function(){
+  var mq = window.matchMedia("(max-width: 768px)");
+  var enabled = mq.matches;
+  var lastY = window.scrollY || 0;
+  var hidden = false;
+  var ticking = false;
+  function setEnabled(flag){
+    enabled = !!flag;
+    if (!enabled){
+      document.body.classList.remove("topbar-hidden");
+    }
+  }
+  (mq.addEventListener ? mq.addEventListener("change", function(e){ setEnabled(e.matches); })
+                       : mq.addListener(function(e){ setEnabled(e.matches); }));
+  function onScroll(){
+    if (!enabled){ ticking = false; return; }
+    var y  = window.scrollY || 0;
+    if (y < 0) y = 0;
+    var dy = y - lastY;
+    if (y > 80 && dy > 2 && !hidden){
+      document.body.classList.add("topbar-hidden");
+      hidden = true;
+    } else if ((dy < -2 || y < 80) && hidden){
+      document.body.classList.remove("topbar-hidden");
+      hidden = false;
+    }
+    lastY = y;
+    ticking = false;
+  }
+  window.addEventListener("scroll", function(){
+    if (!ticking){
+      requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+  window.addEventListener("load", function(){
+    setEnabled(mq.matches);
+    lastY = window.scrollY || 0;
+    onScroll();
+  });
+})();
+</script>
+
+  <!-- ===== ADDED: מדידת רוחב כפתור השפה למרווחים שווים ===== -->
+  <script>
+  (function(){
+    function setLangChipWidth(){
+      var chip = document.querySelector('.language-switcher > button.lang-chip');
+      if(!chip) return;
+      var w = Math.ceil(chip.getBoundingClientRect().width);
+      document.documentElement.style.setProperty('--lang-chip-w', w + 'px');
+    }
+    window.addEventListener('load', setLangChipWidth);
+    window.addEventListener('resize', setLangChipWidth);
+    if ('ResizeObserver' in window){
+      var chip = document.querySelector('.language-switcher > button.lang-chip');
+      chip && new ResizeObserver(setLangChipWidth).observe(chip);
+    }
+  })();
+  </script>
+
+  <!-- ===== ADDED: צל להדר רק בעת גלילה ===== -->
+  <script>
+  (function(){
+    function onScrollShadow(){
+      var y = window.scrollY||0;
+      document.body.classList.toggle('scrolled', y > 4);
+    }
+    window.addEventListener('scroll', onScrollShadow, {passive:true});
+    window.addEventListener('load', onScrollShadow);
+  })();
+  </script>
+  {% endblock %}
+
+  <footer style="background-color:#f2f2f2; padding:20px; text-align:center; direction:rtl; font-family:Arial,sans-serif; font-size:14px; color:#333;">
+    <a href="{{ url_for('terms', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">תנאי שימוש</a> |
+    <a href="{{ url_for('privacy', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">מדיניות פרטיות</a> |
+    <a href="{{ url_for('accessibility', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">נגישות</a>
+    <div style="margin-top:10px;">© 2025 בעלי מקצוע בקליק. כל הזכויות שמורות.</div>
+  </footer>
+
+</body>
+</html>

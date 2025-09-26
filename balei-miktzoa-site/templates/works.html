@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ (_('our_work_title') if _ else 'העבודות שלנו') }}{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('css/works.css') }}">
+{% endblock %}
+
+{% include 'navbar.html' %}
+
+
+{% block content %}
+
+
+<div class="page-wrapper works-page">
+  <main id="main-content" role="main">
+    <h1>{{ (_('our_work_heading') if _ else 'העבודות שלנו') }}</h1>
+
+    <section class="projects" aria-label="{{ (_('projects_grid') if _ else 'רשימת פרויקטים') }}">
+      <article class="project">
+        <div class="media">
+          <img loading="lazy"
+               src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+               alt="{{ (_('kitchen_renovation') if _ else 'שיפוץ מטבח') }}">
+        </div>
+        <div class="description">
+          <h2>{{ (_('kitchen_renovation') if _ else 'שיפוץ מטבח') }} – תל אביב</h2>
+          <p>{{ (_('kitchen_renovation_desc') if _ else 'שילוב ארונות חדשים, משטח שיש, תאורה שקועה ושדרוג תשתיות—קו נקי ושימושי.') }}</p>
+          <div class="pro-name">{{ (_('pro_name') if _ else 'בעל מקצוע') }}: יוסי כהן</div>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="media">
+          <img loading="lazy"
+               src="https://images.unsplash.com/photo-1617692855026-3b0efb1997c2?auto=format&fit=crop&w=1200&q=80"
+               alt="{{ (_('electric_work') if _ else 'עבודות חשמל') }}">
+        </div>
+        <div class="description">
+          <h2>{{ (_('electric_work') if _ else 'עבודות חשמל') }} – חיפה</h2>
+          <p>{{ (_('electric_work_desc') if _ else 'החלפת לוח, הוספת קווי מאמ״ת ותאורה חכמה עם בקרה מהנייד.') }}</p>
+          <div class="pro-name">{{ (_('pro_name') if _ else 'בעל מקצוע') }}: רמי חשמל</div>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="media">
+          <img loading="lazy"
+               src="https://images.unsplash.com/photo-1600907052192-03c6c9c5d03e?auto=format&fit=crop&w=1200&q=80"
+               alt="{{ (_('plumbing_work') if _ else 'עבודות אינסטלציה') }}">
+        </div>
+        <div class="description">
+          <h2>{{ (_('plumbing_work') if _ else 'עבודות אינסטלציה') }} – ירושלים</h2>
+          <p>{{ (_('plumbing_work_desc') if _ else 'איתור נזילה עם מצלמה תרמית והחלפת קו ישן—מינימום שבירה, מקסימום תוצאה.') }}</p>
+          <div class="pro-name">{{ (_('pro_name') if _ else 'בעל מקצוע') }}: משה אינסטלציה</div>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+{% endblock %}

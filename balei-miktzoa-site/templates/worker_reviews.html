@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ worker.company_name or worker.name or 'פרופיל עובד' }}
+{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('css/worker_reviews.css') }}">
+{% endblock %}
+
+{% include 'navbar.html' %}
+
+{% block content %}
+<section class="worker-profile-section" dir="rtl">
+
+  <!-- מזהה העובד לצרכי מדידה / אנליטיקס -->
+  <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
+
+  <!-- כפתור חזרה -->
+  <a href="{{ back_url }}" class="back-button back-link back-link--mobile" rel="prev" aria-label="חזרה לרשימה">
+    חזרה
+  </a>
+
+  <!-- Breadcrumbs (RTL, נגיש) -->
+  <nav class="worker-breadcrumbs" aria-label="ניווט עוגיות" dir="rtl" tabindex="0">
+    <ol>
+      <li>
+        {% if breadcrumb_ctx and breadcrumb_ctx.home and breadcrumb_ctx.home.href %}
+          <a href="{{ breadcrumb_ctx.home.href }}">{{ breadcrumb_ctx.home.label }}</a>
+        {% else %}
+          {{ breadcrumb_ctx.home.label if breadcrumb_ctx and breadcrumb_ctx.home else 'דף הבית' }}
+        {% endif %}
+      </li>
+
+      {% if breadcrumb_ctx and breadcrumb_ctx.cat_city and breadcrumb_ctx.cat_city.label %}
+        {% if breadcrumb_ctx.cat_city.href %}
+          <li><a href="{{ breadcrumb_ctx.cat_city.href }}">{{ breadcrumb_ctx.cat_city.label }}</a></li>
+        {% else %}
+          <li>{{ breadcrumb_ctx.cat_city.label }}</li>
+        {% endif %}
+      {% endif %}
+
+      <li aria-current="page">
+        {{ breadcrumb_ctx.worker.label if breadcrumb_ctx and breadcrumb_ctx.worker else (worker.company_name or worker.name or 'פרופיל עובד') }}
+      </li>
+    </ol>
+  </nav>
+
+  <!-- HERO -->
+  <header class="worker-hero" aria-label="פרטי עובד">
+    <div class="worker-hero-layout">
+      <!-- צד שמאל: תמונה קטנה + מטא -->
+      <div class="worker-hero-left">
+        <figure class="worker-hero-avatar-wrap">
+          {% if worker.image_url %}
+            <img class="worker-hero-avatar"
+                src="{{ worker.image_url }}"
+                alt="תמונה של {{ worker.company_name or worker.name }}"
+                loading="lazy">
+          {% elif worker.image_filename %}
+            <img class="worker-hero-avatar"
+                src="{{ url_for('static', filename='upload_pending/' ~ worker.image_filename) }}"
+                alt="תמונה של {{ worker.company_name or worker.name }}"
+                loading="lazy">
+          {% else %}
+            <img class="worker-hero-avatar"
+                src="{{ url_for('static', filename='upload_pending/default-worker.jpg') }}"
+                alt="תמונת ברירת מחדל"
+                loading="lazy">
+          {% endif %}
+        </figure>
+
+        <div class="worker-hero-meta">
+          <h1 class="worker-hero-title">
+            {{ worker.company_name or worker.name or 'שם עובד' }}
+          </h1>
+
+          {% set field_txt = worker.title or worker.field_display or worker.field_translated or worker.field %}
+          {% set city_txt  = worker.city  or worker.base_city %}
+          <div class="worker-hero-sub">
+            {{ field_txt or 'תחום' }}{% if city_txt %} · {{ city_txt }}{% endif %}
+          </div>
+
+          <div class="worker-hero-badges" role="list" aria-label="תגיות">
+            {% if worker.verified %}<span class="worker-badge worker-badge--verified" role="listitem">מאומת</span>{% endif %}
+            {% if worker.years %}<span class="worker-badge worker-badge--years" role="listitem">{{ worker.years }} שנות ניסיון</span>{% endif %}
+            {% if worker.languages %}<span class="worker-badge worker-badge--lang" role="listitem">{{ worker.languages|join(' · ') }}</span>{% endif %}
+          </div>
+
+          <!-- כרטיס דירוג – נשאר לדסקטופ, במובייל מוסתר ב-CSS -->
+          <div class="hero-rating-card" aria-label="דירוג ממוצע">
+            <div class="hero-rating-main">
+              <span class="rating-number">{{ worker.rating if worker.rating is not none else '—' }}</span>
+              <span class="rating-stars"
+                    style="--value: {{ ( ((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0.0 )|round(2) }};">
+              </span>
+            </div>
+            <div class="rating-count">
+              ({{
+                worker.reviews_count
+                or (reviews|length if reviews is defined else (worker.reviews|length if worker.reviews is defined else 0))
+              }} ביקורות)
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="worker-hero-cta-row">
+            {% if worker.phone_formatted %}
+              <a class="worker-btn worker-btn--call"
+                href="tel:{{ worker.phone_formatted }}"
+                aria-label="התקשר ל{{ worker.company_name or worker.name }}"
+                data-track="click_call" data-worker="{{ worker.worker_id }}">
+                <i class="fa-solid fa-phone" aria-hidden="true"></i> התקשר
+              </a>
+              <a class="worker-btn worker-btn--wa"
+                href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}"
+                target="_blank" rel="noopener"
+                aria-label="שליחת הודעת WhatsApp ל{{ worker.company_name or worker.name }}"
+                data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> וואטסאפ
+              </a>
+            {% endif %}
+            <a class="worker-btn worker-btn--quote"
+              href="{{
+                (url_for_lang('estimate', worker_id=worker.worker_id)
+                  if url_for_lang is defined
+                  else url_for('estimate', worker_id=worker.worker_id,
+                              lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang'))))
+              }}"
+              aria-label="בקשת הצעת מחיר"
+              data-track="click_estimate" data-worker="{{ worker.worker_id }}">
+              <i class="fa-solid fa-file-invoice" aria-hidden="true"></i> הצעת מחיר
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- צד ימין: וידאו/תמונה גדולה -->
+      <div class="worker-hero-right">
+        <div class="media-card hero-image-block">
+          {% set _name  = worker.company_name or worker.name or 'שם עובד' %}
+          {% set _field = worker.title or worker.field_display or worker.field_translated or worker.field %}
+
+          {% if worker.hero_video_src %}
+            <video class="worker-hero-video"
+                  controls
+                  preload="metadata"
+                  playsinline
+                  aria-label="וידאו היכרות"
+                  {% if worker.hero_poster %}poster="{{ worker.hero_poster }}"{% endif %}>
+              <source src="{{ worker.hero_video_src }}" type="video/mp4">
+            </video>
+          {% elif worker.image_url or worker.image_filename %}
+            <img class="worker-hero-gallery hero-main-image"
+                src="{{ worker.image_url or url_for('static', filename='upload_pending/' ~ worker.image_filename) }}"
+                alt="תמונת תצוגה של {{ _name }}"
+                loading="lazy">
+          {% else %}
+            <div class="worker-hero-gallery worker-hero-gallery--empty">אין וידאו/תמונות</div>
+          {% endif %}
+
+          <!-- תווית שם צפה (למובייל) -->
+          <div class="hero-name-float">
+            <div class="hero-name-title">{{ _name }}</div>
+            {% if _field %}<div class="hero-name-sub">{{ _field }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky CTA -->
+  <div class="worker-sticky-cta" aria-label="פעולות מהירות" tabindex="0">
+    {% if worker.phone_formatted %}
+      <a class="worker-btn worker-btn--wa"
+         href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}"
+         target="_blank" rel="noopener"
+         aria-label="וואטסאפ"
+         data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">
+        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+      </a>
+      <a class="worker-btn worker-btn--call"
+         href="tel:{{ worker.phone_formatted }}"
+         aria-label="התקשר"
+         data-track="click_call" data-worker="{{ worker.worker_id }}">
+        <i class="fa-solid fa-phone" aria-hidden="true"></i>
+      </a>
+    {% endif %}
+    <a class="worker-btn worker-btn--quote"
+       href="{{
+         (url_for_lang('estimate', worker_id=worker.worker_id)
+          if url_for_lang is defined
+          else url_for('estimate', worker_id=worker.worker_id,
+                       lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang'))))
+       }}"
+       aria-label="הצעת מחיר"
+       data-track="click_estimate" data-worker="{{ worker.worker_id }}">
+      <i class="fa-solid fa-file-invoice" aria-hidden="true"></i>
+    </a>
+  </div>
+  <div class="worker-sticky-cta-space" aria-hidden="true"></div>
+
+  <!-- תקציר ביקורות + רשימה עם "עוד ביקורות" (רק למעלה) -->
+  <section class="worker-reviews-summary" aria-label="ביקורות">
+    <h2>ביקורות</h2>
+
+    {% set reviews_list = reviews if reviews is defined else (worker.reviews if worker.reviews is defined else []) %}
+    {% set initial_count = 3 %}
+    {% set chunk_size = 4 %}
+
+    {% if reviews_list and reviews_list|length > 0 %}
+      {% if reviews_list|length > initial_count %}
+        <button
+          id="load-more-reviews-btn"
+          class="worker-btn worker-btn--all-reviews"
+          aria-controls="reviews-list"
+          aria-label="עוד {{ chunk_size }} ביקורות"
+          data-initial-count="{{ initial_count }}"
+          data-chunk-size="{{ chunk_size }}"
+          type="button">
+          עוד {{ chunk_size }} ביקורות
+        </button>
+        <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
+      {% endif %}
+
+      <div class="reviews-list" id="reviews-list">
+        {% for review in reviews_list %}
+          <article class="review-item{% if loop.index > initial_count %} is-hidden{% endif %}"
+                  data-index="{{ loop.index }}">
+
+            {# טקסט הביקורת (עם תרגום אם קיים) #}
+            {% set rtxt = review.display_text
+                          or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None)
+                          or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
+
+            {# דירוג מספרי (לכוכבים) #}
+            {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
+
+            {# שם הכותב #}
+            {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
+
+            <!-- כותרת ביקורת: שם — כוכבים -->
+            <div class="review-header">
+              <span class="review-author">{{ rauthor or 'לקוח/ה' }}</span>
+              {% if rr is not none %}
+                <span class="review-sep">—</span>
+                <span class="rating-stars"
+                      aria-label="דירוג {{ rr }}"
+                      style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};">
+                </span>
+              {% endif %}
+            </div>
+
+            <!-- גוף הביקורת -->
+            <p class="review-text">"{{ rtxt }}"</p>
+
+            {# סוג העבודה (אם קיים) #}
+            {% if review.get is defined and review.get('job_done') %}
+              <p class="review-job">העבודה שבוצעה: {{ review.get('job_done') }}</p>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <div class="worker-empty" aria-live="polite">אין ביקורות זמינות</div>
+    {% endif %}
+  </section>
+
+  <!-- טווחי מחיר (מגובה Google Sheets → נבנה בשרת ל-price_items) -->
+  <section class="worker-price-link" aria-label="טווחי מחיר">
+    <h2>טווחי מחיר</h2>
+
+    {# מגיע מהשרת: price_items = build_price_items_for_worker(worker, lang) (רשימת מחרוזות) #}
+    {% set price_items = price_items if price_items is defined else [] %}
+    {# פולבאק: אם אין price_items (מהשיטס/באנדל), ננסה worker.price_ranges (מה-JSON) #}
+    {% set fallback_ranges = worker.price_ranges if worker.price_ranges is defined else [] %}
+
+    {% if price_items and price_items|length > 0 %}
+      <ul class="price-list" role="list">
+        {% for line in price_items[:6] %}
+          {# מצפה לפורמט "שם: מחיר" ומפרק לשם + מחיר #}
+          {% set parts = line.split(':') %}
+          {% set name  = (parts[0] or '').strip() %}
+          {% set price = (parts[1] or '').strip() %}
+          <li class="price-row">
+            <span class="price-row__label">{{ name }}</span>
+            {% if price %}
+              <strong class="price-row__amount">{{ price }}</strong>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+      <p class="price-helper">הטווחים להמחשה בלבד ויכולים להשתנות לפי מורכבות ודחיפות.</p>
+
+    {% elif fallback_ranges and fallback_ranges|length > 0 %}
+      <ul class="price-list" role="list">
+        {% for pr in fallback_ranges[:6] %}
+          {% set label = pr.name if pr is mapping else (pr.label if pr is defined and pr.label else '') %}
+          {% set range = pr.range if pr is mapping else (pr if pr is string else '') %}
+          <li class="price-row">
+            <span class="price-row__label">{{ label or 'עבודה נפוצה' }}</span>
+            {% if range %}
+              <strong class="price-row__amount">₪{{ range|replace('₪','') }}</strong>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+      <p class="price-helper">הטווחים להמחשה בלבד ויכולים להשתנות לפי מורכבות ודחיפות.</p>
+    {% else %}
+      <p class="price-helper">קבלו הערכת מחיר מיידית לפי סוג העבודה והדחיפות.</p>
+    {% endif %}
+
+    <a class="worker-btn worker-btn--estimator"
+      href="{{
+        (url_for_lang('estimate', worker_id=worker.worker_id)
+          if url_for_lang is defined
+          else url_for('estimate', worker_id=worker.worker_id,
+                      lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang'))))
+      }}"
+      aria-label="מעבר למחשבון"
+      data-track="click_estimate" data-worker="{{ worker.worker_id }}">
+      <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+      מעבר למחשבון מחיר מדויק
+    </a>
+  </section>
+
+  <!-- שירותים / התמחויות -->
+  <section class="worker-services-list" aria-label="שירותים/התמחויות">
+    <h2>שירותים</h2>
+    {% if worker.services %}
+      <ul role="list">
+        {% for srv in worker.services %}
+          <li>{{ srv }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="worker-empty" aria-live="polite">אין שירותים זמינים <!-- TODO: worker.services --></div>
+    {% endif %}
+  </section>
+
+  <!-- אזורי שירות + שעות פעילות -->
+  <section class="worker-areas-list" aria-label="אזורים ושעות פעילות">
+    <h2>אזורים ושעות פעילות</h2>
+    {% if worker.service_areas %}
+      <ul role="list">
+        {% for area in worker.service_areas %}
+          <li>{{ area }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="worker-empty" aria-live="polite">אין אזורי שירות <!-- TODO: worker.service_areas --></div>
+    {% endif %}
+    {% if worker.hours %}
+      <div class="worker-hours">שעות פעילות: {{ worker.hours }}</div>
+    {% else %}
+      <div class="worker-empty" aria-live="polite">אין מידע על שעות פעילות <!-- TODO: worker.hours --></div>
+    {% endif %}
+  </section>
+
+  <!-- אודות -->
+  <section class="worker-about" aria-label="אודות העובד">
+    <h2>אודות</h2>
+    {% set about_txt = worker.about_clean or worker.about %}
+    {% if about_txt %}
+      <div class="worker-about-text">{{ about_txt }}</div>
+    {% else %}
+      <div class="worker-empty" aria-live="polite">אין מידע אודות <!-- TODO: worker.about --></div>
+    {% endif %}
+  </section>
+
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
+  <!-- אנליטיקס בסיסי לקליקים -->
+  <script>
+    (function () {
+      var meta = document.getElementById('worker-meta');
+      var workerId = meta ? meta.getAttribute('data-worker-id') : null;
+
+      if (typeof window.trackEvent !== 'function') {
+        window.trackEvent = function (eventName, wid) {
+          if (!eventName || !wid) return;
+          var payload = JSON.stringify({ event: String(eventName), worker_id: String(wid) });
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/track', new Blob([payload], { type: 'application/json' }));
+          } else {
+            try {
+              fetch('/api/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: payload,
+                keepalive: true
+              });
+            } catch (e) {}
+          }
+        };
+
+        document.addEventListener('click', function (e) {
+          var el = e.target.closest('[data-track][data-worker]');
+          if (!el) return;
+          window.trackEvent(el.getAttribute('data-track'), el.getAttribute('data-worker'));
+        }, { capture: true });
+      }
+
+      if (workerId) { window.trackEvent('view', workerId); }
+    })();
+  </script>
+
+  <!-- “עוד ביקורות” – JS נקי, כולל מניעת FOUC (מסתיר פריטים מעבר למנה הראשונית גם בלי CSS) -->
+  <script>
+    (function () {
+      var btn = document.getElementById('load-more-reviews-btn');
+      var list = document.getElementById('reviews-list');
+      var live = document.getElementById('reviews-live-region');
+      if (!list) return;
+
+      // נתוני קונפיג מה־HTML (או ברירות מחדל)
+      var initial = 3, chunk = 4;
+      if (btn) {
+        initial = parseInt(btn.getAttribute('data-initial-count') || '3', 10);
+        chunk   = parseInt(btn.getAttribute('data-chunk-size')   || '4', 10);
+      }
+
+      // כל הפריטים
+      var items = Array.prototype.slice.call(list.querySelectorAll('.review-item'));
+      var shown = 0;
+
+      // מניעת FOUC: הסתרה אינליין של מה שמעבר למנה הראשונית (גם אם אין CSS)
+      items.forEach(function (el, i) {
+        if (i < initial) {
+          shown++;
+          return;
+        }
+        if (el.classList.contains('is-hidden')) {
+          el.style.display = 'none';
+        }
+      });
+
+      if (!btn) return;
+
+      btn.addEventListener('click', function () {
+        var start = shown;
+        var end = Math.min(shown + chunk, items.length);
+        var newly = 0;
+
+        for (var i = start; i < end; i++) {
+          items[i].classList.remove('is-hidden');
+          items[i].style.display = '';
+          newly++;
+        }
+
+        if (newly > 0) {
+          items[start].setAttribute('tabindex', '-1');
+          items[start].focus({ preventScroll: false });
+          if (live) {
+            live.textContent = 'נוספו ' + newly + ' ביקורות';
+            live.classList.remove('is-hidden');
+            setTimeout(function () { live.classList.add('is-hidden'); }, 1500);
+          }
+        }
+
+        shown = end;
+        var remaining = items.length - shown;
+        if (remaining > 0) {
+          var n = Math.min(chunk, remaining);
+          btn.textContent = 'עוד ' + n + ' ביקורות';
+          btn.setAttribute('aria-label', 'עוד ' + n + ' ביקורות');
+        } else {
+          btn.remove();
+        }
+      });
+    })();
+  </script>
+
+  <!-- פוסטר אוטומטי מהפריים הראשון אם אין hero_poster -->
+  <script>
+    (function () {
+      var v = document.querySelector('.worker-hero-video');
+      if (!v) return;
+
+      var hasPoster = v.getAttribute('poster');
+      if (hasPoster) return;
+
+      if (!v.hasAttribute('crossorigin')) {
+        try { v.setAttribute('crossorigin', 'anonymous'); } catch (e) {}
+      }
+
+      v.addEventListener('loadedmetadata', function onMeta() {
+        var t = Math.min(0.1, (v.duration || 1) / 100);
+        function onSeeked() {
+          try {
+            var c = document.createElement('canvas');
+            var w = v.videoWidth || 1280;
+            var h = v.videoHeight || 720;
+            c.width = w; c.height = h;
+            var ctx = c.getContext('2d');
+            ctx.drawImage(v, 0, 0, w, h);
+            var dataURL = c.toDataURL('image/jpeg', 0.85);
+            if (dataURL) v.setAttribute('poster', dataURL);
+          } catch (e) {
+          } finally {
+            try { v.currentTime = 0; } catch (_) {}
+            v.removeEventListener('seeked', onSeeked);
+          }
+        }
+        v.addEventListener('seeked', onSeeked);
+        try { v.currentTime = t; } catch (_) {}
+      }, { once: true });
+    })();
+  </script>
+{% endblock %}

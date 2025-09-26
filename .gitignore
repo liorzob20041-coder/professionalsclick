@@ -1,0 +1,30 @@
+# Python / Flask
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.build/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+
+# Flask/Secrets
+.env
+*.env
+instance/
+*.sqlite
+*.db
+
+# VSCode / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

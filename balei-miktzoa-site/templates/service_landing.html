@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | בעלי מקצוע בקליק{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:900px;margin:2rem auto">
+  <h1 style="margin-bottom:0.5rem">{{ title }}</h1>
+  {% if area_he %}
+    <p>שירות באזור {{ area_he }}.</p>
+  {% else %}
+    <p>בחרו עיר בעמוד הבא כדי לראות בעלי מקצוע מתאימים.</p>
+  {% endif %}
+
+  <a href="{{ list_url }}" class="btn" style="display:inline-block;margin-top:1rem">
+    צפה בבעלי המקצוע
+  </a>
+</section>
+{% endblock %}

@@ -1,55 +1,52 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, g, jsonify
-import os
-import json
-import smtplib
+# === Imports (clean) ===
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading
+from io import BytesIO
+from pathlib import Path
+from datetime import datetime, timedelta, date
+from collections import defaultdict
+from urllib.parse import urlparse, parse_qs, urljoin
+
+from flask import (
+    Flask, render_template, request, redirect, url_for, flash, g, jsonify,
+    session, send_from_directory, Response
+)
+from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from werkzeug.utils import secure_filename
-from datetime import datetime
-from zoneinfo import ZoneInfo
-import math
-import random
-import re
+
+from PIL import Image, ImageOps
 from deep_translator import GoogleTranslator
-from flask import session, request
-import unicodedata
-from urllib.parse import urlparse, parse_qs, urljoin
-import secrets
-import time
-from pathlib import Path
-from collections import defaultdict
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask import send_from_directory
-from flask import Response
-from datetime import date
+import requests
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
-from datetime import timedelta
-# === Google Sheets webhook sync ===
-import requests
-GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwmZsRz_qU9oX7Kl_4G19CZHM2eRw9fqs5r01zNSB_ZCFiZAS_sH4LgjzeMTXyMA9QikQ/exec"
-GOOGLE_WEBHOOK_SECRET = "Lior2004"  # שים כאן את אותו SECRET ששמת ב-Apps Script
 
-
-import ssl
-# ודא שבתחילת הקובץ יש:
-import ssl
-import time
-import smtplib
-from PIL import Image, ImageOps
-load_dotenv()  # יטעין את הערכים מ-.env לסביבת ההרצה
-
-
-import threading
 from threading import Lock
+from services.ai_writer import generate_draft
+from services.ai_variants import list_variants, assign_variant
+
+import mimetypes
+
+
+
+load_dotenv()
+
+# === Google Sheets webhook sync (for reviews) ===
+GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwmZsRz_qU9oX7Kl_4G19CZHM2eRw9fqs5r01zNSB_ZCFiZAS_sH4LgjzeMTXyMA9QikQ/exec"
+GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
+
+# === Locks ===
 REVIEWS_JSON_LOCK = Lock()
 
 
-from services.ai_writer import generate_draft
-import hashlib  # לדטרמיניזם/קורסור וריאנטים
+# ------------------------------
+# קבועים כלליים (שפה/בניית קישורי סטטיק)
+# ------------------------------
+SUPPORTED_LANGS = ("he", "en", "ru")   # בשימוש ב-smart_alias וב-sitemap
+ASSETS_V = os.environ.get("ASSETS_V", "1055")  # גרסת נכסים (cache-busting)
 
-# בראש app.py / הקובץ שלך:
-from services.ai_variants import list_variants, assign_variant
 
 # ------------------------------
 # קבועים ותיקיות
@@ -495,7 +492,7 @@ def get_all_reviews(worker_id, lang=None):
     return [r for r in all_reviews if str(r.get('worker_id')) == worker_id_str]
 
 
-def translate_review(text, source_lang='iw', target_langs=['en','ru']):
+def translate_review(text, source_lang='he', target_langs=['en','ru']):
     """ מקבלת טקסט בעברית ומחזירה מילון עם כל השפות הרצויות.
     text: מחרוזת הביקורת
     source_lang: שפת המקור ('iw' עבור עברית)
@@ -1096,7 +1093,6 @@ def t(key: str, bundle: str | None = None) -> str:
 # ------------------------------
 # Flask App
 # ------------------------------
-from werkzeug.middleware.proxy_fix import ProxyFix
 # במקום: app = Flask(__name__)
 app = Flask(__name__, static_folder=None) 
 # JSON יפה בעברית
@@ -1104,7 +1100,6 @@ app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
 
 app.static_folder = STATIC_DIR
-import mimetypes
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('font/woff2', '.woff2')
@@ -1128,63 +1123,16 @@ register_jinja_filters(app)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
-# === Price presets from Google Sheets ===
-PRICE_SHEETS_URL = os.environ.get(
-    "PRICE_SHEETS_URL",
-    "https://script.google.com/macros/s/AKfycbwmZsRz_qU9oX7Kl_4G19CZHM2eRw9fqs5r01zNSB_ZCFiZAS_sH4LgjzeMTXyMA9QikQ/exec?name=price_prest&secret=Lior2004"
-)
 
 
 
-from io import BytesIO
-from PIL import Image, ImageOps
-from flask import Response, request
-import os
-from io import BytesIO
-from PIL import Image, ImageOps
-from flask import Response, request
-import os
-
-from io import BytesIO
-from PIL import Image, ImageOps
-from flask import Response, request
-import os
-
-# ודא שיש לך את זה באתחול:
-# from flask_wtf.csrf import CSRFProtect
-# csrf = CSRFProtect(app)
-
-from flask import request, Response, current_app
-from io import BytesIO
-from PIL import Image, ImageOps
-import mimetypes, os
-
-# === /img – ממיר/מקטין תמונות ומחזיר image/* (לא HTML) ===
-from io import BytesIO
-from PIL import Image, ImageOps
-from flask import Response, request
-import os
 
 
 
-from functools import lru_cache
-import requests, time
 
-@lru_cache(maxsize=1)
-def _fetch_price_prest_rows(_ts_bucket=None):
-    """
-    מחזיר list[dict] מהשיטס: [{key, he, en, ru, price_he, price_en, price_ru}, ...]
-    _ts_bucket מיועד לרענון cache כל כמה דקות.
-    """
-    try:
-        r = requests.get(PRICE_SHEETS_URL, timeout=5)
-        r.raise_for_status()
-        data = r.json()
-        if isinstance(data, list):
-            return data
-    except Exception as e:
-        print("price_prest fetch failed:", e)
-    return []
+
+
+
 
 
 
@@ -1324,13 +1272,9 @@ def img_proxy(filename):
 
 
 
-from flask import jsonify, Response
-# הוסף/תקן ייבוא
-from flask_wtf import CSRFProtect
 
 
 
-import mimetypes, os
 
 
 
@@ -1465,14 +1409,11 @@ def serve_static(filename):
 
 
 
-# שים את זה אחרי יצירת app
-import mimetypes
 
 
 
 
 # ---- Static URL helper (absolute + version) ----
-ASSETS_V = os.environ.get("ASSETS_V", "1055")  # העלה מספר לגרסה חדשה
 
 def static_url(path: str) -> str:
     path = str(path).lstrip("/")  # בלי // כפול
@@ -1502,16 +1443,6 @@ def inject_static_url():
 # --- Serve /static/* early with correct Content-Type (iOS/Safari strict) ---
 # --- Serve /static/* early with correct Content-Type (iOS/Safari strict) ---
 
-# --- Static handler עם Content-Type נכון + המרת תמונות ב-iOS/Safari ---
-from flask import send_from_directory, abort
-import mimetypes
-
-# --- Serve only CSS with strict headers (let Flask handle images/fonts/videos) ---
-import mimetypes
-from flask import Response, send_file
-
-# --- Force-correct static serving (images/CSS/JS) ---
-from flask import send_from_directory
 
 
 
@@ -1730,8 +1661,6 @@ def accessibility_fallback():
 # ודא שבתחילת הקובץ יש: import ssl import time import smtplib
 @app.route('/<lang>/send-message', methods=['POST'])
 def send_message(lang):
-    import ssl, smtplib, threading, time, os
-    from datetime import datetime  # ללוג במקרה של כשל
     is_ajax = (request.headers.get('X-Requested-With', '').lower() in ('fetch', 'xmlhttprequest'))
     try:
         # --- HONEYPOT ---
@@ -2200,58 +2129,29 @@ def show_workers(lang, field, area):
 @app.route('/<lang>/services/<service>/', defaults={'area': None})
 @app.route('/<lang>/services/<service>/<area>')
 def service_landing(lang, service, area):
-    if lang not in SUPPORTED_LANGS:
-        lang = "he"
-
-    # זיהוי מפתח השירות (שם, כינוי, סלג)
+    # מזהה שירות -> מפה לתחום קנוני בעברית
     key = resolve_service_key(service) or service
-    if key not in SERVICE_REGISTRY:
-        # אם זה בכלל תחום – נפנה לעמוד הרשימה
+    he_field = SERVICE_REGISTRY.get(key, {}).get("field_he")
+
+    # אם לא זוהה שירות אבל זה נראה כמו תחום/נרדף – ננסה לפתור כתחום
+    if not he_field:
         he_field = resolve_field_alias(service, lang)
-        if he_field in CANON_FIELDS_HE:
-            f_slug = localize_field_slug(he_field, lang)
-            c_slug = localize_city_slug(resolve_city_alias(area, lang), lang) if area else None
-            dest = url_for('show_workers', lang=lang, field=f_slug, area=c_slug) if c_slug else url_for('show_workers', lang=lang, field=f_slug)
-            return redirect(dest, code=301)
+
+    # אם עדיין לא זוהה כלום – 404
+    if not he_field:
         return not_found(404)
 
-    meta = SERVICE_REGISTRY[key]
-    he_field = meta["field_he"]
+    # עיר (אם נמסרה) לנוסח קנוני בעברית
     he_area = resolve_city_alias(area, lang) if area else None
 
-    # קישורים לעמוד הרשימה המתאים
+    # המרה ל-slug בשפת ה-UI (he/en/ru)
     f_slug = localize_field_slug(he_field, lang)
-    c_slug = localize_city_slug(he_area, lang) if he_area else None
-    list_url = url_for('show_workers', lang=lang, field=f_slug, area=c_slug) if c_slug else url_for('show_workers', lang=lang, field=f_slug)
+    c_slug = localize_city_slug(he_area,  lang) if he_area else None
 
-    # hreflang לכל השפות
-    hreflang_urls = {}
-    for L in SUPPORTED_LANGS:
-        s_slug = localize_service_slug(key, L)
-        if he_area:
-            a_slug = localize_city_slug(he_area, L)
-            hreflang_urls[L] = url_for('service_landing', lang=L, service=s_slug, area=a_slug, _external=True)
-        else:
-            hreflang_urls[L] = url_for('service_landing', lang=L, service=s_slug, _external=True)
+    # במקום redirect: מרנדרים את **אותו** דף רשימה,
+    # כך המשתמש כבר רואה את הליסט, וה־canonical נשאר של /workers/ (מעולה ל-SEO).
+    return show_workers(lang, f_slug, c_slug)
 
-    # כותרת לפי שפה + עיר (אם יש)
-    titles = {
-        "he": f"{meta['he']}" + (f" ב{he_area}" if he_area else ""),
-        "en": f"{meta['en']}" + (f" in {city_map_he_to_en.get(he_area, he_area).title()}" if he_area else ""),
-        "ru": f"{meta['ru']}" + (f" в {city_map_he_to_ru.get(he_area, he_area)}" if he_area else "")
-    }
-    title = titles.get(lang) or titles["he"]
-
-    return render_template(
-        "service_landing.html",
-        lang=lang,
-        service_key=key,
-        meta=meta,
-        area_he=he_area,
-        title=title,
-        list_url=list_url,
-        hreflang_urls=hreflang_urls
-    )
 
 
 
@@ -3151,9 +3051,7 @@ def handle_csrf_error(e):
 # ========= REPLACE robots_txt + sitemap_xml WITH THIS =========
 
 from xml.sax.saxutils import escape as _xesc
-from datetime import datetime, date
 
-SUPPORTED_LANGS = ("he", "en", "ru")
 
 def _abs_path(path: str) -> str:
     """לבנות URL מוחלט עם BASE_DOMAIN (כדי למנוע דומיין dev בסריקה)."""
@@ -3534,10 +3432,6 @@ def inline_css_for_ios(resp):
 
 
 
-from flask import request
-
-from flask import request
-
 
 
 
@@ -3556,7 +3450,6 @@ def add_noindex_header(resp):
 
 @app.route("/_debug/img/<path:name>")
 def _debug_img(name):
-    import mimetypes
     p = os.path.join(STATIC_DIR, name)
 
     if not os.path.isfile(p):
@@ -3608,8 +3501,7 @@ def warmup():
 # =====================================================
 
 # --- עמוד המחשבון ---
-import os, json
-from flask import g, request, redirect, url_for, render_template
+
 
 SUPPORTED_LANGS = ("he", "en", "ru")
 

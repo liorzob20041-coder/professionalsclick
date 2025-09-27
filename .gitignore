@@ -1,0 +1,41 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.build/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+
+# Flask/Secrets
+.env
+**/.env
+*.env
+instance/
+*.sqlite
+*.db
+
+# VSCode / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Frontend
+node_modules/
+balei-miktzoa-site/node_modules/
+balei-miktzoa-site/package-lock.json
+balei-miktzoa-site/pnpm-lock.yaml
+balei-miktzoa-site/yarn.lock
+balei-miktzoa-site/dist/
+balei-miktzoa-site/build/
+
+# App data (לא קוד)
+balei-miktzoa-site/data/analytics/

@@ -239,10 +239,7 @@ body{ background: var(--background); color: var(--foreground); }
    Cards / Sections
    ========================= */
 .worker-reviews-summary,
-.worker-price-link,
-.worker-services-list,
-.worker-areas-list,
-.worker-about{
+.worker-price-link{
   margin:2rem auto; padding:1.5rem;
   background: var(--card); color: var(--card-foreground);
   border:1px solid var(--border);
@@ -251,24 +248,304 @@ body{ background: var(--background); color: var(--foreground); }
   max-inline-size:900px;
 }
 .worker-reviews-summary h2,
-.worker-price-link h2,
-.worker-services-list h2,
-.worker-areas-list h2,
-.worker-about h2{
+.worker-price-link h2{
   margin:0 0 8px; font-size:clamp(1.05rem,3.4vw,1.25rem); line-height:1.2; font-weight:900; letter-spacing:.2px;
 }
-
+.worker-about{
+  margin:2rem auto;
+  padding:0;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  max-inline-size:900px;
+}
 .worker-reviews-stats{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-block:6px 8px; }
-
 .worker-empty{ background:#f9fafb; border:1px dashed var(--border); color: var(--muted-foreground); padding:10px 12px; border-radius:10px; }
+/* Services & areas panels */
+.worker-info-panels{
+  margin:2rem auto;
+  max-inline-size:900px;
+  display:grid;
+  gap:1.5rem;
+}
+.worker-panel{
+  background: var(--card);
+  color: var(--card-foreground);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  padding:1.75rem;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+.worker-panel--services{
+  background: color-mix(in srgb, var(--brand-50) 55%, #fff 45%);
+  border-color: color-mix(in srgb, var(--brand-200) 60%, var(--border) 40%);
+}
+.worker-panel--areas{
+  background: color-mix(in srgb, #ecfdf5 60%, #fff 40%);
+  border-color: color-mix(in srgb, #a7f3d0 50%, var(--border) 50%);
+}
+.worker-panel__header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:0.75rem;
+}
+.worker-panel__title{
+  margin:0;
+  font-size:clamp(1.1rem,3.6vw,1.35rem);
+  font-weight:800;
+  color: var(--w-ink);
+}
+.worker-panel__subtitle{
+  margin:0;
+  font-size:.92rem;
+  font-weight:700;
+  color: var(--muted-foreground);
+}
+.worker-services-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.worker-service-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border-radius:16px;
+  background: color-mix(in srgb, var(--brand-50) 80%, #fff 20%);
+  border:1px solid color-mix(in srgb, var(--brand-200) 70%, #fff 30%);
+  box-shadow:0 6px 16px rgba(234,58,102,0.12);
+  font-weight:700;
+  color: var(--brand-700);
+}
+.worker-service-card__text{ flex:1; }
+.worker-service-card__icon{
+  inline-size:34px;
+  block-size:34px;
+  border-radius:50%;
+  background:#dcfce7;
+  color:#15803d;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.05rem;
+  box-shadow:0 2px 6px rgba(21,128,61,0.14);
+}
+.worker-panel__group{ display:flex; flex-direction:column; gap:0.75rem; }
+.worker-panel__group + .worker-panel__group{ margin-top:0.5rem; }
+.worker-area-list,
+.worker-hours-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.worker-area-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.8);
+  border:1px solid color-mix(in srgb, var(--brand-100) 60%, #fff 40%);
+  color: var(--foreground);
+  font-weight:600;
+}
 
-/* Lists */
-.worker-services-list ul, .worker-areas-list ul{ list-style:disc inside; padding:0; margin:8px 0 0; }
-.worker-services-list li, .worker-areas-list li{ margin-block:4px; color: var(--foreground); }
+.worker-panel__actions{ margin-top:auto; }
+
+.worker-panel__cta{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 16px;
+  border-radius:14px;
+  background:#10b981;
+  color:#fff;
+  font-weight:800;
+  text-decoration:none;
+  border:1px solid #0ea371;
+  box-shadow:0 4px 12px rgba(16,185,129,0.18);
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.worker-panel__cta:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(16,185,129,0.25); }
+.worker-panel__cta:focus-visible{ outline:2px solid var(--w-ring); outline-offset:3px; }
+
+/* Services & areas panels */
+.worker-info-panels{
+  margin:2rem auto;
+  max-inline-size:900px;
+  display:grid;
+  gap:1.5rem;
+}
+.worker-panel{
+  background: var(--card);
+  color: var(--card-foreground);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  padding:1.75rem;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+.worker-panel--services{
+  background: color-mix(in srgb, var(--brand-50) 55%, #fff 45%);
+  border-color: color-mix(in srgb, var(--brand-200) 60%, var(--border) 40%);
+}
+.worker-panel--areas{
+  background: color-mix(in srgb, #ecfdf5 60%, #fff 40%);
+  border-color: color-mix(in srgb, #a7f3d0 50%, var(--border) 50%);
+}
+.worker-panel__header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:0.75rem;
+}
+.worker-panel__title{
+  margin:0;
+  font-size:clamp(1.1rem,3.6vw,1.35rem);
+  font-weight:800;
+  color: var(--w-ink);
+}
+.worker-panel__subtitle{
+  margin:0;
+  font-size:.92rem;
+  font-weight:700;
+  color: var(--muted-foreground);
+}
+.worker-services-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.worker-service-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:14px;
+  background: rgba(255,255,255,0.7);
+  border:1px solid color-mix(in srgb, var(--brand-200) 65%, #fff 35%);
+  color: var(--brand-700);
+  font-weight:700;
+  box-shadow:0 2px 6px rgba(234,58,102,0.08);
+}
+.worker-panel__group{ display:flex; flex-direction:column; gap:0.75rem; }
+.worker-panel__group + .worker-panel__group{ margin-top:0.5rem; }
+.worker-area-list,
+.worker-hours-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.worker-area-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.8);
+  border:1px solid color-mix(in srgb, var(--brand-100) 60%, #fff 40%);
+  color: var(--foreground);
+  font-weight:600;
+}
+.worker-area-item i{ color: var(--brand-700); margin-inline-start:4px; }
+.worker-hours-card{
+  padding:12px 14px;
+  border-radius:12px;
+  background:#dcfce7;
+  border:1px solid #bbf7d0;
+  color:#14532d;
+  font-weight:700;
+  white-space:pre-line;
+}
+.worker-hours-item{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#dcfce7;
+  border:1px solid #bbf7d0;
+  color:#14532d;
+}
+.worker-hours-item__days{ font-weight:700; }
+.worker-hours-item__time{ font-feature-settings:'tnum' 1; font-weight:600; white-space:nowrap; }
+.worker-panel__empty{
+  background: rgba(255,255,255,0.65);
+  border:1px dashed color-mix(in srgb, var(--border) 60%, #fff 40%);
+  color: var(--muted-foreground);
+  padding:10px 12px;
+  border-radius:12px;
+}
+.worker-panel__actions{ margin-top:auto; }
+.worker-panel__cta{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 16px;
+  border-radius:14px;
+  background:#10b981;
+  color:#fff;
+  font-weight:800;
+  text-decoration:none;
+  border:1px solid #0ea371;
+  box-shadow:0 4px 12px rgba(16,185,129,0.18);
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.worker-panel__cta:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(16,185,129,0.25); }
+.worker-panel__cta:focus-visible{ outline:2px solid var(--w-ring); outline-offset:3px; }
+@media (min-width:960px){
+  .worker-info-panels{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
 
 /* About */
-.worker-about-text{ color: var(--foreground); line-height:1.6; white-space:pre-line; }
-
+.worker-about-card{
+  background: linear-gradient(135deg, #fff7f8 0%, #ffffff 60%);
+  border:1px solid color-mix(in srgb, var(--brand-200) 55%, #fff 45%);
+  border-radius:18px;
+  box-shadow:0 6px 20px rgba(138,21,56,0.10);
+  padding:1.75rem;
+  display:flex;
+  flex-direction:column;
+  gap:1.25rem;
+}
+.worker-about-card__header{ display:flex; align-items:center; justify-content:space-between; }
+.worker-about-card__title{ margin:0; font-size:clamp(1.2rem,3.5vw,1.5rem); font-weight:800; color: var(--brand-700); }
+.worker-about-card__body{ color: var(--foreground); }
+.worker-about-text{ color: var(--foreground); line-height:1.7; white-space:pre-line; font-size:1.05rem; }
+.worker-about-card__footer{ display:flex; }
+.worker-about-card__badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid color-mix(in srgb, var(--brand-300) 60%, #fff 40%);
+  color: var(--brand-700);
+  font-weight:700;
+  box-shadow:0 2px 8px rgba(138,21,56,0.12);
+}
 /* =========================
    Reviews list
    ========================= */
@@ -290,8 +567,7 @@ body{ background: var(--background); color: var(--foreground); }
   .worker-hero,
   .worker-reviews-summary,
   .worker-price-link,
-  .worker-services-list,
-  .worker-areas-list,
+  .worker-info-panels,
   .worker-about,
   #all-reviews{ padding-inline: calc(24px + 2px); }
 }
@@ -316,10 +592,15 @@ body{ background: var(--background); color: var(--foreground); }
   .worker-hero-layout,
   .worker-reviews-summary,
   .worker-price-link,
-  .worker-services-list,
-  .worker-areas-list,
+  .worker-info-panels,
   .worker-about,
   .worker-profile-section .review-item{ box-shadow:none; border-color:#2a323e; }
+  .worker-service-card{ background:#2a1e28; border-color:#3b2736; box-shadow:none; color:#ffd6e2; }
+  .worker-service-card__icon{ background:#1d3b2a; color:#6ee7b7; box-shadow:none; }
+  .worker-hours-item{ background:#123524; border-color:#1f5135; box-shadow:none; color:#e8fff3; }
+  .worker-hours-item__icon{ background:#1f5135; color:#bbf7d0; box-shadow:none; }
+  .worker-about-card{ background:#291722; border-color:#3a2230; box-shadow:none; }
+  .worker-about-card__badge{ background:#1f1520; border-color:#3a2230; box-shadow:none; color:#ffb3c7; }
   .worker-breadcrumbs li,
   .worker-breadcrumbs a,
   .worker-breadcrumbs [aria-current="page"]{ color:#ffb3c7; }

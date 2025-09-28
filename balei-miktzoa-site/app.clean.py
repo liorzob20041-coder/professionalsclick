@@ -2352,6 +2352,30 @@ def worker_reviews(lang, worker_id):
             seen.add(c); areas.append(c)
     worker['service_areas'] = areas
 
+    schedule_blocks = []
+    for slot in worker.get('work_blocks') or []:
+        if not isinstance(slot, dict):
+            continue
+        days = [d.strip() for d in (slot.get('days') or []) if isinstance(d, str) and d.strip()]
+        start_hour = slot.get('start_hour')
+        end_hour = slot.get('end_hour')
+        item = {}
+        if days:
+            item['days'] = days
+        if isinstance(start_hour, (int, float, str)) and str(start_hour).strip():
+            try:
+                item['start_hour'] = int(float(start_hour))
+            except (ValueError, TypeError):
+                pass
+        if isinstance(end_hour, (int, float, str)) and str(end_hour).strip():
+            try:
+                item['end_hour'] = int(float(end_hour))
+            except (ValueError, TypeError):
+                pass
+        if item:
+            schedule_blocks.append(item)
+    worker['work_blocks'] = schedule_blocks
+
     # --- ביקורות + חישוב ממוצע (הקריטי ל-HERO) ---
     reviews_file = os.path.join(DATA_FOLDER, 'worker_reviews.json')
     all_reviews  = read_json_file(reviews_file)

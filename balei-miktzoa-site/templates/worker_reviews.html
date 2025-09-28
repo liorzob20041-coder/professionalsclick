@@ -326,50 +326,122 @@
     </a>
   </section>
 
-  <!-- שירותים / התמחויות -->
-  <section class="worker-services-list" aria-label="שירותים/התמחויות">
-    <h2>שירותים</h2>
-    {% if worker.services %}
-      <ul role="list">
-        {% for srv in worker.services %}
-          <li>{{ srv }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <div class="worker-empty" aria-live="polite">אין שירותים זמינים <!-- TODO: worker.services --></div>
-    {% endif %}
+  <!-- שירותים ואזורי פעילות -->
+  <section class="worker-info-panels" aria-label="שירותים ואזורי פעילות">
+    {% set _specializations = worker.specializations or worker.services_list or worker.sub_services or [] %}
+    <div class="worker-panel worker-panel--services" role="region" aria-labelledby="worker-services-title">
+      <div class="worker-panel__header">
+        <h2 id="worker-services-title" class="worker-panel__title">השירותים שלי</h2>
+      </div>
+      {% if _specializations %}
+        <ul class="worker-services-list" role="list">
+          {% for srv in _specializations %}
+            {% set _srv = srv|string %}
+            {% if _srv %}
+              <li class="worker-service-card" role="listitem">
+                <span class="worker-service-card__text">{{ _srv }}</span>
+                <span class="worker-service-card__icon" aria-hidden="true">
+                  <i class="fa-solid fa-check"></i>
+                </span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="worker-panel__empty" aria-live="polite">אין שירותים זמינים</div>
+      {% endif %}
+    </div>
+    <div class="worker-panel worker-panel--areas" role="region" aria-labelledby="worker-areas-title">
+      <div class="worker-panel__header">
+        <h2 id="worker-areas-title" class="worker-panel__title">אזורים ושעות פעילות</h2>
+      </div>
+      <div class="worker-panel__group" aria-label="אזורי שירות">
+        <h3 class="worker-panel__subtitle">אזורי שירות</h3>
+        {% set _areas = worker.service_areas or [] %}
+        {% if _areas %}
+          <ul class="worker-area-list" role="list">
+            {% for area in _areas %}
+              {% set _area = area|string %}
+              {% if _area %}
+                <li class="worker-area-item" role="listitem">
+                  <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                  <span>{{ _area }}</span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="worker-panel__empty" aria-live="polite">אין אזורי שירות זמינים</div>
+        {% endif %}
+      </div>
+      <div class="worker-panel__group" aria-label="שעות פעילות">
+        <h3 class="worker-panel__subtitle">שעות פעילות</h3>
+        {% set _schedule = worker.work_schedule_display or worker.work_blocks or [] %}
+        {% if worker.hours %}
+          <div class="worker-hours-card">{{ worker.hours }}</div>
+        {% elif _schedule %}
+          <ul class="worker-hours-list" role="list">
+            {% for block in _schedule %}
+              {% set _days_raw = block.get('days') %}
+              {% set days_label = block.get('days_display') or (_days_raw or [])|join(' • ') %}
+              {% set start_label = block.get('start_label') or (block.get('start_hour') is not none and '%02d:00' % (block.get('start_hour')|int)) %}
+              {% set end_label = block.get('end_label') or (block.get('end_hour') is not none and '%02d:00' % (block.get('end_hour')|int)) %}
+              <li class="worker-hours-item" role="listitem">
+                <div class="worker-hours-item__meta">
+                  {% if days_label %}
+                    <span class="worker-hours-item__days">{{ days_label }}</span>
+                  {% endif %}
+                  {% if start_label or end_label %}
+                    <span class="worker-hours-item__time">
+                      {% if start_label %}{{ start_label }}{% endif %}
+                      {% if start_label and end_label %} – {% endif %}
+                      {% if end_label %}{{ end_label }}{% endif %}
+                    </span>
+                  {% endif %}
+                </div>
+                <span class="worker-hours-item__icon" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="worker-panel__empty" aria-live="polite">אין מידע על שעות פעילות</div>
+        {% endif %}
+      </div>
+      {% if worker.phone_formatted %}
+        <div class="worker-panel__actions">
+          <a class="worker-panel__cta" href="tel:{{ worker.phone_formatted }}" data-track="click_call"
+             data-worker="{{ worker.worker_id }}" aria-label="התקשר ל{{ worker.company_name or worker.name }}">
+            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            זמין עכשיו לשיחה
+          </a>
+        </div>
+      {% endif %}
+    </div>
   </section>
-
-  <!-- אזורי שירות + שעות פעילות -->
-  <section class="worker-areas-list" aria-label="אזורים ושעות פעילות">
-    <h2>אזורים ושעות פעילות</h2>
-    {% if worker.service_areas %}
-      <ul role="list">
-        {% for area in worker.service_areas %}
-          <li>{{ area }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <div class="worker-empty" aria-live="polite">אין אזורי שירות <!-- TODO: worker.service_areas --></div>
-    {% endif %}
-    {% if worker.hours %}
-      <div class="worker-hours">שעות פעילות: {{ worker.hours }}</div>
-    {% else %}
-      <div class="worker-empty" aria-live="polite">אין מידע על שעות פעילות <!-- TODO: worker.hours --></div>
-    {% endif %}
-  </section>
-
   <!-- אודות -->
-  <section class="worker-about" aria-label="אודות העובד">
-    <h2>אודות</h2>
+  <section class="worker-about" aria-label="קצת עליי">
     {% set about_txt = worker.about_clean or worker.about %}
-    {% if about_txt %}
-      <div class="worker-about-text">{{ about_txt }}</div>
-    {% else %}
-      <div class="worker-empty" aria-live="polite">אין מידע אודות <!-- TODO: worker.about --></div>
-    {% endif %}
+    {% set about_badge = worker.tagline or worker.experience_text or worker.field %}
+    <div class="worker-about-card">
+      <div class="worker-about-card__header">
+        <h2 class="worker-about-card__title">קצת עליי</h2>
+      </div>
+      {% if about_txt %}
+        <div class="worker-about-card__body">
+          <div class="worker-about-text">{{ about_txt }}</div>
+        </div>
+      {% else %}
+        <div class="worker-about-card__body">
+          <div class="worker-empty" aria-live="polite">אין מידע אודות</div>
+        </div>
+      {% endif %}
+      {% if about_badge %}
+        <div class="worker-about-card__footer">
+          <span class="worker-about-card__badge">{{ about_badge }}</span>
+        </div>
+      {% endif %}
+    </div>
   </section>
-
 </section>
 {% endblock %}
 

@@ -45,6 +45,9 @@ REVIEWS_JSON_LOCK = Lock()
 # קבועים כלליים (שפה/בניית קישורי סטטיק)
 # ------------------------------
 SUPPORTED_LANGS = ("he", "en", "ru")   # בשימוש ב-smart_alias וב-sitemap
+SMART_ALIAS_RESERVED = {
+    "estimate": "estimate",
+}
 ASSETS_V = os.environ.get("ASSETS_V", "1055")  # גרסת נכסים (cache-busting)
 
 
@@ -1542,6 +1545,7 @@ def set_language():
             lang = path_parts[0]
     if not lang:
         lang = 'he'
+    lang = normalize_lang(lang)
     g.current_lang = lang
 
     # --- מזהה סשן אנונימי (למניעת ספירה כפולה + ניתוחים) ---
@@ -2446,6 +2450,17 @@ def add_review(lang):
 def smart_alias(lang, term, area):
     if lang not in SUPPORTED_LANGS:
         return not_found(404)
+
+    reserved_endpoint = SMART_ALIAS_RESERVED.get((term or '').strip().lower())
+    if reserved_endpoint:
+        if area:
+            return not_found(404)
+        target_lang = normalize_lang(lang)
+        target = url_for(reserved_endpoint, lang=target_lang)
+        if request.query_string:
+            qs = request.query_string.decode('utf-8', 'ignore')
+            target = f"{target}?{qs}"
+        return redirect(target, code=302)
 
     # מפרק למילים, מנרמל HE/EN/RU
     def _tokens(s: str):
@@ -3502,8 +3517,6 @@ def warmup():
 
 # --- עמוד המחשבון ---
 
-
-SUPPORTED_LANGS = ("he", "en", "ru")
 
 def normalize_lang(lang: str) -> str:
     lang = (lang or "he").lower()

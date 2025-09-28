@@ -99,6 +99,18 @@ INVITE_KEY = os.environ.get('INVITE_KEY', 'dev-invite')
 # --- OG target languages ---
 OG_LANGS = ("he", "en", "ru")
 
+# --- Worker language choices ---
+WORKER_LANGUAGE_CHOICES = (
+    "עברית",
+    "אנגלית",
+    "רוסית",
+    "ערבית",
+    "אמהרית",
+    "צרפתית",
+    "ספרדית",
+)
+DEFAULT_WORKER_LANGUAGES = ()
+
 # ------------------------------
 # נתוני ערים
 # ------------------------------
@@ -191,6 +203,53 @@ def _canon_he_field(s: str) -> str:
     }
     return mapping.get(s, s)
 
+
+def normalize_worker_languages(raw_languages, default=None):
+    """מסנן ומנרמל רשימת שפות בהתאם לסט המורשה."""
+    allowed = set(WORKER_LANGUAGE_CHOICES)
+
+    def _collect(values):
+        cleaned_local = []
+        seen_local = set()
+        for value in values:
+            if not isinstance(value, str):
+                continue
+            label = value.strip()
+            if not label or label not in allowed or label in seen_local:
+                continue
+            seen_local.add(label)
+            cleaned_local.append(label)
+        return cleaned_local
+
+    if isinstance(raw_languages, str):
+        candidates = [raw_languages]
+    elif isinstance(raw_languages, (list, tuple, set)):
+        candidates = list(raw_languages)
+    else:
+        candidates = []
+
+    cleaned = _collect(candidates)
+    if cleaned:
+        return cleaned
+
+    fallback = default if default is not None else DEFAULT_WORKER_LANGUAGES
+    if isinstance(fallback, str):
+        fallback_candidates = [fallback]
+    elif isinstance(fallback, (list, tuple, set)):
+        fallback_candidates = list(fallback)
+    else:
+        fallback_candidates = []
+
+    return _collect(fallback_candidates)
+
+
+def ensure_worker_languages(worker: dict, default=None) -> list:
+    """מבטיחה שלעובד תהיה רשימת שפות מנורמלת במפתח languages."""
+    cleaned = normalize_worker_languages(worker.get("languages"), default=default)
+    worker["languages"] = cleaned
+    return cleaned
+
+
 def normalize_worker_fields(w: dict) -> dict:
     """
     דואג ש־field בעברית יהיה קנוני-ברבים, ושדות התרגום ימולאו/יתוקנו לפי המיפוי.
@@ -203,6 +262,7 @@ def normalize_worker_fields(w: dict) -> dict:
     w["field"]    = i18n["he"]
     w["field_en"] = i18n["en"]
     w["field_ru"] = i18n["ru"]
+    ensure_worker_languages(w)
     return w
 
 
@@ -1814,6 +1874,10 @@ def request_professional(lang):
         #    כל ערך שאינו ריק ייחשב True.
         offers_emergency = bool(request.form.get('offers_emergency'))
 
+        # 3) שפות שירות – צ'קבוקסים name="languages"
+        languages_raw = request.form.getlist('languages')
+        languages = normalize_worker_languages(languages_raw, default=DEFAULT_WORKER_LANGUAGES)
+
         # --- וידאו: לינק/קובץ ---
         video_file_cam = request.files.get('video_file_cam')
         video_file_gallery = request.files.get('video_file_gallery')
@@ -1880,7 +1944,8 @@ def request_professional(lang):
 
             # NEW: שמירה ב-JSON
             "sub_services": sub_services,            # רשימת המחרוזות שסומנו בטופס (בעברית כרגע)
-            "offers_emergency": offers_emergency     # True/False
+            "offers_emergency": offers_emergency,    # True/False
+            "languages": languages                   # רשימת שפות מאומתת
         }
 
         # שמירה לפנדינג
@@ -1893,7 +1958,13 @@ def request_professional(lang):
         return redirect(url_for('request_professional', lang=lang, key=invite_key))
 
     # GET — מעבירים invite_key לטמפלט (שדה חבוי + ב-action)
-    return render_template('request.html', lang=lang, invite_key=invite_key)
+    return render_template(
+        'request.html',
+        lang=lang,
+        invite_key=invite_key,
+        language_choices=WORKER_LANGUAGE_CHOICES,
+        default_languages=list(DEFAULT_WORKER_LANGUAGES),
+    )
 # ------------------------------
 # Workers list
 # ------------------------------
@@ -1967,6 +2038,7 @@ def show_workers(lang, field, area):
 
     # עיבוד נתונים לתצוגה
     for w in workers:
+        ensure_worker_languages(w)
         # זמינות עכשיו
         is_available = False
         for block in w.get('work_blocks', []):
@@ -2183,6 +2255,9 @@ def worker_reviews(lang, worker_id):
     worker = next((w for w in all_workers if str(w.get('worker_id')) == str(worker_id)), None)
     if not worker:
         return "Worker not found", 404
+
+    ensure_worker_languages(worker)
+
 
     # --- back_url קאנוני (עם שימור ה־QS האחרון מהרשימה אם קיים) ---
     he_field = worker.get('field') or 'all'

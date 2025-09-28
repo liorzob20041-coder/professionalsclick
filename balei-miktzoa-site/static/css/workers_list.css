@@ -746,6 +746,21 @@ body {
   margin: 4px 0;
   color: #444;
 }
+.lang-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  color: #444;
+  font-size: 0.95em;
+}
+.lang-row__label {
+  font-weight: 700;
+}
+.lang-row__values {
+  font-weight: 600;
+}
 
 .icon {
   font-size: 0.95em;

@@ -85,7 +85,7 @@
           <div class="worker-hero-badges" role="list" aria-label="תגיות">
             {% if worker.verified %}<span class="worker-badge worker-badge--verified" role="listitem">מאומת</span>{% endif %}
             {% if worker.years %}<span class="worker-badge worker-badge--years" role="listitem">{{ worker.years }} שנות ניסיון</span>{% endif %}
-            {% if worker.languages %}<span class="worker-badge worker-badge--lang" role="listitem">{{ worker.languages|join(' · ') }}</span>{% endif %}
+            {% if worker.languages %}<span class="worker-badge worker-badge--lang" role="listitem">{{ worker.languages|join(' • ') }}</span>{% endif %}
           </div>
 
           <!-- כרטיס דירוג – נשאר לדסקטופ, במובייל מוסתר ב-CSS -->

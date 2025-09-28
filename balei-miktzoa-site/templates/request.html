@@ -105,6 +105,11 @@
     .subsvc-grid { display:grid; grid-template-columns:1fr; gap:8px; margin-top:8px; }
     @media (min-width:600px){ .subsvc-grid { grid-template-columns:repeat(2,1fr); } }
     .subsvc-item { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff; }
+    .lang-wrap { border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff; }
+    .lang-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:8px; }
+    .lang-option { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff; }
+    .lang-option input{ width:18px; height:18px; accent-color:var(--accent); }
+    .lang-option span{ font-weight:600; }
     .subsvc-empty { color:#6b7280; font-size:.95rem; margin-top:6px; }
   </style>
 </head>
@@ -184,6 +189,22 @@
             </div>
           </div>
 
+          <div class="field">
+            <span id="languagesLabel" class="label">שפות שירות</span>
+            <div class="lang-wrap" role="group" aria-labelledby="languagesLabel">
+              {% set _language_choices = language_choices|default([], true) %}
+              {% set _default_languages = default_languages|default([], true) %}
+              <div class="lang-grid">
+                {% for lang_label in _language_choices %}
+                  <label class="lang-option">
+                    <input type="checkbox" name="languages" value="{{ lang_label }}"{% if lang_label in _default_languages %} checked{% endif %}>
+                    <span>{{ lang_label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+            <span class="hint">בחר/י את השפות שבהן את/ה נותן שירות (ניתן לבחור יותר מאחת).</span>
+          </div>
           <div class="field">
             <label for="description" class="label">תיאור קצר עליך</label>
             <textarea class="textarea" id="description" name="description" required

@@ -326,7 +326,14 @@
                   {% if w.experience_text %}
                     <p class="info-row"><i class="fa-solid fa-briefcase icon fa-fw" aria-hidden="true"></i>{{ w.experience_text }}</p>
                   {% endif %}
-
+                  {% set lang_list = w.languages or [] %}
+                  {% if lang_list %}
+                    <div class="lang-row">
+                      <i class="fa-solid fa-language icon fa-fw" aria-hidden="true"></i>
+                      <span class="lang-row__label">שפות:</span>
+                      <span class="lang-row__values">{{ ' • '.join(lang_list) }}</span>
+                    </div>
+                  {% endif %}
                   {% set bio_short = (w.bio_short or w.description) %}
                   {% if bio_short %}
                     <p class="card-bio">{{ bio_short }}</p>

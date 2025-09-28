@@ -23,18 +23,17 @@ import requests
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
 
+
 from threading import Lock
 from services.ai_writer import generate_draft
 from services.ai_variants import list_variants, assign_variant
 
-import mimetypes
 
 
 
 load_dotenv()
-
 # === Google Sheets webhook sync (for reviews) ===
-GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwmZsRz_qU9oX7Kl_4G19CZHM2eRw9fqs5r01zNSB_ZCFiZAS_sH4LgjzeMTXyMA9QikQ/exec"
+GOOGLE_WEBHOOK_URL = os.environ.get("GOOGLE_WEBHOOK_URL", "").strip()
 GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
 
 # === Locks ===
@@ -547,10 +546,11 @@ def sync_review_to_sheets(new_review: dict, lang="he"):
         "text_ru": text_ru,
     }
 
-    try:
-        requests.post(GOOGLE_WEBHOOK_URL, json=payload, timeout=5)
-    except Exception as e:
-        print("Sheets sync failed:", e)
+    if GOOGLE_WEBHOOK_URL:
+        try:
+            requests.post(GOOGLE_WEBHOOK_URL, json=payload, timeout=5)
+        except Exception as e:
+            print("Sheets sync failed:", e)
 
 
 

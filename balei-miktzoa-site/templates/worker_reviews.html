@@ -109,7 +109,6 @@
             {% if worker.phone_formatted %}
               {% set cta = worker.call_to_action or {} %}
               {% set cta_state = cta.status if cta.status is defined else None %}
-
               {% set cta_primary = 'התקשר' %}
               {% if cta_state == 'open' %}
                 {% set cta_secondary = 'זמין עכשיו לשיחה' %}
@@ -118,21 +117,37 @@
               {% else %}
                 {% set cta_secondary = cta.subline or 'נשמח לחזור' %}
               {% endif %}
-
-              <a class="worker-btn worker-btn--call {{ 'is-open' if cta_state == 'open' else 'is-closed' if cta_state == 'closed' else '' }}"
-                href="tel:{{ worker.phone_formatted }}"
-                aria-label="התקשר ל{{ worker.company_name or worker.name }}"
-                data-track="click_call" data-worker="{{ worker.worker_id }}"
-                {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>
-                <span class="worker-btn__icon" aria-hidden="true">
-                  <i class="fa-solid fa-phone"></i>
-                </span>
-                <span class="worker-btn__copy">
-                  <span class="worker-btn__copy-primary">{{ cta_primary }}</span>
-                  <span class="worker-btn__copy-secondary">{{ cta_secondary }}</span>
-                </span>
-              </a>
-
+              {% set call_classes = 'worker-btn worker-btn--call' %}
+              {% if cta_state == 'open' %}
+                {% set call_classes = call_classes ~ ' is-open' %}
+              {% elif cta_state == 'closed' %}
+                {% set call_classes = call_classes ~ ' is-closed is-disabled' %}
+              {% endif %}
+              {% if cta_state == 'closed' %}
+                <button type="button" class="{{ call_classes }}" aria-disabled="true" disabled>
+                  <span class="worker-btn__icon" aria-hidden="true">
+                    <i class="fa-solid fa-phone"></i>
+                  </span>
+                  <span class="worker-btn__copy">
+                    <span class="worker-btn__copy-primary">{{ cta_primary }}</span>
+                    <span class="worker-btn__copy-secondary">{{ cta_secondary }}</span>
+                  </span>
+                </button>
+              {% else %}
+                <a class="{{ call_classes }}"
+                  href="tel:{{ worker.phone_formatted }}"
+                  aria-label="התקשר ל{{ worker.company_name or worker.name }}"
+                  data-track="click_call" data-worker="{{ worker.worker_id }}"
+                  {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>
+                  <span class="worker-btn__icon" aria-hidden="true">
+                    <i class="fa-solid fa-phone"></i>
+                  </span>
+                  <span class="worker-btn__copy">
+                    <span class="worker-btn__copy-primary">{{ cta_primary }}</span>
+                    <span class="worker-btn__copy-secondary">{{ cta_secondary }}</span>
+                  </span>
+                </a>
+              {% endif %}
               <a class="worker-btn worker-btn--wa"
                 href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}"
                 target="_blank" rel="noopener"
@@ -200,16 +215,29 @@
          aria-label="וואטסאפ"
          data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">
         <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+      </a>
       {% set _cta = worker.call_to_action or {} %}
       {% set _state = _cta.status if _cta.status is defined else None %}
-      <a class="worker-btn worker-btn--call {{ 'is-open' if _state == 'open' else 'is-closed' if _state == 'closed' else '' }}"
-        href="tel:{{ worker.phone_formatted }}"
-        aria-label="התקשר"
-        data-track="click_call" data-worker="{{ worker.worker_id }}"
-        {% if _state %}data-availability="{{ _state }}"{% endif %}>
-        <i class="fa-solid fa-phone" aria-hidden="true"></i>
-      </a>
-
+      {% set _call_classes = 'worker-btn worker-btn--call' %}
+      {% if _state == 'open' %}
+        {% set _call_classes = _call_classes ~ ' is-open' %}
+      {% elif _state == 'closed' %}
+        {% set _call_classes = _call_classes ~ ' is-closed is-disabled' %}
+      {% endif %}
+      {% if _state == 'closed' %}
+        <button type="button" class="{{ _call_classes }}" aria-disabled="true" disabled title="{{ _cta.subline or 'לא זמין כעת' }}" aria-label="{{ _cta.subline or 'לא זמין כעת' }}">
+          <i class="fa-solid fa-phone" aria-hidden="true"></i>
+          <span class="sr-only">{{ _cta.subline or 'לא זמין כעת' }}</span>
+        </button>
+      {% else %}
+        <a class="{{ _call_classes }}"
+          href="tel:{{ worker.phone_formatted }}"
+          aria-label="התקשר"
+          data-track="click_call" data-worker="{{ worker.worker_id }}"
+          {% if _state %}data-availability="{{ _state }}"{% endif %}>
+          <i class="fa-solid fa-phone" aria-hidden="true"></i>
+        </a>
+      {% endif %}
     {% endif %}
     <a class="worker-btn worker-btn--quote"
        href="{{
@@ -444,17 +472,32 @@
           {% else %}
             {% set _secondary = _cta.subline or 'נשמח לחזור' %}
           {% endif %}
-
-          <a class="worker-panel__cta {{ 'is-open' if _state == 'open' else 'is-closed' if _state == 'closed' else '' }}"
-            href="tel:{{ worker.phone_formatted }}" data-track="click_call"
-            data-worker="{{ worker.worker_id }}" aria-label="התקשר ל{{ worker.company_name or worker.name }}"
-            {% if _state %}data-availability="{{ _state }}"{% endif %}>
-            <span class="worker-panel__cta-icon" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>
-            <span class="worker-panel__cta-text">
-              <span class="worker-panel__cta-text-primary">{{ _primary }}</span>
-              <span class="worker-panel__cta-text-secondary">{{ _secondary }}</span>
-            </span>
-          </a>
+          {% set _cta_classes = 'worker-panel__cta' %}
+          {% if _state == 'open' %}
+            {% set _cta_classes = _cta_classes ~ ' is-open' %}
+          {% elif _state == 'closed' %}
+            {% set _cta_classes = _cta_classes ~ ' is-closed is-disabled' %}
+          {% endif %}
+          {% if _state == 'closed' %}
+            <button type="button" class="{{ _cta_classes }}" aria-disabled="true" disabled>
+              <span class="worker-panel__cta-icon" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>
+              <span class="worker-panel__cta-text">
+                <span class="worker-panel__cta-text-primary">{{ _primary }}</span>
+                <span class="worker-panel__cta-text-secondary">{{ _secondary }}</span>
+              </span>
+            </button>
+          {% else %}
+            <a class="{{ _cta_classes }}"
+              href="tel:{{ worker.phone_formatted }}" data-track="click_call"
+              data-worker="{{ worker.worker_id }}" aria-label="התקשר ל{{ worker.company_name or worker.name }}"
+              {% if _state %}data-availability="{{ _state }}"{% endif %}>
+              <span class="worker-panel__cta-icon" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>
+              <span class="worker-panel__cta-text">
+                <span class="worker-panel__cta-text-primary">{{ _primary }}</span>
+                <span class="worker-panel__cta-text-secondary">{{ _secondary }}</span>
+              </span>
+            </a>
+          {% endif %}
         </div>
       {% endif %}
     </div>

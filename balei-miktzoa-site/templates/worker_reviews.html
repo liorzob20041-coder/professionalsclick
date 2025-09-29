@@ -107,12 +107,32 @@
           <!-- CTA -->
           <div class="worker-hero-cta-row">
             {% if worker.phone_formatted %}
-              <a class="worker-btn worker-btn--call"
+              {% set cta = worker.call_to_action or {} %}
+              {% set cta_state = cta.status if cta.status is defined else None %}
+
+              {% set cta_primary = 'התקשר' %}
+              {% if cta_state == 'open' %}
+                {% set cta_secondary = 'זמין עכשיו לשיחה' %}
+              {% elif cta_state == 'closed' %}
+                {% set cta_secondary = cta.subline or 'לא זמין כעת' %}
+              {% else %}
+                {% set cta_secondary = cta.subline or 'נשמח לחזור' %}
+              {% endif %}
+
+              <a class="worker-btn worker-btn--call {{ 'is-open' if cta_state == 'open' else 'is-closed' if cta_state == 'closed' else '' }}"
                 href="tel:{{ worker.phone_formatted }}"
                 aria-label="התקשר ל{{ worker.company_name or worker.name }}"
-                data-track="click_call" data-worker="{{ worker.worker_id }}">
-                <i class="fa-solid fa-phone" aria-hidden="true"></i> התקשר
+                data-track="click_call" data-worker="{{ worker.worker_id }}"
+                {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>
+                <span class="worker-btn__icon" aria-hidden="true">
+                  <i class="fa-solid fa-phone"></i>
+                </span>
+                <span class="worker-btn__copy">
+                  <span class="worker-btn__copy-primary">{{ cta_primary }}</span>
+                  <span class="worker-btn__copy-secondary">{{ cta_secondary }}</span>
+                </span>
               </a>
+
               <a class="worker-btn worker-btn--wa"
                 href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}"
                 target="_blank" rel="noopener"
@@ -121,6 +141,7 @@
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> וואטסאפ
               </a>
             {% endif %}
+
             <a class="worker-btn worker-btn--quote"
               href="{{
                 (url_for_lang('estimate', worker_id=worker.worker_id)
@@ -179,13 +200,16 @@
          aria-label="וואטסאפ"
          data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">
         <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-      </a>
-      <a class="worker-btn worker-btn--call"
-         href="tel:{{ worker.phone_formatted }}"
-         aria-label="התקשר"
-         data-track="click_call" data-worker="{{ worker.worker_id }}">
+      {% set _cta = worker.call_to_action or {} %}
+      {% set _state = _cta.status if _cta.status is defined else None %}
+      <a class="worker-btn worker-btn--call {{ 'is-open' if _state == 'open' else 'is-closed' if _state == 'closed' else '' }}"
+        href="tel:{{ worker.phone_formatted }}"
+        aria-label="התקשר"
+        data-track="click_call" data-worker="{{ worker.worker_id }}"
+        {% if _state %}data-availability="{{ _state }}"{% endif %}>
         <i class="fa-solid fa-phone" aria-hidden="true"></i>
       </a>
+
     {% endif %}
     <a class="worker-btn worker-btn--quote"
        href="{{
@@ -339,10 +363,10 @@
             {% set _srv = srv|string %}
             {% if _srv %}
               <li class="worker-service-card" role="listitem">
-                <span class="worker-service-card__text">{{ _srv }}</span>
                 <span class="worker-service-card__icon" aria-hidden="true">
                   <i class="fa-solid fa-check"></i>
                 </span>
+                <span class="worker-service-card__text">{{ _srv }}</span>
               </li>
             {% endif %}
           {% endfor %}
@@ -386,17 +410,18 @@
               {% set days_label = block.get('days_display') or (_days_raw or [])|join(' • ') %}
               {% set start_label = block.get('start_label') or (block.get('start_hour') is not none and '%02d:00' % (block.get('start_hour')|int)) %}
               {% set end_label = block.get('end_label') or (block.get('end_hour') is not none and '%02d:00' % (block.get('end_hour')|int)) %}
+              {% set time_label = block.get('time_display') or ((start_label or end_label) and ((start_label or '') ~ (start_label and end_label and ' – ' or '') ~ (end_label or ''))) %}
+              {% set block_tagline = block.get('tagline') %}
               <li class="worker-hours-item" role="listitem">
                 <div class="worker-hours-item__meta">
                   {% if days_label %}
                     <span class="worker-hours-item__days">{{ days_label }}</span>
                   {% endif %}
-                  {% if start_label or end_label %}
-                    <span class="worker-hours-item__time">
-                      {% if start_label %}{{ start_label }}{% endif %}
-                      {% if start_label and end_label %} – {% endif %}
-                      {% if end_label %}{{ end_label }}{% endif %}
-                    </span>
+                  {% if time_label %}
+                    <span class="worker-hours-item__time">{{ time_label }}</span>
+                  {% endif %}
+                  {% if block_tagline %}
+                    <span class="worker-hours-item__tagline">{{ block_tagline }}</span>
                   {% endif %}
                 </div>
                 <span class="worker-hours-item__icon" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
@@ -409,10 +434,26 @@
       </div>
       {% if worker.phone_formatted %}
         <div class="worker-panel__actions">
-          <a class="worker-panel__cta" href="tel:{{ worker.phone_formatted }}" data-track="click_call"
-             data-worker="{{ worker.worker_id }}" aria-label="התקשר ל{{ worker.company_name or worker.name }}">
-            <i class="fa-solid fa-phone" aria-hidden="true"></i>
-            זמין עכשיו לשיחה
+          {% set _cta = worker.call_to_action or {} %}
+          {% set _state = _cta.status if _cta.status is defined else None %}
+          {% set _primary = 'התקשר' %}
+          {% if _state == 'open' %}
+            {% set _secondary = 'זמין עכשיו לשיחה' %}
+          {% elif _state == 'closed' %}
+            {% set _secondary = _cta.subline or 'לא זמין כעת' %}
+          {% else %}
+            {% set _secondary = _cta.subline or 'נשמח לחזור' %}
+          {% endif %}
+
+          <a class="worker-panel__cta {{ 'is-open' if _state == 'open' else 'is-closed' if _state == 'closed' else '' }}"
+            href="tel:{{ worker.phone_formatted }}" data-track="click_call"
+            data-worker="{{ worker.worker_id }}" aria-label="התקשר ל{{ worker.company_name or worker.name }}"
+            {% if _state %}data-availability="{{ _state }}"{% endif %}>
+            <span class="worker-panel__cta-icon" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>
+            <span class="worker-panel__cta-text">
+              <span class="worker-panel__cta-text-primary">{{ _primary }}</span>
+              <span class="worker-panel__cta-text-secondary">{{ _secondary }}</span>
+            </span>
           </a>
         </div>
       {% endif %}

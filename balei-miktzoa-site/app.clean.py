@@ -1,8 +1,9 @@
 # === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging
 from io import BytesIO
 from pathlib import Path
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone, time as dt_time
+from zoneinfo import ZoneInfo
 from collections import defaultdict
 from urllib.parse import urlparse, parse_qs, urljoin
 
@@ -22,6 +23,14 @@ from deep_translator import GoogleTranslator
 import requests
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
+
+try:
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+except ImportError:  # Python < 3.9 or zoneinfo backport not installed
+    ZoneInfo = None
+
+    class ZoneInfoNotFoundError(Exception):
+        """Fallback exception type when zoneinfo is unavailable."""
 
 
 from threading import Lock
@@ -48,6 +57,321 @@ SMART_ALIAS_RESERVED = {
     "estimate": "estimate",
 }
 ASSETS_V = os.environ.get("ASSETS_V", "1055")  # גרסת נכסים (cache-busting)
+
+
+# --- טווחי ימים ותצוגה ---
+DAY_ORDER = ("sun", "mon", "tue", "wed", "thu", "fri", "sat")
+DAY_ORDER_INDEX = {slug: idx for idx, slug in enumerate(DAY_ORDER)}
+PY_WEEKDAY_TO_SLUG = {
+    0: "mon",
+    1: "tue",
+    2: "wed",
+    3: "thu",
+    4: "fri",
+    5: "sat",
+    6: "sun",
+}
+DAY_SLUG_TO_PY_WEEKDAY = {slug: idx for idx, slug in PY_WEEKDAY_TO_SLUG.items()}
+DAY_LABELS = {
+    "he": {
+        "sun": "ראשון",
+        "mon": "שני",
+        "tue": "שלישי",
+        "wed": "רביעי",
+        "thu": "חמישי",
+        "fri": "שישי",
+        "sat": "שבת",
+    },
+    "en": {
+        "sun": "Sunday",
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+    },
+    "ru": {
+        "sun": "Воскресенье",
+        "mon": "Понедельник",
+        "tue": "Вторник",
+        "wed": "Среда",
+        "thu": "Четверг",
+        "fri": "Пятница",
+        "sat": "Суббота",
+    },
+}
+DAY_SYNONYMS = {
+    "sun": {"sunday", "sun", "ראשון", "יום ראשון", "א'", "воскресенье", "вс", "воскр"},
+    "mon": {"monday", "mon", "שני", "יום שני", "ב'", "понедельник", "пн"},
+    "tue": {"tuesday", "tue", "שלישי", "יום שלישי", "ג'", "вторник", "вт"},
+    "wed": {"wednesday", "wed", "רביעי", "יום רביעי", "ד'", "среда", "ср"},
+    "thu": {"thursday", "thu", "חמישי", "יום חמישי", "ה'", "четверг", "чт"},
+    "fri": {"friday", "fri", "שישי", "יום שישי", "ו'", "пятница", "пт"},
+    "sat": {"saturday", "sat", "שבת", "יום שבת", "ש'", "суббота", "сб"},
+}
+ISRAEL_TZ = ZoneInfo("Asia/Jerusalem")
+
+
+def _normalize_day_token(token: str) -> str | None:
+    """מקבל טקסט יום ומחזיר קוד יום קנוני (sun..sat) אם זוהה."""
+
+    if not token:
+        return None
+    normalized = unicodedata.normalize("NFKC", str(token).strip()).lower()
+    if not normalized:
+        return None
+    normalized = re.sub(r"[.,\-_/\\]", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    if normalized.startswith("יום "):
+        normalized = normalized[4:]
+    for slug, synonyms in DAY_SYNONYMS.items():
+        if normalized in synonyms:
+            return slug
+    # התאמה לקיצורים של שתי אותיות עבריות (למשל "יום א")
+    if normalized.startswith("א "):
+        normalized = normalized.replace(" ", "")
+    if normalized.startswith("יום") and len(normalized) <= 4:
+        normalized = normalized.replace("יום", "").strip()
+    for slug, synonyms in DAY_SYNONYMS.items():
+        if normalized in synonyms:
+            return slug
+    return None
+
+
+def _canonicalize_days(days: list[str]) -> list[str]:
+    """מסנן ומחזיר רשימת ימים קנונית על פי סדר קבוע."""
+
+    seen = set()
+    canonical = []
+    for token in days or []:
+        slug = _normalize_day_token(token)
+        if slug and slug not in seen:
+            seen.add(slug)
+            canonical.append(slug)
+    canonical.sort(key=lambda slug: DAY_ORDER_INDEX.get(slug, 99))
+    return canonical
+
+
+def _condense_day_ranges(days: list[str]) -> list[tuple[str, str]]:
+    """מקבל רשימת ימים קנונית ומחזיר טווחים רציפים."""
+
+    if not days:
+        return []
+    sorted_days = sorted(days, key=lambda slug: DAY_ORDER_INDEX.get(slug, 99))
+    ranges: list[tuple[str, str]] = []
+    start = prev = sorted_days[0]
+    for slug in sorted_days[1:]:
+        if DAY_ORDER_INDEX.get(slug, -1) == DAY_ORDER_INDEX.get(prev, -1) + 1:
+            prev = slug
+            continue
+        ranges.append((start, prev))
+        start = prev = slug
+    ranges.append((start, prev))
+    return ranges
+
+
+def _clean_hour_value(hour_val) -> int | None:
+    if hour_val is None:
+        return None
+    if isinstance(hour_val, (int, float)):
+        hour_int = int(hour_val)
+    else:
+        text = str(hour_val).strip()
+        if not text:
+            return None
+        try:
+            hour_int = int(float(text))
+        except (TypeError, ValueError):
+            return None
+    return max(0, min(24, hour_int))
+
+
+def _format_time_label(hour_int: int | None, lang: str) -> str:
+    if hour_int is None:
+        return ""
+    return f"{hour_int:02d}:00"
+
+
+def build_schedule_display(blocks: list[dict], lang: str) -> list[dict]:
+    """בונה רשימת טווחים לתצוגה לפי שפה."""
+
+    display_blocks: list[dict] = []
+    labels = DAY_LABELS.get(lang, DAY_LABELS["he"])
+    for block in blocks or []:
+        days_raw = block.get("days") or block.get("days_canonical") or block.get("days_raw") or []
+        canonical_days = _canonicalize_days(days_raw)
+        start_hour = _clean_hour_value(block.get("start_hour"))
+        end_hour = _clean_hour_value(block.get("end_hour"))
+        day_ranges = _condense_day_ranges(canonical_days)
+        if canonical_days or start_hour is not None or end_hour is not None:
+            days_labels: list[str] = []
+            for start_slug, end_slug in day_ranges:
+                start_label = labels.get(start_slug, start_slug.title())
+                end_label = labels.get(end_slug, end_slug.title())
+                if start_slug == end_slug:
+                    days_labels.append(start_label)
+                else:
+                    days_labels.append(f"{start_label}–{end_label}")
+            display_blocks.append({
+                "days": canonical_days,
+                "days_display": " • ".join(days_labels) if days_labels else "",
+                "start_hour": start_hour,
+                "end_hour": end_hour,
+                "start_label": _format_time_label(start_hour, lang),
+                "end_label": _format_time_label(end_hour, lang),
+            })
+    return display_blocks
+
+
+def build_call_to_action(blocks: list[dict], lang: str, *, now: datetime | None = None) -> dict | None:
+    """יוצר כותרת משנה וסטטוס CTA על בסיס לוח הזמנים."""
+
+    if not blocks:
+        return None
+
+    now = now or datetime.now(ISRAEL_TZ)
+
+    def _iter_windows():
+        for block in blocks:
+            canonical_days = _canonicalize_days(block.get("days") or block.get("days_canonical") or block.get("days_raw") or [])
+            if not canonical_days:
+                canonical_days = list(DAY_ORDER)
+            start_hour = _clean_hour_value(block.get("start_hour"))
+            end_hour = _clean_hour_value(block.get("end_hour"))
+            for slug in canonical_days:
+                weekday = DAY_SLUG_TO_PY_WEEKDAY.get(slug)
+                if weekday is None:
+                    continue
+                yield slug, weekday, start_hour, end_hour
+
+    def _resolve_window(base_date: date, start_hour: int | None, end_hour: int | None) -> tuple[datetime, datetime]:
+        if start_hour is None:
+            start_hour = 0
+        if end_hour is None:
+            end_hour = 24
+        start_hour = max(0, min(24, start_hour))
+        end_hour = max(0, min(24, end_hour))
+        start_dt = datetime.combine(base_date, dt_time(start_hour % 24, 0), tzinfo=ISRAEL_TZ)
+        end_dt = datetime.combine(base_date, dt_time(end_hour % 24, 0), tzinfo=ISRAEL_TZ)
+        if end_hour == 24:
+            end_dt += timedelta(days=1)
+        if end_dt <= start_dt:
+            end_dt += timedelta(days=1)
+        return start_dt, end_dt
+
+    upcoming_window = None
+    active_window = None
+
+    for offset in range(7):
+        day_dt = (now + timedelta(days=offset)).date()
+        weekday = day_dt.weekday()
+        slug = PY_WEEKDAY_TO_SLUG.get(weekday)
+        if slug is None:
+            continue
+        for _, window_weekday, start_hour, end_hour in _iter_windows():
+            if window_weekday != weekday:
+                continue
+            start_dt, end_dt = _resolve_window(day_dt, start_hour, end_hour)
+            if start_dt <= now < end_dt:
+                if not active_window or end_dt < active_window[1]:
+                    active_window = (start_dt, end_dt)
+            elif start_dt > now:
+                if not upcoming_window or start_dt < upcoming_window[0]:
+                    upcoming_window = (start_dt, end_dt)
+        if active_window:
+            break
+        if upcoming_window and upcoming_window[0].date() == day_dt:
+            # כבר מצאנו את החלון הקרוב ביותר של היום
+            break
+
+    labels = DAY_LABELS.get(lang, DAY_LABELS["he"])
+
+    def _format_future_label(target_dt: datetime) -> str:
+        diff_days = (target_dt.date() - now.date()).days
+        time_part = target_dt.strftime("%H:%M")
+        if diff_days == 0:
+            return {
+                "he": f"היום ב-{time_part}",
+                "en": f"Today at {time_part}",
+                "ru": f"Сегодня в {time_part}",
+            }.get(lang, f"Today at {time_part}")
+        if diff_days == 1:
+            return {
+                "he": f"מחר ב-{time_part}",
+                "en": f"Tomorrow at {time_part}",
+                "ru": f"Завтра в {time_part}",
+            }.get(lang, f"Tomorrow at {time_part}")
+        slug = PY_WEEKDAY_TO_SLUG.get(target_dt.weekday())
+        day_label = labels.get(slug, slug.title()) if slug else target_dt.strftime("%A")
+        if lang == "he":
+            return f"ביום {day_label} ב-{time_part}"
+        if lang == "ru":
+            return f"В {day_label} в {time_part}"
+        return f"On {day_label} at {time_part}"
+
+    if active_window:
+        _, active_end = active_window
+        diff_days = (active_end.date() - now.date()).days
+        time_part = active_end.strftime("%H:%M")
+        if diff_days == 0:
+            subline = {
+                "he": f"עד {time_part}",
+                "en": f"Until {time_part}",
+                "ru": f"До {time_part}",
+            }.get(lang, f"Until {time_part}")
+        elif diff_days == 1:
+            subline = {
+                "he": f"עד מחר {time_part}",
+                "en": f"Until tomorrow at {time_part}",
+                "ru": f"До завтра {time_part}",
+            }.get(lang, f"Until tomorrow at {time_part}")
+        else:
+            slug = PY_WEEKDAY_TO_SLUG.get(active_end.weekday())
+            day_label = labels.get(slug, slug.title()) if slug else active_end.strftime("%A")
+            if lang == "he":
+                subline = f"עד {day_label} {time_part}"
+            elif lang == "ru":
+                subline = f"До {day_label} {time_part}"
+            else:
+                subline = f"Until {day_label} {time_part}"
+        return {
+            "status": "open",
+            "headline": {
+                "he": "זמין עכשיו לשיחה",
+                "en": "Available to talk now",
+                "ru": "Доступен для звонка сейчас",
+            }.get(lang, "Available now"),
+            "subline": subline,
+            "until": active_end.isoformat(),
+        }
+
+    if upcoming_window:
+        start_dt, _ = upcoming_window
+        return {
+            "status": "closed",
+            "headline": {
+                "he": "לא זמין כעת",
+                "en": "Not available right now",
+                "ru": "Сейчас недоступен",
+            }.get(lang, "Not available right now"),
+            "subline": _format_future_label(start_dt),
+            "next": start_dt.isoformat(),
+        }
+
+    return {
+        "status": "unknown",
+        "headline": {
+            "he": "צרו קשר לתיאום",
+            "en": "Call to schedule",
+            "ru": "Свяжитесь для согласования",
+        }.get(lang, "Call to schedule"),
+        "subline": {
+            "he": "השאירו פרטים ונחזור אליכם",
+            "en": "Leave your details and we'll get back to you",
+            "ru": "Оставьте заявку — мы перезвоним",
+        }.get(lang, "Leave your details and we'll get back to you"),
+    }
 
 
 # ------------------------------
@@ -2356,25 +2680,31 @@ def worker_reviews(lang, worker_id):
     for slot in worker.get('work_blocks') or []:
         if not isinstance(slot, dict):
             continue
-        days = [d.strip() for d in (slot.get('days') or []) if isinstance(d, str) and d.strip()]
-        start_hour = slot.get('start_hour')
-        end_hour = slot.get('end_hour')
+        days_raw = [
+            d.strip()
+            for d in (slot.get('days') or [])
+            if isinstance(d, str) and d.strip()
+        ]
+        canonical_days = _canonicalize_days(days_raw)
+        start_hour = _clean_hour_value(slot.get('start_hour'))
+        end_hour = _clean_hour_value(slot.get('end_hour'))
         item = {}
-        if days:
-            item['days'] = days
-        if isinstance(start_hour, (int, float, str)) and str(start_hour).strip():
-            try:
-                item['start_hour'] = int(float(start_hour))
-            except (ValueError, TypeError):
-                pass
-        if isinstance(end_hour, (int, float, str)) and str(end_hour).strip():
-            try:
-                item['end_hour'] = int(float(end_hour))
-            except (ValueError, TypeError):
-                pass
+        if days_raw:
+            item['days'] = days_raw
+            item['days_raw'] = days_raw
+        if canonical_days:
+            item['days_canonical'] = canonical_days
+        if start_hour is not None:
+            item['start_hour'] = start_hour
+        if end_hour is not None:
+            item['end_hour'] = end_hour
         if item:
             schedule_blocks.append(item)
+
     worker['work_blocks'] = schedule_blocks
+    worker['work_schedule_display'] = build_schedule_display(schedule_blocks, lang=lang)
+    worker['call_to_action'] = build_call_to_action(schedule_blocks, lang=lang)
+
 
     # --- ביקורות + חישוב ממוצע (הקריטי ל-HERO) ---
     reviews_file = os.path.join(DATA_FOLDER, 'worker_reviews.json')

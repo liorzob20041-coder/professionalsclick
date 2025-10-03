@@ -12,6 +12,18 @@
 {% include 'navbar.html' %}
 
 {% block content %}
+{% set desc_bundle = describe_worker(worker) %}
+{% if desc_bundle is mapping %}
+  {% set neutral_variant = desc_bundle.get('neutral_professional') %}
+  {% set service_variant = desc_bundle.get('service_human') %}
+  {% set urgent_variant = desc_bundle.get('urgent_trust') %}
+{% else %}
+  {% set neutral_variant = None %}
+  {% set service_variant = None %}
+  {% set urgent_variant = None %}
+{% endif %}
+{% set hero_teaser = neutral_variant.teaser if neutral_variant and neutral_variant.teaser else (worker.tagline or worker.experience_text or '') %}
+{% set about_body = service_variant.body if service_variant and service_variant.body else (worker.about_clean or worker.about) %}
 <section class="worker-profile-section" dir="rtl">
 
   <!-- מזהה העובד לצרכי מדידה / אנליטיקס -->
@@ -81,6 +93,9 @@
           <div class="worker-hero-sub">
             {{ field_txt or 'תחום' }}{% if city_txt %} · {{ city_txt }}{% endif %}
           </div>
+          {% if hero_teaser %}
+            <p class="worker-hero-sub worker-hero-tagline">{{ hero_teaser }}</p>
+          {% endif %}
 
           <div class="worker-hero-badges" role="list" aria-label="תגיות">
             {% if worker.verified %}<span class="worker-badge worker-badge--verified" role="listitem">מאומת</span>{% endif %}
@@ -504,8 +519,8 @@
   </section>
   <!-- אודות -->
   <section class="worker-about" aria-label="קצת עליי">
-    {% set about_txt = worker.about_clean or worker.about %}
-    {% set about_badge = worker.tagline or worker.experience_text or worker.field %}
+    {% set about_txt = about_body %}
+    {% set about_badge = hero_teaser or worker.tagline or worker.experience_text or worker.field %}
     <div class="worker-about-card">
       <div class="worker-about-card__header">
         <h2 class="worker-about-card__title">קצת עליי</h2>

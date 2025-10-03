@@ -179,16 +179,10 @@
                 <span class="city-switch__label">שינוי עיר</span>
                 <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
               </button>
-
-
-
             </span>
           </span>
         {% endif %}
       </h1>
-
-
-
 
       <p class="brand-sub">קליק אחד והמקצוען בדרך אליכם</p>
 
@@ -324,7 +318,10 @@
                   {% endif %}
 
                   {% if w.experience_text %}
-                    <p class="info-row"><i class="fa-solid fa-briefcase icon fa-fw" aria-hidden="true"></i>{{ w.experience_text }}</p>
+                    <p class="info-row">
+                      <i class="fa-solid fa-briefcase icon icon--accent fa-fw" aria-hidden="true"></i>
+                      {{ w.experience_text }}
+                    </p>
                   {% endif %}
                   {% set lang_list = w.languages or [] %}
                   {% if lang_list %}

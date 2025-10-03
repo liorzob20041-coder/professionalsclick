@@ -36,6 +36,7 @@ except ImportError:  # Python < 3.9 or zoneinfo backport not installed
 from threading import Lock
 from services.ai_writer import generate_draft
 from services.ai_variants import list_variants, assign_variant
+from services.worker_descriptions import describe_worker
 
 
 
@@ -1402,6 +1403,7 @@ def register_jinja_filters(flask_app):
     """רישום הפילטרים לסביבת Jinja לאחר יצירת האפליקציה."""
     flask_app.jinja_env.filters['to_embed_url'] = to_embed_url
     flask_app.jinja_env.filters['video_kind'] = video_kind
+    flask_app.jinja_env.filters['describe_worker'] = describe_worker
 
 # ------------------------------
 # ניהול שפה ותרגומים

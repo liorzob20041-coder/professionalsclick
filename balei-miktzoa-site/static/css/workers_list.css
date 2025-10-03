@@ -1382,3 +1382,27 @@ select:focus-visible,
   }
 }
 
+
+
+
+/* צבע מותג כללי (עדכן/י לגוון שלך) */
+:root {
+  --brand-600: #b10e2e;   /* דוגמה – בורדו */
+  --muted-600: #9ca3af;  /* אפור לאייקונים משניים */
+}
+
+/* ברירת מחדל: אפור */
+.worker-card .icon {
+  color: var(--muted-600);
+}
+
+/* הדגשה: אייקונים עם המחלקה icon--accent יהיו בצבע המותג */
+.worker-card .icon--accent {
+  color: var(--brand-600);
+}
+
+/* ניגודיות טובה על רקעים בהירים במיוחד */
+.worker-card .info-row,
+.worker-card .lang-row {
+  color: #111827; /* טקסט כהה נוח לקריאה */
+}

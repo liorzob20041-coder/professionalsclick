@@ -35,18 +35,18 @@
         ]
       }
     ],
-    "ai_draft_bio": "אלקטרו-אורי בהנהלת אורי כהן מטפלים בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה.",
+    "ai_draft_bio": "אלקטרו-אורי – חשמלאי בהנהלת אורי כהן מטפלים בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. נשמח ליצור קשר.",
     "ai_draft_highlights": [
       "תיאום מהיר ושקוף",
       "התאמה לצורכי הלקוח",
       "עבודה מוקפדת"
     ],
-    "ai_draft_seo_title": "אלקטרו-אורי | תיקון קצרי חשמל, התקנת שקעים ומפסקים",
+    "ai_draft_seo_title": "אלקטרו-אורי – חשמלאי | תיקון קצרי חשמל, התקנת שקעים ומפסקים",
     "ai_status": "ready",
-    "ai_updated_at": "2025-09-22T10:47:08Z",
-    "ai_model": "deterministic-variants+policy+orders+allcheck+noCTA+noProf",
-    "ai_draft_bio_short": "אלקטרו-אורי בהנהלת אורי כהן מטפלים בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה.",
-    "ai_draft_bio_full": "אלקטרו-אורי בהנהלת אורי כהן מתמחה בתיקון קצרי חשמל והתקנת שקעים ומפסקים. בנוסף מטפל בשדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין.",
+    "ai_updated_at": "2025-10-04T09:31:43Z",
+    "ai_model": "deterministic-variants+policy+voiceecho",
+    "ai_draft_bio_short": "אלקטרו-אורי – חשמלאי בהנהלת אורי כהן מטפלים בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. נשמח ליצור קשר.",
+    "ai_draft_bio_full": "אלקטרו-אורי – חשמלאי בהנהלת אורי כהן מתמחה בתיקון קצרי חשמל והתקנת שקעים ומפסקים. בנוסף מטפל בשדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין.",
     "ai_draft_services_sentence": "תיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי, התקנת תאורה",
     "ai_draft_services": [
       "תיקון קצרי חשמל",
@@ -62,7 +62,70 @@
     "ai_variant_in_use_by": null,
     "ai_variants_exhausted": false,
     "ai_variant_cursor_next": 1,
-    "ai_variant_cursor": 0
+    "ai_variant_cursor": 0,
+    "request_id": "d0fb4745a0f8",
+    "description_generated_at": "2025-10-03T20:06:50.807071Z",
+    "description_variants": {
+      "neutral_professional": {
+        "teaser": "אלקטרו-אורי – חשמלאי מוסמך – פתרונות מלאים בתל אביב פעילות בתל אביב.",
+        "body": "אלקטרו-אורי – חשמלאי מוסמך מבצע/ת מגוון עבודות מקצועיות בתל אביב. מקפידים על חומרים איכותיים, סדר ובטיחות בכל שלב.",
+        "source": "fallback"
+      },
+      "service_human": {
+        "teaser": "אלקטרו-אורי – חשמלאי מוסמך – פתרונות מלאים בתל אביב פעילות בתל אביב.",
+        "body": "אלקטרו-אורי – חשמלאי מוסמך מבצע/ת מגוון עבודות מקצועיות בתל אביב. אצלנו תקבלו יחס אישי, תיאום ציפיות ברור ועבודה נקייה.",
+        "source": "fallback"
+      },
+      "urgent_trust": {
+        "teaser": "אלקטרו-אורי – חשמלאי מוסמך – פתרונות מלאים בתל אביב פעילות בתל אביב.",
+        "body": "אלקטרו-אורי – חשמלאי מוסמך מבצע/ת מגוון עבודות מקצועיות בתל אביב. בתיאום זריז, הגעה בזמן ותיעוד מסודר עד למסירה.",
+        "source": "fallback"
+      },
+      "used_fields": {
+        "display_name": "אלקטרו-אורי – חשמלאי מוסמך",
+        "person_name": "אורי כהן",
+        "field_label": "חשמלאים",
+        "city": "תל אביב",
+        "years": "",
+        "experience_text": "",
+        "rating": "",
+        "reviews_count": "",
+        "languages": [],
+        "sub_services": [],
+        "sub_services_compact": "",
+        "highlights": [],
+        "availability": "",
+        "policy_flags": {
+          "licensed": false,
+          "insured": false,
+          "invoice": false,
+          "emergency": false
+        },
+        "source_bio": "מתמקצע בכל עבודות החשמל"
+      }
+    },
+    "description_used_fields": {
+      "display_name": "אלקטרו-אורי – חשמלאי מוסמך",
+      "person_name": "אורי כהן",
+      "field_label": "חשמלאים",
+      "city": "תל אביב",
+      "years": "",
+      "experience_text": "",
+      "rating": "",
+      "reviews_count": "",
+      "languages": [],
+      "sub_services": [],
+      "sub_services_compact": "",
+      "highlights": [],
+      "availability": "",
+      "policy_flags": {
+        "licensed": false,
+        "insured": false,
+        "invoice": false,
+        "emergency": false
+      },
+      "source_bio": "מתמקצע בכל עבודות החשמל"
+    }
   },
   {
     "company_name": "אלקטרו-אורי – חשמלאי מוסמך",
@@ -141,7 +204,8 @@
     "ai_variant_in_use_by": null,
     "ai_variants_exhausted": false,
     "ai_variant_cursor_next": 1,
-    "ai_variant_cursor": 0
+    "ai_variant_cursor": 0,
+    "request_id": "d0fb4745a0f8"
   },
   {
     "company_name": "אלקטרו-וולט פתרונות בע״מ",
@@ -214,8 +278,314 @@
     "ai_variants_exhausted": false,
     "ai_variant_cursor_next": 1,
     "ai_status": "ready",
-    "ai_updated_at": "2025-09-22T11:31:11Z",
+    "ai_updated_at": "2025-10-04T09:31:37Z",
     "ai_model": "deterministic-variants+policy+voiceecho",
-    "ai_variant_cursor": 0
+    "ai_variant_cursor": 0,
+    "request_id": "9b1b75d14ea7"
+  },
+  {
+    "company_name": "ליאור הגבר",
+    "name": "ליאור זובריצקי",
+    "field": "חשמלאים",
+    "field_en": "Electricians",
+    "field_ru": "электрики",
+    "base_city": "תל אביב",
+    "work_radius": 30,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "נתניה",
+      "ראשון לציון"
+    ],
+    "phone": "050-2255368",
+    "experience": 11,
+    "description": "מתמקצע בכל עבודות החשמל כבר 11 שנים בזריזות וביעילות ",
+    "reviews": "",
+    "image_filename": "",
+    "video_url": null,
+    "video_local": null,
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "sub_services": [],
+    "offers_emergency": true,
+    "languages": [
+      "עברית",
+      "אנגלית",
+      "צרפתית",
+      "ספרדית"
+    ],
+    "request_id": "e27e1c9c5739",
+    "description_generated_at": "2025-10-04T09:28:45.090482Z",
+    "description_variants": {
+      "neutral_professional": {
+        "teaser": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. נשמח לדבר.",
+        "body": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל והתקנת שקעים ומפסקים. בנוסף מטפל בשדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין.",
+        "source": "prompt"
+      },
+      "service_human": {
+        "teaser": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. נשמח לדבר.",
+        "body": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל והתקנת שקעים ומפסקים. בנוסף מטפל בשדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין.",
+        "source": "prompt"
+      },
+      "urgent_trust": {
+        "teaser": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. נשמח לדבר.",
+        "body": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל והתקנת שקעים ומפסקים. בנוסף מטפל בשדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין.",
+        "source": "prompt"
+      },
+      "used_fields": {
+        "display_name": "ליאור הגבר",
+        "person_name": "ליאור זובריצקי",
+        "field_label": "חשמלאים",
+        "city": "תל אביב",
+        "sub_services": [],
+        "highlights": [
+          "תיאום מהיר ושקוף",
+          "התאמה לצורכי הלקוח",
+          "עבודה מוקפדת"
+        ],
+        "policy_flags": {
+          "licensed": false,
+          "insured": false,
+          "invoice": false,
+          "emergency": true
+        },
+        "source_bio": "מתמקצע בכל עבודות החשמל כבר 11 שנים בזריזות וביעילות "
+      },
+      "_meta": {
+        "ai_model": "deterministic-variants+policy+voiceecho",
+        "ai_variant_used": "elc_v6",
+        "ai_variant_card_style": 0,
+        "ai_variant_full_style": 1,
+        "ai_variant_cta_group": 5,
+        "ai_variant_cursor_next": 1,
+        "ai_updated_at": "2025-10-04T09:28:45Z"
+      }
+    },
+    "description_used_fields": {
+      "display_name": "ליאור הגבר",
+      "person_name": "ליאור זובריצקי",
+      "field_label": "חשמלאים",
+      "city": "תל אביב",
+      "sub_services": [],
+      "highlights": [
+        "תיאום מהיר ושקוף",
+        "התאמה לצורכי הלקוח",
+        "עבודה מוקפדת"
+      ],
+      "policy_flags": {
+        "licensed": false,
+        "insured": false,
+        "invoice": false,
+        "emergency": true
+      },
+      "source_bio": "מתמקצע בכל עבודות החשמל כבר 11 שנים בזריזות וביעילות "
+    },
+    "ai_draft_bio_short": "ליאור הגבר בהנהלת ליאור זובריצקי נותנים שירות תיקונים מהיר, תיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. שירות מקצועי, מהיר ואמין. נשמח לשוחח.",
+    "ai_draft_bio_full": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בתיקון קצרי חשמל והתקנת שקעים ומפסקים. בנוסף מטפל בשדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין.",
+    "ai_draft_bio": "ליאור הגבר בהנהלת ליאור זובריצקי נותנים שירות תיקונים מהיר, תיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי והתקנת תאורה. שירות מקצועי, מהיר ואמין. שירות מקצועי, מהיר ואמין. נשמח לשוחח.",
+    "ai_draft_highlights": [
+      "תיאום מהיר ושקוף",
+      "התאמה לצורכי הלקוח",
+      "עבודה מוקפדת"
+    ],
+    "ai_draft_seo_title": "ליאור הגבר | תיקון קצרי חשמל, התקנת שקעים ומפסקים",
+    "ai_draft_services_sentence": "תיקון קצרי חשמל, התקנת שקעים ומפסקים, שדרוג לוח תלת פאזי, התקנת תאורה",
+    "ai_draft_services": [
+      "תיקון קצרי חשמל",
+      "התקנת שקעים ומפסקים",
+      "שדרוג לוח תלת פאזי",
+      "התקנת תאורה"
+    ],
+    "ai_style": "רגוע ושקוף",
+    "ai_variant_used": "elc_v3",
+    "ai_variant_card_style": 2,
+    "ai_variant_full_style": 2,
+    "ai_variant_cta_group": 2,
+    "ai_variant_in_use_by": null,
+    "ai_variants_exhausted": false,
+    "ai_variant_cursor_next": 6,
+    "ai_status": "ready",
+    "ai_updated_at": "2025-10-04T10:13:11Z",
+    "ai_model": "deterministic-variants+policy+voiceecho",
+    "ai_variant_cursor": 6
+  },
+  {
+    "company_name": "ליאור הגבר",
+    "name": "ליאור זובריצקי",
+    "field": "שיפוצים",
+    "field_en": "Renovations",
+    "field_ru": "ремонт",
+    "base_city": "תל אביב",
+    "work_radius": 30,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "נתניה",
+      "ראשון לציון"
+    ],
+    "phone": "050-2255368",
+    "experience": 11,
+    "description": "",
+    "reviews": "",
+    "image_filename": "",
+    "video_url": null,
+    "video_local": null,
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 21,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "רביעי",
+          "חמישי",
+          "שישי",
+          "שבת"
+        ]
+      }
+    ],
+    "sub_services": [
+      "עבודות צבע",
+      "טיח ושליכט",
+      "ריצוף וחיפוי",
+      "שיפוץ חדרי רחצה",
+      "שבירת קירות",
+      "איטום"
+    ],
+    "offers_emergency": true,
+    "languages": [
+      "עברית",
+      "אנגלית",
+      "רוסית",
+      "ערבית",
+      "אמהרית"
+    ],
+    "request_id": "b90dab64a3c9",
+    "description_generated_at": "2025-10-04T08:28:21.395061Z",
+    "description_variants": {
+      "neutral_professional": {
+        "teaser": "ליאור הגבר — מתמחים בעבודות צבע, טיח ושליכט, ריצוף וחיפוי, שיפוץ חדרי רחצה, שבירת קירות ואיטום בתל אביב | סטנדרט עבודה תקני",
+        "body": "ליאור הגבר מגשים עבורכם פרויקטים של שיפוץ חדרי רחצה, עבודות צבע, טיח ושליכט, ריצוף וחיפוי. בנוסף, ליאור הגבר מציע שירותי שבירת קירות ואיטום. ליאור הגבר מתמחה בתכנון מוקפד וביצוע מסודר של כל העבודות. אתם מוזמנים לשוחח איתו על כל הצרכים שלכם. שומרים על שקיפות מלאה ותיאום ציפיות עד למסירה.",
+        "source": "llm"
+      },
+      "service_human": {
+        "teaser": "ליאור הגבר: מתמחים בעבודות צבע, טיח ושליכט, ריצוף וחיפוי, שיפוץ חדרי רחצה, שבירת קירות ואיטום בתל אביב | שקיפות מלאה מלאה ויישור קו מראש",
+        "body": "שומרים על שקיפות מלאה ותיאום ציפיות עד למסירה. מטפלים גם בשבירת קירות, איטום.",
+        "source": "llm"
+      },
+      "urgent_trust": {
+        "teaser": "ליאור הגבר — מתמחים בעבודות צבע, טיח ושליכט, ריצוף וחיפוי, שיפוץ חדרי רחצה, שבירת קירות ואיטום בתל אביב | שירות זמין ונגיש",
+        "body": "שומרים על שקיפות מלאה ותיאום ציפיות עד למסירה. מטפלים גם בשבירת קירות, איטום.",
+        "source": "llm"
+      },
+      "used_fields": {
+        "display_name": "ליאור הגבר",
+        "city": "תל אביב",
+        "sub_services": [
+          "עבודות צבע",
+          "טיח ושליכט",
+          "ריצוף וחיפוי",
+          "שיפוץ חדרי רחצה",
+          "שבירת קירות",
+          "איטום"
+        ],
+        "main_services": [
+          "עבודות צבע",
+          "טיח ושליכט",
+          "ריצוף וחיפוי",
+          "שיפוץ חדרי רחצה"
+        ],
+        "policy_flags": {
+          "licensed": false,
+          "insured": false,
+          "invoice": false,
+          "emergency": true
+        },
+        "languages": [
+          "עברית",
+          "אנגלית",
+          "רוסית"
+        ],
+        "years": "",
+        "rating": "",
+        "reviews_count": ""
+      }
+    },
+    "description_used_fields": {
+      "display_name": "ליאור הגבר",
+      "city": "תל אביב",
+      "sub_services": [
+        "עבודות צבע",
+        "טיח ושליכט",
+        "ריצוף וחיפוי",
+        "שיפוץ חדרי רחצה",
+        "שבירת קירות",
+        "איטום"
+      ],
+      "main_services": [
+        "עבודות צבע",
+        "טיח ושליכט",
+        "ריצוף וחיפוי",
+        "שיפוץ חדרי רחצה"
+      ],
+      "policy_flags": {
+        "licensed": false,
+        "insured": false,
+        "invoice": false,
+        "emergency": true
+      },
+      "languages": [
+        "עברית",
+        "אנגלית",
+        "רוסית"
+      ],
+      "years": "",
+      "rating": "",
+      "reviews_count": ""
+    },
+    "ai_draft_bio_short": "ליאור הגבר בהנהלת ליאור זובריצקי נותנים שירות תיקונים מהיר, עבודות צבע, טיח ושליכט, ריצוף וחיפוי, שיפוץ חדרי רחצה, שבירת קירות ואיטום. שירות מקצועי, מהיר ואמין. שירות מקצועי, מהיר ואמין. נשמח לעזור.",
+    "ai_draft_bio_full": "ליאור הגבר בהנהלת ליאור זובריצקי מתמחה בעבודות צבע וטיח ושליכט. בנוסף מטפל בריצוף וחיפוי, שיפוץ חדרי רחצה ושבירת קירות. כמו כן זמין לאיטום. שירות מקצועי, מהיר ואמין.",
+    "ai_draft_bio": "ליאור הגבר בהנהלת ליאור זובריצקי נותנים שירות תיקונים מהיר, עבודות צבע, טיח ושליכט, ריצוף וחיפוי, שיפוץ חדרי רחצה, שבירת קירות ואיטום. שירות מקצועי, מהיר ואמין. שירות מקצועי, מהיר ואמין. נשמח לעזור.",
+    "ai_draft_highlights": [
+      "תיאום מהיר ושקוף",
+      "התאמה לצורכי הלקוח",
+      "עבודה מוקפדת"
+    ],
+    "ai_draft_seo_title": "ליאור הגבר | עבודות צבע, טיח ושליכט",
+    "ai_draft_services_sentence": "עבודות צבע, טיח ושליכט, ריצוף וחיפוי, שיפוץ חדרי רחצה, שבירת קירות, איטום",
+    "ai_draft_services": [
+      "עבודות צבע",
+      "טיח ושליכט",
+      "ריצוף וחיפוי",
+      "שיפוץ חדרי רחצה",
+      "שבירת קירות",
+      "איטום"
+    ],
+    "ai_style": "תכל'ס",
+    "ai_variant_used": "gen_v3",
+    "ai_variant_card_style": 2,
+    "ai_variant_full_style": 2,
+    "ai_variant_cta_group": 2,
+    "ai_variant_in_use_by": null,
+    "ai_variants_exhausted": false,
+    "ai_variant_cursor_next": 6,
+    "ai_status": "ready",
+    "ai_updated_at": "2025-10-04T10:11:47Z",
+    "ai_model": "deterministic-variants+policy+voiceecho",
+    "ai_variant_cursor": 6
   }
 ]

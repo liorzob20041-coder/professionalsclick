@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>ניהול בקשות בעלי מקצוע</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- CSRF למודאל -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <style>
     :root{
       --bg:#0f1115;--panel:#171a1f;--ink:#e6edf3;--muted:#9aa4b2;
@@ -45,10 +47,8 @@
     .name{font-weight:700;margin:0 0 4px 0}
     .pill{display:inline-block;background:#0f1520;border:1px solid #283144;padding:2px 8px;border-radius:999px;font-size:12px;color:#cbd6e2;margin-inline-start:6px}
 
-    .text-block{max-width:480px}
-    .text-block .text{
-      display:-webkit-box;-webkit-box-orient:vertical;line-clamp:1;-webkit-line-clamp:1;overflow:hidden
-    }
+    .text-block{max-width:520px}
+    .text-block .text{display:-webkit-box;-webkit-box-orient:vertical;line-clamp:1;-webkit-line-clamp:1;overflow:hidden}
     .text-block.open .text{line-clamp:none;-webkit-line-clamp:initial;overflow:visible;white-space:normal}
     .toggle-link{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;font-size:12px;color:#7cc3ff;margin-top:4px}
 
@@ -58,12 +58,30 @@
 
     .actions form{display:inline-block;margin:4px 4px 0}
     .btn{background:var(--btn);color:var(--ink);border:1px solid #2b3240;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
+    .btn[disabled]{opacity:.6;cursor:default}
     .btn.primary{background:var(--btn2);border-color:#2c67c0}
     .btn.ok{background:#1b5e20;border-color:#2e7d32}
     .btn.danger{background:#7a1b1b;border-color:#9a2a2a}
     .btn.warn{background:#7a4c00;border-color:#9a6700}
     .checkbox{font-size:13px;color:#cbd5e1;margin-inline-end:8px}
     @media (max-width:920px){.hide-md{display:none}}
+
+    /* ==== MODAL ==== */
+    .desc-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50}
+    .desc-modal[hidden]{display:none}
+    .desc-modal__backdrop{position:absolute;inset:0;background:rgba(9,11,19,0.75)}
+    .desc-modal__dialog{position:relative;background:#10131a;border:1px solid #1b2333;border-radius:14px;padding:20px 22px;width:min(780px,92vw);max-height:92vh;overflow:auto;box-shadow:0 24px 48px rgba(3,5,10,0.45)}
+    .desc-modal__close{position:absolute;top:10px;left:14px;background:none;border:0;color:#a9b4c6;font-size:22px;cursor:pointer}
+    .desc-modal__title{margin:0 0 12px;font-size:18px}
+    .desc-modal__status{font-size:13px;margin-bottom:12px;color:#8ba3c2;min-height:18px}
+    .desc-tabs{display:flex;gap:8px;margin-bottom:12px}
+    .desc-tabs button{flex:1;background:#111826;border:1px solid #1f2a3d;color:#cfe3ff;padding:8px;border-radius:10px;cursor:pointer;font-size:13px}
+    .desc-tabs button[aria-selected="true"]{background:#1b2a3f;border-color:#4a6fae;color:#f8fbff}
+    .desc-form label{display:block;font-size:13px;margin:10px 0 4px;color:#cfe3ff}
+    .desc-form textarea{width:100%;background:#0f1520;border:1px solid #263247;border-radius:8px;color:#f1f5f9;padding:10px;font-size:13px;min-height:70px;resize:vertical}
+    .desc-form textarea:focus{outline:2px solid #2c67c0}
+    .desc-modal__actions{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+    .copy-btn{margin-top:6px;font-size:12px;padding:4px 8px;border-radius:8px;border:1px solid #2b3240;background:#182032;color:#e6edf3;cursor:pointer}
   </style>
 </head>
 <body>
@@ -105,8 +123,8 @@
       </thead>
       <tbody>
         {% for item in pending_list %}
-        <tr>
-          <!-- שם + תמונה/תגיות -->
+        {% set req_id = (item._request_id or item.request_id or ('row-' ~ loop.index0)) %}
+        <tr data-row-id="{{ req_id }}">
           <td>
             <div class="thumb">
               {% if item.image_filename %}
@@ -125,9 +143,7 @@
             </div>
           </td>
 
-          <td class="hide-md">
-            {{ item.field or '—' }}
-          </td>
+          <td class="hide-md">{{ item.field or '—' }}</td>
 
           <td>
             {{ item.get('area') or item.get('base_city') or '—' }}
@@ -137,52 +153,46 @@
           </td>
 
           <td class="hide-md mono">{{ item.phone or '—' }}</td>
-
           <td>{{ item.experience or 0 }} שנים</td>
 
-          <!-- טיוטת AI + דפדוף וריאנטים -->
           <td>
             {% set ai_status = item.get('ai_status') %}
             <div style="margin-bottom:6px">
               {% if ai_status == 'ready' %}
-                <span class="status ready">מוכן</span>
+                <span class="status ready" data-role="ai-status">מוכן</span>
               {% elif ai_status == 'error' %}
-                <span class="status err">שגיאה</span>
+                <span class="status err" data-role="ai-status">שגיאה</span>
               {% else %}
-                <span class="status na">טרם הופעל</span>
+                <span class="status na" data-role="ai-status">טרם הופעל</span>
               {% endif %}
             </div>
 
             <div class="ai-meta">
-              {% if item.get('ai_variant_used') %}
-                <span class="kv">וריאנט: <span class="mono">{{ item.ai_variant_used }}</span></span>
-              {% endif %}
-              {% if item.get('ai_variant_cursor') is not none %}
-                <span class="kv">מונה פרומפט: #{{ (item.ai_variant_cursor or 0) + 1 }}</span>
-              {% endif %}
+              <span class="kv">וריאנט: <span class="mono" data-role="ai-variant-id">{{ item.get('ai_variant_used') or '—' }}</span></span>
+              <span class="kv">מונה פרומפט: <span data-role="ai-prompt-counter">#{{ (item.ai_variant_cursor or 0) + 1 }}</span></span>
               {% if item.get('ai_variants_exhausted') %}
-                <span class="kv">מצב: כל הוריאנטים בשימוש (exhausted)</span>
+                <span class="kv" data-role="ai-exhausted">מצב: כל הוריאנטים בשימוש (exhausted)</span>
+              {% else %}
+                <span class="kv" data-role="ai-exhausted" style="display:none"></span>
               {% endif %}
             </div>
 
             {% if ai_status == 'ready' %}
               <div class="ai-sec-title">תיאור קצר (כרטיס):</div>
               <div class="text-block" id="ai-short-{{ loop.index0 }}">
-                <div class="text">
-                  {{ item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '—' }}
-                </div>
+                <div class="text" data-role="ai-short-text">{{ item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '—' }}</div>
                 <button class="toggle-link" type="button" onclick="toggleBlock('ai-short-{{ loop.index0 }}', this)">הצג הכל</button>
               </div>
 
               <div class="ai-sec-title">תיאור מלא (פרופיל):</div>
               <div class="text-block" id="ai-full-{{ loop.index0 }}">
-                <div class="text">{{ item.get('ai_draft_bio_full') or item.get('ai_draft_bio') or '—' }}</div>
+                <div class="text" data-role="ai-full-text">{{ item.get('ai_draft_bio_full') or item.get('ai_draft_bio') or '—' }}</div>
                 <button class="toggle-link" type="button" onclick="toggleBlock('ai-full-{{ loop.index0 }}', this)">הצג הכל</button>
               </div>
 
               <div class="ai-sec-title">שירותים:</div>
               <div class="text-block" id="svc-{{ loop.index0 }}">
-                <div class="text">
+                <div class="text" data-role="ai-services-text">
                   {% if item.get('ai_draft_services_sentence') %}
                     {{ item['ai_draft_services_sentence'] }}
                   {% else %}
@@ -192,14 +202,54 @@
                 </div>
                 <button class="toggle-link" type="button" onclick="toggleBlock('svc-{{ loop.index0 }}', this)">הצג הכל</button>
               </div>
-            {% elif ai_status == 'error' %}
-              <em class="muted">שגיאה ביצירת טיוטה</em>
             {% else %}
               <em class="muted">אין טיוטה</em>
             {% endif %}
 
-            <!-- פעולות דפדוף וריאנטים -->
+            <!-- JSON למודאל: prompt-based בלבד -->
+            <script type="application/json" class="desc-data" data-req-id="{{ req_id }}">
+            {
+              "req_id": {{ req_id|tojson }},
+              "name": {{ (item.company_name or item.name or 'ללא שם')|tojson }},
+              "variants": {
+                "neutral_professional": {
+                  "teaser": {{ (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '')|tojson }},
+                  "body":   {{ (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '')|tojson }},
+                  "source": "prompt"
+                },
+                "service_human": {
+                  "teaser": {{ (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '')|tojson }},
+                  "body":   {{ (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '')|tojson }},
+                  "source": "prompt"
+                },
+                "urgent_trust": {
+                  "teaser": {{ (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '')|tojson }},
+                  "body":   {{ (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '')|tojson }},
+                  "source": "prompt"
+                }
+              },
+              "used_fields": {
+                "sub_services": {{ (item.get('sub_services') or [])|tojson }},
+                "city": {{ (item.get('area') or item.get('base_city') or '')|tojson }},
+                "policy_flags": {
+                  "licensed": {{ (item.get('is_licensed') or item.get('certified') or False)|tojson }},
+                  "insured": {{ (item.get('insured') or False)|tojson }},
+                  "invoice": {{ (item.get('invoice_vat') or item.get('issue_invoice') or False)|tojson }},
+                  "emergency": {{ (item.get('offers_emergency') or False)|tojson }}
+                }
+              },
+              "fallback_generate_url": {{ url_for('admin_ai_generate', index=loop.index0)|tojson }},
+              "fallback_generate_reset_url": {{ (url_for('admin_ai_generate', index=loop.index0) + '?reset=1')|tojson }}
+            }
+            </script>
+
+          </td>
+
+          <td>
             <div class="actions">
+              <button type="button" class="btn primary" data-open-modal="{{ req_id }}">✏️ פתח חלון</button>
+
+              <!-- הכפתורים הישנים (גיבוי) -->
               <form action="{{ url_for('admin_ai_generate', index=loop.index0) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn">⚙️ פרומפט הבא</button>
@@ -208,38 +258,58 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn warn">↺ אפס ודלג</button>
               </form>
-            </div>
 
-            <!-- תיאור מקורי -->
-            <div style="margin-top:8px">
-              <div class="ai-sec-title">תיאור מקורי (מהטופס):</div>
-              <div class="text-block" id="orig-{{ loop.index0 }}">
-                <div class="text">{{ item.get('description') or '—' }}</div>
-                <button class="toggle-link" type="button" onclick="toggleBlock('orig-{{ loop.index0 }}', this)">הצג הכל</button>
-              </div>
+              <form action="{{ url_for('approve_professional', index=loop.index0) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label class="checkbox">
+                  <input type="checkbox" name="use_ai" value="1" {% if item.get('ai_status') != 'ready' %}disabled{% endif %}>
+                  השתמש בטיוטת AI
+                </label>
+                <button type="submit" class="btn ok">אשר</button>
+              </form>
+              <form action="{{ url_for('delete_pending', index=loop.index0) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn danger">דחה</button>
+              </form>
             </div>
-          </td>
-
-          <!-- פעולות אישור/דחייה -->
-          <td>
-            <form action="{{ url_for('approve_professional', index=loop.index0) }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <label class="checkbox">
-                <input type="checkbox" name="use_ai" value="1" {% if item.get('ai_status') != 'ready' %}disabled{% endif %}>
-                השתמש בטיוטת AI
-              </label>
-              <button type="submit" class="btn ok">אשר</button>
-            </form>
-            <form action="{{ url_for('delete_pending', index=loop.index0) }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn danger">דחה</button>
-            </form>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   {% endif %}
+</div>
+
+<!-- ==== MODAL ==== -->
+<div class="desc-modal" id="descModal" hidden>
+  <div class="desc-modal__backdrop" data-close-modal></div>
+  <div class="desc-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="descModalTitle">
+    <button type="button" class="desc-modal__close" aria-label="סגור חלון" data-close-modal>&times;</button>
+    <h2 class="desc-modal__title" id="descModalTitle"></h2>
+    <div class="desc-modal__status" id="descModalStatus"></div>
+
+    <div class="desc-tabs" role="tablist" aria-label="סגנונות">
+      <button type="button" role="tab" data-style-tab="neutral_professional" aria-selected="true">ניטרלי-מקצועי</button>
+      <button type="button" role="tab" data-style-tab="service_human" aria-selected="false">שירותי-אנושי</button>
+      <button type="button" role="tab" data-style-tab="urgent_trust" aria-selected="false">דחוף/אמינות</button>
+    </div>
+
+    <div class="desc-form">
+      <label for="descTeaser">תיאור קצר (כרטיס)</label>
+      <textarea id="descTeaser" rows="3"></textarea>
+      <button class="copy-btn" type="button" data-copy="#descTeaser">העתק</button>
+
+      <label for="descBody">תיאור מלא (פרופיל)</label>
+      <textarea id="descBody" rows="8"></textarea>
+      <button class="copy-btn" type="button" data-copy="#descBody">העתק</button>
+    </div>
+
+    <div class="desc-modal__actions">
+      <button type="button" class="btn" id="descNextPromptBtn">⚙️ פרומפט הבא</button>
+      <button type="button" class="btn warn" id="descResetBtn">↺ אפס ודלג</button>
+      <button type="button" class="btn" id="descCloseBtn" data-close-modal>סגור</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -249,6 +319,179 @@
     var isOpen = el.classList.toggle('open');
     btn.textContent = isOpen ? 'הסתר' : 'הצג הכל';
   }
+
+  (function(){
+    const modal = document.getElementById('descModal');
+    const titleEl = document.getElementById('descModalTitle');
+    const statusEl = document.getElementById('descModalStatus');
+    const teaserInput = document.getElementById('descTeaser');
+    const bodyInput = document.getElementById('descBody');
+    const nextBtn = document.getElementById('descNextPromptBtn');
+    const resetBtn = document.getElementById('descResetBtn');
+    const closeBtns = modal.querySelectorAll('[data-close-modal]');
+    const tabButtons = Array.from(modal.querySelectorAll('[data-style-tab]'));
+    const STYLE_ORDER = ['neutral_professional','service_human','urgent_trust'];
+    const csrf = (document.querySelector('meta[name="csrf-token"]')||{}).content || '';
+
+    // זיכרון הרשומות
+    const store = new Map();
+    document.querySelectorAll('.desc-data').forEach(node => {
+      try {
+        const payload = JSON.parse(node.textContent || '{}');
+        if (payload && payload.req_id){
+          store.set(payload.req_id, payload);
+        }
+      } catch(e){ console.error('bad json', e); }
+    });
+
+    let currentReq = null;
+    let currentStyle = 'neutral_professional';
+
+    function setStatus(text){ statusEl.textContent = text || ''; }
+    function setBusy(b){ nextBtn.disabled = resetBtn.disabled = !!b; }
+
+    function selectTab(style){
+      if (!STYLE_ORDER.includes(style)) style='neutral_professional';
+      currentStyle = style;
+      tabButtons.forEach(btn => {
+        const active = btn.getAttribute('data-style-tab') === style;
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      const p = store.get(currentReq) || {};
+      const v = (p.variants && p.variants[style]) || {teaser:'', body:''};
+      teaserInput.value = v.teaser || '';
+      bodyInput.value = v.body || '';
+    }
+
+    function openModal(reqId){
+      const payload = store.get(reqId);
+      if (!payload){ return; }
+      currentReq = reqId;
+      currentStyle = 'neutral_professional';
+      titleEl.textContent = `עריכת תיאור – ${payload.name || ''}`;
+      setStatus('');
+      selectTab(currentStyle);
+      modal.hidden = false;
+
+      nextBtn.onclick  = () => triggerGenerate('next');
+      resetBtn.onclick = () => triggerGenerate('reset');
+    }
+
+    function closeModal(){
+      modal.hidden = true;
+      currentReq = null;
+      currentStyle = 'neutral_professional';
+      setStatus('');
+    }
+
+    // שולח POST כמו הטופס הישן, ואז מושך שוב את התוכן של השורה וה-json מהעמוד (ללא ריענון כללי)
+    async function triggerGenerate(kind){
+      const p = store.get(currentReq);
+      if (!p) return;
+
+      const url = (kind === 'reset') ? p.fallback_generate_reset_url : p.fallback_generate_url;
+
+      setBusy(true);
+      setStatus(kind === 'reset' ? 'מאפס ורץ פרומפט…' : 'מריץ פרומפט…');
+      try {
+        const fd = new FormData();
+        if (csrf) fd.append('csrf_token', csrf);
+        await fetch(url, { method:'POST', body: fd, headers: {'X-Requested-With':'fetch'} });
+
+        // למשוך גרסה טרייה של העמוד ולסנכרן:
+        const doc = await fetchFreshDocument();
+        applyRowFromDoc(currentReq, doc);     // מעדכן גם הטבלה וגם ה-store
+        selectTab(currentStyle);              // מרענן טקסטים במודאל
+        setStatus('עודכן ✓');
+      } catch (e) {
+        console.error(e);
+        setStatus('שגיאה בהרצה');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    // טוען את העמוד מחדש כפלט HTML
+    async function fetchFreshDocument(){
+      const url = window.location.href + (window.location.search ? '&' : '?') + '_ts=' + Date.now();
+      const htmlText = await fetch(url, { cache: 'no-store' }).then(r => r.text());
+      const parser = new DOMParser();
+      return parser.parseFromString(htmlText, 'text/html');
+    }
+
+    // לוקח את השורה וה-json מהמסמך הטרי ומעדכן את DOM הנוכחי ואת ה-store
+    function applyRowFromDoc(reqId, doc){
+      const serverRow = doc.querySelector(`[data-row-id="${reqId}"]`);
+      if (!serverRow) { console.warn('row not found in refreshed doc'); return; }
+
+      // עדכון json החבוי
+      const serverDataNode = serverRow.querySelector(`.desc-data[data-req-id="${reqId}"]`);
+      if (serverDataNode){
+        try{
+          const payload = JSON.parse(serverDataNode.textContent || '{}');
+          store.set(reqId, payload);
+          // עדכון ה-json בדף הנוכחי
+          const localDataNode = document.querySelector(`.desc-data[data-req-id="${reqId}"]`);
+          if (localDataNode){ localDataNode.textContent = JSON.stringify(payload); }
+        }catch(e){ console.error('bad json from refreshed doc', e); }
+      }
+
+      // העתקת שדות התצוגה (תיאור קצר/מלא + מטא)
+      const localRow = document.querySelector(`[data-row-id="${reqId}"]`);
+      if (!localRow) return;
+
+      copyText(serverRow, localRow, '[data-role="ai-short-text"]');
+      copyText(serverRow, localRow, '[data-role="ai-full-text"]');
+      copyText(serverRow, localRow, '[data-role="ai-services-text"]');
+      copyText(serverRow, localRow, '[data-role="ai-variant-id"]');
+      copyText(serverRow, localRow, '[data-role="ai-prompt-counter"]');
+      // exhausted: צריך גם להציג/להסתיר
+      const srcEx = serverRow.querySelector('[data-role="ai-exhausted"]');
+      const dstEx = localRow.querySelector('[data-role="ai-exhausted"]');
+      if (srcEx && dstEx){
+        dstEx.textContent = srcEx.textContent;
+        dstEx.style.display = getComputedStyle(srcEx).display;
+      }
+      // ai-status תמיד "מוכן" אחרי יצירה מוצלחת (כמו בצד שרת)
+      const st = localRow.querySelector('[data-role="ai-status"]');
+      if (st){ st.className = 'status ready'; st.textContent = 'מוכן'; }
+    }
+
+    function copyText(srcRoot, dstRoot, selector){
+      const src = srcRoot.querySelector(selector);
+      const dst = dstRoot.querySelector(selector);
+      if (src && dst){ dst.textContent = src.textContent; }
+    }
+
+    // פתיחת מודאל מכל שורה
+    document.querySelectorAll('[data-open-modal]').forEach(btn => {
+      btn.addEventListener('click', () => openModal(btn.getAttribute('data-open-modal')));
+    });
+
+    // טאבים
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => selectTab(btn.getAttribute('data-style-tab')));
+    });
+
+    // סגירה
+    closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hidden){ closeModal(); }
+    });
+
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sel = btn.getAttribute('data-copy');
+        const el = sel && document.querySelector(sel);
+        if (!el) return;
+        el.select();
+        document.execCommand('copy');
+        btn.textContent = 'הועתק ✓';
+        setTimeout(() => btn.textContent = 'העתק', 900);
+      });
+    });
+  })();
 </script>
 </body>
 </html>

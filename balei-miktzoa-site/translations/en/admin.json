@@ -1,0 +1,119 @@
+{
+  "page": {
+    "title": "Professional Requests Admin"
+  },
+  "toolbar": {
+    "aria": "Admin toolbar",
+    "dashboard": "Analytics dashboard",
+    "monthly": "Monthly report",
+    "all_time": "All-time report",
+    "logout": "Sign out"
+  },
+  "flash": {
+    "empty_pending": "No pending requests at the moment."
+  },
+  "table": {
+    "headers": {
+      "name": "Name",
+      "field": "Field",
+      "area": "Area",
+      "phone": "Phone",
+      "experience": "Experience",
+      "description": "Description",
+      "actions": "Actions"
+    },
+    "fallback_name": "Unnamed",
+    "services_count": "Sub-services: {count}",
+    "experience_years": "{years} yrs"
+  },
+  "radius": {
+    "label": "Radius {km} km"
+  },
+  "badge": {
+    "emergency": "24/7 Emergency"
+  },
+  "description": {
+    "button": {
+      "open": "Generate description",
+      "regenerate": "Regenerate",
+      "save": "Approve & save",
+      "cancel": "Cancel"
+    },
+    "status": {
+      "never": "No description yet",
+      "generated": "Generated on {ts}",
+      "running": "Generating description…",
+      "error": "Generation failed",
+      "selected": "Description selected",
+      "current_choice": "Style: {style} · Source: {source}"
+    }
+  },
+  "actions": {
+    "use_ai_checkbox": "Use legacy AI draft",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "original": {
+    "title": "Original submission",
+    "toggle_show": "Show more",
+    "toggle_hide": "Hide"
+  },
+  "modal": {
+    "close_label": "Close dialog",
+    "tablist_label": "Choose description style",
+    "title": "Edit description for {name}",
+    "tabs": {
+      "neutral": "Neutral · Professional",
+      "service": "Service-driven · Human",
+      "urgent": "Urgency & Trust"
+    },
+    "field": {
+      "teaser": "Card teaser",
+      "body": "Profile body"
+    },
+    "status": {
+      "idle": "Pick a tone to edit.",
+      "running": "Generating variants…",
+      "done": "Copy ready.",
+      "error": "Something went wrong."
+    },
+    "source": {
+      "llm": "Source: Model",
+      "fallback": "Source: Fallback copy",
+      "manual": "Source: Manual edits"
+    }
+  },
+  "used_fields": {
+    "title": "Data used in the copy",
+    "empty": "No supporting data to show.",
+    "labels": {
+      "display_name": "Display name",
+      "person_name": "Contact name",
+      "field_label": "Discipline",
+      "city": "City",
+      "years": "Experience",
+      "experience_text": "Experience summary",
+      "rating": "Rating",
+      "reviews_count": "Reviews count",
+      "languages": "Languages",
+      "sub_services": "Sub-services",
+      "sub_services_compact": "Sub-services (compact)",
+      "highlights": "Highlights",
+      "availability": "Availability",
+      "policy_flags": "Policy flags",
+      "source_bio": "Source bio"
+    },
+    "policy": {
+      "licensed": "Licensed",
+      "insured": "Insured",
+      "invoice": "Issues invoice",
+      "emergency": "Emergency service",
+      "none": "No policy flags"
+    }
+  },
+  "messages": {
+    "generate_started": "Generating new variants…",
+    "generate_error": "We couldn't complete the action. Please retry.",
+    "save_success": "Description saved."
+  }
+}

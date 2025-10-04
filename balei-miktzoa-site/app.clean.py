@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import datetime, timedelta, date, timezone, time as dt_time
 from zoneinfo import ZoneInfo
 from collections import defaultdict
+from typing import Any
 from urllib.parse import urlparse, parse_qs, urljoin
 
 from flask import (
@@ -36,7 +37,7 @@ except ImportError:  # Python < 3.9 or zoneinfo backport not installed
 from threading import Lock
 from services.ai_writer import generate_draft
 from services.ai_variants import list_variants, assign_variant
-from services.worker_descriptions import describe_worker
+from services.worker_descriptions import generate_worker_descriptions
 
 
 
@@ -48,6 +49,9 @@ GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
 
 # === Locks ===
 REVIEWS_JSON_LOCK = Lock()
+DESCRIPTION_JOB_LOCK = Lock()
+DESCRIPTION_JOBS: dict[str, dict] = {}
+DESCRIPTION_JOB_BY_REQ: dict[str, str] = {}
 
 
 # ------------------------------
@@ -678,6 +682,11 @@ def read_json_file(path):
 def write_json_file(path, data):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _now_iso() -> str:
+    ts = datetime.now(timezone.utc).isoformat()
+    return ts.replace("+00:00", "Z")
 
 # ------------------------------
 # פונקציות עזר
@@ -1403,7 +1412,6 @@ def register_jinja_filters(flask_app):
     """רישום הפילטרים לסביבת Jinja לאחר יצירת האפליקציה."""
     flask_app.jinja_env.filters['to_embed_url'] = to_embed_url
     flask_app.jinja_env.filters['video_kind'] = video_kind
-    flask_app.jinja_env.filters['describe_worker'] = describe_worker
 
 # ------------------------------
 # ניהול שפה ותרגומים
@@ -1466,16 +1474,27 @@ def get_price_items_from_translations(niche_key: str, lang: str = "he", limit: i
 
 def t(key: str, bundle: str | None = None) -> str:
     """
-    t('pro_req.title', 'request') -> reads translations/<lang>/request.json
-    t('some.key')                 -> falls back to current endpoint's bundle via g.translations
+    t('pro_req.title', 'request') -> translations/<lang>/request.json
+    t('table.headers.name')       -> תומך במפתחות נקודתיים במבנה מקונן
     """
     lang = getattr(g, "current_lang", "he")
     if bundle:
         data = _load_bundle(lang, bundle)
     else:
-        # fallback: use the endpoint-based dict already loaded into g.translations
+        # fallback: לפי ה-endpoint הנוכחי שכבר נטען ל-g.translations
         data = getattr(g, "translations", {}) or load_translations(lang)
-    return data.get(key, key)
+
+    cur = data
+    for part in str(key).split('.'):
+        if isinstance(cur, dict) and part in cur:
+            cur = cur[part]
+        else:
+            return key  # לא נמצא → מחזיר את המפתח עצמו
+    return str(cur) if isinstance(cur, (str, int, float)) else key
+
+def _(key: str) -> str:
+    return t(key)
+
 
 
 
@@ -2962,10 +2981,264 @@ def smart_alias(lang, term, area):
 # ------------------------------
 # Admin
 # ------------------------------
+
+
+def _request_id_for_item(item: dict) -> str:
+    if not isinstance(item, dict):
+        return ""
+    if item.get("worker_id"):
+        rid = str(item.get("worker_id"))
+        item.setdefault("request_id", rid)
+        return rid
+    existing = str(item.get("request_id") or "").strip()
+    if existing:
+        return existing
+    rid = _pre_worker_id(item)
+    item["request_id"] = rid
+    return rid
+
+
+def _resolve_request_record(req_id: str):
+    req_id = (req_id or "").strip()
+    if not req_id:
+        return None
+
+    pending_list = read_json_file(PENDING_FILE)
+    for idx, item in enumerate(pending_list):
+        if _request_id_for_item(item) == req_id:
+            return "pending", pending_list, idx, item
+
+    approved_list = read_json_file(APPROVED_FILE)
+    for idx, item in enumerate(approved_list):
+        if _request_id_for_item(item) == req_id:
+            return "approved", approved_list, idx, item
+
+    return None
+
+
+def _get_request_snapshot(req_id: str):
+    resolved = _resolve_request_record(req_id)
+    if not resolved:
+        return None
+    record_type, _, _, item = resolved
+    safe_copy = json.loads(json.dumps(item, ensure_ascii=False, default=str))
+    return record_type, safe_copy
+
+
+def _persist_description_result(req_id: str, result: dict, generated_at: str):
+    resolved = _resolve_request_record(req_id)
+    if not resolved:
+        return
+
+    record_type, records, idx, item = resolved
+    safe_result = json.loads(json.dumps(result or {}, ensure_ascii=False, default=str))
+    item["description_generated_at"] = generated_at
+    item["description_variants"] = safe_result
+    if isinstance(safe_result, dict):
+        item["description_used_fields"] = safe_result.get("used_fields") or {}
+    item["request_id"] = _request_id_for_item(item)
+    records[idx] = item
+
+    path = PENDING_FILE if record_type == "pending" else APPROVED_FILE
+    write_json_file(path, records)
+
+
+def _set_job_status(job_id: str, status: str, **extra):
+    with DESCRIPTION_JOB_LOCK:
+        job = DESCRIPTION_JOBS.get(job_id)
+        if not job:
+            return
+        job["status"] = status
+        job.update(extra)
+        job["updated_at"] = time.time()
+
+
+def _prune_old_jobs(max_age_seconds: int = 3600):
+    cutoff = time.time() - max_age_seconds
+    with DESCRIPTION_JOB_LOCK:
+        to_drop: list[tuple[str, str | None]] = []
+        for job_id, meta in list(DESCRIPTION_JOBS.items()):
+            ts = meta.get("updated_at") or meta.get("created_at") or 0
+            if ts < cutoff:
+                to_drop.append((job_id, meta.get("req_id")))
+        for job_id, req in to_drop:
+            DESCRIPTION_JOBS.pop(job_id, None)
+            if req and DESCRIPTION_JOB_BY_REQ.get(req) == job_id:
+                DESCRIPTION_JOB_BY_REQ.pop(req, None)
+
+
 @app.route('/admin')
 def admin():
     pending_list = read_json_file(PENDING_FILE)
+    for item in pending_list:
+        item['_request_id'] = _request_id_for_item(item)
+        variants = item.get('description_variants')
+        if isinstance(variants, dict) and 'used_fields' in variants and 'description_used_fields' not in item:
+            item['description_used_fields'] = variants.get('used_fields') or {}
     return render_template('admin.html', pending_list=pending_list)
+
+
+@app.post('/admin/requests/<req_id>/generate_description')
+def admin_generate_description(req_id):
+    snapshot_info = _get_request_snapshot(req_id)
+    if not snapshot_info:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+
+    record_type, snapshot = snapshot_info
+    _prune_old_jobs()
+
+    job_id = secrets.token_hex(12)
+    now_ts = time.time()
+    with DESCRIPTION_JOB_LOCK:
+        DESCRIPTION_JOBS[job_id] = {
+            "req_id": req_id,
+            "status": "queued",
+            "result": None,
+            "error": None,
+            "created_at": now_ts,
+            "updated_at": now_ts,
+            "record_type": record_type,
+        }
+        DESCRIPTION_JOB_BY_REQ[req_id] = job_id
+
+    def _runner():
+        _set_job_status(job_id, "running")
+        try:
+            result = generate_worker_descriptions(snapshot)
+            safe_result = json.loads(json.dumps(result, ensure_ascii=False, default=str))
+            generated_at = _now_iso()
+            _set_job_status(job_id, "done", result=safe_result, generated_at=generated_at)
+            _persist_description_result(req_id, safe_result, generated_at)
+        except Exception as exc:
+            _set_job_status(job_id, "error", error=str(exc))
+
+    threading.Thread(target=_runner, daemon=True).start()
+
+    return jsonify({"ok": True, "job_id": job_id, "status": "queued", "record_type": record_type})
+
+
+@app.get('/admin/requests/<req_id>/description_status')
+def admin_description_status(req_id):
+    resolved = _resolve_request_record(req_id)
+    record_type = None
+    item = None
+    if resolved:
+        record_type, _, _, item = resolved
+        item = json.loads(json.dumps(item, ensure_ascii=False, default=str))
+
+    job_snapshot = None
+    with DESCRIPTION_JOB_LOCK:
+        job_id = DESCRIPTION_JOB_BY_REQ.get(req_id)
+        if job_id and job_id in DESCRIPTION_JOBS:
+            snap = DESCRIPTION_JOBS[job_id].copy()
+            snap['job_id'] = job_id
+            job_snapshot = snap
+
+    response: dict[str, Any] = {"ok": True, "req_id": req_id, "record_type": record_type}
+
+    if job_snapshot:
+        response.update({
+            "job_id": job_snapshot.get("job_id"),
+            "status": job_snapshot.get("status", "unknown"),
+            "result": job_snapshot.get("result"),
+            "generated_at": job_snapshot.get("generated_at"),
+            "error": job_snapshot.get("error"),
+        })
+
+    if item:
+        response["selected"] = item.get("description_selected_text")
+        stored_variants = item.get("description_variants")
+        if stored_variants and not response.get("result"):
+            response["result"] = stored_variants
+        stored_generated_at = item.get("description_generated_at")
+        if stored_generated_at and not response.get("generated_at"):
+            response["generated_at"] = stored_generated_at
+        response["description_source"] = item.get("description_source")
+        response["description_style"] = item.get("description_style")
+        response["description_used_fields"] = item.get("description_used_fields")
+        if stored_variants and not response.get("status"):
+            response["status"] = "done"
+
+    if not response.get("status"):
+        response["status"] = "idle"
+
+    return jsonify(response)
+
+
+@app.post('/admin/requests/<req_id>/select_description')
+def admin_select_description(req_id):
+    payload = request.get_json(silent=True) or {}
+    style = (payload.get('style') or '').strip()
+    source = (payload.get('source') or '').strip()
+    teaser = (payload.get('teaser') or '').strip()
+    body = (payload.get('body') or '').strip()
+
+    resolved = _resolve_request_record(req_id)
+    if not resolved:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+
+    record_type, records, idx, item = resolved
+
+    if not source:
+        source = 'manual'
+
+    selection = {
+        'style': style,
+        'source': source,
+        'teaser': teaser,
+        'body': body,
+        'updated_at': _now_iso(),
+    }
+
+    job_result = None
+    generated_at = None
+    with DESCRIPTION_JOB_LOCK:
+        job_id = DESCRIPTION_JOB_BY_REQ.get(req_id)
+        if job_id:
+            job_meta = DESCRIPTION_JOBS.get(job_id)
+            if job_meta:
+                job_result = job_meta.get('result')
+                generated_at = job_meta.get('generated_at')
+
+    if job_result:
+        safe_result = json.loads(json.dumps(job_result, ensure_ascii=False, default=str))
+        item['description_variants'] = safe_result
+        if isinstance(safe_result, dict):
+            item['description_used_fields'] = safe_result.get('used_fields') or {}
+    elif isinstance(item.get('description_variants'), dict) and not item.get('description_used_fields'):
+        item['description_used_fields'] = item['description_variants'].get('used_fields') or {}
+
+    if generated_at:
+        item['description_generated_at'] = generated_at
+    elif not item.get('description_generated_at'):
+        item['description_generated_at'] = _now_iso()
+
+    item['description_selected_text'] = selection
+    if style:
+        item['description_style'] = style
+    if source:
+        item['description_source'] = source
+
+    item['bio_short'] = teaser
+    item['bio_full'] = body
+    item['description'] = body
+    item['request_id'] = _request_id_for_item(item)
+
+    if record_type == 'approved':
+        item['updated_at'] = _now_iso()
+
+    records[idx] = item
+    path = PENDING_FILE if record_type == 'pending' else APPROVED_FILE
+    write_json_file(path, records)
+
+    response = {
+        'ok': True,
+        'record_type': record_type,
+        'selection': selection,
+        'generated_at': item.get('description_generated_at'),
+        'variants': item.get('description_variants'),
+    }
+    return jsonify(response)
 
 @app.route('/approve/<int:index>', methods=['POST'])
 def approve_professional(index):
@@ -3018,9 +3291,47 @@ def approve_professional(index):
         else:
             item['specializations'] = []
 
-        # --- שימוש בטיוטת AI אם ביקשו בטופס ---
+        selection_applied = False
+        selection_payload = item.get('description_selected_text')
+        if isinstance(selection_payload, dict):
+            sel_teaser = _sanitize_he((selection_payload.get('teaser') or '').strip())
+            sel_body = _sanitize_he((selection_payload.get('body') or '').strip())
+
+            if item.get('offers_emergency'):
+                sel_teaser = _strip_emergency(sel_teaser)
+                sel_body = _strip_emergency(sel_body)
+
+            if sel_teaser:
+                item['bio_short'] = sel_teaser
+            if sel_body:
+                item['bio_full'] = sel_body
+                item['description'] = sel_body
+
+            source_val = (selection_payload.get('source') or item.get('description_source') or '').strip()
+            style_val = (selection_payload.get('style') or item.get('description_style') or '').strip()
+            if source_val:
+                item['description_source'] = source_val
+            if style_val:
+                item['description_style'] = style_val
+
+            selection_applied = bool(sel_teaser or sel_body or source_val or style_val)
+
+        if not selection_applied:
+            # אם נשמרו שדות מקור/סגנון ללא מילון מפורש (למשל עדכון ידני אחרי האישור)
+            source_val = (item.get('description_source') or '').strip()
+            style_val = (item.get('description_style') or '').strip()
+            if source_val:
+                item['description_source'] = source_val
+                selection_applied = True
+            if style_val:
+                item['description_style'] = style_val
+                selection_applied = True
+            if item.get('bio_full') and not item.get('description'):
+                item['description'] = item['bio_full']
+
+        # --- שימוש בטיוטת AI אם ביקשו בטופס ואין בחירה מותאמת ---
         use_ai = request.form.get('use_ai') in ('1', 'on', 'true', 'True')
-        if use_ai and (item.get('ai_status') == 'ready'):
+        if not selection_applied and use_ai and (item.get('ai_status') == 'ready'):
             # שליפה בטוחה של שדות מהטיוטה
             ai_bio_short = (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '').strip()
             ai_bio_full  = (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '').strip()
@@ -3056,7 +3367,7 @@ def approve_professional(index):
             item['services_list'] = sub_services[:]
             item['seo_title'] = seo_title
 
-            # תאימות—description = התיאור המלא
+            # תאימות—description = התיאור המלא␊
             if ai_bio_full:
                 item['description'] = ai_bio_full
 

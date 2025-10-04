@@ -1,0 +1,119 @@
+{
+  "page": {
+    "title": "ניהול בקשות בעלי מקצוע"
+  },
+  "toolbar": {
+    "aria": "סרגל ניהול",
+    "dashboard": "דשבורד אנליטיקס",
+    "monthly": "דוח חודשי",
+    "all_time": "כל הזמנים",
+    "logout": "התנתקות"
+  },
+  "flash": {
+    "empty_pending": "אין בקשות ממתינות כרגע."
+  },
+  "table": {
+    "headers": {
+      "name": "שם",
+      "field": "תחום",
+      "area": "אזור",
+      "phone": "טלפון",
+      "experience": "וותק",
+      "description": "תיאור",
+      "actions": "פעולות"
+    },
+    "fallback_name": "ללא שם",
+    "services_count": "תתי־תחומים: {count}",
+    "experience_years": "{years} שנות ניסיון"
+  },
+  "radius": {
+    "label": "רדיוס {km} ק״מ"
+  },
+  "badge": {
+    "emergency": "חירום 24/7"
+  },
+  "description": {
+    "button": {
+      "open": "יצירת תיאור",
+      "regenerate": "צור מחדש",
+      "save": "אשר ושמור",
+      "cancel": "ביטול"
+    },
+    "status": {
+      "never": "טרם נוצר תיאור",
+      "generated": "תיאור נוצר ב-{ts}",
+      "running": "יוצר תיאור…",
+      "error": "שגיאה בתהליך",
+      "selected": "נבחר תיאור",
+      "current_choice": "סגנון: {style} · מקור: {source}"
+    }
+  },
+  "actions": {
+    "use_ai_checkbox": "השתמש בטיוטת AI ישנה",
+    "approve": "אשר",
+    "reject": "דחה"
+  },
+  "original": {
+    "title": "תיאור מקורי מהטופס",
+    "toggle_show": "הצג הכל",
+    "toggle_hide": "הסתר"
+  },
+  "modal": {
+    "close_label": "סגור חלון",
+    "tablist_label": "בחירת סגנון תיאור",
+    "title": "עריכת תיאור עבור {name}",
+    "tabs": {
+      "neutral": "ניטרלי-מקצועי",
+      "service": "שירותי-אנושי",
+      "urgent": "דחוף / אמינות"
+    },
+    "field": {
+      "teaser": "תיאור קצר (כרטיס)",
+      "body": "תיאור מלא (פרופיל)"
+    },
+    "status": {
+      "idle": "בחרו סגנון לעריכה.",
+      "running": "יוצר וריאציות…",
+      "done": "התיאור מוכן.",
+      "error": "אירעה שגיאה."
+    },
+    "source": {
+      "llm": "מקור: מודל",
+      "fallback": "מקור: טקסט מוכן",
+      "manual": "מקור: עריכה ידנית"
+    }
+  },
+  "used_fields": {
+    "title": "נתונים ששימשו לכתיבה",
+    "empty": "לא נאספו נתונים להצגה.",
+    "labels": {
+      "display_name": "שם תצוגה",
+      "person_name": "שם איש קשר",
+      "field_label": "תחום פעילות",
+      "city": "עיר",
+      "years": "וותק",
+      "experience_text": "תיאור ניסיון",
+      "rating": "דירוג",
+      "reviews_count": "מספר ביקורות",
+      "languages": "שפות",
+      "sub_services": "תתי־תחומים",
+      "sub_services_compact": "תתי־תחומים (מקוצר)",
+      "highlights": "נקודות חזקות",
+      "availability": "זמינות",
+      "policy_flags": "הצהרות שירות",
+      "source_bio": "תיאור מקורי"
+    },
+    "policy": {
+      "licensed": "בעל רישיון",
+      "insured": "מבוטח",
+      "invoice": "מספק חשבונית",
+      "emergency": "נותן מענה חירום",
+      "none": "לא צוינו הצהרות"
+    }
+  },
+  "messages": {
+    "generate_started": "יוצר וריאציות חדשות…",
+    "generate_error": "לא הצלחנו להשלים את הפעולה. נסו שוב.",
+    "save_success": "התיאור נשמר."
+  }
+}

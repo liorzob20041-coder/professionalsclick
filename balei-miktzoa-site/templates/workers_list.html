@@ -253,7 +253,7 @@
         {% else %}
           <div class="workers-grid" id="workersGrid">
             {% for w in workers %}
-              <div class="worker-card">
+              <div class="worker-card" data-href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
                 {% set image_url = w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg') %}
                 {% set raw_video = w.video_url or w.video_local %}
                 {% if raw_video %}
@@ -293,7 +293,9 @@
 
                 <div class="worker-info">
                   <h2 class="worker-name">
-                    {{ w.company_name }}
+                    <a class="worker-link" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="פרופיל של {{ w.company_name }}">
+                      {{ w.company_name }}
+                    </a>
                     {% if w.offers_emergency %}<span class="badge-emer">חירום 24/7</span>{% endif %}
                   </h2>
                   <p class="worker-person-name">({{ w.name }})</p>
@@ -334,14 +336,12 @@
                   {% set bio_short = (w.bio_short or w.description) %}
                   {% if bio_short %}
                     <p class="card-bio">{{ bio_short }}</p>
-                    <a class="more-link" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">קראו עוד</a>
                   {% endif %}
 
                   {% set svc_list = (w.services_list or w.sub_services or []) %}
                   {% if svc_list %}
                     {% set top3 = svc_list[:3] %}
                     <div class="mini-services">
-                      <span class="label">התמחויות:</span>
                       <span>{{ ', '.join(top3) }}{% if svc_list|length > 3 %}…{% endif %}</span>
                     </div>
                   {% endif %}
@@ -467,5 +467,17 @@
       function closeDrawer(){ overlay.hidden=true; drawer.setAttribute('aria-hidden','true'); openBtn&&openBtn.setAttribute('aria-expanded','false'); document.documentElement.classList.remove('drawer-open'); document.body.style.overflow=''; drawer.hidden=true; }
       openBtn&&openBtn.addEventListener('click', openDrawer); closeBtn&&closeBtn.addEventListener('click', closeDrawer); overlay&&overlay.addEventListener('click', closeDrawer); document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); }, {passive:true});
     })();
+
+    document.addEventListener('click', function(e){
+      if (e.defaultPrevented) return;
+      const ignoreTarget = e.target.closest('a, button, .phone-button, .play-overlay');
+      if (ignoreTarget) return;
+      const card = e.target.closest('.worker-card');
+      if (!card) return;
+      const href = card.dataset.href;
+      if (!href) return;
+      if ((typeof e.button === 'number' && e.button !== 0) || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      window.location.href = href;
+    });
   </script>
 {% endblock %}

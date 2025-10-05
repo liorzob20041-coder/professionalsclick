@@ -583,6 +583,10 @@ body {
   transform: translateY(-5px);
 }
 
+.worker-card[data-href]:hover {
+  cursor: pointer;
+}
+
 /* Media */
 .card-media {
   position: relative;
@@ -725,6 +729,25 @@ body {
   margin: 0;
 }
 
+.worker-name .worker-link {
+  color: #1f2937;
+  text-decoration: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.worker-name .worker-link:hover {
+  text-decoration: underline;
+}
+
+.worker-name .worker-link:focus-visible {
+  outline: 2px solid var(--soft-ring);
+  outline-offset: 3px;
+  text-decoration: none;
+}
+
 .worker-person-name {
   font-size: 0.95em;
   color: #666;
@@ -737,6 +760,15 @@ body {
   color: #666;
   margin: 4px 0 8px;
   line-height: 1.4;
+}
+
+.mini-services {
+  color: #374151;
+  font-weight: 600;
+}
+
+.mini-services .label {
+  display: none;
 }
 
 .info-row {

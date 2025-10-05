@@ -130,25 +130,148 @@ _KNOWN_PATTERNS = {
         "טוחן אשפה",
         "התקנת נקודת מים",
     ],
+    "מנעולן": [
+        "פריצת דלתות",
+        "החלפת צילינדרים",
+        "פתיחת כספות",
+        "פריצת רכבים",
+        "התקנת מנעולים חכמים",
+        "חילוץ מפתחות שבורים",
+    ],
+    "מדביר": [
+        "הדברת ג'וקים ונמלים",
+        "טיפול במכרסמים",
+        "הדברת טרמיטים",
+        "הדברה ירוקה",
+        "ריסוס לחצרות ולמחסנים",
+        "איתור מוקדי מזיקים",
+    ],
+    "נגר": [
+        "ייצור מטבחים בהתאמה אישית",
+        "נגרות פנים",
+        "בניית ארונות קיר",
+        "תיקון רהיטי עץ",
+        "חידוש משטחי עץ",
+        "עבודות פרגולות ודקים",
+    ],
+    "שיפוצניק": [
+        "שיפוץ דירות",
+        "חידוש חדרי אמבטיה",
+        "עבודות צבע וגבס",
+        "החלפת ריצוף",
+        "שדרוג מטבחים",
+        "עבודות חשמל ואינסטלציה משלימות",
+    ],
+    "טכנאי מזגנים": [
+        "התקנת מזגנים",
+        "תיקון תקלות מיזוג",
+        "מילוי גז למזגנים",
+        "תחזוקת מערכות VRF",
+        "התקנת מזגני מיני מרכזי",
+        "ניקוי עמוק למערכות מיזוג",
+    ],
+}
+
+_BIO_KEYWORDS_HINTS = {
+    "מנעולן": [
+        r"מנעול",
+        r"צילינדר",
+        r"פריצ[הת]",
+        r"locksmith",
+        r"keys?",
+        r"צילנדר",
+    ],
+    "מדביר": [
+        r"הדברה",
+        r"מדביר",
+        r"ריסוס",
+        r"pest\s*control",
+        r"חיסול מזיקים",
+        r"טרמיטי?",
+        r"ג'וקים",
+        r"נמלים",
+    ],
+    "נגר": [
+        r"נגר",
+        r"עבודות\s*עץ",
+        r"woodwork",
+        r"carpenter",
+        r"מטבח",
+        r"רהיט",
+    ],
+    "שיפוצניק": [
+        r"שיפוצ",
+        r"renovat",
+        r"גבס",
+        r"ריצוף",
+        r"חידוש בית",
+    ],
+    "טכנאי מזגנים": [
+        r"מזגנ",
+        r"מיזוג",
+        r"a\/?c",
+        r"air\s*conditioning",
+        r"vrf",
+        r"צ'ילרים",
+    ],
 }
 
 def _infer_services_from_bio(field: str, source_bio: str):
     base = []
     f = (field or "").strip()
-    if "חשמל" in f or "חשמלא" in f:
-        base = _KNOWN_PATTERNS["חשמלאי"]
+    norm_field = _normalize_field(f)
+    if norm_field in _KNOWN_PATTERNS:
+        base = _KNOWN_PATTERNS[norm_field]
+    elif "חשמל" in f or "חשמלא" in f:
+        base = _KNOWN_PATTERNS.get("חשמלאי", [])
+        norm_field = "חשמלאי"
     elif "אינסטל" in f:
-        base = _KNOWN_PATTERNS["אינסטלטור"]
-    if not base or not source_bio:
+        base = _KNOWN_PATTERNS.get("אינסטלטור", [])
+        norm_field = "אינסטלטור"
+
+    s = (source_bio or "").replace("־", "-").replace("–", "-") if source_bio else ""
+    if not base and s:
+        s_lower = s.lower()
+        for field_key, patterns in _BIO_KEYWORDS_HINTS.items():
+            for rx in patterns:
+                if re.search(rx, s_lower, flags=re.IGNORECASE):
+                    base = _KNOWN_PATTERNS.get(field_key, [])
+                    norm_field = field_key
+                    break
+            if base:
+                break
+
+    if not base:
         return []
-    s = (source_bio or "").replace("־","-").replace("–","-")
-    # מיפוי אנגלי נפוץ → עברית, כדי שזיהוי יעבוד
-    s = s.replace("Electrical work", "עבודות החשמל").replace("electrical work", "עבודות החשמל")
+
+    if not s:
+        return base[:4]
+
+    replacements = {
+        "electrical work": "עבודות החשמל",
+        "Electrical work": "עבודות החשמל",
+        "locksmith": "שירותי מנעולן",
+        "Locksmith": "שירותי מנעולן",
+        "pest control": "הדברה מקצועית",
+        "Pest control": "הדברה מקצועית",
+        "carpenter": "נגר מקצועי",
+        "Carpenter": "נגר מקצועי",
+        "renovation": "שיפוץ מקצועי",
+        "Renovation": "שיפוץ מקצועי",
+        "air conditioning": "מיזוג אוויר",
+        "Air conditioning": "מיזוג אוויר",
+    }
+    for eng, heb in replacements.items():
+        s = s.replace(eng, heb)
+
     found = []
     for item in base:
         key = item.split()[0]
-        if key in s or item in s:
+        if key and key in s:
             found.append(item)
+        elif item in s:
+            found.append(item)
+
     if len(found) < 2:
         return base[:4]
     return [x for x in base if x in found]
@@ -286,6 +409,11 @@ def _join_commas_and_and(items):
 _FIELD_GENITIVE = {
     "חשמלאי": "עבודות החשמל",
     "אינסטלטור": "עבודות האינסטלציה",
+    "מנעולן": "שירותי המנעולנות",
+    "מדביר": "שירותי ההדברה",
+    "נגר": "עבודות הנגרות",
+    "שיפוצניק": "עבודות השיפוץ",
+    "טכנאי מזגנים": "שירותי המיזוג",
 }
 def _field_genitive(field: str) -> str:
     f = (field or "").strip()
@@ -304,6 +432,35 @@ def _quality_tail(seed: str, voice_tags: list) -> str:
     h = hashlib.sha1(f"{seed}|quality".encode("utf-8", errors="ignore")).hexdigest()
     idx = int(h, 16) % len(pool)
     return pool[idx]
+
+def _card_quality_tail(seed: str, voice_tags: list) -> str:
+    vl = _voice_line(voice_tags)
+    if vl:
+        return vl.replace("דגש על", "שומרים על")
+    pool = [
+        "שומרים על זמינות מהירה ויחס אישי.",
+        "מקפידים על תיאום שקוף מהשיחה הראשונה.",
+        "עובדים באמינות ובתיאום מלא מולכם.",
+        "חוויית שירות רגועה ומדויקת בכל פנייה.",
+    ]
+    h = hashlib.sha1(f"{seed}|cardtail".encode("utf-8", errors="ignore")).hexdigest()
+    idx = int(h, 16) % len(pool)
+    return pool[idx]
+
+def _split_service_groups(sub_services: list[str], limit: int = 3) -> list[list[str]]:
+    services = [s for s in (sub_services or []) if isinstance(s, str) and s.strip()]
+    if not services:
+        return []
+    chunk = max(1, (len(services) + limit - 1) // limit)
+    groups = [services[i:i + chunk] for i in range(0, len(services), chunk)]
+    return groups[:limit]
+
+def _sentence_not_in_card(text: str, card_sentences: list[str]) -> bool:
+    norm = (text or "").strip()
+    for s in card_sentences or []:
+        if norm and norm in s:
+            return False
+    return True
 
 # =============== All-selection detection ===============
 _ALL_RATIO = 0.98  # “כמעט הכול” נחשב כל הסעיפים
@@ -332,6 +489,9 @@ def _selected_all_services(worker: dict, field: str, selected: list) -> bool:
     elif "אינסטל" in field:
         base = _KNOWN_PATTERNS["אינסטלטור"]
     base = _canon_set(base)
+    if not base:
+        inferred = _infer_services_from_bio(field, _extract_source_bio(worker))
+        base = _canon_set(inferred)
     if not base:
         return False
     coverage = len(sel & base) / max(1, len(base))
@@ -376,47 +536,46 @@ def _display_heading(worker) -> tuple[str,bool]:
         return f"{comp} בהנהלת {name}", True
     return _first_name(name), False
 
-def _card_opening_style(worker, field: str, sub_services: list, style_idx: int, seed: str, voice_tags: list, is_all: bool) -> str:
+def _card_opening_style(worker, field: str, sub_services: list, style_idx: int, seed: str, voice_tags: list, is_all: bool) -> dict:
     heading, has_comp = _display_heading(worker)
-    sv_inline = _join_inline(sub_services) if sub_services else ""
-    sv_commas = _join_commas_and_and(sub_services) if sub_services else ""
-    give_service  = "נותנים שירות" if has_comp else "נותן שירות"
-    handle_verb   = "מטפלים" if has_comp else "מטפל"
     gen = _field_genitive(field)
+    groups = _split_service_groups(sub_services)
+    if len(groups) > 2:
+        merged_tail = []
+        for chunk in groups[1:]:
+            merged_tail.extend(chunk)
+        groups = [groups[0], merged_tail]
+    sentences: list[str] = []
 
-    # 0) קלאסי טבעי
-    if style_idx % 5 == 0:
-        if is_all and sv_commas:
-            return f"{heading} מתמחה בכל {gen}: {sv_commas}."
-        if sv_inline:
-            return f"{heading} מתמחה ב{sv_inline}."
-        return f"{heading} מתמחה ב{gen}."
+    def describe_group(idx: int, group: list[str]) -> str:
+        text = _join_inline(group)
+        if style_idx % 5 == 0:
+            return f"{heading} מתמחה ב{text}." if idx == 0 else f"בנוסף מטפל ב{text}."
+        if style_idx % 5 == 1:
+            return f"{heading} מכסה מגוון של {text}." if idx == 0 else f"וכן מטפל ב{text}."
+        if style_idx % 5 == 2:
+            verb = "נותנים" if has_comp else "נותן"
+            return f"{heading} {verb} מענה מהיר ל{text}." if idx == 0 else f"גם לטיפול ב{text} תמצאו מענה זריז."
+        if style_idx % 5 == 3:
+            verb = "מטפלים" if has_comp else "מטפל"
+            return f"{heading} {verb} ב{text}." if idx == 0 else f"כמו כן {verb} ב{text}."
+        return f"אצל {heading} תקבלו מענה ל{text}." if idx == 0 else f"בין היתר זמינים ל{text}."
 
-    # 1) “כל סוגי …: …”
-    if style_idx % 5 == 1:
-        if is_all and sv_commas:
-            return f"{heading} מתמחה בכל סוגי {gen}: {sv_commas}."
-        if sv_commas:
-            return f"{heading} מתמחה במגוון {gen}: {sv_commas}."
-        return f"{heading} מתמחה במגוון {gen}."
+    if is_all and groups:
+        sentences.append(f"{heading} מתמחה בכל {gen}: {_join_commas_and_and(sub_services)}.")
+    elif groups:
+        for idx, group in enumerate(groups):
+            sentences.append(describe_group(idx, group))
+        if len(groups) == 1 and len(sentences) == 1:
+            verb = "נותנים" if has_comp else "נותן"
+            sentences.append(f"{heading} {verb} מענה מדויק בכל פרויקט {gen}.")
+    else:
+        verb = "נותנים" if has_comp else "נותן"
+        sentences.append(f"{heading} {verb} מענה מקצועי לכלל {gen}.")
+        sentences.append("התמקדות בפתרונות מדויקים ומותאמים אישית לכל לקוח.")
 
-    # 2) שירות תיקונים + זנב איכות מהתיאור
-    if style_idx % 5 == 2:
-        tail = _quality_tail(seed, voice_tags)
-        if sv_commas:
-            return f"{heading} {give_service} תיקונים מהיר, {sv_commas}. {tail}"
-        return f"{heading} {give_service} תיקונים מהיר. {tail}"
-
-    # 3) “מטפל/ים ב…”
-    if style_idx % 5 == 3:
-        if sv_inline:
-            return f"{heading} {handle_verb} ב{sv_inline}."
-        return f"{heading} {handle_verb} ב{gen}."
-
-    # 4) “אצל … תקבלו מענה ל…”
-    if sv_inline:
-        return f"אצל {heading} תקבלו מענה ל{sv_inline}."
-    return f"אצל {heading} תקבלו מענה ל{gen}."
+    quality_tail = _card_quality_tail(seed, voice_tags)
+    return {"sentences": sentences[:3], "quality_tail": quality_tail}
 
 def _full_intro(worker):
     # בפרופיל מלא נשאיר אותו סופר-נייטרלי – בלי מקצוע
@@ -433,7 +592,7 @@ def _fix_kmo_khen_with_name(text: str, name: str) -> str:
     text = re.sub(rf"כמו כן\s+{re.escape(name)}", f"כמו כן, {first}", text)
     return re.sub(r"\s{2,}", " ", text).strip()
 
-def _build_full_paragraph_style(worker, field: str, sub_services: list, voice_tags: list, seed: str, style_idx: int, is_all: bool) -> str:
+def _build_full_paragraph_style(worker, field: str, sub_services: list, voice_tags: list, seed: str, style_idx: int, is_all: bool, card_sentences: list[str] | None = None) -> str:
     sv = _canon_list(sub_services)
     display = _full_intro(worker)
 
@@ -454,11 +613,73 @@ def _build_full_paragraph_style(worker, field: str, sub_services: list, voice_ta
         if q:
             lines.append(q)
 
+        enrich = _full_enrichment_sentences(field, seed, card_sentences or [])
+        for sentence in enrich:
+            if _sentence_not_in_card(sentence, card_sentences or []) and sentence not in lines:
+                lines.append(sentence)
+
         return " ".join([x for x in lines if x]).strip()
 
     core = segs(parts_style=style_idx % 4)
     core = _fix_kmo_khen_with_name(core, _get_str(worker, "name"))
     return core
+
+def _full_enrichment_sentences(field: str, seed: str, card_sentences: list[str]) -> list[str]:
+    field = _normalize_field(field)
+    process_bank = [
+        "עובדים בשקיפות מלאה מרגע האבחון ועד סיום העבודה.",
+        "מתאימים את תהליך העבודה לכל דרישה בשטח.",
+        "משלבים תכנון מוקפד עם ביצוע נקי ומאורגן.",
+    ]
+    equipment_bank = [
+        "עושים שימוש בציוד מקצועי ומעודכן.",
+        "מגיעים עם ציוד תקין ומכויל לכל משימה.",
+        "מקפידים על חומרים מאושרים ואיכותיים.",
+    ]
+    experience_bank = [
+        "שמים דגש על חוויית לקוח נינוחה ובטוחה.",
+        "מתאמים הגעה מדויקת ומלווים עד לקבלת פתרון מלא.",
+        "זמינים לשאלות ולעדכונים לאורך הדרך.",
+    ]
+
+    speciality = {
+        "מנעולן": "מגיעים במהירות עם פתרונות מתקדמים לכל סוג מנעול.",
+        "מדביר": "פועלים בשיטות מותאמות עם חומרים בטוחים לדיירים ולחיות המחמד.",
+        "נגר": "מקפידים על גימור קפדני ודיוק במידות עד הפרט האחרון.",
+        "שיפוצניק": "מלווים אתכם בתכנון, בבחירת חומרים ובפיקוח על בעלי המקצוע המשלימים.",
+        "טכנאי מזגנים": "בודקים את המערכת מקצה לקצה ומותירים את המקום נקי ומסודר.",
+    }
+
+    banks = [process_bank, equipment_bank, experience_bank]
+    selected = []
+    for idx, bank in enumerate(banks):
+        h = hashlib.sha1(f"{seed}|enrich|{idx}".encode("utf-8", errors="ignore")).hexdigest()
+        choice = bank[int(h, 16) % len(bank)]
+        if _sentence_not_in_card(choice, card_sentences):
+            selected.append(choice)
+
+    spec = speciality.get(field)
+    if spec and _sentence_not_in_card(spec, card_sentences):
+        selected.insert(1, spec)
+
+    seen = set()
+    ordered = []
+    for sentence in selected:
+        if sentence not in seen:
+            seen.add(sentence)
+            ordered.append(sentence)
+    return ordered[:3]
+
+# =========================
+#  NEW: deterministic shuffle for sub-services
+# =========================
+def _shuffle_services_deterministic(items: list[str], seed: str, cursor: int) -> list[str]:
+    """מסדר תתי־תחומים בסדר דטרמיניסטי לפי seed+cursor (לגיוון בכל 'פרומפט הבא')."""
+    arr = [s for s in (items or []) if isinstance(s, str) and s.strip()]
+    def _key(x: str) -> int:
+        h = hashlib.sha1(f"{seed}|{cursor}|{x}".encode("utf-8", errors="ignore")).hexdigest()
+        return int(h, 16)
+    return sorted(arr, key=_key)
 
 # =========================
 #  Main
@@ -495,7 +716,7 @@ def generate_draft(worker: dict, lang: str = "he") -> dict:
         voice_tags = _derive_voice_tags(source_bio)
         style_name = _style_for_worker(worker)["name"]
 
-        # וריאנט
+        # וריאנט + seed/cursor
         seed = _variant_seed(worker)
         cursor = worker.get("ai_variant_cursor", worker.get("variant_refresh", 0))
         try: cursor = int(cursor or 0)
@@ -518,29 +739,47 @@ def generate_draft(worker: dict, lang: str = "he") -> dict:
             in_use_by = pick.get("in_use_by")
             exhausted = bool(pick.get("exhausted"))
 
+        # *** NEW: שִׁפול דטרמיניסטי של תתי־התחומים לפי seed+cursor ***
+        sub_services_shuffled = _shuffle_services_deterministic(sub_services, seed, cursor)
+
         # כרטיס (תיאור קצר) – בלי מקצוע
-        opening = _card_opening_style(worker, field, sub_services, variant["card_style"], seed, voice_tags, is_all)
+        card_pack = _card_opening_style(worker, field, sub_services_shuffled, variant["card_style"], seed, voice_tags, is_all)
+        card_sentences = [s.strip() for s in card_pack.get("sentences", []) if s and s.strip()]
         cta = _cta_pick(variant["cta_group"], seed, offset=cursor)
-        parts = [opening]
-        qtail = _quality_tail(seed, voice_tags)
-        if qtail:
-            parts.append(qtail)
+
+        parts = []
+        for sentence in card_sentences:
+            if sentence and not sentence.endswith((".", "!", "?")):
+                sentence = sentence.strip() + "."
+            parts.append(sentence)
+
+        tail = card_pack.get("quality_tail")
+        if tail:
+            tail = tail.strip()
+            if tail and not tail.endswith((".", "!", "?")):
+                tail += "."
+            if tail:
+                parts.append(tail)
+
         if cta:
-            parts.append(cta)
+            cta = cta.strip()
+            if cta and not cta.endswith((".", "!", "?")):
+                cta += "."
+            if cta:
+                parts.append(cta)
+
         bio_short = " ".join([p for p in parts if p]).strip()
-        if not bio_short.endswith("."):
-            bio_short += "."
         bio_short = _sanitize_he_with_field(bio_short, field_with_cert, policy)
 
-        # פרופיל מלא – בלי מקצוע
-        bio_full = _build_full_paragraph_style(worker, field, sub_services, voice_tags, seed, variant["full_style"], is_all)
+        # פרופיל מלא – בלי מקצוע (עם אותה רשימה מעורבבת)
+        bio_full = _build_full_paragraph_style(worker, field, sub_services_shuffled, voice_tags, seed, variant["full_style"], is_all, card_sentences=card_sentences)
         bio_full = _sanitize_he_with_field(bio_full, field_with_cert, policy)
 
-        # SEO – בלי מקצוע: שם חברה/שם פרטי + 1-2 שירותים מובילים
+        # SEO – בלי מקצוע: שם חברה/שם פרטי + 1-2 שירותים *מעורבבים* מובילים
         name  = _get_str(worker, "name")
         comp  = _get_str(worker, "company_name")
         has_comp = bool(comp and comp != name)
-        top2 = ", ".join(_canon_list(sub_services)[:2]) if sub_services else ""
+        top2 = ", ".join(_canon_list(sub_services_shuffled)[:2]) if sub_services_shuffled else ""
         if has_comp:
             seo_raw = f"{comp} | {top2}" if top2 else comp
         else:
@@ -548,7 +787,7 @@ def generate_draft(worker: dict, lang: str = "he") -> dict:
             seo_raw = f"{first} | {top2}" if top2 and first else (first or top2 or "שירות מקצועי")
         seo_title = _sanitize_he_with_field((seo_raw or "").strip(" |"), field_with_cert, policy)
 
-        services_sentence = ", ".join(_canon_list(sub_services))
+        services_sentence = ", ".join(_canon_list(sub_services_shuffled))
         highlights = ["תיאום מהיר ושקוף", "התאמה לצורכי הלקוח", "עבודה מוקפדת"]
 
         if not bio_short:
@@ -561,7 +800,7 @@ def generate_draft(worker: dict, lang: str = "he") -> dict:
             "ai_draft_highlights": highlights,
             "ai_draft_seo_title": seo_title,
             "ai_draft_services_sentence": services_sentence,
-            "ai_draft_services": _canon_list(sub_services),
+            "ai_draft_services": _canon_list(sub_services_shuffled),
             "ai_style": style_name,
 
             "ai_variant_used": variant["id"],

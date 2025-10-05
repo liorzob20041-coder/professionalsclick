@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import time
 from typing import Any, Dict, Mapping, MutableMapping, Tuple
 
@@ -64,20 +65,83 @@ def _used_fields(worker: Mapping[str, Any], draft: Mapping[str, Any]) -> Dict[st
         "source_bio": worker.get("original_bio") or worker.get("about_clean") or worker.get("about") or worker.get("description") or worker.get("bio") or "",
     }
 
+_TEASER_TARGET_MAX = 220
+
+_TONE_LAYERS = {
+    "neutral_professional": {
+        "teaser_extra": "תכנון מוקפד וביצוע מקצועי.",
+        "open": "התמונה המלאה:",
+        "mid": "מתאמים הכל בשקיפות מלאה לאורך הפרויקט.",
+        "cta": "צרו קשר ונגבש פתרון מדויק."},
+    "service_human": {
+        "teaser_extra": "יחס אישי וחיוך בכל פנייה.",
+        "open": "איך אנחנו מלווים אתכם:",
+        "mid": "שומרים על עדכונים רציפים וקשב מלא לצרכים שלכם.",
+        "cta": "בואו נדבר ונבנה יחד מענה שמתאים לכם."},
+    "urgent_trust": {
+        "teaser_extra": "זמינות גבוהה לקריאות דחופות.",
+        "open": "כדי לפתור את התקלה במהירות:",
+        "mid": "זמינים לשאלות ולעדכונים בזמן אמת עד לסיום.",
+        "cta": "הרימו טלפון ונגיע במהירות."},
+}
+
+
+def _trim_teaser(text: str, limit: int = _TEASER_TARGET_MAX) -> str:
+    text = (text or "").strip()
+    if not text:
+        return ""
+    if len(text) <= limit:
+        return text
+    trimmed = text[: limit - 1].rstrip()
+    trimmed = re.sub(r"[\s,;:.]+$", "", trimmed)
+    return f"{trimmed}…"
+
+
+def _compose_body(base_body: str, layer: Dict[str, str]) -> str:
+    base_body = (base_body or "").strip()
+    segments = []
+    open_phrase = layer.get("open")
+    if open_phrase:
+        segments.append(open_phrase.rstrip())
+    if base_body:
+        segments.append(base_body)
+    mid_phrase = layer.get("mid")
+    if mid_phrase:
+        mid_phrase = mid_phrase.rstrip(" ")
+        if not mid_phrase.endswith(('.', '!', '?')):
+            mid_phrase += "."
+        segments.append(mid_phrase)
+    cta = layer.get("cta")
+    if cta:
+        cta = cta.rstrip(" ")
+        if not cta.endswith(('.', '!', '?')):
+            cta += "."
+        segments.append(cta)
+    text = " ".join(seg for seg in segments if seg).strip()
+    return text
+
+
+def _tone_teaser(base_teaser: str, layer: Dict[str, str]) -> str:
+    base_teaser = (base_teaser or "").strip()
+    extra = layer.get("teaser_extra")
+    text = f"{base_teaser} {extra}".strip() if extra else base_teaser
+    return _trim_teaser(text)
+
+
 
 def _adapt_to_three_styles(draft: Mapping[str, Any]) -> Dict[str, Any]:
     """
-    ממפה את הפלט של ai_writer (bio_short/full) לשלושת הטונים כדי לשמור תאימות קדימה.
-    אם תרצה בעתיד לגוון בין הטונים – אפשר להוסיף כאן וריאציות ניסוחיות קטנות.
+    ממפה את הפלט של ai_writer (bio_short/full) לשלושת הטונים עם התאמות ניסוח עדינות.
+
     """
     teaser = (draft.get("ai_draft_bio_short") or "").strip()
     body = (draft.get("ai_draft_bio_full") or teaser).strip()
-    base = {"teaser": teaser, "body": body, "source": "prompt"}
-    return {
-        "neutral_professional": dict(base),
-        "service_human": dict(base),
-        "urgent_trust": dict(base),
-    }
+    out: Dict[str, Any] = {}
+    for tone, layer in _TONE_LAYERS.items():
+        tone_teaser = _tone_teaser(teaser, layer)
+        tone_body = _compose_body(body, layer)
+        out[tone] = {"teaser": tone_teaser, "body": tone_body, "source": "prompt"}
+    return out
 
 
 def generate_worker_descriptions(worker: Mapping[str, Any]) -> Dict[str, Any]:

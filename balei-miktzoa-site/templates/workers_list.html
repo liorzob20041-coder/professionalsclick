@@ -296,9 +296,16 @@
                     <a class="worker-link" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="פרופיל של {{ w.company_name }}">
                       {{ w.company_name }}
                     </a>
-                    {% if w.offers_emergency %}<span class="badge-emer">חירום 24/7</span>{% endif %}
                   </h2>
-                  <p class="worker-person-name">({{ w.name }})</p>
+                  <div class="worker-meta">
+                    <span class="worker-person-name">({{ w.name }})</span>
+                    {% if w.experience_text %}
+                      <span class="worker-badge worker-badge--experience">{{ w.experience_text }}</span>
+                    {% endif %}
+                    {% if w.offers_emergency %}
+                      <span class="worker-badge worker-badge--emergency">24/7</span>
+                    {% endif %}
+                  </div>
 
                   {% if w.rating %}
                     {% set r = w.rating|float %}
@@ -319,13 +326,8 @@
                     </div>
                   {% endif %}
 
-                  {% if w.experience_text %}
-                    <p class="info-row">
-                      <i class="fa-solid fa-briefcase icon icon--accent fa-fw" aria-hidden="true"></i>
-                      {{ w.experience_text }}
-                    </p>
-                  {% endif %}
                   {% set lang_list = w.languages or [] %}
+
                   {% if lang_list %}
                     <div class="lang-row">
                       <i class="fa-solid fa-language icon fa-fw" aria-hidden="true"></i>

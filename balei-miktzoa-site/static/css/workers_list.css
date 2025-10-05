@@ -748,11 +748,43 @@ body {
   text-decoration: none;
 }
 
+.worker-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -2px 0 4px;
+}
+
 .worker-person-name {
   font-size: 0.95em;
-  color: #666;
-  margin: 0 0 6px;
+  color: #4b5563;
+  margin: 0;
   font-style: italic;
+}
+
+.worker-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 700;
+  border: 1px solid transparent;
+  line-height: 1.2;
+}
+
+.worker-badge--experience {
+  background: rgb(var(--brand-50-rgb), 0.9);
+  border-color: rgb(var(--brand-400-rgb), 0.45);
+  color: var(--brand-600);
+}
+
+.worker-badge--emergency {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
 }
 
 .worker-tagline {

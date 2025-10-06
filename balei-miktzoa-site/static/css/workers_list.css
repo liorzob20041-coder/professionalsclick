@@ -823,8 +823,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: 10px 0 6px;
-  padding: 10px 12px;
+  margin: 14px 0 8px;
+  padding: 14px 16px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -844,6 +844,7 @@ body {
 .worker-review-snippet__heading {
   font-weight: 700;
   color: #1f2937;
+  margin-inline-end: 4px;
 }
 
 .worker-review-snippet__author {
@@ -853,17 +854,17 @@ body {
 .worker-review-snippet__stars {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
 }
 
 .worker-review-snippet__stars i {
-  color: #f6b01e;
-  font-size: 15px;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .worker-review-snippet__score {
-  font-weight: 700;
-  color: #92400e;
+  font-weight: 600;
+  color: #6b7280;
 }
 
 .worker-review-snippet__text {

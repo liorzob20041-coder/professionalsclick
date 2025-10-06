@@ -336,27 +336,43 @@
                     {% else %}
                       {% set latest_review_heading = 'ביקורת אחרונה' %}
                     {% endif %}
-                    <div class="worker-review-snippet">
-                      <div class="worker-review-snippet__meta">
-                        <i class="fa-regular fa-comment-dots icon icon--accent" aria-hidden="true"></i>
-                        <span class="worker-review-snippet__heading">{{ latest_review_heading }}</span>
-                        {% if w.latest_review_author %}
-                          <span class="worker-review-snippet__author">{{ w.latest_review_author }}</span>
-                        {% endif %}
-                        {% if w.latest_review_rating is not none %}
-                          {% set lr = w.latest_review_rating|float %}
-                          {% set lr_full = lr|int %}
-                          {% set lr_half = 1 if (lr - lr_full) >= 0.5 and lr_full < 5 else 0 %}
-                          {% set lr_empty = 5 - lr_full - lr_half %}
-                          <span class="worker-review-snippet__stars" title="{{ '%.1f'|format(lr) }}/5" aria-hidden="true">
+                    {% set lr = none %}
+                    {% if w.latest_review_rating is not none %}
+                      {% set lr = w.latest_review_rating|float %}
+                      {% set lr_full = lr|int %}
+                      {% set lr_half = 1 if (lr - lr_full) >= 0.5 and lr_full < 5 else 0 %}
+                      {% set lr_empty = 5 - lr_full - lr_half %}
+                      {% set lr_display = '%.1f'|format(lr) %}
+                    {% endif %}
+                    <div class="worker-review-snippet" aria-label="{{ latest_review_heading }}">
+                      {% if lr is not none %}
+                        <div class="worker-review-snippet__header">
+                          <span class="worker-review-snippet__score-badge">{{ lr_display }}</span>
+                          <span class="worker-review-snippet__stars" title="{{ lr_display }}/5" aria-hidden="true">
                             {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
                             {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
                             {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
                           </span>
-                          <span class="worker-review-snippet__score">{{ '%.1f'|format(lr) }}</span>
-                        {% endif %}
-                      </div>
-                      <p class="worker-review-snippet__text">“{{ w.latest_review }}”</p>
+                        </div>
+                      {% endif %}
+                      {% if w.latest_review_author or lr is not none %}
+                        <div class="worker-review-snippet__meta-row">
+                          {% if w.latest_review_author %}
+                            <span class="worker-review-snippet__author">{{ w.latest_review_author }}</span>
+                          {% endif %}
+                          {% if lr is not none %}
+                            {% if g.current_lang == 'he' %}
+                              {% set review_gave_word = 'נתן' %}
+                            {% elif g.current_lang == 'ru' %}
+                              {% set review_gave_word = 'поставил(а)' %}
+                            {% else %}
+                              {% set review_gave_word = 'gave' %}
+                            {% endif %}
+                            <span class="worker-review-snippet__meta-rating">• {{ review_gave_word }} {{ lr_display }}★</span>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                      <p class="worker-review-snippet__text"><span>“{{ w.latest_review }}”</span></p>
                     </div>
                     <a class="reviews-button" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ _('more_reviews') }}</a>
                   {% endif %}

@@ -345,30 +345,21 @@
                       {% set lr_display = '%.1f'|format(lr) %}
                     {% endif %}
                     <div class="worker-review-snippet" aria-label="{{ latest_review_heading }}">
-                      {% if lr is not none %}
-                        <div class="worker-review-snippet__header">
-                          <span class="worker-review-snippet__score-badge">{{ lr_display }}</span>
-                          <span class="worker-review-snippet__stars" title="{{ lr_display }}/5" aria-hidden="true">
-                            {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
-                            {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
-                            {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
-                          </span>
-                        </div>
-                      {% endif %}
                       {% if w.latest_review_author or lr is not none %}
-                        <div class="worker-review-snippet__meta-row">
+                        <div class="worker-review-snippet__header">
                           {% if w.latest_review_author %}
                             <span class="worker-review-snippet__author">{{ w.latest_review_author }}</span>
                           {% endif %}
                           {% if lr is not none %}
-                            {% if g.current_lang == 'he' %}
-                              {% set review_gave_word = 'נתן' %}
-                            {% elif g.current_lang == 'ru' %}
-                              {% set review_gave_word = 'поставил(а)' %}
-                            {% else %}
-                              {% set review_gave_word = 'gave' %}
+                            {% if w.latest_review_author %}
+                              <span class="worker-review-snippet__sep" aria-hidden="true">-</span>
                             {% endif %}
-                            <span class="worker-review-snippet__meta-rating">• {{ review_gave_word }} {{ lr_display }}★</span>
+                            <span class="worker-review-snippet__stars" title="{{ lr_display }}/5" aria-hidden="true">
+                              {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                              {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
+                              {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
+                            </span>
+                            <span class="worker-review-snippet__score" aria-label="{{ lr_display }}/5">{{ lr_display }}</span>
                           {% endif %}
                         </div>
                       {% endif %}

@@ -292,11 +292,31 @@
                 </div>
 
                 <div class="worker-info">
-                  <h2 class="worker-name">
-                    <a class="worker-link" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="פרופיל של {{ w.company_name }}">
-                      {{ w.company_name }}
-                    </a>
-                  </h2>
+                  <div class="worker-header-row">
+                    <h2 class="worker-name">
+                      <a class="worker-link" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="פרופיל של {{ w.company_name }}">
+                        {{ w.company_name }}
+                      </a>
+                    </h2>
+                    {% if w.rating %}
+                      {% set r = w.rating|float %}
+                      {% set full = r|int %}
+                      {% set half = 1 if (r - full) >= 0.5 and full < 5 else 0 %}
+                      {% set empty = 5 - full - half %}
+                      {% set rc = (w.reviews_count if w.reviews_count is defined else None) %}
+                      <div class="rating worker-rating-inline" title="{{ '%.1f'|format(r) }}/5">
+                        <span class="rating__stars" aria-hidden="true">
+                          {% for i in range(full) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                          {% if half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
+                          {% for i in range(empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
+                        </span>
+                        <span class="rating__score">{{ '%.1f'|format(r) }}</span>
+                        {% if rc %}
+                          <a class="rating__count" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">({{ rc }} ביקורות)</a>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
                   <div class="worker-meta">
                     <span class="worker-person-name">({{ w.name }})</span>
                     {% if w.experience_text %}
@@ -306,25 +326,6 @@
                       <span class="worker-badge worker-badge--emergency">24/7</span>
                     {% endif %}
                   </div>
-
-                  {% if w.rating %}
-                    {% set r = w.rating|float %}
-                    {% set full = r|int %}
-                    {% set half = 1 if (r - full) >= 0.5 and full < 5 else 0 %}
-                    {% set empty = 5 - full - half %}
-                    {% set rc = (w.reviews_count if w.reviews_count is defined else None) %}
-                    <div class="rating" title="{{ '%.1f'|format(r) }}/5">
-                      <span class="rating__stars" aria-hidden="true">
-                        {% for i in range(full) %}<i class="fa-solid fa-star"></i>{% endfor %}
-                        {% if half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
-                        {% for i in range(empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
-                      </span>
-                      <span class="rating__score">{{ '%.1f'|format(r) }}</span>
-                      {% if rc %}
-                        <a class="rating__count" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">({{ rc }} ביקורות)</a>
-                      {% endif %}
-                    </div>
-                  {% endif %}
 
                   {% set lang_list = w.languages or [] %}
 
@@ -349,7 +350,35 @@
                   {% endif %}
 
                   {% if w.latest_review %}
-                    <p class="info-row"><i class="fa-regular fa-comment-dots icon fa-fw icon--accent" aria-hidden="true"></i>“{{ w.latest_review }}” {% if w.latest_review_author %}- {{ w.latest_review_author }}{% endif %}</p>
+                    {% if g.current_lang == 'en' %}
+                      {% set latest_review_heading = 'Latest review' %}
+                    {% elif g.current_lang == 'ru' %}
+                      {% set latest_review_heading = 'Последний отзыв' %}
+                    {% else %}
+                      {% set latest_review_heading = 'ביקורת אחרונה' %}
+                    {% endif %}
+                    <div class="worker-review-snippet">
+                      <div class="worker-review-snippet__meta">
+                        <i class="fa-regular fa-comment-dots icon icon--accent" aria-hidden="true"></i>
+                        <span class="worker-review-snippet__heading">{{ latest_review_heading }}</span>
+                        {% if w.latest_review_author %}
+                          <span class="worker-review-snippet__author">{{ w.latest_review_author }}</span>
+                        {% endif %}
+                        {% if w.latest_review_rating is not none %}
+                          {% set lr = w.latest_review_rating|float %}
+                          {% set lr_full = lr|int %}
+                          {% set lr_half = 1 if (lr - lr_full) >= 0.5 and lr_full < 5 else 0 %}
+                          {% set lr_empty = 5 - lr_full - lr_half %}
+                          <span class="worker-review-snippet__stars" title="{{ '%.1f'|format(lr) }}/5" aria-hidden="true">
+                            {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                            {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
+                            {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
+                          </span>
+                          <span class="worker-review-snippet__score">{{ '%.1f'|format(lr) }}</span>
+                        {% endif %}
+                      </div>
+                      <p class="worker-review-snippet__text">“{{ w.latest_review }}”</p>
+                    </div>
                     <a class="reviews-button" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ _('more_reviews') }}</a>
                   {% endif %}
 

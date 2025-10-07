@@ -873,6 +873,60 @@ def get_latest_review(worker_id, lang='he'):
     return latest
 
 
+def _parse_review_date(value: Any) -> datetime | None:
+    """Parse review date strings into datetime objects."""
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, date):
+        return datetime.combine(value, dt_time.min)
+    if not isinstance(value, str):
+        return None
+    cleaned = value.strip()
+    if not cleaned:
+        return None
+    cleaned = cleaned.replace('Z', '+00:00')
+    try:
+        return datetime.fromisoformat(cleaned)
+    except ValueError:
+        try:
+            base = cleaned.split('.')[0]
+            return datetime.fromisoformat(base)
+        except ValueError:
+            return None
+
+
+def _format_review_date(dt: datetime | None, lang: str) -> tuple[str | None, str | None]:
+    """Return human readable + ISO date strings for the latest review."""
+    if not dt:
+        return None, None
+    day = dt.day
+    year = dt.year
+    months_he = [
+        "בינואר", "בפברואר", "במרץ", "באפריל", "במאי", "ביוני",
+        "ביולי", "באוגוסט", "בספטמבר", "באוקטובר", "בנובמבר", "בדצמבר",
+    ]
+    months_en = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ]
+    months_ru = [
+        "января", "февраля", "марта", "апреля", "мая", "июня",
+        "июля", "августа", "сентября", "октября", "ноября", "декабря",
+    ]
+    if lang == 'he':
+        month = months_he[dt.month - 1]
+        display = f"{day} {month} {year}"
+    elif lang == 'ru':
+        month = months_ru[dt.month - 1]
+        display = f"{day} {month} {year}"
+    else:
+        month = months_en[dt.month - 1]
+        display = f"{day} {month} {year}"
+    return display, dt.date().isoformat()
+
+
 def get_all_reviews(worker_id, lang=None):
     """ מחזיר את כל הביקורות עבור עובד לפי worker_id. פרמטר lang נשמר כדי להתאים לקריאות קיימות אך אינו בשימוש. """
     reviews_file = os.path.join(DATA_FOLDER, 'worker_reviews.json')
@@ -1474,27 +1528,16 @@ def get_price_items_from_translations(niche_key: str, lang: str = "he", limit: i
 
 def t(key: str, bundle: str | None = None) -> str:
     """
-    t('pro_req.title', 'request') -> translations/<lang>/request.json
-    t('table.headers.name')       -> תומך במפתחות נקודתיים במבנה מקונן
+    t('pro_req.title', 'request') -> reads translations/<lang>/request.json
+    t('some.key')                 -> falls back to current endpoint's bundle via g.translations
     """
     lang = getattr(g, "current_lang", "he")
     if bundle:
         data = _load_bundle(lang, bundle)
     else:
-        # fallback: לפי ה-endpoint הנוכחי שכבר נטען ל-g.translations
+        # fallback: use the endpoint-based dict already loaded into g.translations
         data = getattr(g, "translations", {}) or load_translations(lang)
-
-    cur = data
-    for part in str(key).split('.'):
-        if isinstance(cur, dict) and part in cur:
-            cur = cur[part]
-        else:
-            return key  # לא נמצא → מחזיר את המפתח עצמו
-    return str(cur) if isinstance(cur, (str, int, float)) else key
-
-def _(key: str) -> str:
-    return t(key)
-
+    return data.get(key, key)
 
 
 
@@ -2430,6 +2473,24 @@ def show_workers(lang, field, area):
         latest_review = get_latest_review(w.get('worker_id'), lang) or {}
         w['latest_review'] = (latest_review.get('text') or '').strip()
         w['latest_review_author'] = (latest_review.get('author') or '').strip()
+        w['latest_review_rating'] = latest_review.get('rating')
+        review_dt = _parse_review_date(latest_review.get('date'))
+        display_date, iso_date = _format_review_date(review_dt, lang)
+        w['latest_review_date_display'] = display_date
+        w['latest_review_date_iso'] = iso_date
+
+        latest_rating_raw = latest_review.get('rating')
+        latest_rating_val: float | None = None
+        if isinstance(latest_rating_raw, (int, float)):
+            latest_rating_val = float(latest_rating_raw)
+        elif isinstance(latest_rating_raw, str):
+            latest_rating_raw = latest_rating_raw.strip()
+            if latest_rating_raw:
+                try:
+                    latest_rating_val = float(latest_rating_raw.replace(',', '.'))
+                except ValueError:
+                    latest_rating_val = None
+        w['latest_review_rating'] = latest_rating_val
 
     # --- Labels לתצוגה בשפת ה-UI ---
     def _label_field(he_value, lang_code):

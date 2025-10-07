@@ -345,31 +345,36 @@
                       {% set lr_display = '%.1f'|format(lr) %}
                     {% endif %}
                     <div class="worker-review-card" aria-label="{{ latest_review_heading }}">
-                      <div class="worker-review-card__row">
-                        <div class="worker-review-card__meta">
-                          {% if w.latest_review_author %}
-                            <span class="worker-review-card__author">{{ w.latest_review_author }}</span>
-                          {% endif %}
-                          {% if w.latest_review_author and w.latest_review_date_display %}
-                            <span class="worker-review-card__dot" aria-hidden="true">•</span>
-                          {% endif %}
-                          {% if w.latest_review_date_display %}
-                            <time class="worker-review-card__date" datetime="{{ w.latest_review_date_iso }}">{{ w.latest_review_date_display }}</time>
-                          {% endif %}
-                          {% if lr is not none %}
+                      <div class="worker-review-card__header">
+                        {% if w.latest_review_date_display %}
+                          <time class="worker-review-card__date" datetime="{{ w.latest_review_date_iso }}">{{ w.latest_review_date_display }}</time>
+                        {% endif %}
+                        {% if lr is not none %}
+                          <div class="worker-review-card__rating" aria-label="{{ lr_display }}/5">
+                            <span class="worker-review-card__badge">{{ lr_display }}</span>
                             <span class="worker-review-card__stars" title="{{ lr_display }}/5" aria-hidden="true">
                               {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
                               {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
                               {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
                             </span>
-                          {% endif %}
-                        </div>
-                        {% if lr is not none %}
-                          <span class="worker-review-card__badge" aria-label="{{ lr_display }}/5">{{ lr_display }}</span>
+                          </div>
                         {% endif %}
                       </div>
                       {% if w.latest_review %}
-                        <p class="worker-review-card__text" dir="auto">{{ w.latest_review }}</p>
+                        <p class="worker-review-card__text" dir="auto">“{{ w.latest_review }}”</p>
+                      {% endif %}
+                      {% if w.latest_review_author or w.latest_review_verified %}
+                        <div class="worker-review-card__footer">
+                          {% if w.latest_review_author %}
+                            <span class="worker-review-card__reviewer">{{ w.latest_review_author }}</span>
+                          {% endif %}
+                          {% if w.latest_review_verified %}
+                            <span class="worker-review-card__verified">
+                              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                              <span class="worker-review-card__verified-label">{{ _('verified_reviewer') }}</span>
+                            </span>
+                          {% endif %}
+                        </div>
                       {% endif %}
                       <a class="worker-review-card__more" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ _('more_reviews') }}</a>
                     </div>

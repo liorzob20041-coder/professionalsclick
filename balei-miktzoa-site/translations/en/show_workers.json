@@ -23,5 +23,6 @@
   "result_count": "Found {count} professionals",
   "sort_by_experience": "By experience",
   "sort_by_rating": "By rating",
-  "title": "Professionals in your area"
+  "title": "Professionals in your area",
+  "verified_reviewer": "Verified reviewer"
 }

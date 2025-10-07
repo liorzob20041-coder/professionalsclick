@@ -363,17 +363,9 @@
                       {% if w.latest_review %}
                         <p class="worker-review-card__text" dir="auto">“{{ w.latest_review }}”</p>
                       {% endif %}
-                      {% if w.latest_review_author or w.latest_review_verified %}
+                      {% if w.latest_review_author %}
                         <div class="worker-review-card__footer">
-                          {% if w.latest_review_author %}
-                            <span class="worker-review-card__reviewer">{{ w.latest_review_author }}</span>
-                          {% endif %}
-                          {% if w.latest_review_verified %}
-                            <span class="worker-review-card__verified">
-                              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-                              <span class="worker-review-card__verified-label">{{ _('verified_reviewer') }}</span>
-                            </span>
-                          {% endif %}
+                          <span class="worker-review-card__reviewer">{{ w.latest_review_author }}</span>
                         </div>
                       {% endif %}
                       <a class="worker-review-card__more" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ _('more_reviews') }}</a>

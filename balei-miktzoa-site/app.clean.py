@@ -897,10 +897,12 @@ def _parse_review_date(value: Any) -> datetime | None:
             return None
 
 
-def _format_review_date(dt: datetime | None, lang: str) -> tuple[str | None, str | None]:
-    """Return human readable + ISO date strings for the latest review."""
+def _format_review_date(
+    dt: datetime | None, lang: str
+) -> tuple[str | None, str | None, str | None]:
+    """Return short, full and ISO date strings for the latest review."""
     if not dt:
-        return None, None
+        return None, None, None
     day = dt.day
     year = dt.year
     months_he = [
@@ -915,16 +917,20 @@ def _format_review_date(dt: datetime | None, lang: str) -> tuple[str | None, str
         "января", "февраля", "марта", "апреля", "мая", "июня",
         "июля", "августа", "сентября", "октября", "ноября", "декабря",
     ]
+    month_index = dt.month - 1
     if lang == 'he':
-        month = months_he[dt.month - 1]
-        display = f"{day} {month} {year}"
+        month = months_he[month_index]
+        full_display = f"{day} {month} {year}"
+        short_display = f"{day:02d}.{dt.month:02d}.{year % 100:02d}"
     elif lang == 'ru':
-        month = months_ru[dt.month - 1]
-        display = f"{day} {month} {year}"
+        month = months_ru[month_index]
+        full_display = f"{day} {month} {year}"
+        short_display = f"{day:02d}.{dt.month:02d}.{year % 100:02d}"
     else:
-        month = months_en[dt.month - 1]
-        display = f"{day} {month} {year}"
-    return display, dt.date().isoformat()
+        month = months_en[month_index]
+        full_display = f"{month} {day}, {year}"
+        short_display = f"{day:02d}/{dt.month:02d}"
+    return short_display, full_display, dt.date().isoformat()
 
 
 def get_all_reviews(worker_id, lang=None):
@@ -2475,8 +2481,9 @@ def show_workers(lang, field, area):
         w['latest_review_author'] = (latest_review.get('author') or '').strip()
         w['latest_review_rating'] = latest_review.get('rating')
         review_dt = _parse_review_date(latest_review.get('date'))
-        display_date, iso_date = _format_review_date(review_dt, lang)
-        w['latest_review_date_display'] = display_date
+        short_date, full_date, iso_date = _format_review_date(review_dt, lang)
+        w['latest_review_date_short'] = short_date
+        w['latest_review_date_full'] = full_date
         w['latest_review_date_iso'] = iso_date
 
         latest_rating_raw = latest_review.get('rating')

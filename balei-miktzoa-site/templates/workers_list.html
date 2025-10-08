@@ -345,28 +345,33 @@
                       {% set lr_display = '%.1f'|format(lr) %}
                     {% endif %}
                     <div class="worker-review-card" aria-label="{{ latest_review_heading }}">
-                      <div class="worker-review-card__header">
-                        {% if w.latest_review_date_display %}
-                          <time class="worker-review-card__date" datetime="{{ w.latest_review_date_iso }}">{{ w.latest_review_date_display }}</time>
-                        {% endif %}
-                        {% if lr is not none %}
-                          <div class="worker-review-card__rating" aria-label="{{ lr_display }}/5">
-                            <span class="worker-review-card__badge">{{ lr_display }}</span>
-                            <span class="worker-review-card__stars" title="{{ lr_display }}/5" aria-hidden="true">
-                              {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
-                              {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
-                              {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
-                            </span>
-                          </div>
-                        {% endif %}
-                      </div>
+                      {% if (w.latest_review_author or w.latest_review_date_short) or lr is not none %}
+                        <div class="worker-review-card__rows">
+                          {% if w.latest_review_author or w.latest_review_date_short %}
+                            <div class="worker-review-card__row worker-review-card__row--header">
+                              {% if w.latest_review_author %}
+                                <span class="worker-review-card__reviewer" title="{{ w.latest_review_author }}">{{ w.latest_review_author }}</span>
+                              {% endif %}
+                              {% if w.latest_review_date_short %}
+                                {% if w.latest_review_author %}<span class="worker-review-card__divider" aria-hidden="true">•</span>{% endif %}
+                                <time class="worker-review-card__date" datetime="{{ w.latest_review_date_iso or '' }}" title="{{ w.latest_review_date_full or '' }}" aria-label="{{ w.latest_review_date_full or '' }}">{{ w.latest_review_date_short }}</time>
+                              {% endif %}
+                            </div>
+                          {% endif %}
+                          {% if lr is not none %}
+                            <div class="worker-review-card__row worker-review-card__row--meta" role="group" aria-label="{{ lr_display }}/5">
+                              <span class="worker-review-card__stars" aria-hidden="true">
+                                {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                                {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
+                                {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
+                              </span>
+                              <span class="worker-review-card__badge" aria-label="{{ lr_display }}/5">{{ lr_display }}</span>
+                            </div>
+                          {% endif %}
+                        </div>
+                      {% endif %}
                       {% if w.latest_review %}
                         <p class="worker-review-card__text" dir="auto">“{{ w.latest_review }}”</p>
-                      {% endif %}
-                      {% if w.latest_review_author %}
-                        <div class="worker-review-card__footer">
-                          <span class="worker-review-card__reviewer">{{ w.latest_review_author }}</span>
-                        </div>
                       {% endif %}
                       <a class="worker-review-card__more" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ _('more_reviews') }}</a>
                     </div>

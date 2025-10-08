@@ -10,7 +10,7 @@ from urllib.parse import urlparse, parse_qs, urljoin
 
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, g, jsonify,
-    session, send_from_directory, Response
+    session, send_from_directory, Response, current_app, abort
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
@@ -20,7 +20,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from PIL import Image, ImageOps
-from deep_translator import GoogleTranslator
 import requests
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
@@ -38,6 +37,8 @@ from threading import Lock
 from services.ai_writer import generate_draft
 from services.ai_variants import list_variants, assign_variant
 from services.worker_descriptions import generate_worker_descriptions
+from services.json_store import atomic_write_json
+from services.translation import translate as translate_text
 
 
 
@@ -48,8 +49,8 @@ GOOGLE_WEBHOOK_URL = os.environ.get("GOOGLE_WEBHOOK_URL", "").strip()
 GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
 
 # === Locks ===
-REVIEWS_JSON_LOCK = Lock()
 DESCRIPTION_JOB_LOCK = Lock()
+
 DESCRIPTION_JOBS: dict[str, dict] = {}
 DESCRIPTION_JOB_BY_REQ: dict[str, str] = {}
 
@@ -423,7 +424,9 @@ MAX_VIDEO_MB = 50  # רף רך – אופציונלי
 # דומיין בסיס של האתר (בפרודקשן עדכן לדומיין הסופי)
 BASE_DOMAIN = os.environ.get('BASE_DOMAIN', 'https://baley-mikzoa.co.il')
 
-INVITE_KEY = os.environ.get('INVITE_KEY', 'dev-invite')
+ENVIRONMENT = os.environ.get('FLASK_ENV', 'production')
+DEBUG_FLAG = os.environ.get('FLASK_DEBUG') == '1'
+INVITE_KEY = os.environ.get('INVITE_KEY')
 
 # --- OG target languages ---
 OG_LANGS = ("he", "en", "ru")
@@ -680,8 +683,17 @@ def read_json_file(path):
 
 
 def write_json_file(path, data):
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    target = Path(path)
+    if isinstance(data, list):
+        with atomic_write_json(target, default_factory=list) as container:
+            container.clear()
+            container.extend(data)
+    elif isinstance(data, dict):
+        with atomic_write_json(target, default_factory=dict) as container:
+            container.clear()
+            container.update(data)
+    else:
+        raise TypeError("write_json_file supports only list or dict payloads")
 
 
 def _now_iso() -> str:
@@ -971,7 +983,7 @@ def translate_review(text, source_lang='he', target_langs=['en','ru']):
     translations = { 'he': text }  # תמיד שומר את המקור בעברית
     for lang in target_langs:
         try:
-            translated = GoogleTranslator(source=source_lang, target=lang).translate(text)
+            translated = translate_text(text, lang, source_lang=source_lang)
             translations[lang] = translated
         except Exception as e:
             # במקרה של שגיאה, נשאיר את המקור
@@ -991,12 +1003,12 @@ def sync_review_to_sheets(new_review: dict, lang="he"):
 
     if not text_en:
         try:
-            text_en = GoogleTranslator(source="iw", target="en").translate(text_he)
+            text_en = translate_text(text_he, "en", source_lang="iw")
         except Exception:
             text_en = text_he
     if not text_ru:
         try:
-            text_ru = GoogleTranslator(source="iw", target="ru").translate(text_he)
+            text_ru = translate_text(text_he, "ru", source_lang="iw")
         except Exception:
             text_ru = text_he
 
@@ -1565,7 +1577,17 @@ def t(key: str, bundle: str | None = None) -> str:
 # Flask App
 # ------------------------------
 # במקום: app = Flask(__name__)
-app = Flask(__name__, static_folder=None) 
+app = Flask(__name__, static_folder=None)
+app.config.from_mapping(
+    INVITE_KEY=INVITE_KEY,
+    ENV=ENVIRONMENT,
+    DEBUG=DEBUG_FLAG,
+)
+if app.config["ENV"] == "production" and not app.config.get("INVITE_KEY"):
+    raise RuntimeError("INVITE_KEY must be set in production")
+if app.config["ENV"] != "production" and not app.config.get("INVITE_KEY"):
+    app.config["INVITE_KEY"] = "dev-invite"
+
 # JSON יפה בעברית
 app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
@@ -2252,11 +2274,12 @@ def admin_logout_beacon():
 @app.route('/<lang>/request', methods=['GET', 'POST'])
 def request_professional(lang):
     # --- דרישת קישור הזמנה ---
-    invite_key = os.environ.get('INVITE_KEY', 'dev-invite')  # שים ערך אמיתי ב-.env
+    invite_key = current_app.config.get("INVITE_KEY")
+    if current_app.config.get("ENV") != "production" and not invite_key:
+        invite_key = "dev-invite"
     supplied_key = (request.args.get('key') or request.form.get('key') or '').strip()
-    if supplied_key != invite_key:
-        flash('כדי למלא את הטופס יש צורך בקישור הזמנה.', 'error')
-        return redirect(url_for('contact', lang=lang))
+    if not invite_key or supplied_key != invite_key:
+        abort(403)
 
     if request.method == 'POST':
         # --- איסוף נתונים מהטופס ---
@@ -2357,9 +2380,8 @@ def request_professional(lang):
         }
 
         # שמירה לפנדינג
-        pending_list = read_json_file(PENDING_FILE)
-        pending_list.append(new_request)
-        write_json_file(PENDING_FILE, pending_list)
+        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
+            pending_list.append(new_request)
 
         flash("הבקשה נשלחה בהצלחה! תודה רבה.")
         # שומרים את ה-key גם בחזרה, כדי שהעמוד יישאר נגיש ברענון
@@ -2945,15 +2967,8 @@ def add_review(lang):
 
         # כתיבה מוגנת מנעילה כדי למנוע דריסות בקבצים
         # כתיבה מוגנת מנעילה כדי למנוע דריסות בקבצים
-        with REVIEWS_JSON_LOCK:
-            reviews_list = read_json_file(reviews_file)
-            # מוסיפים ביקורות חדשות בתחילת הרשימה כדי שיופיעו ראשונות בתצוגה
-            if isinstance(reviews_list, list):
-                reviews_list.insert(0, new_review)
-            else:
-                # במידה והקובץ פגום (לא רשימה) נתחיל רשימה חדשה כדי לא לאבד את הביקורת
-                reviews_list = [new_review]
-            write_json_file(reviews_file, reviews_list)
+        with atomic_write_json(Path(reviews_file), default_factory=list) as reviews_list:
+            reviews_list.insert(0, new_review)
 
         # סנכרון לשיטס (Webhook) - לא חוסם את הזרימה
         sync_review_to_sheets(new_review, lang=lang)
@@ -2968,13 +2983,11 @@ def add_review(lang):
             except Exception:
                 trans = {"he": _text}
             try:
-                with REVIEWS_JSON_LOCK:
-                    cur = read_json_file(_path)
+                with atomic_write_json(Path(_path), default_factory=list) as cur:
                     for r in cur:
                         if r.get("review_id") == _rid:
                             r["translations"] = trans
                             break
-                    write_json_file(_path, cur)
             except Exception as e:
                 # לוג “best effort” אם תרצה לעקוב אחרי תקלות
                 try:
@@ -3131,17 +3144,20 @@ def _persist_description_result(req_id: str, result: dict, generated_at: str):
     if not resolved:
         return
 
-    record_type, records, idx, item = resolved
+    record_type, _, _, _ = resolved
     safe_result = json.loads(json.dumps(result or {}, ensure_ascii=False, default=str))
-    item["description_generated_at"] = generated_at
-    item["description_variants"] = safe_result
-    if isinstance(safe_result, dict):
-        item["description_used_fields"] = safe_result.get("used_fields") or {}
-    item["request_id"] = _request_id_for_item(item)
-    records[idx] = item
 
-    path = PENDING_FILE if record_type == "pending" else APPROVED_FILE
-    write_json_file(path, records)
+    path = Path(PENDING_FILE if record_type == "pending" else APPROVED_FILE)
+    with atomic_write_json(path, default_factory=list) as records:
+        for idx, record in enumerate(records):
+            if _request_id_for_item(record) == req_id:
+                record["description_generated_at"] = generated_at
+                record["description_variants"] = safe_result
+                if isinstance(safe_result, dict):
+                    record["description_used_fields"] = safe_result.get("used_fields") or {}
+                record["request_id"] = _request_id_for_item(record)
+                records[idx] = record
+                break
 
 
 def _set_job_status(job_id: str, status: str, **extra):
@@ -3278,7 +3294,7 @@ def admin_select_description(req_id):
     if not resolved:
         return jsonify({"ok": False, "error": "not_found"}), 404
 
-    record_type, records, idx, item = resolved
+    record_type, _, _, _ = resolved
 
     if not source:
         source = 'manual'
@@ -3301,50 +3317,65 @@ def admin_select_description(req_id):
                 job_result = job_meta.get('result')
                 generated_at = job_meta.get('generated_at')
 
-    if job_result:
-        safe_result = json.loads(json.dumps(job_result, ensure_ascii=False, default=str))
-        item['description_variants'] = safe_result
-        if isinstance(safe_result, dict):
-            item['description_used_fields'] = safe_result.get('used_fields') or {}
-    elif isinstance(item.get('description_variants'), dict) and not item.get('description_used_fields'):
-        item['description_used_fields'] = item['description_variants'].get('used_fields') or {}
+    path = Path(PENDING_FILE if record_type == 'pending' else APPROVED_FILE)
+    updated_item = None
+    with atomic_write_json(path, default_factory=list) as records:
+        for idx, record in enumerate(records):
+            if _request_id_for_item(record) != req_id:
+                continue
 
-    if generated_at:
-        item['description_generated_at'] = generated_at
-    elif not item.get('description_generated_at'):
-        item['description_generated_at'] = _now_iso()
+            if job_result:
+                safe_result = json.loads(json.dumps(job_result, ensure_ascii=False, default=str))
+                record['description_variants'] = safe_result
+                if isinstance(safe_result, dict):
+                    record['description_used_fields'] = safe_result.get('used_fields') or {}
+            elif isinstance(record.get('description_variants'), dict) and not record.get('description_used_fields'):
+                record['description_used_fields'] = record['description_variants'].get('used_fields') or {}
 
-    item['description_selected_text'] = selection
-    if style:
-        item['description_style'] = style
-    if source:
-        item['description_source'] = source
+            if generated_at:
+                record['description_generated_at'] = generated_at
+            elif not record.get('description_generated_at'):
+                record['description_generated_at'] = _now_iso()
 
-    item['bio_short'] = teaser
-    item['bio_full'] = body
-    item['description'] = body
-    item['request_id'] = _request_id_for_item(item)
+            record['description_selected_text'] = selection
+            if style:
+                record['description_style'] = style
+            if source:
+                record['description_source'] = source
 
-    if record_type == 'approved':
-        item['updated_at'] = _now_iso()
+            record['bio_short'] = teaser
+            record['bio_full'] = body
+            record['description'] = body
+            record['request_id'] = _request_id_for_item(record)
 
-    records[idx] = item
-    path = PENDING_FILE if record_type == 'pending' else APPROVED_FILE
-    write_json_file(path, records)
+            if record_type == 'approved':
+                record['updated_at'] = _now_iso()
+
+            records[idx] = record
+            updated_item = json.loads(json.dumps(record, ensure_ascii=False, default=str))
+            break
+
+    if not updated_item:
+        return jsonify({"ok": False, "error": "not_found"}), 404
 
     response = {
         'ok': True,
         'record_type': record_type,
         'selection': selection,
-        'generated_at': item.get('description_generated_at'),
-        'variants': item.get('description_variants'),
+        'generated_at': updated_item.get('description_generated_at'),
+        'variants': updated_item.get('description_variants'),
     }
     return jsonify(response)
 
 @app.route('/approve/<int:index>', methods=['POST'])
 def approve_professional(index):
-    pending_list = read_json_file(PENDING_FILE)
-    approved_list = read_json_file(APPROVED_FILE)
+    popped_item = None
+    with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
+        if 0 <= index < len(pending_list):
+            popped_item = pending_list.pop(index)
+
+    if popped_item is None:
+        return redirect(url_for('admin'))
 
     # עוזרי טקסט מקומיים (לא תלויים ב-ai_writer)
     def _sanitize_he(text: str) -> str:
@@ -3373,136 +3404,131 @@ def approve_professional(index):
             return "אינסטלטור"
         return s
 
-    if 0 <= index < len(pending_list):
-        # שולפים את הפריט המאושר מתוך הפנדינג
-        item = pending_list.pop(index)
+    item = popped_item
 
-        # מזהה חדש
-        existing_ids = [int(w.get('worker_id', 0)) for w in approved_list]
-        max_id = max(existing_ids) if existing_ids else 0
-        item['worker_id'] = str(max_id + 1)
+    # קנוניזציה + מילוי שדות
+    normalize_worker_fields(item)
 
-        # קנוניזציה + מילוי שדות
-        normalize_worker_fields(item)
+    # נשמור תמיד את תתי-התחומים כפי שהוזנו בטופס (ולא של המודל)
+    sub_services = [s for s in (item.get('sub_services') or []) if isinstance(s, str) and s.strip()]
+    if sub_services:
+        item['specializations'] = sub_services[:]   # לשימוש בטמפלט "מה אני עושה"
+    else:
+        item['specializations'] = []
 
-        # נשמור תמיד את תתי-התחומים כפי שהוזנו בטופס (ולא של המודל)
-        sub_services = [s for s in (item.get('sub_services') or []) if isinstance(s, str) and s.strip()]
-        if sub_services:
-            item['specializations'] = sub_services[:]   # לשימוש בטמפלט "מה אני עושה"
+    selection_applied = False
+    selection_payload = item.get('description_selected_text')
+    if isinstance(selection_payload, dict):
+        sel_teaser = _sanitize_he((selection_payload.get('teaser') or '').strip())
+        sel_body = _sanitize_he((selection_payload.get('body') or '').strip())
+
+        if item.get('offers_emergency'):
+            sel_teaser = _strip_emergency(sel_teaser)
+            sel_body = _strip_emergency(sel_body)
+
+        if sel_teaser:
+            item['bio_short'] = sel_teaser
+        if sel_body:
+            item['bio_full'] = sel_body
+            item['description'] = sel_body
+
+        source_val = (selection_payload.get('source') or item.get('description_source') or '').strip()
+        style_val = (selection_payload.get('style') or item.get('description_style') or '').strip()
+        if source_val:
+            item['description_source'] = source_val
+        if style_val:
+            item['description_style'] = style_val
+
+        selection_applied = bool(sel_teaser or sel_body or source_val or style_val)
+
+    if not selection_applied:
+        # אם נשמרו שדות מקור/סגנון ללא מילון מפורש (למשל עדכון ידני אחרי האישור)
+        source_val = (item.get('description_source') or '').strip()
+        style_val = (item.get('description_style') or '').strip()
+        if source_val:
+            item['description_source'] = source_val
+            selection_applied = True
+        if style_val:
+            item['description_style'] = style_val
+            selection_applied = True
+        if item.get('bio_full') and not item.get('description'):
+            item['description'] = item['bio_full']
+
+    # --- שימוש בטיוטת AI אם ביקשו בטופס ואין בחירה מותאמת ---
+    use_ai = request.form.get('use_ai') in ('1', 'on', 'true', 'True')
+    if not selection_applied and use_ai and (item.get('ai_status') == 'ready'):
+        # שליפה בטוחה של שדות מהטיוטה
+        ai_bio_short = (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '').strip()
+        ai_bio_full  = (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '').strip()
+
+        # מחיקת כפילות "חירום 24/7" אם מציגים באדג'
+        if item.get('offers_emergency'):
+            ai_bio_short = _strip_emergency(ai_bio_short)
+            ai_bio_full  = _strip_emergency(ai_bio_full)
+
+        # ניקוי עברית בסיסי
+        ai_bio_short = _sanitize_he(ai_bio_short)
+        ai_bio_full  = _sanitize_he(ai_bio_full)
+
+        # services_sentence: מהמודל אם קיים, אחרת מהרשימה שסומנה
+        if item.get('ai_draft_services_sentence'):
+            services_sentence = _sanitize_he(item['ai_draft_services_sentence'].lstrip("שירותים:").strip())
         else:
-            item['specializations'] = []
+            services_sentence = _sanitize_he(", ".join(sub_services)) if sub_services else ""
 
-        selection_applied = False
-        selection_payload = item.get('description_selected_text')
-        if isinstance(selection_payload, dict):
-            sel_teaser = _sanitize_he((selection_payload.get('teaser') or '').strip())
-            sel_body = _sanitize_he((selection_payload.get('body') or '').strip())
+        # seo_title: מהמודל או ברירת מחדל ללא עיר
+        if item.get('ai_draft_seo_title'):
+            seo_title = _sanitize_he(item['ai_draft_seo_title'].strip())
+        else:
+            name  = (item.get('name') or item.get('company_name') or '').strip()
+            field = (item.get('field') or '').strip()
+            field_singular = field.rstrip("ים").rstrip("ות") if field else field
+            seo_title = _sanitize_he(f"{field_singular or field} – {name}".strip(" – "))
 
-            if item.get('offers_emergency'):
-                sel_teaser = _strip_emergency(sel_teaser)
-                sel_body = _strip_emergency(sel_body)
+        # שמירה בשדות חדשים
+        item['bio_short'] = ai_bio_short
+        item['bio_full']  = ai_bio_full
+        item['services_sentence'] = services_sentence
+        item['services_list'] = sub_services[:]
+        item['seo_title'] = seo_title
 
-            if sel_teaser:
-                item['bio_short'] = sel_teaser
-            if sel_body:
-                item['bio_full'] = sel_body
-                item['description'] = sel_body
-
-            source_val = (selection_payload.get('source') or item.get('description_source') or '').strip()
-            style_val = (selection_payload.get('style') or item.get('description_style') or '').strip()
-            if source_val:
-                item['description_source'] = source_val
-            if style_val:
-                item['description_style'] = style_val
-
-            selection_applied = bool(sel_teaser or sel_body or source_val or style_val)
-
-        if not selection_applied:
-            # אם נשמרו שדות מקור/סגנון ללא מילון מפורש (למשל עדכון ידני אחרי האישור)
-            source_val = (item.get('description_source') or '').strip()
-            style_val = (item.get('description_style') or '').strip()
-            if source_val:
-                item['description_source'] = source_val
-                selection_applied = True
-            if style_val:
-                item['description_style'] = style_val
-                selection_applied = True
-            if item.get('bio_full') and not item.get('description'):
-                item['description'] = item['bio_full']
-
-        # --- שימוש בטיוטת AI אם ביקשו בטופס ואין בחירה מותאמת ---
-        use_ai = request.form.get('use_ai') in ('1', 'on', 'true', 'True')
-        if not selection_applied and use_ai and (item.get('ai_status') == 'ready'):
-            # שליפה בטוחה של שדות מהטיוטה
-            ai_bio_short = (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '').strip()
-            ai_bio_full  = (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '').strip()
-
-            # מחיקת כפילות "חירום 24/7" אם מציגים באדג'
-            if item.get('offers_emergency'):
-                ai_bio_short = _strip_emergency(ai_bio_short)
-                ai_bio_full  = _strip_emergency(ai_bio_full)
-
-            # ניקוי עברית בסיסי
-            ai_bio_short = _sanitize_he(ai_bio_short)
-            ai_bio_full  = _sanitize_he(ai_bio_full)
-
-            # services_sentence: מהמודל אם קיים, אחרת מהרשימה שסומנה
-            if item.get('ai_draft_services_sentence'):
-                services_sentence = _sanitize_he(item['ai_draft_services_sentence'].lstrip("שירותים:").strip())
-            else:
-                services_sentence = _sanitize_he(", ".join(sub_services)) if sub_services else ""
-
-            # seo_title: מהמודל או ברירת מחדל ללא עיר
-            if item.get('ai_draft_seo_title'):
-                seo_title = _sanitize_he(item['ai_draft_seo_title'].strip())
-            else:
-                name  = (item.get('name') or item.get('company_name') or '').strip()
-                field = (item.get('field') or '').strip()
-                field_singular = field.rstrip("ים").rstrip("ות") if field else field
-                seo_title = _sanitize_he(f"{field_singular or field} – {name}".strip(" – "))
-
-            # שמירה בשדות חדשים
-            item['bio_short'] = ai_bio_short
-            item['bio_full']  = ai_bio_full
-            item['services_sentence'] = services_sentence
-            item['services_list'] = sub_services[:]
-            item['seo_title'] = seo_title
-
-            # תאימות—description = התיאור המלא␊
-            if ai_bio_full:
-                item['description'] = ai_bio_full
+        # תאימות—description = התיאור המלא
+        if ai_bio_full:
+            item['description'] = ai_bio_full
 
         # --- נעילת וריאנט לעובד המאושר (כדי לא לשכפל וריאנטים) ---
-        try:
-            used_variant_id = (item.get("ai_variant_used") or "").strip()
-            if used_variant_id:
-                fk = _field_key_for_variants(item.get("field") or item.get("field_he") or "")
-                if fk:
-                    assign_variant(fk, used_variant_id, item['worker_id'])
-        except Exception as e:
-            try:
-                app.logger.warning(f"assign_variant failed: {e}")
-            except Exception:
-                pass
-
-        # מוסיפים לרשימת המאושרים ושומרים קבצים
+    new_worker_id = None
+    with atomic_write_json(Path(APPROVED_FILE), default_factory=list) as approved_list:
+        existing_ids = [int(w.get('worker_id', 0)) for w in approved_list if str(w.get('worker_id', '')).isdigit()]
+        max_id = max(existing_ids) if existing_ids else 0
+        new_worker_id = str(max_id + 1)
+        item['worker_id'] = new_worker_id
         approved_list.append(item)
-        write_json_file(PENDING_FILE, pending_list)
-        write_json_file(APPROVED_FILE, approved_list)
 
-        flash(f"בעל המקצוע {item.get('company_name') or item.get('name')} אושר בהצלחה!")
+    # --- נעילת וריאנט לעובד המאושר (כדי לא לשכפל וריאנטים) ---
+    try:
+        used_variant_id = (item.get("ai_variant_used") or "").strip()
+        if used_variant_id:
+            fk = _field_key_for_variants(item.get("field") or item.get("field_he") or "")
+            if fk and new_worker_id:
+                assign_variant(fk, used_variant_id, new_worker_id)
+    except Exception as e:
+        try:
+            app.logger.warning(f"assign_variant failed: {e}")
+        except Exception:
+            pass
+
+    flash(f"בעל המקצוע {item.get('company_name') or item.get('name')} אושר בהצלחה!")
 
     return redirect(url_for('admin'))
 
 
 
-
 @app.route('/delete_pending/<int:index>', methods=['POST'])
 def delete_pending(index):
-    pending_list = read_json_file(PENDING_FILE)
-    if 0 <= index < len(pending_list):
-        pending_list.pop(index)
-        write_json_file(PENDING_FILE, pending_list)
+    with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
+        if 0 <= index < len(pending_list):
+            pending_list.pop(index)
     return redirect(url_for('admin'))
 
 
@@ -3796,11 +3822,12 @@ def admin_ai_generate(index):
     ניתן לאפס קורסור עם פרמטר ?reset=1 אם צריך.
     """
     pending_list = read_json_file(PENDING_FILE)
-    if not (0 <= index < len(pending_list)):
+    if not isinstance(pending_list, list) or not (0 <= index < len(pending_list)):
         flash("פריט לא קיים", "error")
         return redirect(url_for('admin'))
 
     item = pending_list[index]
+    req_id = _request_id_for_item(item)
 
     # מזהה יציב לפנדינג (כי עדיין אין worker_id)
     pre_id = _pre_worker_id(item)
@@ -3849,8 +3876,11 @@ def admin_ai_generate(index):
         item.update(draft)
 
         # נשמור חזרה
-        pending_list[index] = item
-        write_json_file(PENDING_FILE, pending_list)
+        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
+            for idx, record in enumerate(records):
+                if _request_id_for_item(record) == req_id:
+                    records[idx] = item
+                    break
 
         # דגל הצלחה: מציגים גם מזהה וריאנט, ואם ניתן – label
         used_id = (draft.get("ai_variant_used") or "").strip()
@@ -3866,8 +3896,11 @@ def admin_ai_generate(index):
     except Exception as e:
         # לא מפילים—נרשום שגיאה ונמשיך
         item["ai_status"] = "error"
-        pending_list[index] = item
-        write_json_file(PENDING_FILE, pending_list)
+        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
+            for idx, record in enumerate(records):
+                if _request_id_for_item(record) == req_id:
+                    records[idx] = item
+                    break
         flash("אירעה שגיאה ביצירת הטיוטה.", "error")
 
     return redirect(url_for('admin'))

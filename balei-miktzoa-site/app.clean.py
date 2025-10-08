@@ -1,5 +1,5 @@
 # === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, tempfile
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta, date, timezone, time as dt_time
@@ -43,20 +43,6 @@ from services.worker_descriptions import generate_worker_descriptions
 
 
 load_dotenv()
-
-
-def _require_env_var(name: str) -> str:
-    """Return a mandatory environment variable or fail fast with guidance."""
-
-    value = (os.environ.get(name) or "").strip()
-    if not value:
-        raise RuntimeError(
-            f"Missing required environment variable: {name}. "
-            "Set it in your deployment environment or .env file."
-        )
-    return value
-
-
 # === Google Sheets webhook sync (for reviews) ===
 GOOGLE_WEBHOOK_URL = os.environ.get("GOOGLE_WEBHOOK_URL", "").strip()
 GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
@@ -64,7 +50,6 @@ GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
 # === Locks ===
 REVIEWS_JSON_LOCK = Lock()
 DESCRIPTION_JOB_LOCK = Lock()
-WORKER_RECORDS_LOCK = Lock()
 DESCRIPTION_JOBS: dict[str, dict] = {}
 DESCRIPTION_JOB_BY_REQ: dict[str, str] = {}
 
@@ -438,7 +423,7 @@ MAX_VIDEO_MB = 50  # רף רך – אופציונלי
 # דומיין בסיס של האתר (בפרודקשן עדכן לדומיין הסופי)
 BASE_DOMAIN = os.environ.get('BASE_DOMAIN', 'https://baley-mikzoa.co.il')
 
-INVITE_KEY = _require_env_var('INVITE_KEY')
+INVITE_KEY = os.environ.get('INVITE_KEY', 'dev-invite')
 
 # --- OG target languages ---
 OG_LANGS = ("he", "en", "ru")
@@ -694,205 +679,9 @@ def read_json_file(path):
         return json.load(f)
 
 
-# === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, tempfile
-from io import BytesIO
-from pathlib import Path
-from datetime import datetime, timedelta, date, timezone, time as dt_time
-from zoneinfo import ZoneInfo
-from collections import defaultdict
-from typing import Any
-from urllib.parse import urlparse, parse_qs, urljoin
-
-from flask import (
-    Flask, render_template, request, redirect, url_for, flash, g, jsonify,
-    session, send_from_directory, Response
-)
-from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
-from werkzeug.middleware.proxy_fix import ProxyFix
-
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-from PIL import Image, ImageOps
-from deep_translator import GoogleTranslator
-import requests
-from dotenv import load_dotenv
-from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
-
-try:
-    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-except ImportError:  # Python < 3.9 or zoneinfo backport not installed
-    ZoneInfo = None
-
-    class ZoneInfoNotFoundError(Exception):
-        """Fallback exception type when zoneinfo is unavailable."""
-
-
-from threading import Lock
-from services.ai_writer import generate_draft
-from services.ai_variants import list_variants, assign_variant
-from services.worker_descriptions import generate_worker_descriptions
-
-
-
-
-load_dotenv()
-# === Google Sheets webhook sync (for reviews) ===
-load_dotenv()
-
-
-def _require_env_var(name: str) -> str:
-    """Return a mandatory environment variable or fail fast with guidance."""
-
-    value = (os.environ.get(name) or "").strip()
-    if not value:
-        raise RuntimeError(
-            f"Missing required environment variable: {name}. "
-            "Set it in your deployment environment or .env file."
-        )
-    return value
-
-
-# === Google Sheets webhook sync (for reviews) ===
-GOOGLE_WEBHOOK_URL = os.environ.get("GOOGLE_WEBHOOK_URL", "").strip()
-GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
-
-# === Locks ===
-REVIEWS_JSON_LOCK = Lock()
-DESCRIPTION_JOB_LOCK = Lock()
-REVIEWS_JSON_LOCK = Lock()
-DESCRIPTION_JOB_LOCK = Lock()
-WORKER_RECORDS_LOCK = Lock()
-DESCRIPTION_JOBS: dict[str, dict] = {}
-DESCRIPTION_JOB_BY_REQ: dict[str, str] = {}
-
-
-# ------------------------------
-# קבועים כלליים (שפה/בניית קישורי סטטיק)
-# ------------------------------
-SUPPORTED_LANGS = ("he", "en", "ru")   # בשימוש ב-smart_alias וב-sitemap
-SMART_ALIAS_RESERVED = {
-    "estimate": "estimate",
-}
-ASSETS_V = os.environ.get("ASSETS_V", "1055")  # גרסת נכסים (cache-busting)
-
-
-# --- טווחי ימים ותצוגה ---
-DAY_ORDER = ("sun", "mon", "tue", "wed", "thu", "fri", "sat")
-DAY_ORDER_INDEX = {slug: idx for idx, slug in enumerate(DAY_ORDER)}
-PY_WEEKDAY_TO_SLUG = {
-    0: "mon",
-    1: "tue",
-    2: "wed",
-    3: "thu",
-    4: "fri",
-    5: "sat",
-    6: "sun",
-@@ -401,51 +416,51 @@ APPROVED_FILE = os.path.join(DATA_FOLDER, 'approved.json')
-
-# תיקיית ההעלאות (תמונות/וידאו) בתוך static/upload_pending
-UPLOAD_FOLDER = str(BASE_DIR / 'static' / 'upload_pending')
-
-# קריאת כתובת המייל וסיסמאות ממשתני סביבה
-EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS', '')
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')  # סיסמת אפליקציה
-
-# --- Admin Login ---
-# סיסמת מנהל מוגדרת במשתנה סביבה ADMIN_PASSWORD
-ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', '')
-
-# יצירת התיקיות במידת הצורך
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(DATA_FOLDER, exist_ok=True)
-
-# וידאו – נשמור תחת static/upload_pending/videos
-VIDEO_UPLOAD_SUBDIR = os.path.join(UPLOAD_FOLDER, 'videos')
-os.makedirs(VIDEO_UPLOAD_SUBDIR, exist_ok=True)
-ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'ogg'}
-MAX_VIDEO_MB = 50  # רף רך – אופציונלי
-
-# דומיין בסיס של האתר (בפרודקשן עדכן לדומיין הסופי)
-BASE_DOMAIN = os.environ.get('BASE_DOMAIN', 'https://baley-mikzoa.co.il')
-
-INVITE_KEY = os.environ.get('INVITE_KEY', 'dev-invite')
-INVITE_KEY = _require_env_var('INVITE_KEY')
-
-# --- OG target languages ---
-OG_LANGS = ("he", "en", "ru")
-
-# --- Worker language choices ---
-WORKER_LANGUAGE_CHOICES = (
-    "עברית",
-    "אנגלית",
-    "רוסית",
-    "ערבית",
-    "אמהרית",
-    "צרפתית",
-    "ספרדית",
-)
-DEFAULT_WORKER_LANGUAGES = ()
-
-# ------------------------------
-# נתוני ערים
-# ------------------------------
-cities_coords = {
-    "תל אביב": (32.0853, 34.7818),
-    "ירושלים": (31.7683, 35.2137),
-    "חיפה": (32.7940, 34.9896),
-    "באר שבע": (31.2518, 34.7913),
-    "פתח תקווה": (32.0840, 34.8878),
-@@ -657,53 +672,70 @@ def localize_city_slug(he_value, lang):
-    if lang == 'en':
-        out = city_map_he_to_en.get(he_value, he_value)
-    elif lang == 'ru':
-        out = city_map_he_to_ru.get(he_value, he_value)
-    else:
-        out = he_value  # he
-    return to_kebab_slug(out)
-
-
-def localize_service_slug(service_key: str, lang: str) -> str:
-    meta = SERVICE_REGISTRY.get(service_key, {})
-    label = meta.get(lang) or meta.get("he") or service_key
-    return to_kebab_slug(label)
-
-
-# ------------------------------
-# עזרי קריאה/כתיבה קבצים
-# ------------------------------
-def read_json_file(path):
-    if not os.path.exists(path):
-        return []
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-
 def write_json_file(path, data):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-def write_json_file(path, data):
-    directory = os.path.dirname(path) or "."
-    os.makedirs(directory, exist_ok=True)
-    fd, tmp_path = tempfile.mkstemp(
-        dir=directory,
-        prefix=f".{os.path.basename(path)}.",
-        suffix=".tmp",
-    )
-    try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as tmp_file:
-            json.dump(data, tmp_file, ensure_ascii=False, indent=2)
-            tmp_file.flush()
-            os.fsync(tmp_file.fileno())
-        os.replace(tmp_path, path)
-    finally:
-        try:
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
-        except FileNotFoundError:
-            pass
 
 
 def _now_iso() -> str:
@@ -2463,8 +2252,7 @@ def admin_logout_beacon():
 @app.route('/<lang>/request', methods=['GET', 'POST'])
 def request_professional(lang):
     # --- דרישת קישור הזמנה ---
-    invite_key = INVITE_KEY
-
+    invite_key = os.environ.get('INVITE_KEY', 'dev-invite')  # שים ערך אמיתי ב-.env
     supplied_key = (request.args.get('key') or request.form.get('key') or '').strip()
     if supplied_key != invite_key:
         flash('כדי למלא את הטופס יש צורך בקישור הזמנה.', 'error')
@@ -2568,11 +2356,10 @@ def request_professional(lang):
             "languages": languages                   # רשימת שפות מאומתת
         }
 
-        # שמירה לפנדינג (נעילה למניעת דריסה במקביל)
-        with WORKER_RECORDS_LOCK:
-            pending_list = read_json_file(PENDING_FILE)
-            pending_list.append(new_request)
-            write_json_file(PENDING_FILE, pending_list)
+        # שמירה לפנדינג
+        pending_list = read_json_file(PENDING_FILE)
+        pending_list.append(new_request)
+        write_json_file(PENDING_FILE, pending_list)
 
         flash("הבקשה נשלחה בהצלחה! תודה רבה.")
         # שומרים את ה-key גם בחזרה, כדי שהעמוד יישאר נגיש ברענון
@@ -3340,22 +3127,21 @@ def _get_request_snapshot(req_id: str):
 
 
 def _persist_description_result(req_id: str, result: dict, generated_at: str):
-    with WORKER_RECORDS_LOCK:
-        resolved = _resolve_request_record(req_id)
-        if not resolved:
-            return
+    resolved = _resolve_request_record(req_id)
+    if not resolved:
+        return
 
-        record_type, records, idx, item = resolved
-        safe_result = json.loads(json.dumps(result or {}, ensure_ascii=False, default=str))
-        item["description_generated_at"] = generated_at
-        item["description_variants"] = safe_result
-        if isinstance(safe_result, dict):
-            item["description_used_fields"] = safe_result.get("used_fields") or {}
-        item["request_id"] = _request_id_for_item(item)
-        records[idx] = item
+    record_type, records, idx, item = resolved
+    safe_result = json.loads(json.dumps(result or {}, ensure_ascii=False, default=str))
+    item["description_generated_at"] = generated_at
+    item["description_variants"] = safe_result
+    if isinstance(safe_result, dict):
+        item["description_used_fields"] = safe_result.get("used_fields") or {}
+    item["request_id"] = _request_id_for_item(item)
+    records[idx] = item
 
-        path = PENDING_FILE if record_type == "pending" else APPROVED_FILE
-        write_json_file(path, records)
+    path = PENDING_FILE if record_type == "pending" else APPROVED_FILE
+    write_json_file(path, records)
 
 
 def _set_job_status(job_id: str, status: str, **extra):
@@ -3480,453 +3266,6 @@ def admin_description_status(req_id):
     return jsonify(response)
 
 
-# === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, tempfile
-from io import BytesIO
-from pathlib import Path
-from datetime import datetime, timedelta, date, timezone, time as dt_time
-from zoneinfo import ZoneInfo
-from collections import defaultdict
-from typing import Any
-from urllib.parse import urlparse, parse_qs, urljoin
-
-from flask import (
-    Flask, render_template, request, redirect, url_for, flash, g, jsonify,
-    session, send_from_directory, Response
-)
-from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
-from werkzeug.middleware.proxy_fix import ProxyFix
-
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-from PIL import Image, ImageOps
-from deep_translator import GoogleTranslator
-import requests
-from dotenv import load_dotenv
-from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
-
-try:
-    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-except ImportError:  # Python < 3.9 or zoneinfo backport not installed
-    ZoneInfo = None
-
-    class ZoneInfoNotFoundError(Exception):
-        """Fallback exception type when zoneinfo is unavailable."""
-
-
-from threading import Lock
-from services.ai_writer import generate_draft
-from services.ai_variants import list_variants, assign_variant
-from services.worker_descriptions import generate_worker_descriptions
-
-
-
-
-load_dotenv()
-# === Google Sheets webhook sync (for reviews) ===
-load_dotenv()
-
-
-def _require_env_var(name: str) -> str:
-    """Return a mandatory environment variable or fail fast with guidance."""
-
-    value = (os.environ.get(name) or "").strip()
-    if not value:
-        raise RuntimeError(
-            f"Missing required environment variable: {name}. "
-            "Set it in your deployment environment or .env file."
-        )
-    return value
-
-
-# === Google Sheets webhook sync (for reviews) ===
-GOOGLE_WEBHOOK_URL = os.environ.get("GOOGLE_WEBHOOK_URL", "").strip()
-GOOGLE_WEBHOOK_SECRET = os.environ.get("GOOGLE_WEBHOOK_SECRET", "")
-
-# === Locks ===
-REVIEWS_JSON_LOCK = Lock()
-DESCRIPTION_JOB_LOCK = Lock()
-REVIEWS_JSON_LOCK = Lock()
-DESCRIPTION_JOB_LOCK = Lock()
-WORKER_RECORDS_LOCK = Lock()
-DESCRIPTION_JOBS: dict[str, dict] = {}
-DESCRIPTION_JOB_BY_REQ: dict[str, str] = {}
-
-
-# ------------------------------
-# קבועים כלליים (שפה/בניית קישורי סטטיק)
-# ------------------------------
-SUPPORTED_LANGS = ("he", "en", "ru")   # בשימוש ב-smart_alias וב-sitemap
-SMART_ALIAS_RESERVED = {
-    "estimate": "estimate",
-}
-ASSETS_V = os.environ.get("ASSETS_V", "1055")  # גרסת נכסים (cache-busting)
-
-
-# --- טווחי ימים ותצוגה ---
-DAY_ORDER = ("sun", "mon", "tue", "wed", "thu", "fri", "sat")
-DAY_ORDER_INDEX = {slug: idx for idx, slug in enumerate(DAY_ORDER)}
-PY_WEEKDAY_TO_SLUG = {
-    0: "mon",
-    1: "tue",
-    2: "wed",
-    3: "thu",
-    4: "fri",
-    5: "sat",
-    6: "sun",
-@@ -401,51 +416,51 @@ APPROVED_FILE = os.path.join(DATA_FOLDER, 'approved.json')
-
-# תיקיית ההעלאות (תמונות/וידאו) בתוך static/upload_pending
-UPLOAD_FOLDER = str(BASE_DIR / 'static' / 'upload_pending')
-
-# קריאת כתובת המייל וסיסמאות ממשתני סביבה
-EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS', '')
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')  # סיסמת אפליקציה
-
-# --- Admin Login ---
-# סיסמת מנהל מוגדרת במשתנה סביבה ADMIN_PASSWORD
-ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', '')
-
-# יצירת התיקיות במידת הצורך
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(DATA_FOLDER, exist_ok=True)
-
-# וידאו – נשמור תחת static/upload_pending/videos
-VIDEO_UPLOAD_SUBDIR = os.path.join(UPLOAD_FOLDER, 'videos')
-os.makedirs(VIDEO_UPLOAD_SUBDIR, exist_ok=True)
-ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'ogg'}
-MAX_VIDEO_MB = 50  # רף רך – אופציונלי
-
-# דומיין בסיס של האתר (בפרודקשן עדכן לדומיין הסופי)
-BASE_DOMAIN = os.environ.get('BASE_DOMAIN', 'https://baley-mikzoa.co.il')
-
-INVITE_KEY = os.environ.get('INVITE_KEY', 'dev-invite')
-INVITE_KEY = _require_env_var('INVITE_KEY')
-
-# --- OG target languages ---
-OG_LANGS = ("he", "en", "ru")
-
-# --- Worker language choices ---
-WORKER_LANGUAGE_CHOICES = (
-    "עברית",
-    "אנגלית",
-    "רוסית",
-    "ערבית",
-    "אמהרית",
-    "צרפתית",
-    "ספרדית",
-)
-DEFAULT_WORKER_LANGUAGES = ()
-
-# ------------------------------
-# נתוני ערים
-# ------------------------------
-cities_coords = {
-    "תל אביב": (32.0853, 34.7818),
-    "ירושלים": (31.7683, 35.2137),
-    "חיפה": (32.7940, 34.9896),
-    "באר שבע": (31.2518, 34.7913),
-    "פתח תקווה": (32.0840, 34.8878),
-@@ -657,53 +672,70 @@ def localize_city_slug(he_value, lang):
-    if lang == 'en':
-        out = city_map_he_to_en.get(he_value, he_value)
-    elif lang == 'ru':
-        out = city_map_he_to_ru.get(he_value, he_value)
-    else:
-        out = he_value  # he
-    return to_kebab_slug(out)
-
-
-def localize_service_slug(service_key: str, lang: str) -> str:
-    meta = SERVICE_REGISTRY.get(service_key, {})
-    label = meta.get(lang) or meta.get("he") or service_key
-    return to_kebab_slug(label)
-
-
-# ------------------------------
-# עזרי קריאה/כתיבה קבצים
-# ------------------------------
-def read_json_file(path):
-    if not os.path.exists(path):
-        return []
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-
-def write_json_file(path, data):
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-def write_json_file(path, data):
-    directory = os.path.dirname(path) or "."
-    os.makedirs(directory, exist_ok=True)
-    fd, tmp_path = tempfile.mkstemp(
-        dir=directory,
-        prefix=f".{os.path.basename(path)}.",
-        suffix=".tmp",
-    )
-    try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as tmp_file:
-            json.dump(data, tmp_file, ensure_ascii=False, indent=2)
-            tmp_file.flush()
-            os.fsync(tmp_file.fileno())
-        os.replace(tmp_path, path)
-    finally:
-        try:
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
-        except FileNotFoundError:
-            pass
-
-
-def _now_iso() -> str:
-    ts = datetime.now(timezone.utc).isoformat()
-    return ts.replace("+00:00", "Z")
-
-# ------------------------------
-# פונקציות עזר
-# ------------------------------
-
-
-# ------------------------------
-# AI Draft: עזרי וריאנטים (דפדוף בטיוטה)
-# ------------------------------
-def _pre_worker_id(item: dict) -> str:
-    """
-    מזהה יציב לפנדינג (לפני שיש worker_id אמיתי):
-    name|company|phone|field -> md5[:12]
-    """
-    src = f"{item.get('name','')}|{item.get('company_name','')}|{item.get('phone','')}|{item.get('field','')}"
-    return hashlib.md5(src.encode('utf-8','ignore')).hexdigest()[:12]
-
-def _bump_variant_cursor(pre_id: str, total: int = 7) -> int:
-    """
-    כל קליק על 'צור טיוטת AI' מקדם את המצביע (cursor) ומחזיר את האינדקס הבא (0..total-1).
-@@ -2230,51 +2262,51 @@ def send_message(lang):
-
-
-@app.route('/admin/logout')
-def admin_logout():
-    session.pop('is_admin', None)
-    flash('התנתקת בהצלחה', 'success')
-    return redirect(url_for('admin_login'))
-
-
-
-@csrf.exempt
-@app.post('/admin/logout-beacon')
-def admin_logout_beacon():
-    # לוגאאוט שקט כאשר נסגרת הלשונית האחרונה (נשלח מהדפדפן ב-sendBeacon)
-    session.pop('is_admin', None)
-    return ('', 204)
-
-
-
-# ------------------------------
-# בקשת בעל מקצוע
-# ------------------------------
-@app.route('/<lang>/request', methods=['GET', 'POST'])
-def request_professional(lang):
-    # --- דרישת קישור הזמנה ---
-    invite_key = os.environ.get('INVITE_KEY', 'dev-invite')  # שים ערך אמיתי ב-.env
-    invite_key = INVITE_KEY
-    supplied_key = (request.args.get('key') or request.form.get('key') or '').strip()
-    if supplied_key != invite_key:
-        flash('כדי למלא את הטופס יש צורך בקישור הזמנה.', 'error')
-        return redirect(url_for('contact', lang=lang))
-
-    if request.method == 'POST':
-        # --- איסוף נתונים מהטופס ---
-        name = request.form.get('name')
-        company_name = request.form.get('company_name')
-        field = request.form.get('field')
-        area = request.form.get('area')
-        base_city = request.form.get('base_city')
-        work_radius = request.form.get('work_radius')
-        phone = request.form.get('phone')
-        experience = request.form.get('experience')
-        description = request.form.get('description')
-        reviews = request.form.get('reviews')
-        image = request.files.get('image')
-        image_filename = ''
-
-        # NEW: שדות חדשים מהטופס
-        # 1) תת-תחומים – אם בטופס יש כמה צ'קבוקסים עם אותו name="sub_services"
-        #    זה יחזיר רשימה של מה שסומן. אם אין – נקבל רשימה ריקה.
-        sub_services = request.form.getlist('sub_services')
-
-@@ -2334,54 +2366,55 @@ def request_professional(lang):
-        # בניית הרשומה החדשה לפנדינג
-        new_request = {
-            "company_name": company_name,
-            "name": name,
-            "field":    i18n_field["he"],
-            "field_en": i18n_field["en"],
-            "field_ru": i18n_field["ru"],
-            "base_city": base_city,
-            "work_radius": int(work_radius) if work_radius else 0,
-            "active_cities": cities_in_radius,
-            "phone": phone,
-            "experience": int(experience) if experience and experience.isdigit() else 0,
-            "description": description,
-            "reviews": reviews,
-            "image_filename": image_filename,
-            "video_url": None,
-            "video_local": saved_video_relpath,
-            "work_blocks": work_blocks,
-
-            # NEW: שמירה ב-JSON
-            "sub_services": sub_services,            # רשימת המחרוזות שסומנו בטופס (בעברית כרגע)
-            "offers_emergency": offers_emergency,    # True/False
-            "languages": languages                   # רשימת שפות מאומתת
-        }
-
-        # שמירה לפנדינג
-        pending_list = read_json_file(PENDING_FILE)
-        pending_list.append(new_request)
-        write_json_file(PENDING_FILE, pending_list)
-        # שמירה לפנדינג (נעילה למניעת דריסה במקביל)
-        with WORKER_RECORDS_LOCK:
-            pending_list = read_json_file(PENDING_FILE)
-            pending_list.append(new_request)
-            write_json_file(PENDING_FILE, pending_list)
-
-        flash("הבקשה נשלחה בהצלחה! תודה רבה.")
-        # שומרים את ה-key גם בחזרה, כדי שהעמוד יישאר נגיש ברענון
-        return redirect(url_for('request_professional', lang=lang, key=invite_key))
-
-    # GET — מעבירים invite_key לטמפלט (שדה חבוי + ב-action)
-    return render_template(
-        'request.html',
-        lang=lang,
-        invite_key=invite_key,
-        language_choices=WORKER_LANGUAGE_CHOICES,
-        default_languages=list(DEFAULT_WORKER_LANGUAGES),
-    )
-# ------------------------------
-# Workers list
-# ------------------------------
-@app.route('/<lang>/workers/<field>/', defaults={'area': None})
-@app.route('/<lang>/workers/<field>/<area>')
-def show_workers(lang, field, area):
-    session['last_workers_field'] = field
-    session['last_workers_area'] = area
-
-    # URL נקי לרשימה הנוכחית (שומר query string רק אם קיים)
-    qs = request.query_string.decode('utf-8') if request.query_string else ''
-    current_list_url = request.path + (f'?{qs}' if qs else '')
-@@ -3104,66 +3137,67 @@ def _resolve_request_record(req_id: str):
-    if not req_id:
-        return None
-
-    pending_list = read_json_file(PENDING_FILE)
-    for idx, item in enumerate(pending_list):
-        if _request_id_for_item(item) == req_id:
-            return "pending", pending_list, idx, item
-
-    approved_list = read_json_file(APPROVED_FILE)
-    for idx, item in enumerate(approved_list):
-        if _request_id_for_item(item) == req_id:
-            return "approved", approved_list, idx, item
-
-    return None
-
-
-def _get_request_snapshot(req_id: str):
-    resolved = _resolve_request_record(req_id)
-    if not resolved:
-        return None
-    record_type, _, _, item = resolved
-    safe_copy = json.loads(json.dumps(item, ensure_ascii=False, default=str))
-    return record_type, safe_copy
-
-
-def _persist_description_result(req_id: str, result: dict, generated_at: str):
-    resolved = _resolve_request_record(req_id)
-    if not resolved:
-        return
-
-    record_type, records, idx, item = resolved
-    safe_result = json.loads(json.dumps(result or {}, ensure_ascii=False, default=str))
-    item["description_generated_at"] = generated_at
-    item["description_variants"] = safe_result
-    if isinstance(safe_result, dict):
-        item["description_used_fields"] = safe_result.get("used_fields") or {}
-    item["request_id"] = _request_id_for_item(item)
-    records[idx] = item
-
-    path = PENDING_FILE if record_type == "pending" else APPROVED_FILE
-    write_json_file(path, records)
-def _persist_description_result(req_id: str, result: dict, generated_at: str):
-    with WORKER_RECORDS_LOCK:
-        resolved = _resolve_request_record(req_id)
-        if not resolved:
-            return
-
-        record_type, records, idx, item = resolved
-        safe_result = json.loads(json.dumps(result or {}, ensure_ascii=False, default=str))
-        item["description_generated_at"] = generated_at
-        item["description_variants"] = safe_result
-        if isinstance(safe_result, dict):
-            item["description_used_fields"] = safe_result.get("used_fields") or {}
-        item["request_id"] = _request_id_for_item(item)
-        records[idx] = item
-
-        path = PENDING_FILE if record_type == "pending" else APPROVED_FILE
-        write_json_file(path, records)
-
-
-def _set_job_status(job_id: str, status: str, **extra):
-    with DESCRIPTION_JOB_LOCK:
-        job = DESCRIPTION_JOBS.get(job_id)
-        if not job:
-            return
-        job["status"] = status
-        job.update(extra)
-        job["updated_at"] = time.time()
-
-
-def _prune_old_jobs(max_age_seconds: int = 3600):
-    cutoff = time.time() - max_age_seconds
-    with DESCRIPTION_JOB_LOCK:
-        to_drop: list[tuple[str, str | None]] = []
-        for job_id, meta in list(DESCRIPTION_JOBS.items()):
-            ts = meta.get("updated_at") or meta.get("created_at") or 0
-            if ts < cutoff:
-                to_drop.append((job_id, meta.get("req_id")))
-        for job_id, req in to_drop:
-            DESCRIPTION_JOBS.pop(job_id, None)
-            if req and DESCRIPTION_JOB_BY_REQ.get(req) == job_id:
-                DESCRIPTION_JOB_BY_REQ.pop(req, None)
-
-@@ -3244,288 +3278,292 @@ def admin_description_status(req_id):
-            "result": job_snapshot.get("result"),
-            "generated_at": job_snapshot.get("generated_at"),
-            "error": job_snapshot.get("error"),
-        })
-
-    if item:
-        response["selected"] = item.get("description_selected_text")
-        stored_variants = item.get("description_variants")
-        if stored_variants and not response.get("result"):
-            response["result"] = stored_variants
-        stored_generated_at = item.get("description_generated_at")
-        if stored_generated_at and not response.get("generated_at"):
-            response["generated_at"] = stored_generated_at
-        response["description_source"] = item.get("description_source")
-        response["description_style"] = item.get("description_style")
-        response["description_used_fields"] = item.get("description_used_fields")
-        if stored_variants and not response.get("status"):
-            response["status"] = "done"
-
-    if not response.get("status"):
-        response["status"] = "idle"
-
-    return jsonify(response)
-
-
 @app.post('/admin/requests/<req_id>/select_description')
 def admin_select_description(req_id):
     payload = request.get_json(silent=True) or {}
@@ -4012,90 +3351,6 @@ def approve_professional(index):
         if not text: return text
         fixes = {
             "נקייהיה": "נקייה",
-@app.post('/admin/requests/<req_id>/select_description')
-def admin_select_description(req_id):
-    payload = request.get_json(silent=True) or {}
-    style = (payload.get('style') or '').strip()
-    source = (payload.get('source') or '').strip()
-    teaser = (payload.get('teaser') or '').strip()
-    body = (payload.get('body') or '').strip()
-
-    if not source:
-        source = 'manual'
-
-    selection = {
-        'style': style,
-        'source': source,
-        'teaser': teaser,
-        'body': body,
-        'updated_at': _now_iso(),
-    }
-
-    job_result = None
-    generated_at = None
-    with DESCRIPTION_JOB_LOCK:
-        job_id = DESCRIPTION_JOB_BY_REQ.get(req_id)
-        if job_id:
-            job_meta = DESCRIPTION_JOBS.get(job_id)
-            if job_meta:
-                job_result = job_meta.get('result')
-                generated_at = job_meta.get('generated_at')
-
-    with WORKER_RECORDS_LOCK:
-        resolved = _resolve_request_record(req_id)
-        if not resolved:
-            return jsonify({"ok": False, "error": "not_found"}), 404
-
-        record_type, records, idx, item = resolved
-
-        if job_result:
-            safe_result = json.loads(json.dumps(job_result, ensure_ascii=False, default=str))
-            item['description_variants'] = safe_result
-            if isinstance(safe_result, dict):
-                item['description_used_fields'] = safe_result.get('used_fields') or {}
-        elif isinstance(item.get('description_variants'), dict) and not item.get('description_used_fields'):
-            item['description_used_fields'] = item['description_variants'].get('used_fields') or {}
-
-        if generated_at:
-            item['description_generated_at'] = generated_at
-        elif not item.get('description_generated_at'):
-            item['description_generated_at'] = _now_iso()
-
-        item['description_selected_text'] = selection
-        if style:
-            item['description_style'] = style
-        if source:
-            item['description_source'] = source
-
-        item['bio_short'] = teaser
-        item['bio_full'] = body
-        item['description'] = body
-        item['request_id'] = _request_id_for_item(item)
-
-        if record_type == 'approved':
-            item['updated_at'] = _now_iso()
-
-        records[idx] = item
-        path = PENDING_FILE if record_type == 'pending' else APPROVED_FILE
-        write_json_file(path, records)
-
-        response = {
-            'ok': True,
-            'record_type': record_type,
-            'selection': selection,
-            'generated_at': item.get('description_generated_at'),
-            'variants': item.get('description_variants'),
-        }
-
-    return jsonify(response)
-
-@app.route('/approve/<int:index>', methods=['POST'])
-def approve_professional(index):
-    # עוזרי טקסט מקומיים (לא תלויים ב-ai_writer)
-    def _sanitize_he(text: str) -> str:
-        if not text: return text
-        fixes = {
-            "נקייהיה": "נקייה",
             "מסתפק במתח": "עבודות חשמל",
             "מסתפקים במתח": "עבודות חשמל",
             " ,": ",", "  ": " ",
@@ -4118,128 +3373,124 @@ def approve_professional(index):
             return "אינסטלטור"
         return s
 
-    with WORKER_RECORDS_LOCK:
-        pending_list = read_json_file(PENDING_FILE)
-        approved_list = read_json_file(APPROVED_FILE)
+    if 0 <= index < len(pending_list):
+        # שולפים את הפריט המאושר מתוך הפנדינג
+        item = pending_list.pop(index)
 
-        if 0 <= index < len(pending_list):
-            # שולפים את הפריט המאושר מתוך הפנדינג
-            item = pending_list.pop(index)
+        # מזהה חדש
+        existing_ids = [int(w.get('worker_id', 0)) for w in approved_list]
+        max_id = max(existing_ids) if existing_ids else 0
+        item['worker_id'] = str(max_id + 1)
 
-            # מזהה חדש
-            existing_ids = [int(w.get('worker_id', 0)) for w in approved_list]
-            max_id = max(existing_ids) if existing_ids else 0
-            item['worker_id'] = str(max_id + 1)
+        # קנוניזציה + מילוי שדות
+        normalize_worker_fields(item)
 
-            # קנוניזציה + מילוי שדות
-            normalize_worker_fields(item)
+        # נשמור תמיד את תתי-התחומים כפי שהוזנו בטופס (ולא של המודל)
+        sub_services = [s for s in (item.get('sub_services') or []) if isinstance(s, str) and s.strip()]
+        if sub_services:
+            item['specializations'] = sub_services[:]   # לשימוש בטמפלט "מה אני עושה"
+        else:
+            item['specializations'] = []
 
-            # נשמור תמיד את תתי-התחומים כפי שהוזנו בטופס (ולא של המודל)
-            sub_services = [s for s in (item.get('sub_services') or []) if isinstance(s, str) and s.strip()]
-            if sub_services:
-                item['specializations'] = sub_services[:]   # לשימוש בטמפלט "מה אני עושה"
+        selection_applied = False
+        selection_payload = item.get('description_selected_text')
+        if isinstance(selection_payload, dict):
+            sel_teaser = _sanitize_he((selection_payload.get('teaser') or '').strip())
+            sel_body = _sanitize_he((selection_payload.get('body') or '').strip())
+
+            if item.get('offers_emergency'):
+                sel_teaser = _strip_emergency(sel_teaser)
+                sel_body = _strip_emergency(sel_body)
+
+            if sel_teaser:
+                item['bio_short'] = sel_teaser
+            if sel_body:
+                item['bio_full'] = sel_body
+                item['description'] = sel_body
+
+            source_val = (selection_payload.get('source') or item.get('description_source') or '').strip()
+            style_val = (selection_payload.get('style') or item.get('description_style') or '').strip()
+            if source_val:
+                item['description_source'] = source_val
+            if style_val:
+                item['description_style'] = style_val
+
+            selection_applied = bool(sel_teaser or sel_body or source_val or style_val)
+
+        if not selection_applied:
+            # אם נשמרו שדות מקור/סגנון ללא מילון מפורש (למשל עדכון ידני אחרי האישור)
+            source_val = (item.get('description_source') or '').strip()
+            style_val = (item.get('description_style') or '').strip()
+            if source_val:
+                item['description_source'] = source_val
+                selection_applied = True
+            if style_val:
+                item['description_style'] = style_val
+                selection_applied = True
+            if item.get('bio_full') and not item.get('description'):
+                item['description'] = item['bio_full']
+
+        # --- שימוש בטיוטת AI אם ביקשו בטופס ואין בחירה מותאמת ---
+        use_ai = request.form.get('use_ai') in ('1', 'on', 'true', 'True')
+        if not selection_applied and use_ai and (item.get('ai_status') == 'ready'):
+            # שליפה בטוחה של שדות מהטיוטה
+            ai_bio_short = (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '').strip()
+            ai_bio_full  = (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '').strip()
+
+            # מחיקת כפילות "חירום 24/7" אם מציגים באדג'
+            if item.get('offers_emergency'):
+                ai_bio_short = _strip_emergency(ai_bio_short)
+                ai_bio_full  = _strip_emergency(ai_bio_full)
+
+            # ניקוי עברית בסיסי
+            ai_bio_short = _sanitize_he(ai_bio_short)
+            ai_bio_full  = _sanitize_he(ai_bio_full)
+
+            # services_sentence: מהמודל אם קיים, אחרת מהרשימה שסומנה
+            if item.get('ai_draft_services_sentence'):
+                services_sentence = _sanitize_he(item['ai_draft_services_sentence'].lstrip("שירותים:").strip())
             else:
-                item['specializations'] = []
+                services_sentence = _sanitize_he(", ".join(sub_services)) if sub_services else ""
 
-            selection_applied = False
-            selection_payload = item.get('description_selected_text')
-            if isinstance(selection_payload, dict):
-                sel_teaser = _sanitize_he((selection_payload.get('teaser') or '').strip())
-                sel_body = _sanitize_he((selection_payload.get('body') or '').strip())
+            # seo_title: מהמודל או ברירת מחדל ללא עיר
+            if item.get('ai_draft_seo_title'):
+                seo_title = _sanitize_he(item['ai_draft_seo_title'].strip())
+            else:
+                name  = (item.get('name') or item.get('company_name') or '').strip()
+                field = (item.get('field') or '').strip()
+                field_singular = field.rstrip("ים").rstrip("ות") if field else field
+                seo_title = _sanitize_he(f"{field_singular or field} – {name}".strip(" – "))
 
-                if item.get('offers_emergency'):
-                    sel_teaser = _strip_emergency(sel_teaser)
-                    sel_body = _strip_emergency(sel_body)
+            # שמירה בשדות חדשים
+            item['bio_short'] = ai_bio_short
+            item['bio_full']  = ai_bio_full
+            item['services_sentence'] = services_sentence
+            item['services_list'] = sub_services[:]
+            item['seo_title'] = seo_title
 
-                if sel_teaser:
-                    item['bio_short'] = sel_teaser
-                if sel_body:
-                    item['bio_full'] = sel_body
-                    item['description'] = sel_body
+            # תאימות—description = התיאור המלא␊
+            if ai_bio_full:
+                item['description'] = ai_bio_full
 
-                source_val = (selection_payload.get('source') or item.get('description_source') or '').strip()
-                style_val = (selection_payload.get('style') or item.get('description_style') or '').strip()
-                if source_val:
-                    item['description_source'] = source_val
-                if style_val:
-                    item['description_style'] = style_val
-
-                selection_applied = bool(sel_teaser or sel_body or source_val or style_val)
-
-            if not selection_applied:
-                # אם נשמרו שדות מקור/סגנון ללא מילון מפורש (למשל עדכון ידני אחרי האישור)
-                source_val = (item.get('description_source') or '').strip()
-                style_val = (item.get('description_style') or '').strip()
-                if source_val:
-                    item['description_source'] = source_val
-                    selection_applied = True
-                if style_val:
-                    item['description_style'] = style_val
-                    selection_applied = True
-                if item.get('bio_full') and not item.get('description'):
-                    item['description'] = item['bio_full']
-
-            # --- שימוש בטיוטת AI אם ביקשו בטופס ואין בחירה מותאמת ---
-            use_ai = request.form.get('use_ai') in ('1', 'on', 'true', 'True')
-            if not selection_applied and use_ai and (item.get('ai_status') == 'ready'):
-                # שליפה בטוחה של שדות מהטיוטה
-                ai_bio_short = (item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '').strip()
-                ai_bio_full  = (item.get('ai_draft_bio_full')  or item.get('ai_draft_bio') or '').strip()
-
-                # מחיקת כפילות "חירום 24/7" אם מציגים באדג'
-                if item.get('offers_emergency'):
-                    ai_bio_short = _strip_emergency(ai_bio_short)
-                    ai_bio_full  = _strip_emergency(ai_bio_full)
-
-                # ניקוי עברית בסיסי
-                ai_bio_short = _sanitize_he(ai_bio_short)
-                ai_bio_full  = _sanitize_he(ai_bio_full)
-
-                # services_sentence: מהמודל אם קיים, אחרת מהרשימה שסומנה
-                if item.get('ai_draft_services_sentence'):
-                    services_sentence = _sanitize_he(item['ai_draft_services_sentence'].lstrip("שירותים:").strip())
-                else:
-                    services_sentence = _sanitize_he(", ".join(sub_services)) if sub_services else ""
-
-                # seo_title: מהמודל או ברירת מחדל ללא עיר
-                if item.get('ai_draft_seo_title'):
-                    seo_title = _sanitize_he(item['ai_draft_seo_title'].strip())
-                else:
-                    name  = (item.get('name') or item.get('company_name') or '').strip()
-                    field = (item.get('field') or '').strip()
-                    field_singular = field.rstrip("ים").rstrip("ות") if field else field
-                    seo_title = _sanitize_he(f"{field_singular or field} – {name}".strip(" – "))
-
-                # שמירה בשדות חדשים
-                item['bio_short'] = ai_bio_short
-                item['bio_full']  = ai_bio_full
-                item['services_sentence'] = services_sentence
-                item['services_list'] = sub_services[:]
-                item['seo_title'] = seo_title
-
-                # תאימות—description = התיאור המלא␊
-                if ai_bio_full:
-                    item['description'] = ai_bio_full
-
-            # --- נעילת וריאנט לעובד המאושר (כדי לא לשכפל וריאנטים) ---
+        # --- נעילת וריאנט לעובד המאושר (כדי לא לשכפל וריאנטים) ---
+        try:
+            used_variant_id = (item.get("ai_variant_used") or "").strip()
+            if used_variant_id:
+                fk = _field_key_for_variants(item.get("field") or item.get("field_he") or "")
+                if fk:
+                    assign_variant(fk, used_variant_id, item['worker_id'])
+        except Exception as e:
             try:
-                used_variant_id = (item.get("ai_variant_used") or "").strip()
-                if used_variant_id:
-                    fk = _field_key_for_variants(item.get("field") or item.get("field_he") or "")
-                    if fk:
-                        assign_variant(fk, used_variant_id, item['worker_id'])
-            except Exception as e:
-                try:
-                    app.logger.warning(f"assign_variant failed: {e}")
-                except Exception:
-                    pass
+                app.logger.warning(f"assign_variant failed: {e}")
+            except Exception:
+                pass
 
-            # מוסיפים לרשימת המאושרים ושומרים קבצים
-            approved_list.append(item)
-            write_json_file(PENDING_FILE, pending_list)
-            write_json_file(APPROVED_FILE, approved_list)
+        # מוסיפים לרשימת המאושרים ושומרים קבצים
+        approved_list.append(item)
+        write_json_file(PENDING_FILE, pending_list)
+        write_json_file(APPROVED_FILE, approved_list)
 
-            flash(f"בעל המקצוע {item.get('company_name') or item.get('name')} אושר בהצלחה!")
+        flash(f"בעל המקצוע {item.get('company_name') or item.get('name')} אושר בהצלחה!")
 
     return redirect(url_for('admin'))
 
@@ -4248,11 +3499,10 @@ def approve_professional(index):
 
 @app.route('/delete_pending/<int:index>', methods=['POST'])
 def delete_pending(index):
-    with WORKER_RECORDS_LOCK:
-        pending_list = read_json_file(PENDING_FILE)
-        if 0 <= index < len(pending_list):
-            pending_list.pop(index)
-            write_json_file(PENDING_FILE, pending_list)
+    pending_list = read_json_file(PENDING_FILE)
+    if 0 <= index < len(pending_list):
+        pending_list.pop(index)
+        write_json_file(PENDING_FILE, pending_list)
     return redirect(url_for('admin'))
 
 
@@ -4545,81 +3795,80 @@ def admin_ai_generate(index):
     כל לחיצה מדפדפת לוריאנט הבא ושומרת את הטיוטה בפנדינג.
     ניתן לאפס קורסור עם פרמטר ?reset=1 אם צריך.
     """
-    with WORKER_RECORDS_LOCK:
-        pending_list = read_json_file(PENDING_FILE)
-        if not (0 <= index < len(pending_list)):
-            flash("פריט לא קיים", "error")
-            return redirect(url_for('admin'))
+    pending_list = read_json_file(PENDING_FILE)
+    if not (0 <= index < len(pending_list)):
+        flash("פריט לא קיים", "error")
+        return redirect(url_for('admin'))
 
-        item = pending_list[index]
+    item = pending_list[index]
 
-        # מזהה יציב לפנדינג (כי עדיין אין worker_id)
-        pre_id = _pre_worker_id(item)
+    # מזהה יציב לפנדינג (כי עדיין אין worker_id)
+    pre_id = _pre_worker_id(item)
 
-        # איפוס קורסור (אופציונלי): /admin/pending/<i>/ai-generate?reset=1
-        if request.args.get("reset") in ("1", "true", "yes"):
-            cur = session.get("ai_vcur", {})
-            if pre_id in cur:
-                cur.pop(pre_id, None)
-                session["ai_vcur"] = cur
-                session.modified = True
+    # איפוס קורסור (אופציונלי): /admin/pending/<i>/ai-generate?reset=1
+    if request.args.get("reset") in ("1", "true", "yes"):
+        cur = session.get("ai_vcur", {})
+        if pre_id in cur:
+            cur.pop(pre_id, None)
+            session["ai_vcur"] = cur
+            session.modified = True
 
-        # --- בחירת גודל המאגר לפי תחום בפועל (עם פולבאק ל-ENV/7) ---
-        def _field_key_for_variants(s: str) -> str:
-            s = (s or "").strip()
-            if s in ("חשמלאים", "חשמלאי"):
-                return "חשמלאי"
-            if s in ("אינסטלטורים", "אינסטלטור"):
-                return "אינסטלטור"
-            return s
+    # --- בחירת גודל המאגר לפי תחום בפועל (עם פולבאק ל-ENV/7) ---
+    def _field_key_for_variants(s: str) -> str:
+        s = (s or "").strip()
+        if s in ("חשמלאים", "חשמלאי"):
+            return "חשמלאי"
+        if s in ("אינסטלטורים", "אינסטלטור"):
+            return "אינסטלטור"
+        return s
 
-        field_for_variants = _field_key_for_variants(item.get("field") or "")
-        try:
-            variants_meta = list_variants(field_for_variants)  # [{'id','label',...}, ...]
-            total_variants = len(variants_meta)
-        except Exception:
-            variants_meta, total_variants = [], 0
+    field_for_variants = _field_key_for_variants(item.get("field") or "")
+    try:
+        variants_meta = list_variants(field_for_variants)  # [{'id','label',...}, ...]
+        total_variants = len(variants_meta)
+    except Exception:
+        variants_meta, total_variants = [], 0
 
-        if total_variants <= 0:
-            total_variants = int(os.environ.get("AI_VARIANTS_TOTAL", "7"))
+    if total_variants <= 0:
+        total_variants = int(os.environ.get("AI_VARIANTS_TOTAL", "7"))
 
-        # דפדוף: כל לחיצה מקדמת
-        v_idx = _bump_variant_cursor(pre_id, total=total_variants)
+    # דפדוף: כל לחיצה מקדמת
+    v_idx = _bump_variant_cursor(pre_id, total=total_variants)
 
-        # מכינים payload למנוע הכתיבה:
-        # - original_bio: התיאור שבעל המקצוע כתב על עצמו
-        # - variant_refresh: האינדקס (קורסור) לשינוי הניסוח/הסדר
-        worker = dict(item)
-        worker["original_bio"] = item.get("description") or item.get("about") or ""
-        worker["variant_refresh"] = v_idx
+    # מכינים payload למנוע הכתיבה:
+    # - original_bio: התיאור שבעל המקצוע כתב על עצמו
+    # - variant_refresh: האינדקס (קורסור) לשינוי הניסוח/הסדר
+    worker = dict(item)
+    worker["original_bio"] = item.get("description") or item.get("about") or ""
+    worker["variant_refresh"] = v_idx
 
-        try:
-            draft = generate_draft(worker, lang='he')  # services.ai_writer תומך ב-variant_refresh
-            # נשמור גם את מצב הדפדוף ומטא:
-            draft["ai_variant_cursor"] = v_idx
-            item.update(draft)
+    try:
+        draft = generate_draft(worker, lang='he')  # services.ai_writer תומך ב-variant_refresh
+        # נשמור גם את מצב הדפדוף ומטא:
+        draft["ai_variant_cursor"] = v_idx
+        item.update(draft)
 
-            # נשמור חזרה
-            pending_list[index] = item
-            write_json_file(PENDING_FILE, pending_list)
+        # נשמור חזרה
+        pending_list[index] = item
+        write_json_file(PENDING_FILE, pending_list)
 
-            # דגל הצלחה: מציגים גם מזהה וריאנט, ואם ניתן – label
-            used_id = (draft.get("ai_variant_used") or "").strip()
-            label = ""
-            if used_id and variants_meta:
-                for v in variants_meta:
-                    if v.get("id") == used_id:
-                        label = v.get("label") or ""
-                        break
-            suffix = f" • {used_id}" + (f" – {label}" if label else "")
-            flash(f"טיוטת AI #{v_idx + 1} נוצרה{suffix}.", "success")
+        # דגל הצלחה: מציגים גם מזהה וריאנט, ואם ניתן – label
+        used_id = (draft.get("ai_variant_used") or "").strip()
+        label = ""
+        if used_id and variants_meta:
+            for v in variants_meta:
+                if v.get("id") == used_id:
+                    label = v.get("label") or ""
+                    break
+        suffix = f" • {used_id}" + (f" – {label}" if label else "")
+        flash(f"טיוטת AI #{v_idx + 1} נוצרה{suffix}.", "success")
 
-        except Exception as e:
-            # לא מפילים—נרשום שגיאה ונמשיך
-            item["ai_status"] = "error"
-            pending_list[index] = item
-            write_json_file(PENDING_FILE, pending_list)
-            flash("אירעה שגיאה ביצירת הטיוטה.", "error")
+    except Exception as e:
+        # לא מפילים—נרשום שגיאה ונמשיך
+        item["ai_status"] = "error"
+        pending_list[index] = item
+        write_json_file(PENDING_FILE, pending_list)
+        flash("אירעה שגיאה ביצירת הטיוטה.", "error")
 
     return redirect(url_for('admin'))
 

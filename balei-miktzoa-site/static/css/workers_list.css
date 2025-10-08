@@ -858,7 +858,7 @@ body {
 }
 
 .worker-review-card__reviewer {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   font-size: 0.95rem;
   font-weight: 700;
@@ -883,18 +883,14 @@ body {
   white-space: nowrap;
 }
 
-.worker-review-card__stars {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  color: #9ca3af;
-  fill: #9ca3af;
-  font-size: 0.75rem;
+.worker-review-card__stars{
+  display:inline-flex;
+  align-items:center;
+  gap:2px;              /* היה 3px */
+  color:#9ca3af;
+  font-size:0.74rem;    /* היה ~0.80rem */
 }
-
-.worker-review-card__stars i {
-  font-size: inherit;
-}
+.worker-review-card__stars i{ font-size:inherit; }
 
 .worker-review-card__badge {
   display: inline-flex;
@@ -903,8 +899,9 @@ body {
   min-width: 28px;
   padding: 2px 8px 3px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.08);
-  color: #1f2937;
+  background: #eef2f7;              /* רקע אפור-כחול בהיר */
+  border: 1px solid #d5dbe5;        /* קונטור עדין */
+  color: #334155;                   /* טקסט כהה אך רך */
   font-weight: 600;
   font-size: 0.8rem;
   line-height: 1.1;

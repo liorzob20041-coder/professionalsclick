@@ -945,7 +945,21 @@ def get_all_reviews(worker_id, lang=None):
         return []
     # השוואה כ-string כדי למנוע בעיות עם סוגי נתונים שונים
     worker_id_str = str(worker_id)
-    return [r for r in all_reviews if str(r.get('worker_id')) == worker_id_str]
+    reviews = [r for r in all_reviews if str(r.get('worker_id')) == worker_id_str]
+
+    def _review_sort_key(item):
+        if isinstance(item, dict):
+            dt = _parse_review_date(item.get('date'))
+            if dt is not None:
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                else:
+                    dt = dt.astimezone(timezone.utc)
+                return (1, dt.timestamp())
+        return (0, float('-inf'))
+
+    reviews.sort(key=_review_sort_key, reverse=True)
+    return reviews
 
 
 def translate_review(text, source_lang='he', target_langs=['en','ru']):
@@ -2800,6 +2814,20 @@ def worker_reviews(lang, worker_id):
     all_reviews  = read_json_file(reviews_file)
     reviews      = [r for r in all_reviews if str(r.get('worker_id')) == str(worker_id)]
 
+    # סדר כרונולוגי: ביקורות חדשות תחילה על בסיס שדה התאריך
+    def _review_sort_key(item):
+        if isinstance(item, dict):
+            dt = _parse_review_date(item.get('date'))
+            if dt is not None:
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                else:
+                    dt = dt.astimezone(timezone.utc)
+                return (1, dt.timestamp())
+        return (0, float('-inf'))
+
+    reviews.sort(key=_review_sort_key, reverse=True)
+
     ratings = []
     for r in reviews:
         # טקסט לפי שפה
@@ -2919,7 +2947,12 @@ def add_review(lang):
         # כתיבה מוגנת מנעילה כדי למנוע דריסות בקבצים
         with REVIEWS_JSON_LOCK:
             reviews_list = read_json_file(reviews_file)
-            reviews_list.append(new_review)
+            # מוסיפים ביקורות חדשות בתחילת הרשימה כדי שיופיעו ראשונות בתצוגה
+            if isinstance(reviews_list, list):
+                reviews_list.insert(0, new_review)
+            else:
+                # במידה והקובץ פגום (לא רשימה) נתחיל רשימה חדשה כדי לא לאבד את הביקורת
+                reviews_list = [new_review]
             write_json_file(reviews_file, reviews_list)
 
         # סנכרון לשיטס (Webhook) - לא חוסם את הזרימה

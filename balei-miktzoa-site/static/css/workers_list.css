@@ -32,6 +32,10 @@
   --sub-boost-tracking: 0.15px;
   --sub-boost-line: 1.7;
 
+  /* Worker card spacing */
+  --worker-card-section-gap: 8px;
+  --latest-review-rating-offset: 2px;
+
   /* City switch font */
   --city-font-stack: "Heebo", "Rubik", "Assistant", "Segoe UI", "Noto Sans Hebrew", system-ui,
     -apple-system, arial, sans-serif;
@@ -714,12 +718,11 @@ body {
   object-fit: cover;
 }
 
-/* Card body */
 .worker-info {
   padding: 18px 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--worker-card-section-gap);
 }
 
 .worker-name {
@@ -735,7 +738,7 @@ body {
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) * 0.75);
 }
 
 .worker-name .worker-link:hover {
@@ -752,8 +755,9 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin: -2px 0 4px;
+  gap: var(--worker-card-section-gap);
+  margin: calc(var(--worker-card-section-gap) * -0.25) 0
+    calc(var(--worker-card-section-gap) * 0.5);
 }
 
 .worker-person-name {
@@ -766,7 +770,7 @@ body {
 .worker-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: calc(var(--worker-card-section-gap) * 0.5);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 0.85em;
@@ -791,8 +795,9 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
-  margin: 0 0 4px;
+  gap: var(--worker-card-section-gap)
+    calc(var(--worker-card-section-gap) * 1.5);
+  margin: 0 0 calc(var(--worker-card-section-gap) * 0.5);
 }
 
 .worker-header-row .worker-name {
@@ -806,7 +811,8 @@ body {
 .worker-tagline {
   font-style: italic;
   color: #666;
-  margin: 4px 0 8px;
+  margin: calc(var(--worker-card-section-gap) * 0.5) 0
+    var(--worker-card-section-gap);
   line-height: 1.4;
 }
 
@@ -821,8 +827,8 @@ body {
 
 .worker-review-card {
   display: grid;
-  gap: 8px;
-  margin: 6px 0;
+  gap: var(--worker-card-section-gap);
+  margin: calc(var(--worker-card-section-gap) * 0.75) 0;
   padding: 12px 14px;
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
@@ -835,14 +841,14 @@ body {
   grid-template-areas:
     'header'
     'meta';
-  row-gap: 8px;
-  column-gap: 12px;
-}
+  row-gap: var(--worker-card-section-gap);
+  column-gap: calc(var(--worker-card-section-gap) * 1.5);
+}␊
 
 .worker-review-card__row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) * 0.75);
   min-width: 0;
 }
 
@@ -854,7 +860,14 @@ body {
 .worker-review-card__row--meta {
   grid-area: meta;
   justify-content: flex-start;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) * 0.75);
+  --_latest-review-offset: calc(var(--latest-review-rating-offset) / 2);
+  transform: translateY(var(--_latest-review-offset));
+}
+
+.worker-review-card__row--meta .worker-review-card__stars,
+.worker-review-card__row--meta .worker-review-card__badge {
+  transform: translateY(var(--_latest-review-offset));
 }
 
 .worker-review-card__reviewer {
@@ -909,7 +922,7 @@ body {
 }
 
 .worker-review-card__text {
-  margin: 4px 0 0;
+  margin: calc(var(--worker-card-section-gap) * 0.5) 0 0;
   font-size: 0.95rem;
   line-height: 1.55;
   color: #0f172a;
@@ -931,7 +944,7 @@ body {
   font-weight: 600;
   color: var(--brand-600);
   text-decoration: underline;
-  margin-top: 4px;
+  margin-top: calc(var(--worker-card-section-gap) * 0.5);
 }
 
 .worker-review-card__more:hover,
@@ -963,15 +976,15 @@ body {
 
 @media (max-width: 360px) {
   .worker-review-card__row--header {
-    gap: 6px;
+    gap: calc(var(--worker-card-section-gap) * 0.75);
   }
 }
 .lang-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin: 4px 0;
+  gap: calc(var(--worker-card-section-gap) * 0.75);
+  margin: calc(var(--worker-card-section-gap) * 0.5) 0;
   color: #444;
   font-size: 0.95em;
 }
@@ -981,12 +994,13 @@ body {
 .lang-row__values {
   font-weight: 600;
 }
+
 .lang-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin: 4px 0;
+  gap: calc(var(--worker-card-section-gap) * 0.75);
+  margin: calc(var(--worker-card-section-gap) * 0.5) 0;
   color: #444;
   font-size: 0.95em;
 }
@@ -999,7 +1013,7 @@ body {
 
 .icon {
   font-size: 0.95em;
-  margin-inline-end: 6px;
+  margin-inline-end: calc(var(--worker-card-section-gap) * 0.75);
   vertical-align: -1px;
   color: #4b5563;
 }
@@ -1020,8 +1034,9 @@ body {
 .rating {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0 2px;
+  gap: var(--worker-card-section-gap);
+  margin: calc(var(--worker-card-section-gap) * 0.75) 0
+    calc(var(--worker-card-section-gap) * 0.25);
 }
 
 .rating__stars i {
@@ -1053,7 +1068,7 @@ body {
 
 .worker-rating-inline {
   margin: 0;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) * 0.75);
   flex-wrap: wrap;
 }
 
@@ -1061,7 +1076,7 @@ body {
 .status {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--worker-card-section-gap);
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 800;
@@ -1087,7 +1102,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-top: 12px;
+  margin-top: calc(var(--worker-card-section-gap) * 1.5);
   padding: 12px 22px;
   border: none;
   border-radius: 30px;
@@ -1104,10 +1119,9 @@ body {
 }
 
 .phone-button i {
-  margin-inline-end: 8px;
+  margin-inline-end: var(--worker-card-section-gap);
   font-size: 1.05em;
 }
-
 /* Empty state */
 .empty-state.clean {
   background: #fff;
@@ -1118,12 +1132,12 @@ body {
 }
 
 .empty-state h3 {
-  margin: 0 0 8px;
+  margin: 0 0 var(--worker-card-section-gap);
   font-size: 1.2rem;
 }
 
 .empty-state p {
-  margin: 0 0 10px;
+  margin: 0 0 calc(var(--worker-card-section-gap) * 1.25);
   color: #6b7280;
 }
 
@@ -1131,8 +1145,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: var(--worker-card-section-gap);
+  margin-top: var(--worker-card-section-gap);
 }
 
 .suggestions .chip {
@@ -1144,8 +1158,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin: 18px 0 6px;
+  gap: var(--worker-card-section-gap);
+  margin: calc(var(--worker-card-section-gap) * 2.25) 0
+    calc(var(--worker-card-section-gap) * 0.75);
   flex-wrap: wrap;
 }
 
@@ -1632,23 +1647,4 @@ select:focus-visible,
 .worker-card .lang-row {
   color: #111827; /* טקסט כהה נוח לקריאה */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

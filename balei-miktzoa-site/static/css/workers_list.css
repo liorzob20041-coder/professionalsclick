@@ -35,6 +35,9 @@
   /* City switch font */
   --city-font-stack: "Heebo", "Rubik", "Assistant", "Segoe UI", "Noto Sans Hebrew", system-ui,
     -apple-system, arial, sans-serif;
+  /* Worker card spacing */
+  --worker-card-section-gap: 12px;
+  --latest-review-rating-offset: 2px;
 }
 
 /* ===== Brand theme scope ===== */
@@ -719,7 +722,7 @@ body {
   padding: 18px 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3);
 }
 
 .worker-name {
@@ -735,7 +738,7 @@ body {
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) / 2);
 }
 
 .worker-name .worker-link:hover {
@@ -752,8 +755,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin: -2px 0 4px;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3);
+  margin: calc(var(--worker-card-section-gap) * -1 / 6) 0 calc(var(--worker-card-section-gap) / 3);
 }
 
 .worker-person-name {
@@ -766,7 +769,7 @@ body {
 .worker-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: calc(var(--worker-card-section-gap) / 3);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 0.85em;
@@ -791,8 +794,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
-  margin: 0 0 4px;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3) var(--worker-card-section-gap);
+  margin: 0 0 calc(var(--worker-card-section-gap) / 3);
 }
 
 .worker-header-row .worker-name {
@@ -806,7 +809,7 @@ body {
 .worker-tagline {
   font-style: italic;
   color: #666;
-  margin: 4px 0 8px;
+  margin: calc(var(--worker-card-section-gap) / 3) 0 calc(var(--worker-card-section-gap) * 2 / 3);
   line-height: 1.4;
 }
 
@@ -821,8 +824,8 @@ body {
 
 .worker-review-card {
   display: grid;
-  gap: 8px;
-  margin: 6px 0;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3);
+  margin: calc(var(--worker-card-section-gap) / 2) 0;
   padding: 12px 14px;
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
@@ -835,14 +838,14 @@ body {
   grid-template-areas:
     'header'
     'meta';
-  row-gap: 8px;
-  column-gap: 12px;
+  row-gap: calc(var(--worker-card-section-gap) * 2 / 3);
+  column-gap: var(--worker-card-section-gap);
 }
 
 .worker-review-card__row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) / 2);
   min-width: 0;
 }
 
@@ -854,7 +857,8 @@ body {
 .worker-review-card__row--meta {
   grid-area: meta;
   justify-content: flex-start;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) / 2);
+  transform: translateY(var(--latest-review-rating-offset));
 }
 
 .worker-review-card__reviewer {
@@ -883,15 +887,18 @@ body {
   white-space: nowrap;
 }
 
-.worker-review-card__stars{
-  display:inline-flex;
-  align-items:center;
-  gap:2px;              /* היה 3px */
-  color:#9ca3af;
-  font-size:0.66rem;    /* היה ~0.80rem */
-  opacity:0.75;
+.worker-review-card__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--worker-card-section-gap) / 6); /* היה 3px */
+  color: #9ca3af;
+  font-size: 0.66rem; /* היה ~0.80rem */
+  opacity: 0.75;
+  transform: translateY(var(--latest-review-rating-offset));
 }
-.worker-review-card__stars i{ font-size:inherit; }
+.worker-review-card__stars i {
+  font-size: inherit;
+}
 
 .worker-review-card__badge {
   display: inline-flex;
@@ -902,14 +909,15 @@ body {
   border-radius: 999px;
   background: #eef2f7;              /* רקע אפור-כחול בהיר */
   border: 1px solid #d5dbe5;        /* קונטור עדין */
-  color: #334155;     
+  color: #334155;
   font-weight: 600;
   font-size: 0.8rem;
   line-height: 1.1;
+  transform: translateY(var(--latest-review-rating-offset));
 }
 
 .worker-review-card__text {
-  margin: 4px 0 0;
+  margin: calc(var(--worker-card-section-gap) / 3) 0 0;
   font-size: 0.95rem;
   line-height: 1.55;
   color: #0f172a;
@@ -931,7 +939,7 @@ body {
   font-weight: 600;
   color: var(--brand-600);
   text-decoration: underline;
-  margin-top: 4px;
+  margin-top: calc(var(--worker-card-section-gap) / 3);
 }
 
 .worker-review-card__more:hover,
@@ -963,15 +971,15 @@ body {
 
 @media (max-width: 360px) {
   .worker-review-card__row--header {
-    gap: 6px;
+    gap: calc(var(--worker-card-section-gap) / 2);
   }
 }
 .lang-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin: 4px 0;
+  gap: calc(var(--worker-card-section-gap) / 2);
+  margin: calc(var(--worker-card-section-gap) / 3) 0;
   color: #444;
   font-size: 0.95em;
 }
@@ -985,8 +993,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin: 4px 0;
+  gap: calc(var(--worker-card-section-gap) / 2);
+  margin: calc(var(--worker-card-section-gap) / 3) 0;
   color: #444;
   font-size: 0.95em;
 }
@@ -999,7 +1007,7 @@ body {
 
 .icon {
   font-size: 0.95em;
-  margin-inline-end: 6px;
+  margin-inline-end: calc(var(--worker-card-section-gap) / 2);
   vertical-align: -1px;
   color: #4b5563;
 }
@@ -1020,8 +1028,8 @@ body {
 .rating {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0 2px;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3);
+  margin: calc(var(--worker-card-section-gap) / 2) 0 calc(var(--worker-card-section-gap) / 6);
 }
 
 .rating__stars i {
@@ -1053,7 +1061,7 @@ body {
 
 .worker-rating-inline {
   margin: 0;
-  gap: 6px;
+  gap: calc(var(--worker-card-section-gap) / 2);
   flex-wrap: wrap;
 }
 
@@ -1061,7 +1069,7 @@ body {
 .status {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3);
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 800;
@@ -1087,7 +1095,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-top: 12px;
+  margin-top: var(--worker-card-section-gap);
   padding: 12px 22px;
   border: none;
   border-radius: 30px;
@@ -1104,7 +1112,7 @@ body {
 }
 
 .phone-button i {
-  margin-inline-end: 8px;
+  margin-inline-end: calc(var(--worker-card-section-gap) * 2 / 3);
   font-size: 1.05em;
 }
 
@@ -1131,8 +1139,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: calc(var(--worker-card-section-gap) * 2 / 3);
+  margin-top: calc(var(--worker-card-section-gap) * 2 / 3);
 }
 
 .suggestions .chip {
@@ -1191,7 +1199,7 @@ body {
 
 .cta-min__box {
   display: flex;
-  gap: 12px;
+  gap: var(--worker-card-section-gap);
   align-items: center;
   background: #fff;
   border: 1px solid rgb(0 0 0 / 12%);

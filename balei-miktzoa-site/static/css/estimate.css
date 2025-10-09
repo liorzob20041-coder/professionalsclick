@@ -30,67 +30,92 @@ body{background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system
 .est-hint{
   display:flex; align-items:center; gap:10px;
   background:#FEE2E9; border:1px solid #F4D9DF; border-radius:12px;
-  padding:14px 18px; color:var(--ink); margin-bottom:18px
+  padding:12px 16px; color:var(--ink); margin-bottom:12px
 }
 .est-hint__icon{font-size:18px}
 
 /* Titles */
-.est-title{margin:0 0 6px; font-size:clamp(28px,3.2vw,40px); font-weight:800}
-.est-subtitle{margin:0 0 14px; color:var(--muted); font-size:18px}
+.est-title{margin:0 0 4px; font-size:clamp(24px,2.6vw,32px); font-weight:800}
+.est-subtitle{margin:0 0 8px; color:var(--muted); font-size:15px}
 
-/* Search */
-.est-search{
+/* ===== Panel (search + results) ===== */
+.est-panel{
+  border:1px solid #F4D9DF;
+  border-radius:16px;
+  background:linear-gradient(135deg,#ffffff,rgba(255,245,247,.92));
+  box-shadow:0 8px 24px rgba(2,8,23,.06);
+  overflow:hidden;
+}
+
+/* Search row inside panel */
+.est-panel__search{
   display:flex; align-items:center; gap:10px;
-  border:1px solid var(--brd); border-radius:16px; background:#fff;
-  height:64px; padding:12px 16px; margin:10px 0 6px
+  padding:12px 14px;
+  border-bottom:1px solid #EFEFF2;
+  background:#FFF;
 }
 .est-search__input{
-  flex:1; border:0; outline:0; background:transparent; font-size:18px; color:var(--ink); text-align:right
+  flex:1; border:0; outline:0; background:transparent;
+  font-size:16px; color:var(--ink); text-align:right;
 }
 .est-search__input::placeholder{color:#9aa3af}
 .est-search__btn{
-  width:40px; height:40px; border-radius:50%;
-  background:#FEE2E9; border:1px solid #F4D9DF; display:grid; place-items:center; cursor:pointer
+  width:38px; height:38px; border-radius:50%;
+  background:#FEE2E9; border:1px solid #F4D9DF;
+  display:grid; place-items:center; cursor:pointer;
 }
-.est-search__svg{width:18px; height:18px; color:#C8405A}
+.est-search__svg{width:17px; height:17px; color:#C8405A}
 
-/* List header */
-.est-listhead{
+/* Panel head */
+.est-panel__head{
   display:flex; align-items:center; gap:6px;
-  color:var(--muted); font-weight:600; margin:14px 2px 8px
+  color:var(--muted); font-weight:600; font-size:14px;
+  padding:10px 16px 6px;
 }
 
-/* List */
-.est-list{list-style:none; margin:0; padding:0; border-radius:16px; overflow:hidden; border:1px solid #F5F6F8}
-.est-row{
-  display:flex; align-items:center; gap:14px; background:#fff;
-  padding:16px 18px; border-bottom:1px solid #EDEFF2
+/* Scrollable results list */
+.est-panel__list{
+  max-height:60vh;               /* גלילה פנימית */
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:6px 0;
+  border:0; border-radius:0; background:#FFF;
 }
+
+/* Rows */
+.est-list{list-style:none; margin:0; padding:0}
+.est-row{
+  display:flex; align-items:center; gap:10px; background:#fff;
+  padding:12px 16px; border-bottom:1px solid #EDEFF2;
+  transition:background .18s ease
+}
+.est-row:hover{background:rgba(2,8,23,.03)}
 .est-row:last-child{border-bottom:0}
+.est-row:focus{outline:none}
+.est-row:focus-visible{box-shadow:0 0 0 2px rgba(200,64,90,.25) inset; border-radius:8px}
 
 /* Leading icon */
 .est-row__icon{
-  width:48px; height:48px; border-radius:14px;
+  width:40px; height:40px; border-radius:12px;
   background:#FEE2E9; border:1px solid #F4D9DF;
   display:grid; place-items:center; flex:0 0 auto
 }
 
 /* Body */
 .est-row__body{min-width:0; flex:1}
-.est-row__top{display:flex; align-items:center; gap:10px; margin-bottom:4px}
-.est-row__title{font-size:22px; font-weight:700}
+.est-row__top{display:flex; align-items:center; gap:8px; margin-bottom:2px}
+.est-row__title{font-size:20px; font-weight:700}
 .est-tag{
   background:rgba(200,64,90,.12); border:1px solid rgba(200,64,90,.28);
-  color:var(--cta); font-size:12px; padding:4px 8px; border-radius:999px
+  color:var(--cta); font-size:12px; padding:3px 7px; border-radius:999px
 }
-.est-row__meta{font-size:15px; color:#475569; margin-bottom:6px}
-.est-row__stats{font-size:14px; color:#64748B}
+.est-row__meta{font-size:14px; color:#475569; margin-bottom:4px}
+.est-row__stats{font-size:12px; color:#64748B}
 .est-dot{margin-inline-start:6px}
 
 /* Responsive */
 @media (max-width:480px){
   .est-page{padding:16px 12px 48px}
-  .est-search{height:56px}
-  .est-title{font-size:28px}
+  .est-title{font-size:26px}
   .est-row__title{font-size:18px}
 }

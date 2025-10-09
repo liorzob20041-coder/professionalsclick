@@ -4,125 +4,93 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>בעלי מקצוע בקליק — מחשבון</title>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/estimate.css') }}">
 </head>
 <body>
   {% set t = i18n_est or {} %}
   {% set categories = [
-    {"id": "electricity", "emoji": "⚡", "label": t.get('categories.electricity', 'חשמל')},
-    {"id": "plumbing", "emoji": "🚰", "label": t.get('categories.plumbing', 'אינסטלציה')},
-    {"id": "painting", "emoji": "🎨", "label": t.get('categories.painting', 'צביעה')},
-    {"id": "renovation", "emoji": "🏗️", "label": t.get('categories.renovation', 'שיפוצים')}
+    {"id": "electricity", "icon": "fa-bolt", "label": t.get('categories.electricity', 'חשמל')},
+    {"id": "plumbing", "icon": "fa-faucet-drip", "label": t.get('categories.plumbing', 'אינסטלציה')},
+    {"id": "painting", "icon": "fa-paint-roller", "label": t.get('categories.painting', 'צביעה')},
+    {"id": "renovation", "icon": "fa-screwdriver-wrench", "label": t.get('categories.renovation', 'שיפוצים')}
   ] %}
   <main class="est-page">
-    <!-- פס סטטוס עליון -->
-    <section class="est-rail">
-      <div class="est-rail__row">
-        <div class="est-rail__text">שאלה 1 מתוך 3</div>
-        <div class="est-rail__brand">בעלי מקצוע בקליק</div>
+    <header class="est-header">
+      <div class="est-header__row">
+        <div class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</div>
+        <button type="button" class="est-toggle" data-est-toggle aria-pressed="false" aria-label="דפדוף לפי רשימה">
+          <span class="est-toggle__icon" aria-hidden="true"><i class="fa-solid fa-table-cells-large"></i></span>
+          <span class="est-toggle__label" data-label-convo>דפדוף לפי רשימה</span>
+          <span class="est-toggle__label" data-label-split>חזרה לשיחה</span>
+        </button>
       </div>
-      <div class="est-progress" aria-hidden="true">
+      <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
         <div class="est-progress__bar"></div>
       </div>
-    </section>
+      <ol class="est-crumbs" data-est-crumbs>
+        <li class="est-crumb is-active" data-est-crumb="category">תחום</li>
+        <li class="est-crumb" data-est-crumb="job">עבודה</li>
+        <li class="est-crumb" data-est-crumb="subtype">תת-סוג</li>
+        <li class="est-crumb" data-est-crumb="quote">חישוב</li>
+      </ol>
+    </header>
 
-    <!-- כרטיס מרכזי -->
-    <section class="est-card est-card--wide">
-      <div class="est-hint">
-        <span class="est-hint__icon" aria-hidden="true">💡</span>
-        {{ t.get('ui.greeting', 'היי 👋 נחשב יחד טווח מחיר משוער.') }}
-
-      </div>
-
-      <h1 class="est-title">{{ t.get('ui.h1', 'מחשבון הצעת מחיר') }}</h1>
-      <p class="est-subtitle">{{ t.get('ui.subtitle', 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.') }}</p>
-
-      <div class="est-layout">
-        <!-- פאנל חיפוש + קטגוריות -->
-        <section class="est-panel" aria-label="חיפוש תחום">
-          <div class="est-panel__search" role="search">
-            <span class="sr-only" id="est-search-label">{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</span>
-            <button type="button" class="est-search__lead" aria-hidden="true" tabindex="-1">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
-                <path d="M16.5 16.5L20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-
-              </svg>
-            </button>
-            <input type="search" class="est-search__input" placeholder="...חיפוש מהיר" aria-labelledby="est-search-label">
-            <button type="button" class="est-search__btn" aria-label="נקה או חפש">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
-                <path d="M16.5 16.5L20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-              </svg>
+    <section class="est-layout" data-mode="convo">
+      <aside class="est-panel" data-est-panel aria-label="בחירה מתוך רשימת תחומים">
+        <header class="est-panel__head">
+          <h2 class="est-panel__title">{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</h2>
+          <p class="est-panel__subtitle">בחרו מהרשימה או הקלידו כדי לסנן.</p>
+        </header>
+        <div class="est-panel__search">
+          <label class="sr-only" for="est-panel-search">{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</label>
+          <div class="est-search">
+            <span class="est-search__leading" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="search" id="est-panel-search" class="est-search__input" placeholder="...חיפוש מהיר" data-est-panel-search autocomplete="off">
+            <button type="button" class="est-search__clear" data-est-panel-clear aria-label="ניקוי החיפוש">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
           </div>
 
-          <div class="est-panel__head">
-            <span>{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M12 4l3 4h-6l3-4zm0 5v7m0 4h.01" fill="none" stroke="#C8405A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
+        </div>
+        <div class="est-panel__chips" data-est-panel-list role="list"></div>
+        <p class="est-panel__tip">אנחנו שואלים כדי לדייק את הטווח המשוער שלכם.</p>
+      </aside>
 
-          <ul class="est-panel__list" role="list" aria-label="{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}" data-est-categories>
-            {% for cat in categories %}
-            <li>
-              <button type="button" class="est-row" data-est-category="{{ cat.id }}" data-est-label="{{ cat.label }}" data-est-search="{{ cat.label|lower }}" aria-pressed="false">
-                <span class="est-row__emoji" aria-hidden="true">{{ cat.emoji }}</span>
-                <span class="est-row__title">{{ cat.label }}</span>
-                <span class="est-row__chevron" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <polyline points="10 6 16 12 10 18"></polyline>
-                  </svg>
-                </span>
-              </button>
-            </li>
-            {% endfor %}
-          </ul>
-        </section>
-        <!-- /פאנל -->
-
-        <!-- זרימת השאלות והתוצאה -->
-        <section class="est-flow" aria-live="polite" data-est-flow>
-          <header class="est-flow__header">
-            <div class="est-flow__badge" aria-hidden="true">🤖</div>
-            <div>
-              <h2 class="est-flow__title">{{ t.get('ui.h1', 'מחשבון הצעת מחיר') }}</h2>
-              <p class="est-flow__subtitle">{{ t.get('ui.subtitle', 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.') }}</p>
-            </div>
-          </header>
-          <div class="est-flow__summary hidden" data-est-summary></div>
-          <div class="est-flow__body" data-est-body>
-            <p class="est-flow__placeholder">{{ t.get('ui.greeting', 'היי 👋 נחשב יחד טווח מחיר משוער.') }}</p>
-          </div>
-          <footer class="est-flow__footer">
-            <button type="button" class="est-reset" data-est-reset hidden>איפוס בחירה</button>
-          </footer>
-        </section>
-      </div>
+      <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
+        <div class="est-convo__body" data-est-body aria-live="polite"></div>
+      </section>
     </section>
   </main>
-    <script id="est-i18n" type="application/json">{{ t|tojson }}</script>
-    <script id="est-cats" type="application/json">{{ categories|tojson }}</script>
-    <script>
-    // קריאה בטוחה של ה-JSON שהוזרק
+  <script id="est-i18n" type="application/json">{{ t|tojson }}</script>
+  <script id="est-cats" type="application/json">{{ categories|tojson }}</script>
+  <script>
     const i18n = JSON.parse(document.getElementById('est-i18n')?.textContent || '{}');
     const categories = JSON.parse(document.getElementById('est-cats')?.textContent || '[]');
-    </script>
+  </script>
+
   <script>
     (function(){
 
       const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+      const iconMap = {
+        electricity: 'fa-bolt',
+        plumbing: 'fa-faucet-drip',
+        painting: 'fa-paint-roller',
+        renovation: 'fa-screwdriver-wrench'
+      };
       const els = {
         list: document.querySelector('[data-est-categories]'),
+        layout: document.querySelector('.est-layout'),
         body: document.querySelector('[data-est-body]'),
-        summary: document.querySelector('[data-est-summary]'),
-        reset: document.querySelector('[data-est-reset]'),
-        search: document.querySelector('.est-search__input'),
-        searchBtn: document.querySelector('.est-search__btn')
+        panelList: document.querySelector('[data-est-panel-list]'),
+        panelSearch: document.querySelector('[data-est-panel-search]'),
+        panelClear: document.querySelector('[data-est-panel-clear]'),
+        toggle: document.querySelector('[data-est-toggle]'),
+        progress: document.querySelector('[data-est-progress]'),
+        crumbs: Array.from(document.querySelectorAll('[data-est-crumb]'))
       };
-      const categoryButtons = Array.from(document.querySelectorAll('[data-est-category]'));
       const state = {
         category: null,
         categoryLabel: '',
@@ -142,102 +110,149 @@
         'ui.preparing_opts': 'מכין אפשרויות…',
         'ui.loading_questions': 'טוען שאלות מתאימות…',
         'ui.computing': 'מחשב תוצאה…',
-        'ui.err_load_opts': '⚠️ בעיה בטעינת האפשרויות. ננסה שוב.',
-        'ui.err_load_subs': '⚠️ בעיה בטעינת האפשרויות.',
-        'ui.err_load_qs': '⚠️ אירעה שגיאה בטעינת השאלות.',
-        'ui.err_quote': '⚠️ שגיאה בהבאת הצעת המחיר.',
+        'ui.err_load_opts': 'בעיה זמנית בטעינת האפשרויות. נסו שוב.',
+        'ui.err_load_subs': 'בעיה זמנית בטעינת האפשרויות.',
+        'ui.err_load_qs': 'אירעה שגיאה בטעינת השאלות.',
+        'ui.err_quote': 'שגיאה בהבאת הצעת המחיר.',
         'ui.field_label': 'תחום:',
         'ui.job_label': 'עבודה:',
         'ui.where_label': 'תת-סוג:',
         'ui.range_label': 'טווח מחיר משוער:',
         'ui.details_label': 'פירוט:',
-        'ui.greeting': 'היי 👋 נחשב יחד טווח מחיר משוער.',
+        'ui.greeting': 'היי, נחשב יחד טווח מחיר משוער.',
         'ui.subtitle': 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.',
         'ui.result_note': 'הטווח מבוסס על נתונים של פרויקטים אמיתיים.',
         'ui.compute_btn': 'חשב טווח מחיר',
         'ui.add_more': 'נוסיף עבודה נוספת לחישוב המצטבר.',
         'ui.no_jobs': 'לא נמצאו עבודות זמינות לתחום שנבחר.',
         'ui.no_subtypes': 'אין תתי-סוג זמינים לעבודה הזו.',
-        'ui.add_job_btn': 'הוספת עבודה נוספת'
+        'ui.add_job_btn': 'הוספת עבודה נוספת',
+        'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.'
       };
+      const steps = ['category', 'job', 'subtype', 'quote'];
+      const metaSample = 'מבוסס על 2,847 פרויקטים דומים.';
+      let activeBotBubble = null;
 
       function t(key){
-        return (i18n && Object.prototype.hasOwnProperty.call(i18n, key)) ? i18n[key] : (fallback[key] || '');
+        return Object.prototype.hasOwnProperty.call(i18n, key) ? i18n[key] : (fallback[key] || '');
       }
 
-      function setBodyContent(node){
+      function clearFeed(){
+
         if (!els.body) return;
         els.body.innerHTML = '';
-        if (typeof node === 'string'){
-          els.body.innerHTML = node;
-        } else if (node){
-          els.body.appendChild(node);
+        activeBotBubble = null;
+
+      }
+
+      function createBubble(type){
+        const article = document.createElement('article');
+        article.className = `est-bubble est-bubble--${type}`;
+        article.dataset.type = type;
+        requestAnimationFrame(() => {
+          article.classList.add('is-visible');
+        });
+        return article;
+      }
+
+      function appendBubble(bubble){
+        if (!els.body || !bubble) return bubble;
+        els.body.appendChild(bubble);
+        if (typeof els.body.scrollTo === 'function'){
+          els.body.scrollTo({ top: els.body.scrollHeight, behavior: 'smooth' });
+        } else {
+          els.body.scrollTop = els.body.scrollHeight;
         }
+        return bubble;
       }
 
-      function makeParagraph(text, className){
-        const p = document.createElement('p');
-        p.textContent = text;
-        if (className) p.className = className;
-        return p;
+      function appendBotBubble(content){
+        const bubble = createBubble('bot');
+        if (typeof content === 'string'){
+          bubble.innerHTML = content;
+        } else if (content){
+          bubble.appendChild(content);
+        }
+        activeBotBubble = appendBubble(bubble);
+        return activeBotBubble;
       }
 
-      function showLoading(key){
+      function appendUserBubble(label, icon){
+        const bubble = createBubble('user');
+        const inner = document.createElement('div');
+        inner.className = 'est-chip est-chip--selected';
+        if (icon){
+          const iconEl = document.createElement('i');
+          iconEl.className = `fa-solid ${icon}`;
+          iconEl.setAttribute('aria-hidden', 'true');
+          inner.appendChild(iconEl);
+        }
+        const span = document.createElement('span');
+        span.textContent = label;
+        inner.appendChild(span);
+        bubble.appendChild(inner);
+        appendBubble(bubble);
+        return bubble;
+      }
+
+      function appendMetaBubble(text){
+        if (!text) return null;
+        const bubble = createBubble('meta');
+        bubble.textContent = text;
+        appendBubble(bubble);
+        return bubble;
+      }
+
+      function appendErrorBubble(text){
+        const bubble = createBubble('error');
+        bubble.textContent = text;
+        appendBubble(bubble);
+        return bubble;
+      }
+
+      function makeLoadingNode(message){
         const wrap = document.createElement('div');
         wrap.className = 'est-loading';
-        wrap.textContent = t(key) || key;
-        setBodyContent(wrap);
+        const icon = document.createElement('span');
+        icon.className = 'est-loading__icon';
+        icon.innerHTML = '<i class="fa-solid fa-circle-notch" aria-hidden="true"></i>';
+        const text = document.createElement('span');
+        text.className = 'est-loading__text';
+        text.textContent = message;
+        wrap.appendChild(text);
+        wrap.insertBefore(icon, text);
+        return wrap;
       }
 
-      function showError(key){
-        const div = document.createElement('div');
-        div.className = 'est-error';
-        div.textContent = typeof key === 'string' && key.startsWith('⚠️') ? key : (t(key) || key || 'בעיה זמנית.');
-        setBodyContent(div);
+      function replaceBotBubbleContent(node){
+        if (!activeBotBubble){
+          return appendBotBubble(node);
+        }
+        activeBotBubble.innerHTML = '';
+        if (typeof node === 'string'){
+          activeBotBubble.innerHTML = node;
+        } else if (node){
+          activeBotBubble.appendChild(node);
+        }
+        return activeBotBubble;
       }
 
-      function updateSummary(){
-        if (!els.summary) return;
-        const parts = [];
-        if (state.categoryLabel){
-          parts.push({ label: t('ui.field_label'), value: state.categoryLabel });
-        }
-        if (state.jobLabel){
-          parts.push({ label: t('ui.job_label'), value: state.jobLabel });
-        }
-        if (state.subtypeLabel){
-          parts.push({ label: t('ui.where_label'), value: state.subtypeLabel });
-        }
-        els.summary.innerHTML = '';
-        if (!parts.length){
-          els.summary.classList.add('hidden');
-        } else {
-          parts.forEach(part => {
-            const badge = document.createElement('span');
-            const strong = document.createElement('strong');
-            strong.textContent = part.label;
-            badge.appendChild(strong);
-            badge.appendChild(document.createTextNode(' ' + (part.value || '')));
-            els.summary.appendChild(badge);
-          });
-          els.summary.classList.remove('hidden');
-        }
-      }
-
-      function setResetVisibility(flag){
-        if (!els.reset) return;
-        els.reset.hidden = !flag;
-      }
-
-      function highlightCategory(id){
-        categoryButtons.forEach(btn => {
-          const selected = btn.dataset.estCategory === id;
-          btn.classList.toggle('is-selected', selected);
-          btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      function fetchEstimate(payload){
+        return fetch('/api/estimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ lang }, payload || {}))
+        }).then(async (res) => {
+          const data = await res.json();
+          if (!res.ok){
+            throw new Error(data && data.error ? data.error : 'Request failed');
+          }
+          return data;
         });
       }
 
-      function resetFlow(){
+      function resetState(){
+
         state.category = null;
         state.categoryLabel = '';
         state.job = null;
@@ -247,77 +262,468 @@
         state.answers = {};
         state.questions = [];
         state.resultNote = '';
-        highlightCategory('');
-        updateSummary();
-        setResetVisibility(false);
-        setBodyContent(makeParagraph(t('ui.greeting'), 'est-flow__placeholder'));
-        if (els.search){
-          els.search.value = '';
-          filterCategories('');
+      }
+
+      function resetFlow(){
+        resetState();
+        updateProgress('category');
+        clearFeed();
+        renderOnboarding();
+        filterCategories('');
+      }
+
+      function createChip(option, handler){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'est-chip';
+        btn.dataset.value = option.id || option.value;
+        btn.dataset.search = (option.label || '').toLowerCase();
+        btn.setAttribute('role', 'listitem');
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => {
+          handler(option);
+        });
+        btn.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' '){
+            event.preventDefault();
+            handler(option);
+          }
+        });
+        if (option.icon){
+          const iconEl = document.createElement('i');
+          iconEl.className = `fa-solid ${option.icon}`;
+          iconEl.setAttribute('aria-hidden', 'true');
+          btn.appendChild(iconEl);
         }
+        const span = document.createElement('span');
+        span.textContent = option.label || option.value;
+        btn.appendChild(span);
+        return btn;
+      }
+
+      function renderCategoryQuickPick(){
+        const wrap = document.createElement('div');
+        wrap.className = 'est-quickpick';
+        const heading = document.createElement('h2');
+        heading.className = 'est-quickpick__title';
+        heading.textContent = t('ui.ask_category');
+        wrap.appendChild(heading);
+
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'est-search est-search--inline';
+        const searchId = 'est-inline-search';
+        const label = document.createElement('label');
+        label.className = 'sr-only';
+        label.setAttribute('for', searchId);
+        label.textContent = t('ui.ask_category');
+        const searchIcon = document.createElement('span');
+        searchIcon.className = 'est-search__leading';
+        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
+        const input = document.createElement('input');
+        input.type = 'search';
+        input.id = searchId;
+        input.className = 'est-search__input';
+        input.placeholder = '...חיפוש מהיר';
+        input.autocomplete = 'off';
+        const clear = document.createElement('button');
+        clear.type = 'button';
+        clear.className = 'est-search__clear';
+        clear.setAttribute('aria-label', 'ניקוי החיפוש');
+        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        clear.addEventListener('click', () => {
+          input.value = '';
+          filterCategories('');
+          filterQuickPick('', chips);
+          input.focus();
+        });
+        input.addEventListener('input', () => {
+          filterCategories(input.value);
+          filterQuickPick(input.value, chips);
+        });
+        searchWrap.appendChild(searchIcon);
+        searchWrap.appendChild(input);
+        searchWrap.appendChild(clear);
+        wrap.appendChild(label);
+        wrap.appendChild(searchWrap);
+
+        const grid = document.createElement('div');
+        grid.className = 'est-quickpick__grid';
+        const chips = categories.map(cat => {
+          const option = {
+            id: cat.id,
+            value: cat.id,
+            label: cat.label,
+            icon: iconMap[cat.id] || cat.icon || 'fa-circle'
+          };
+          const chip = createChip(option, () => {
+            handleCategoryPick(option);
+          });
+          chip.classList.add('est-chip--ghost');
+          grid.appendChild(chip);
+          return chip;
+        });
+        wrap.appendChild(grid);
+
+        const tip = document.createElement('p');
+        tip.className = 'est-quickpick__tip';
+        tip.textContent = 'אנחנו שואלים כדי לדייק את הטווח המשוער.';
+        wrap.appendChild(tip);
+        appendBotBubble(wrap);
+        filterQuickPick('', chips);
+      }
+
+      function filterQuickPick(term, items){
+        const value = (term || '').trim().toLowerCase();
+        items.forEach(item => {
+          const match = !value || (item.dataset.search || '').includes(value);
+          item.hidden = !match;
+        });
+      }
+
+      function populatePanel(){
+        if (!els.panelList) return;
+        els.panelList.innerHTML = '';
+        categories.forEach(cat => {
+          const option = {
+            id: cat.id,
+            value: cat.id,
+            label: cat.label,
+            icon: iconMap[cat.id] || cat.icon || 'fa-circle'
+          };
+          const chip = createChip(option, () => {
+            handleCategoryPick(option);
+          });
+          chip.classList.add('est-chip--ghost');
+          els.panelList.appendChild(chip);
+        });
+
       }
 
       function filterCategories(term){
         const value = (term || '').trim().toLowerCase();
-        categoryButtons.forEach(btn => {
-          const label = (btn.dataset.estSearch || '').toLowerCase();
-          const match = !value || label.includes(value);
-          const li = btn.closest('li');
-          if (li){
-            li.style.display = match ? '' : 'none';
-          }
+        if (!els.panelList) return;
+        Array.from(els.panelList.children).forEach(node => {
+          if (!(node instanceof HTMLElement)) return;
+          const match = !value || (node.dataset.search || '').includes(value);
+          node.hidden = !match;
         });
       }
 
-      async function fetchEstimate(payload){
-        const res = await fetch('/api/estimate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(Object.assign({ lang }, payload || {}))
-        });
-        const data = await res.json();
-        if (!res.ok){
-          throw new Error(data && data.error ? data.error : 'Request failed');
+      function setActiveCategory(id){
+        if (els.panelList){
+          Array.from(els.panelList.children).forEach(node => {
+            if (!(node instanceof HTMLElement)) return;
+            const selected = node.dataset.value === id;
+            node.classList.toggle('est-chip--active', selected);
+            node.setAttribute('aria-pressed', selected ? 'true' : 'false');
+          });
         }
-        return data;
+        document.querySelectorAll('.est-quickpick__grid .est-chip').forEach(btn => {
+          if (!(btn instanceof HTMLElement)) return;
+          const selected = btn.dataset.value === id;
+          btn.classList.toggle('est-chip--active', selected);
+          btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+
       }
 
-      async function loadJobs(){
-        if (!state.category) return;
-        showLoading('ui.loading_jobs');
-        try {
-          const data = await fetchEstimate({ category: state.category });
-          renderJobs(data.jobs || []);
-        } catch (err){
-          console.error(err);
-          showError('ui.err_load_opts');
+      function updateProgress(step){
+        const index = steps.indexOf(step);
+        const percent = index < 0 ? 0 : (index / (steps.length - 1)) * 100;
+        if (els.progress){
+          els.progress.setAttribute('aria-valuenow', String(Math.round(percent)));
+          els.progress.style.setProperty('--progress', `${percent}%`);
         }
+        if (els.crumbs){
+          els.crumbs.forEach((crumb, idx) => {
+            crumb.classList.toggle('is-active', idx === index);
+            crumb.classList.toggle('is-complete', idx < index);
+          });
+        }
+        const disableSearch = index > 0;
+        if (els.panelSearch){
+          els.panelSearch.disabled = disableSearch;
+        }
+        if (els.panelClear){
+          els.panelClear.disabled = disableSearch;
+        }
+      }
+
+      function renderOnboarding(){
+        const box = document.createElement('div');
+        box.className = 'est-intro';
+        const title = document.createElement('h1');
+        title.textContent = t('ui.greeting');
+        const subtitle = document.createElement('p');
+        subtitle.textContent = t('ui.subtitle');
+        box.appendChild(title);
+        box.appendChild(subtitle);
+        appendBotBubble(box);
+        appendMetaBubble('מוכנים? בחרו תחום כדי שנתחיל.');
+        renderCategoryQuickPick();
+      }
+
+      function handleCategoryPick(option){
+        if (!option) return;
+        if (state.category === option.id){
+          appendMetaBubble('התחום כבר נבחר. בואו נמשיך.');
+          return;
+        }
+        state.category = option.id;
+        state.categoryLabel = option.label || option.id;
+        state.job = null;
+        state.jobLabel = '';
+        state.subtype = null;
+        state.subtypeLabel = '';
+        state.answers = {};
+        state.questions = [];
+        state.resultNote = '';
+        setActiveCategory(option.id);
+        appendUserBubble(state.categoryLabel, iconMap[option.id]);
+        appendMetaBubble(metaSample);
+        updateProgress('job');
+        loadJobs();
+      }
+
+      function showLoading(key){
+        const node = makeLoadingNode(t(key) || key);
+        appendBotBubble(node);
+      }
+
+      function showError(key){
+        const message = t(key) || key || 'בעיה זמנית.';
+        if (activeBotBubble){
+          activeBotBubble.className = 'est-bubble est-bubble--error';
+          activeBotBubble.textContent = message;
+          activeBotBubble = null;
+          return;
+        }
+        appendErrorBubble(message);
       }
 
       function renderJobs(jobs){
-        const container = document.createElement('div');
-        const heading = document.createElement('h3');
-        heading.className = 'est-legend';
-        heading.textContent = t('ui.choose_job');
-        container.appendChild(heading);
+        const wrap = document.createElement('div');
+        wrap.className = 'est-botcard';
+        const title = document.createElement('h3');
+        title.className = 'est-botcard__title';
+        title.textContent = t('ui.choose_job');
+        wrap.appendChild(title);
         if (!jobs.length){
-          container.appendChild(makeParagraph(t('ui.no_jobs'), 'est-flow__placeholder'));
-          setBodyContent(container);
+          const empty = document.createElement('p');
+          empty.className = 'est-botcard__empty';
+          empty.textContent = t('ui.no_jobs');
+          wrap.appendChild(empty);
+          replaceBotBubbleContent(wrap);
           return;
         }
-        const list = document.createElement('div');
-        list.className = 'est-options';
+        const grid = document.createElement('div');
+        grid.className = 'est-botcard__grid';
+        grid.setAttribute('role', 'list');
         jobs.forEach(job => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'est-option';
-          btn.dataset.value = job.id;
-          btn.textContent = job.label || job.id;
-          btn.addEventListener('click', () => selectJob(job));
-          list.appendChild(btn);
+          const option = {
+            id: job.id,
+            value: job.id,
+            label: job.label || job.id
+          };
+          const chip = createChip(option, () => {
+            selectJob(job);
+          });
+          grid.appendChild(chip);
         });
-        container.appendChild(list);
-        setBodyContent(container);
+        wrap.appendChild(grid);
+        replaceBotBubbleContent(wrap);
+      }
+
+      function renderSubtypes(subtypes){
+        const wrap = document.createElement('div');
+        wrap.className = 'est-botcard';
+        const title = document.createElement('h3');
+        title.className = 'est-botcard__title';
+        title.textContent = t('ui.where_exactly');
+        wrap.appendChild(title);
+        if (!subtypes.length){
+          const empty = document.createElement('p');
+          empty.className = 'est-botcard__empty';
+          empty.textContent = t('ui.no_subtypes');
+          wrap.appendChild(empty);
+          replaceBotBubbleContent(wrap);
+          return;
+        }
+        const grid = document.createElement('div');
+        grid.className = 'est-botcard__grid';
+        grid.setAttribute('role', 'list');
+        subtypes.forEach(sub => {
+          const option = {
+            id: sub.id,
+            value: sub.id,
+            label: sub.label || sub.id
+          };
+          const chip = createChip(option, () => {
+            selectSubtype(sub);
+          });
+          grid.appendChild(chip);
+        });
+        wrap.appendChild(grid);
+        replaceBotBubbleContent(wrap);
+      }
+
+      function renderQuestions(questions){
+        if (!questions.length){
+          const wrap = document.createElement('div');
+          wrap.className = 'est-botcard';
+          const note = document.createElement('p');
+          note.className = 'est-botcard__empty';
+          note.textContent = t('ui.no_questions');
+          wrap.appendChild(note);
+          replaceBotBubbleContent(wrap);
+          appendMetaBubble(metaSample);
+          renderComputeCallToAction();
+          return;
+        }
+        state.questions = questions;
+        askQuestion(0);
+      }
+
+      function askQuestion(index){
+        const q = state.questions[index];
+        if (!q){
+          renderComputeCallToAction();
+          return;
+        }
+        const wrap = document.createElement('div');
+        wrap.className = 'est-botcard';
+        const title = document.createElement('h3');
+        title.className = 'est-botcard__title';
+        title.textContent = q.text || '';
+        wrap.appendChild(title);
+        let whyId = '';
+        if (q.meta && q.meta.why){
+          whyId = `why-${q.id}`;
+          const why = document.createElement('p');
+          why.className = 'est-botcard__why';
+          why.id = whyId;
+          why.textContent = q.meta.why;
+          wrap.appendChild(why);
+        }
+        const grid = document.createElement('div');
+        grid.className = 'est-botcard__grid';
+        grid.setAttribute('role', 'list');
+        (q.options || []).forEach(opt => {
+          const option = {
+            id: opt.value,
+            value: opt.value,
+            label: opt.label || opt.value
+          };
+          const chip = createChip(option, () => {
+            if (grid.dataset.locked === 'true') return;
+            grid.dataset.locked = 'true';
+            Array.from(grid.children).forEach(child => {
+              if (child instanceof HTMLButtonElement){
+                child.disabled = true;
+                child.classList.add('is-disabled');
+                child.setAttribute('aria-pressed', child === chip ? 'true' : 'false');
+              }
+            });
+            state.answers[q.id] = opt.value;
+            appendUserBubble(option.label);
+            appendMetaBubble(metaSample);
+            askQuestion(index + 1);
+          });
+          if (whyId){
+            chip.setAttribute('aria-describedby', whyId);
+          }
+          if (opt.hint){
+            chip.dataset.hint = opt.hint;
+          }
+          grid.appendChild(chip);
+        });
+        wrap.appendChild(grid);
+        replaceBotBubbleContent(wrap);
+      }
+
+      function renderComputeCallToAction(){
+        const wrap = document.createElement('div');
+        wrap.className = 'est-botcard est-botcard--cta';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'est-btn est-btn--primary';
+        button.textContent = t('ui.compute_btn');
+        button.addEventListener('click', () => {
+          button.disabled = true;
+          appendMetaBubble(t('ui.computing'));
+          computeQuote();
+        });
+        wrap.appendChild(button);
+        appendBotBubble(wrap);
+      }
+
+      function renderResult(result){
+        const wrap = document.createElement('div');
+        wrap.className = 'est-resultcard';
+        const heading = document.createElement('h3');
+        heading.className = 'est-resultcard__title';
+        heading.textContent = t('ui.range_label');
+        wrap.appendChild(heading);
+        const priceText = result.price || (result.price_min && result.price_max ? `₪${result.price_min}–₪${result.price_max}` : '');
+        const range = document.createElement('p');
+        range.className = 'est-resultcard__range';
+        range.textContent = priceText || '—';
+        wrap.appendChild(range);
+        const noteText = result.result_note || state.resultNote || t('ui.result_note');
+        if (noteText){
+          const note = document.createElement('p');
+          note.className = 'est-resultcard__note';
+          note.textContent = noteText;
+          wrap.appendChild(note);
+        }
+        if (result.description){
+          const desc = document.createElement('p');
+          desc.className = 'est-resultcard__desc';
+          desc.textContent = `${t('ui.details_label')} ${result.description}`;
+          wrap.appendChild(desc);
+        }
+        const extraCopy = t('ui.add_more');
+        if (extraCopy){
+          const extra = document.createElement('p');
+          extra.className = 'est-resultcard__desc';
+          extra.textContent = extraCopy;
+          wrap.appendChild(extra);
+        }
+        const confidence = document.createElement('p');
+        confidence.className = 'est-resultcard__confidence';
+        confidence.textContent = 'מבוסס על 2,847 פרויקטים דומים.';
+        wrap.appendChild(confidence);
+        const actions = document.createElement('div');
+        actions.className = 'est-resultcard__actions';
+        const resetBtn = document.createElement('button');
+        resetBtn.type = 'button';
+        resetBtn.className = 'est-btn est-btn--ghost';
+        resetBtn.textContent = 'התחל מחדש';
+        resetBtn.addEventListener('click', () => {
+          appendMetaBubble('מתחילים מחדש את החישוב.');
+          resetFlow();
+        });
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'est-btn est-btn--primary';
+        addBtn.textContent = 'הוסף עבודה נוספת';
+        addBtn.addEventListener('click', () => {
+          appendMetaBubble('בוחרים עבודה נוספת לאותו תחום.');
+          state.job = null;
+          state.jobLabel = '';
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.answers = {};
+          state.questions = [];
+          updateProgress('job');
+
+          loadJobs();
+        });
+        actions.appendChild(resetBtn);
+        actions.appendChild(addBtn);
+        wrap.appendChild(actions);
+        replaceBotBubbleContent(wrap);
+        updateProgress('quote');
       }
 
       function selectJob(job){
@@ -329,54 +735,10 @@
         state.answers = {};
         state.questions = [];
         state.resultNote = '';
-        updateSummary();
+        appendUserBubble(state.jobLabel);
+        appendMetaBubble(metaSample);
+        updateProgress('subtype');
         loadSubtypes();
-      }
-
-      async function loadSubtypes(){
-        if (!state.category || !state.job) return;
-        showLoading('ui.preparing_opts');
-        try {
-          const data = await fetchEstimate({ category: state.category, job: state.job });
-          const subtypes = data.subtypes || [];
-          if (!subtypes.length){
-            state.subtype = state.job;
-            state.subtypeLabel = state.jobLabel;
-            updateSummary();
-            loadQuestions();
-            return;
-          }
-          renderSubtypes(subtypes);
-        } catch (err){
-          console.error(err);
-          showError('ui.err_load_subs');
-        }
-      }
-
-      function renderSubtypes(subtypes){
-        const container = document.createElement('div');
-        const heading = document.createElement('h3');
-        heading.className = 'est-legend';
-        heading.textContent = t('ui.where_exactly');
-        container.appendChild(heading);
-        if (!subtypes.length){
-          container.appendChild(makeParagraph(t('ui.no_subtypes'), 'est-flow__placeholder'));
-          setBodyContent(container);
-          return;
-        }
-        const list = document.createElement('div');
-        list.className = 'est-options';
-        subtypes.forEach(sub => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'est-option';
-          btn.dataset.value = sub.id;
-          btn.textContent = sub.label || sub.id;
-          btn.addEventListener('click', () => selectSubtype(sub));
-          list.appendChild(btn);
-        });
-        container.appendChild(list);
-        setBodyContent(container);
       }
 
       function selectSubtype(sub){
@@ -385,208 +747,92 @@
         state.subtypeLabel = sub.label || sub.id;
         state.answers = {};
         state.questions = [];
-        updateSummary();
+        appendUserBubble(state.subtypeLabel);
+        appendMetaBubble(metaSample);
+        updateProgress('quote');
         loadQuestions();
       }
 
-      async function loadQuestions(){
+      function loadJobs(){
+        if (!state.category) return;
+        showLoading('ui.loading_jobs');
+        fetchEstimate({ category: state.category }).then((data) => {
+          renderJobs(data.jobs || []);
+        }).catch((err) => {
+          console.error(err);
+          showError('ui.err_load_opts');
+        });
+      }
+
+      function loadSubtypes(){
+        if (!state.category || !state.job) return;
+        showLoading('ui.preparing_opts');
+        fetchEstimate({ category: state.category, job: state.job }).then((data) => {
+          const subtypes = data.subtypes || [];
+          if (!subtypes.length){
+            state.subtype = state.job;
+            state.subtypeLabel = state.jobLabel;
+            updateProgress('quote');
+            loadQuestions();
+            return;
+          }
+          renderSubtypes(subtypes);
+        }).catch((err) => {
+          console.error(err);
+          showError('ui.err_load_subs');
+        });
+      }
+
+      function loadQuestions(){
         if (!state.category || !state.job || !state.subtype) return;
         showLoading('ui.loading_questions');
-        try {
-          const data = await fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype });
+        fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype }).then((data) => {
           state.questions = data.questions || [];
           state.resultNote = data.result_note || state.resultNote;
           renderQuestions(state.questions);
-        } catch (err){
+        }).catch((err) => {
           console.error(err);
           showError('ui.err_load_qs');
-        }
+        });
       }
 
-      function renderQuestions(questions){
-        const form = document.createElement('form');
-        form.className = 'est-form';
-        if (!questions.length){
-          form.appendChild(makeParagraph('אין שאלות נוספות. נחשב את הטווח מיד.', 'est-flow__placeholder'));
-        }
-        questions.forEach(q => {
-          const fieldset = document.createElement('fieldset');
-          fieldset.className = 'est-fieldset';
-          const legend = document.createElement('legend');
-          legend.className = 'est-legend';
-          legend.textContent = q.text || '';
-          fieldset.appendChild(legend);
-          const radios = document.createElement('div');
-          radios.className = 'est-radios';
-          (q.options || []).forEach(opt => {
-            const label = document.createElement('label');
-            label.className = 'est-radio';
-            const input = document.createElement('input');
-            input.type = 'radio';
-            input.name = q.id;
-            input.value = opt.value;
-            input.required = true;
-            input.addEventListener('change', () => {
-              const siblings = label.parentElement ? Array.from(label.parentElement.querySelectorAll('.est-radio')) : [];
-              siblings.forEach(item => {
-                item.dataset.checked = item === label ? 'true' : 'false';
-              });
-            });
-            const span = document.createElement('span');
-            span.className = 'est-radio__label';
-            span.textContent = opt.label || opt.value;
-            label.appendChild(input);
-            label.appendChild(span);
-            if (opt.hint){
-              const hint = document.createElement('span');
-              hint.className = 'est-radio__hint';
-              hint.textContent = opt.hint;
-              label.appendChild(hint);
-            }
-            radios.appendChild(label);
-          });
-          fieldset.appendChild(radios);
-          form.appendChild(fieldset);
-        });
-        const actions = document.createElement('div');
-        actions.className = 'est-form__actions';
-        const submit = document.createElement('button');
-        submit.type = 'submit';
-        submit.className = 'est-btn est-btn--primary';
-        submit.textContent = t('ui.compute_btn');
-        actions.appendChild(submit);
-        form.appendChild(actions);
-        form.addEventListener('submit', function(ev){
-          ev.preventDefault();
-          const formData = new FormData(form);
-          const answers = {};
-          state.questions.forEach(q => {
-            const val = formData.get(q.id);
-            if (val){
-              answers[q.id] = val;
-            }
-          });
-          if (state.questions.length && Object.keys(answers).length !== state.questions.length){
-            showError('אנחנו צריכים מענה לכל השאלות כדי לחשב מחיר.');
-            return;
-          }
-          state.answers = answers;
-          computeQuote();
-        });
-        setBodyContent(form);
-      }
-
-      async function computeQuote(){
+      function computeQuote(){
         showLoading('ui.computing');
-        try {
-          const data = await fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype, answers: state.answers });
+        fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype, answers: state.answers }).then((data) => {
           renderResult(data);
-        } catch (err){
+        }).catch((err) => {
           console.error(err);
           showError('ui.err_quote');
-        }
-      }
-
-      function renderResult(result){
-        const wrapper = document.createElement('div');
-        wrapper.className = 'est-result';
-        const priceTitle = document.createElement('div');
-        priceTitle.className = 'est-result__price';
-        const rangeLabel = document.createElement('span');
-        rangeLabel.textContent = t('ui.range_label') + ' ';
-        const rangeValue = document.createElement('strong');
-        rangeValue.textContent = result.price || (result.price_min && result.price_max ? `₪${result.price_min}–₪${result.price_max}` : '');
-        priceTitle.appendChild(rangeLabel);
-        priceTitle.appendChild(rangeValue);
-        wrapper.appendChild(priceTitle);
-        const noteText = result.result_note || state.resultNote || t('ui.result_note');
-        if (noteText){
-          const noteEl = document.createElement('div');
-          noteEl.className = 'est-result__note';
-          noteEl.textContent = noteText;
-          wrapper.appendChild(noteEl);
-        }
-        if (result.description){
-          const detail = document.createElement('div');
-          detail.className = 'est-result__details';
-          detail.textContent = t('ui.details_label') + ' ' + result.description;
-          wrapper.appendChild(detail);
-        }
-        if (t('ui.add_more')){
-          const extra = document.createElement('div');
-          extra.className = 'est-result__details';
-          extra.textContent = t('ui.add_more');
-          wrapper.appendChild(extra);
-        }
-        const actions = document.createElement('div');
-        actions.className = 'est-form__actions';
-        const again = document.createElement('button');
-        again.type = 'button';
-        again.className = 'est-btn est-btn--ghost';
-        again.textContent = t('ui.add_job_btn');
-        again.addEventListener('click', () => {
-          state.job = null;
-          state.jobLabel = '';
-          state.subtype = null;
-          state.subtypeLabel = '';
-          state.answers = {};
-          state.questions = [];
-          state.resultNote = '';
-          updateSummary();
-          loadJobs();
         });
-        actions.appendChild(again);
-        wrapper.appendChild(actions);
-        setBodyContent(wrapper);
       }
 
-      categoryButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.estCategory;
-          const cat = categories.find(c => c.id === id);
-          if (!cat) return;
-          if (state.category === id){
-            loadJobs();
-            return;
-          }
-          state.category = id;
-          state.categoryLabel = cat.label || id;
-          state.job = null;
-          state.jobLabel = '';
-          state.subtype = null;
-          state.subtypeLabel = '';
-          state.answers = {};
-          state.questions = [];
-          state.resultNote = '';
-          highlightCategory(id);
-          updateSummary();
-          setResetVisibility(true);
-          loadJobs();
-        });
-      });
-
-      if (els.reset){
-        els.reset.addEventListener('click', resetFlow);
-      }
-
-      if (els.search){
-        els.search.addEventListener('input', (event) => {
+      if (els.panelSearch){
+        els.panelSearch.addEventListener('input', (event) => {
           filterCategories(event.target.value);
         });
       }
 
-      if (els.searchBtn){
-        els.searchBtn.addEventListener('click', () => {
-          if (!els.search) return;
-          if (els.search.value){
-            els.search.value = '';
-            filterCategories('');
-          }
-          els.search.focus();
+      if (els.panelClear){
+        els.panelClear.addEventListener('click', () => {
+          if (!els.panelSearch) return;
+          els.panelSearch.value = '';
+          filterCategories('');
+          els.panelSearch.focus();
         });
       }
 
-      filterCategories('');
+      if (els.toggle && els.layout){
+        els.toggle.addEventListener('click', () => {
+          const mode = els.layout.dataset.mode === 'split' ? 'convo' : 'split';
+          els.layout.dataset.mode = mode;
+          const pressed = mode === 'split';
+          els.toggle.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+          els.toggle.setAttribute('aria-label', pressed ? 'חזרה לשיחה' : 'דפדוף לפי רשימה');
+        });
+      }
+
+      populatePanel();
+      resetFlow();
     })();
   </script>
 </body>

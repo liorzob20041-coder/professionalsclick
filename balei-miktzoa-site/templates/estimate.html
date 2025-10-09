@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/estimate.css') }}">
 </head>
 <body>
+  {% set t = i18n_est or {} %}
+  {% set categories = [
+    {"id": "electricity", "emoji": "⚡", "label": t.get('categories.electricity', 'חשמל')},
+    {"id": "plumbing", "emoji": "🚰", "label": t.get('categories.plumbing', 'אינסטלציה')},
+    {"id": "painting", "emoji": "🎨", "label": t.get('categories.painting', 'צביעה')},
+    {"id": "renovation", "emoji": "🏗️", "label": t.get('categories.renovation', 'שיפוצים')}
+  ] %}
   <main class="est-page">
     <!-- פס סטטוס עליון -->
     <section class="est-rail">
@@ -23,121 +30,564 @@
     <section class="est-card est-card--wide">
       <div class="est-hint">
         <span class="est-hint__icon" aria-hidden="true">💡</span>
-        בחירת התחום עוזרת לנו לחשב מחיר מדויק על בסיס אלפי פרויקטים דומים
+        {{ t.get('ui.greeting', 'היי 👋 נחשב יחד טווח מחיר משוער.') }}
+
       </div>
 
-      <h1 class="est-title">באיזה תחום אתם צריכים עבודה?</h1>
-      <p class="est-subtitle">בחרו את סוג העבודה</p>
+      <h1 class="est-title">{{ t.get('ui.h1', 'מחשבון הצעת מחיר') }}</h1>
+      <p class="est-subtitle">{{ t.get('ui.subtitle', 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.') }}</p>
 
-      <!-- פאנל חיפוש + תוצאות עם גלילה פנימית -->
-      <section class="est-panel" aria-label="חיפוש תחום">
-        <div class="est-panel__search" role="search">
-          <button type="button" class="est-search__lead" aria-hidden="true" tabindex="-1">
+      <div class="est-layout">
+        <!-- פאנל חיפוש + קטגוריות -->
+        <section class="est-panel" aria-label="חיפוש תחום">
+          <div class="est-panel__search" role="search">
+            <span class="sr-only" id="est-search-label">{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</span>
+            <button type="button" class="est-search__lead" aria-hidden="true" tabindex="-1">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+                <path d="M16.5 16.5L20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+
+              </svg>
+            </button>
+            <input type="search" class="est-search__input" placeholder="...חיפוש מהיר" aria-labelledby="est-search-label">
+            <button type="button" class="est-search__btn" aria-label="נקה או חפש">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+                <path d="M16.5 16.5L20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="est-panel__head">
+            <span>{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</span>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
-              <path d="M16.5 16.5L20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <path d="M12 4l3 4h-6l3-4zm0 5v7m0 4h.01" fill="none" stroke="#C8405A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </button>
-          <input type="search" class="est-search__input" placeholder="...חיפוש מהיר" aria-label="חיפוש מהיר">
-          <button type="button" class="est-search__btn" aria-label="חיפוש">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
-              <path d="M16.5 16.5L20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-            </svg>
-          </button>
-        </div>
+          </div>
 
-        <div class="est-panel__head">
-          <span>בחרו תחום עבודה</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 4l3 4h-6l3-4zm0 5v7m0 4h.01" fill="none" stroke="#C8405A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </div>
+          <ul class="est-panel__list" role="list" aria-label="{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}" data-est-categories>
+            {% for cat in categories %}
+            <li>
+              <button type="button" class="est-row" data-est-category="{{ cat.id }}" data-est-label="{{ cat.label }}" data-est-search="{{ cat.label|lower }}" aria-pressed="false">
+                <span class="est-row__emoji" aria-hidden="true">{{ cat.emoji }}</span>
+                <span class="est-row__title">{{ cat.label }}</span>
+                <span class="est-row__chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <polyline points="10 6 16 12 10 18"></polyline>
+                  </svg>
+                </span>
+              </button>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+        <!-- /פאנל -->
 
-        <ul class="est-panel__list" role="list" aria-label="תחומים פופולריים">
-          <li class="est-row" tabindex="0">
-            <div class="est-row__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 3l-7 9h5l-1 9 8-10h-5l1-8z" />
-
-              </svg>
+        <!-- זרימת השאלות והתוצאה -->
+        <section class="est-flow" aria-live="polite" data-est-flow>
+          <header class="est-flow__header">
+            <div class="est-flow__badge" aria-hidden="true">🤖</div>
+            <div>
+              <h2 class="est-flow__title">{{ t.get('ui.h1', 'מחשבון הצעת מחיר') }}</h2>
+              <p class="est-flow__subtitle">{{ t.get('ui.subtitle', 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.') }}</p>
             </div>
-            <div class="est-row__body">
-              <div class="est-row__top">
-                <span class="est-tag">פופולרי</span>
-                <span class="est-row__title">חשמל</span>
-              </div>
-              <div class="est-row__meta">
-                <span>תיקונים</span>
-                <span class="est-row__bullet" aria-hidden="true">•</span>
-                <span>תאורה</span>
-                <span class="est-row__bullet" aria-hidden="true">•</span>
-                <span>לוח חשמל</span>
-              </div>
-              <div class="est-row__stats">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3.3 0-6 2.2-6 5v1h12v-1c0-2.8-2.7-5-6-5z" />
-                </svg>
-                <span>2,847</span>
-              </div>
-            </div>
-          </li>
-
-          <li class="est-row est-row--trend" tabindex="0">
-            <div class="est-row__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M4 14l4-4 3 3 5-5 4 4" />
-
-              </svg>
-            </div>
-            <div class="est-row__body">
-              <div class="est-row__top">
-                <span class="est-tag">פופולרי</span>
-                <span class="est-row__title">אינסטלציה</span>
-              </div>
-              <div class="est-row__meta">
-                <span>צנרת</span>
-                <span class="est-row__bullet" aria-hidden="true">•</span>
-                <span>אינסטלציה סניטרית</span>
-              </div>
-              <div class="est-row__stats">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3.3 0-6 2.2-6 5v1h12v-1c0-2.8-2.7-5-6-5z" />
-                </svg>
-                <span>2,134</span>
-              </div>
-            </div>
-          </li>
-
-          <li class="est-row is-selected" tabindex="0">
-            <div class="est-row__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <rect x="4" y="6" width="16" height="12" rx="2" ry="2" />
-                <path d="M8 10h8M8 14h5" />                
-              </svg>
-            </div>
-            <div class="est-row__body">
-              <div class="est-row__top">
-                <span class="est-tag">פופולרי</span>
-                <span class="est-row__title">צביעה</span>
-              </div>
-              <div class="est-row__meta">
-                <span>צביעת דירה</span>
-                <span class="est-row__bullet" aria-hidden="true">•</span>
-                <span>חדרים</span>
-              </div>
-              <div class="est-row__stats">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-3.3 0-6 2.2-6 5v1h12v-1c0-2.8-2.7-5-6-5z" />
-                </svg>
-                <span>3,521</span>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </section>
-      <!-- /פאנל -->
+          </header>
+          <div class="est-flow__summary hidden" data-est-summary></div>
+          <div class="est-flow__body" data-est-body>
+            <p class="est-flow__placeholder">{{ t.get('ui.greeting', 'היי 👋 נחשב יחד טווח מחיר משוער.') }}</p>
+          </div>
+          <footer class="est-flow__footer">
+            <button type="button" class="est-reset" data-est-reset hidden>איפוס בחירה</button>
+          </footer>
+        </section>
+      </div>
     </section>
   </main>
+    <script id="est-i18n" type="application/json">{{ t|tojson }}</script>
+    <script id="est-cats" type="application/json">{{ categories|tojson }}</script>
+    <script>
+    // קריאה בטוחה של ה-JSON שהוזרק
+    const i18n = JSON.parse(document.getElementById('est-i18n')?.textContent || '{}');
+    const categories = JSON.parse(document.getElementById('est-cats')?.textContent || '[]');
+    </script>
+  <script>
+    (function(){
+
+      const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+      const els = {
+        list: document.querySelector('[data-est-categories]'),
+        body: document.querySelector('[data-est-body]'),
+        summary: document.querySelector('[data-est-summary]'),
+        reset: document.querySelector('[data-est-reset]'),
+        search: document.querySelector('.est-search__input'),
+        searchBtn: document.querySelector('.est-search__btn')
+      };
+      const categoryButtons = Array.from(document.querySelectorAll('[data-est-category]'));
+      const state = {
+        category: null,
+        categoryLabel: '',
+        job: null,
+        jobLabel: '',
+        subtype: null,
+        subtypeLabel: '',
+        answers: {},
+        questions: [],
+        resultNote: ''
+      };
+      const fallback = {
+        'ui.ask_category': 'בחרו תחום עבודה',
+        'ui.choose_job': 'איזו עבודה בדיוק צריך?',
+        'ui.where_exactly': 'איזה סוג עבודה בדיוק?',
+        'ui.loading_jobs': 'טוען עבודות מתאימות…',
+        'ui.preparing_opts': 'מכין אפשרויות…',
+        'ui.loading_questions': 'טוען שאלות מתאימות…',
+        'ui.computing': 'מחשב תוצאה…',
+        'ui.err_load_opts': '⚠️ בעיה בטעינת האפשרויות. ננסה שוב.',
+        'ui.err_load_subs': '⚠️ בעיה בטעינת האפשרויות.',
+        'ui.err_load_qs': '⚠️ אירעה שגיאה בטעינת השאלות.',
+        'ui.err_quote': '⚠️ שגיאה בהבאת הצעת המחיר.',
+        'ui.field_label': 'תחום:',
+        'ui.job_label': 'עבודה:',
+        'ui.where_label': 'תת-סוג:',
+        'ui.range_label': 'טווח מחיר משוער:',
+        'ui.details_label': 'פירוט:',
+        'ui.greeting': 'היי 👋 נחשב יחד טווח מחיר משוער.',
+        'ui.subtitle': 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.',
+        'ui.result_note': 'הטווח מבוסס על נתונים של פרויקטים אמיתיים.',
+        'ui.compute_btn': 'חשב טווח מחיר',
+        'ui.add_more': 'נוסיף עבודה נוספת לחישוב המצטבר.',
+        'ui.no_jobs': 'לא נמצאו עבודות זמינות לתחום שנבחר.',
+        'ui.no_subtypes': 'אין תתי-סוג זמינים לעבודה הזו.',
+        'ui.add_job_btn': 'הוספת עבודה נוספת'
+      };
+
+      function t(key){
+        return (i18n && Object.prototype.hasOwnProperty.call(i18n, key)) ? i18n[key] : (fallback[key] || '');
+      }
+
+      function setBodyContent(node){
+        if (!els.body) return;
+        els.body.innerHTML = '';
+        if (typeof node === 'string'){
+          els.body.innerHTML = node;
+        } else if (node){
+          els.body.appendChild(node);
+        }
+      }
+
+      function makeParagraph(text, className){
+        const p = document.createElement('p');
+        p.textContent = text;
+        if (className) p.className = className;
+        return p;
+      }
+
+      function showLoading(key){
+        const wrap = document.createElement('div');
+        wrap.className = 'est-loading';
+        wrap.textContent = t(key) || key;
+        setBodyContent(wrap);
+      }
+
+      function showError(key){
+        const div = document.createElement('div');
+        div.className = 'est-error';
+        div.textContent = typeof key === 'string' && key.startsWith('⚠️') ? key : (t(key) || key || 'בעיה זמנית.');
+        setBodyContent(div);
+      }
+
+      function updateSummary(){
+        if (!els.summary) return;
+        const parts = [];
+        if (state.categoryLabel){
+          parts.push({ label: t('ui.field_label'), value: state.categoryLabel });
+        }
+        if (state.jobLabel){
+          parts.push({ label: t('ui.job_label'), value: state.jobLabel });
+        }
+        if (state.subtypeLabel){
+          parts.push({ label: t('ui.where_label'), value: state.subtypeLabel });
+        }
+        els.summary.innerHTML = '';
+        if (!parts.length){
+          els.summary.classList.add('hidden');
+        } else {
+          parts.forEach(part => {
+            const badge = document.createElement('span');
+            const strong = document.createElement('strong');
+            strong.textContent = part.label;
+            badge.appendChild(strong);
+            badge.appendChild(document.createTextNode(' ' + (part.value || '')));
+            els.summary.appendChild(badge);
+          });
+          els.summary.classList.remove('hidden');
+        }
+      }
+
+      function setResetVisibility(flag){
+        if (!els.reset) return;
+        els.reset.hidden = !flag;
+      }
+
+      function highlightCategory(id){
+        categoryButtons.forEach(btn => {
+          const selected = btn.dataset.estCategory === id;
+          btn.classList.toggle('is-selected', selected);
+          btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+      }
+
+      function resetFlow(){
+        state.category = null;
+        state.categoryLabel = '';
+        state.job = null;
+        state.jobLabel = '';
+        state.subtype = null;
+        state.subtypeLabel = '';
+        state.answers = {};
+        state.questions = [];
+        state.resultNote = '';
+        highlightCategory('');
+        updateSummary();
+        setResetVisibility(false);
+        setBodyContent(makeParagraph(t('ui.greeting'), 'est-flow__placeholder'));
+        if (els.search){
+          els.search.value = '';
+          filterCategories('');
+        }
+      }
+
+      function filterCategories(term){
+        const value = (term || '').trim().toLowerCase();
+        categoryButtons.forEach(btn => {
+          const label = (btn.dataset.estSearch || '').toLowerCase();
+          const match = !value || label.includes(value);
+          const li = btn.closest('li');
+          if (li){
+            li.style.display = match ? '' : 'none';
+          }
+        });
+      }
+
+      async function fetchEstimate(payload){
+        const res = await fetch('/api/estimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ lang }, payload || {}))
+        });
+        const data = await res.json();
+        if (!res.ok){
+          throw new Error(data && data.error ? data.error : 'Request failed');
+        }
+        return data;
+      }
+
+      async function loadJobs(){
+        if (!state.category) return;
+        showLoading('ui.loading_jobs');
+        try {
+          const data = await fetchEstimate({ category: state.category });
+          renderJobs(data.jobs || []);
+        } catch (err){
+          console.error(err);
+          showError('ui.err_load_opts');
+        }
+      }
+
+      function renderJobs(jobs){
+        const container = document.createElement('div');
+        const heading = document.createElement('h3');
+        heading.className = 'est-legend';
+        heading.textContent = t('ui.choose_job');
+        container.appendChild(heading);
+        if (!jobs.length){
+          container.appendChild(makeParagraph(t('ui.no_jobs'), 'est-flow__placeholder'));
+          setBodyContent(container);
+          return;
+        }
+        const list = document.createElement('div');
+        list.className = 'est-options';
+        jobs.forEach(job => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'est-option';
+          btn.dataset.value = job.id;
+          btn.textContent = job.label || job.id;
+          btn.addEventListener('click', () => selectJob(job));
+          list.appendChild(btn);
+        });
+        container.appendChild(list);
+        setBodyContent(container);
+      }
+
+      function selectJob(job){
+        if (!job) return;
+        state.job = job.id;
+        state.jobLabel = job.label || job.id;
+        state.subtype = null;
+        state.subtypeLabel = '';
+        state.answers = {};
+        state.questions = [];
+        state.resultNote = '';
+        updateSummary();
+        loadSubtypes();
+      }
+
+      async function loadSubtypes(){
+        if (!state.category || !state.job) return;
+        showLoading('ui.preparing_opts');
+        try {
+          const data = await fetchEstimate({ category: state.category, job: state.job });
+          const subtypes = data.subtypes || [];
+          if (!subtypes.length){
+            state.subtype = state.job;
+            state.subtypeLabel = state.jobLabel;
+            updateSummary();
+            loadQuestions();
+            return;
+          }
+          renderSubtypes(subtypes);
+        } catch (err){
+          console.error(err);
+          showError('ui.err_load_subs');
+        }
+      }
+
+      function renderSubtypes(subtypes){
+        const container = document.createElement('div');
+        const heading = document.createElement('h3');
+        heading.className = 'est-legend';
+        heading.textContent = t('ui.where_exactly');
+        container.appendChild(heading);
+        if (!subtypes.length){
+          container.appendChild(makeParagraph(t('ui.no_subtypes'), 'est-flow__placeholder'));
+          setBodyContent(container);
+          return;
+        }
+        const list = document.createElement('div');
+        list.className = 'est-options';
+        subtypes.forEach(sub => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'est-option';
+          btn.dataset.value = sub.id;
+          btn.textContent = sub.label || sub.id;
+          btn.addEventListener('click', () => selectSubtype(sub));
+          list.appendChild(btn);
+        });
+        container.appendChild(list);
+        setBodyContent(container);
+      }
+
+      function selectSubtype(sub){
+        if (!sub) return;
+        state.subtype = sub.id;
+        state.subtypeLabel = sub.label || sub.id;
+        state.answers = {};
+        state.questions = [];
+        updateSummary();
+        loadQuestions();
+      }
+
+      async function loadQuestions(){
+        if (!state.category || !state.job || !state.subtype) return;
+        showLoading('ui.loading_questions');
+        try {
+          const data = await fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype });
+          state.questions = data.questions || [];
+          state.resultNote = data.result_note || state.resultNote;
+          renderQuestions(state.questions);
+        } catch (err){
+          console.error(err);
+          showError('ui.err_load_qs');
+        }
+      }
+
+      function renderQuestions(questions){
+        const form = document.createElement('form');
+        form.className = 'est-form';
+        if (!questions.length){
+          form.appendChild(makeParagraph('אין שאלות נוספות. נחשב את הטווח מיד.', 'est-flow__placeholder'));
+        }
+        questions.forEach(q => {
+          const fieldset = document.createElement('fieldset');
+          fieldset.className = 'est-fieldset';
+          const legend = document.createElement('legend');
+          legend.className = 'est-legend';
+          legend.textContent = q.text || '';
+          fieldset.appendChild(legend);
+          const radios = document.createElement('div');
+          radios.className = 'est-radios';
+          (q.options || []).forEach(opt => {
+            const label = document.createElement('label');
+            label.className = 'est-radio';
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = q.id;
+            input.value = opt.value;
+            input.required = true;
+            input.addEventListener('change', () => {
+              const siblings = label.parentElement ? Array.from(label.parentElement.querySelectorAll('.est-radio')) : [];
+              siblings.forEach(item => {
+                item.dataset.checked = item === label ? 'true' : 'false';
+              });
+            });
+            const span = document.createElement('span');
+            span.className = 'est-radio__label';
+            span.textContent = opt.label || opt.value;
+            label.appendChild(input);
+            label.appendChild(span);
+            if (opt.hint){
+              const hint = document.createElement('span');
+              hint.className = 'est-radio__hint';
+              hint.textContent = opt.hint;
+              label.appendChild(hint);
+            }
+            radios.appendChild(label);
+          });
+          fieldset.appendChild(radios);
+          form.appendChild(fieldset);
+        });
+        const actions = document.createElement('div');
+        actions.className = 'est-form__actions';
+        const submit = document.createElement('button');
+        submit.type = 'submit';
+        submit.className = 'est-btn est-btn--primary';
+        submit.textContent = t('ui.compute_btn');
+        actions.appendChild(submit);
+        form.appendChild(actions);
+        form.addEventListener('submit', function(ev){
+          ev.preventDefault();
+          const formData = new FormData(form);
+          const answers = {};
+          state.questions.forEach(q => {
+            const val = formData.get(q.id);
+            if (val){
+              answers[q.id] = val;
+            }
+          });
+          if (state.questions.length && Object.keys(answers).length !== state.questions.length){
+            showError('אנחנו צריכים מענה לכל השאלות כדי לחשב מחיר.');
+            return;
+          }
+          state.answers = answers;
+          computeQuote();
+        });
+        setBodyContent(form);
+      }
+
+      async function computeQuote(){
+        showLoading('ui.computing');
+        try {
+          const data = await fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype, answers: state.answers });
+          renderResult(data);
+        } catch (err){
+          console.error(err);
+          showError('ui.err_quote');
+        }
+      }
+
+      function renderResult(result){
+        const wrapper = document.createElement('div');
+        wrapper.className = 'est-result';
+        const priceTitle = document.createElement('div');
+        priceTitle.className = 'est-result__price';
+        const rangeLabel = document.createElement('span');
+        rangeLabel.textContent = t('ui.range_label') + ' ';
+        const rangeValue = document.createElement('strong');
+        rangeValue.textContent = result.price || (result.price_min && result.price_max ? `₪${result.price_min}–₪${result.price_max}` : '');
+        priceTitle.appendChild(rangeLabel);
+        priceTitle.appendChild(rangeValue);
+        wrapper.appendChild(priceTitle);
+        const noteText = result.result_note || state.resultNote || t('ui.result_note');
+        if (noteText){
+          const noteEl = document.createElement('div');
+          noteEl.className = 'est-result__note';
+          noteEl.textContent = noteText;
+          wrapper.appendChild(noteEl);
+        }
+        if (result.description){
+          const detail = document.createElement('div');
+          detail.className = 'est-result__details';
+          detail.textContent = t('ui.details_label') + ' ' + result.description;
+          wrapper.appendChild(detail);
+        }
+        if (t('ui.add_more')){
+          const extra = document.createElement('div');
+          extra.className = 'est-result__details';
+          extra.textContent = t('ui.add_more');
+          wrapper.appendChild(extra);
+        }
+        const actions = document.createElement('div');
+        actions.className = 'est-form__actions';
+        const again = document.createElement('button');
+        again.type = 'button';
+        again.className = 'est-btn est-btn--ghost';
+        again.textContent = t('ui.add_job_btn');
+        again.addEventListener('click', () => {
+          state.job = null;
+          state.jobLabel = '';
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.answers = {};
+          state.questions = [];
+          state.resultNote = '';
+          updateSummary();
+          loadJobs();
+        });
+        actions.appendChild(again);
+        wrapper.appendChild(actions);
+        setBodyContent(wrapper);
+      }
+
+      categoryButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.estCategory;
+          const cat = categories.find(c => c.id === id);
+          if (!cat) return;
+          if (state.category === id){
+            loadJobs();
+            return;
+          }
+          state.category = id;
+          state.categoryLabel = cat.label || id;
+          state.job = null;
+          state.jobLabel = '';
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.answers = {};
+          state.questions = [];
+          state.resultNote = '';
+          highlightCategory(id);
+          updateSummary();
+          setResetVisibility(true);
+          loadJobs();
+        });
+      });
+
+      if (els.reset){
+        els.reset.addEventListener('click', resetFlow);
+      }
+
+      if (els.search){
+        els.search.addEventListener('input', (event) => {
+          filterCategories(event.target.value);
+        });
+      }
+
+      if (els.searchBtn){
+        els.searchBtn.addEventListener('click', () => {
+          if (!els.search) return;
+          if (els.search.value){
+            els.search.value = '';
+            filterCategories('');
+          }
+          els.search.focus();
+        });
+      }
+
+      filterCategories('');
+    })();
+  </script>
 </body>
 </html>

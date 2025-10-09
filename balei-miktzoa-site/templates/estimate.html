@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}מחשבון הצעת מחיר{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ static_url('css/estimate.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="est-page" dir="rtl">
+  <!-- Status Rail -->
+  <section class="est-rail container" aria-label="סטטוס תהליך">
+    <div class="est-rail__row">
+      <div class="est-rail__title" role="status">
+        <span class="est-rail__icon" aria-hidden="true">📈</span>
+        <span class="est-rail__text">בתהליך חישוב</span>
+      </div>
+      <span class="est-pill" role="note" aria-label="התראות">ייתכן שיידרשו עוד שאלות</span>
+    </div>
+    <div class="est-progress" aria-hidden="true">
+      <div class="est-progress__bar" style="width:20%"></div>
+    </div>
+  </section>
+
+  <!-- Hero -->
+  <section class="est-hero container" aria-labelledby="est-title">
+    <p class="est-eyebrow">מחשבון הערכת מחיר</p>
+    <h1 id="est-title" class="est-title">כמה תעלה לך העבודה?</h1>
+    <p class="est-subtitle">ענה על כמה שאלות קצרות ותקבל טווח מחיר מדויק תוך דקה.</p>
+
+    <div class="est-domain">
+      <div class="est-card" aria-live="polite">
+        <!-- שלבים יבואו בהמשך -->
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

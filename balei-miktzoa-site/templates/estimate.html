@@ -1,38 +1,104 @@
-{% extends "base.html" %}
-
-{% block title %}מחשבון הצעת מחיר{% endblock %}
-
-{% block extra_head %}
-  <link rel="stylesheet" href="{{ static_url('css/estimate.css') }}">
-{% endblock %}
-
-{% block content %}
-<main class="est-page" dir="rtl">
-  <!-- Status Rail -->
-  <section class="est-rail container" aria-label="סטטוס תהליך">
-    <div class="est-rail__row">
-      <div class="est-rail__title" role="status">
-        <span class="est-rail__icon" aria-hidden="true">📈</span>
-        <span class="est-rail__text">בתהליך חישוב</span>
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>בעלי מקצוע בקליק — מחשבון</title>
+  <!-- אם שני הקבצים באותה תיקייה -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estimate.css') }}">
+  <!-- אם בתיקיית static/css: <link rel="stylesheet" href="/static/css/estimate.css" /> -->
+</head>
+<body>
+  <main class="est-page">
+    <!-- Status rail -->
+    <section class="est-rail">
+      <div class="est-rail__row">
+        <div class="est-rail__text">3 מתוך 1 שאלה</div>
+        <div class="est-rail__brand">בעלי מקצוע בקליק</div>
       </div>
-      <span class="est-pill" role="note" aria-label="התראות">ייתכן שיידרשו עוד שאלות</span>
-    </div>
-    <div class="est-progress" aria-hidden="true">
-      <div class="est-progress__bar" style="width:20%"></div>
-    </div>
-  </section>
-
-  <!-- Hero -->
-  <section class="est-hero container" aria-labelledby="est-title">
-    <p class="est-eyebrow">מחשבון הערכת מחיר</p>
-    <h1 id="est-title" class="est-title">כמה תעלה לך העבודה?</h1>
-    <p class="est-subtitle">ענה על כמה שאלות קצרות ותקבל טווח מחיר מדויק תוך דקה.</p>
-
-    <div class="est-domain">
-      <div class="est-card" aria-live="polite">
-        <!-- שלבים יבואו בהמשך -->
+      <div class="est-progress" aria-hidden="true">
+        <div class="est-progress__bar"></div>
       </div>
-    </div>
-  </section>
-</main>
-{% endblock %}
+    </section>
+
+    <!-- Card -->
+    <section class="est-card est-card--wide">
+      <div class="est-hint">
+        <span class="est-hint__icon" aria-hidden="true">💡</span>
+        בחירת התחום עוזרת לנו לחשב מחיר מדויק על בסיס אלפי פרויקטים דומים
+      </div>
+
+      <h1 class="est-title">באיזה תחום אתם צריכים עבודה?</h1>
+      <p class="est-subtitle">בחרו את סוג העבודה</p>
+
+      <div class="est-search" role="search">
+        <input type="search" class="est-search__input" placeholder="...חיפוש מהיר" />
+        <button type="button" class="est-search__btn" aria-label="חיפוש">
+          <svg viewBox="0 0 24 24" class="est-search__svg" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M16.5 16.5 L21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="est-listhead">
+        <span>פופולרי</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M6 14l6-6 6 6" fill="none" stroke="#8A1538" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <ul class="est-list" role="list" aria-label="תחומים פופולריים">
+        <li class="est-row">
+          <div class="est-row__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+              <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" fill="none" stroke="#C8405A" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="est-row__body">
+            <div class="est-row__top">
+              <span class="est-tag">פופולרי</span>
+              <span class="est-row__title">חשמל</span>
+            </div>
+            <div class="est-row__meta">תיקונים, תאורה, לוח חשמל</div>
+            <div class="est-row__stats"><span class="est-dot" aria-hidden="true">👤</span> 2,847</div>
+          </div>
+        </li>
+
+        <li class="est-row">
+          <div class="est-row__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+              <path d="M4 10h16M7 6h10M6 14h6v4H6z" fill="none" stroke="#C8405A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="est-row__body">
+            <div class="est-row__top">
+              <span class="est-tag">פופולרי</span>
+              <span class="est-row__title">אינסטלציה</span>
+            </div>
+            <div class="est-row__meta">אינסטלציה סניטרית, צנרת</div>
+            <div class="est-row__stats"><span class="est-dot" aria-hidden="true">👤</span> 2,134</div>
+          </div>
+        </li>
+
+        <li class="est-row">
+          <div class="est-row__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+              <rect x="4" y="6" width="16" height="12" rx="2" ry="2" fill="none" stroke="#C8405A" stroke-width="1.8"/>
+              <path d="M8 10h8M8 14h5" fill="none" stroke="#C8405A" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="est-row__body">
+            <div class="est-row__top">
+              <span class="est-tag">פופולרי</span>
+              <span class="est-row__title">צביעה</span>
+            </div>
+            <div class="est-row__meta">צביעת דירה, חדרים</div>
+            <div class="est-row__stats"><span class="est-dot" aria-hidden="true">👤</span> 3,521</div>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

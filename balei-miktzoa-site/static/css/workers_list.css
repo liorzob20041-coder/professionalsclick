@@ -132,7 +132,7 @@ body {
   box-shadow: 0 10px 28px rgb(15 23 42 / 6%);
   padding: 22px 16px 14px;
   margin: 8px 0 14px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* dot grid */
@@ -361,7 +361,7 @@ body {
   border: 1px solid var(--soft-border);
   box-shadow: 0 20px 38px rgb(15 23 42 / 18%);
   background: #fff;
-  z-index: 40;
+  z-index: 1200;
 }
 
 .masthead--ripple .city-menu__surface {

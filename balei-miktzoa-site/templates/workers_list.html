@@ -621,6 +621,10 @@
         menu.hidden=true;
         document.removeEventListener('click', onDocumentClick, true);
         document.removeEventListener('keydown', onKeyDown, true);
+        if(searchInput){
+          searchInput.value='';
+          updateVisibility('');
+        }
       }
 
       function onDocumentClick(e){
@@ -658,6 +662,9 @@
 
       if(searchInput){
         searchInput.addEventListener('input',()=>{
+          updateVisibility(searchInput.value);
+        });
+        searchInput.addEventListener('focus',()=>{
           updateVisibility(searchInput.value);
         });
       }

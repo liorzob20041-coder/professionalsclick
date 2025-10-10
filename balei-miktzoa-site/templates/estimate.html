@@ -21,7 +21,6 @@
       <div class="est-header__row">
         <div class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</div>
         <p class="est-header__lead">אני כאן לעזור לכם לקבל הערכת מחיר מדויקת ומהירה.</p>
-
       </div>
       <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
         <div class="est-progress__bar"></div>
@@ -35,8 +34,6 @@
     </header>
 
     <section class="est-layout">
-
-
       <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
         <div class="est-convo__body" data-est-body aria-live="polite"></div>
       </section>
@@ -51,7 +48,6 @@
 
   <script>
     (function(){
-
       const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
       const iconMap = {
         electricity: 'fa-bolt',
@@ -60,9 +56,7 @@
         renovation: 'fa-screwdriver-wrench'
       };
       const els = {
-
         body: document.querySelector('[data-est-body]'),
-
         progress: document.querySelector('[data-est-progress]'),
         crumbs: Array.from(document.querySelectorAll('[data-est-crumb]'))
       };
@@ -113,11 +107,9 @@
       }
 
       function clearFeed(){
-
         if (!els.body) return;
         els.body.innerHTML = '';
         activeBotBubble = null;
-
       }
 
       function createBubble(type){
@@ -227,7 +219,6 @@
       }
 
       function resetState(){
-
         state.category = null;
         state.categoryLabel = '';
         state.job = null;
@@ -352,17 +343,13 @@
         });
       }
 
-
-
       function setActiveCategory(id){
-
         document.querySelectorAll('.est-quickpick__grid .est-chip').forEach(btn => {
           if (!(btn instanceof HTMLElement)) return;
           const selected = btn.dataset.value === id;
           btn.classList.toggle('est-chip--active', selected);
           btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
         });
-
       }
 
       function updateProgress(step){
@@ -378,7 +365,6 @@
             crumb.classList.toggle('is-complete', idx < index);
           });
         }
-
       }
 
       function renderOnboarding(){
@@ -648,7 +634,6 @@
           state.answers = {};
           state.questions = [];
           updateProgress('job');
-
           loadJobs();
         });
         actions.appendChild(resetBtn);
@@ -737,7 +722,6 @@
           showError('ui.err_quote');
         });
       }
-
 
       resetFlow();
     })();

@@ -172,18 +172,34 @@
         const shouldFocus = options && Object.prototype.hasOwnProperty.call(options, 'focusInteractive')
           ? options.focusInteractive !== false
           : true;
-        ensureBubbleInView(bubble, shouldFocus);
+        const shouldEnsure = options && Object.prototype.hasOwnProperty.call(options, 'ensureVisible')
+          ? options.ensureVisible !== false
+          : true;
+        if (shouldEnsure){
+        const shouldEnsure = options && Object.prototype.hasOwnProperty.call(options, 'ensureVisible')
+          ? options.ensureVisible !== false
+          : true;
+        if (shouldEnsure){
+          ensureBubbleInView(bubble, shouldFocus);
+        } else if (shouldFocus){
+          focusFirstInteractive(bubble);
+        }
+        } else if (shouldFocus){
+          focusFirstInteractive(bubble);
+        }
         return bubble;
       }
 
-      function appendBotBubble(content){
+      function appendBotBubble(content, options){
+
         const bubble = createBubble('bot');
         if (typeof content === 'string'){
           bubble.innerHTML = content;
         } else if (content){
           bubble.appendChild(content);
         }
-        activeBotBubble = appendBubble(bubble, { focusInteractive: true });
+        activeBotBubble = appendBubble(bubble, Object.assign({ focusInteractive: true }, options));
+
 
         return activeBotBubble;
       }
@@ -307,13 +323,29 @@
         clearFeed();
         renderOnboarding();
       }
-
+      function normalizeText(value){
+        const stringValue = (value || '')
+          .toString()
+          .trim();
+        if (!stringValue){
+          return '';
+        }
+        const normalized = typeof stringValue.normalize === 'function'
+          ? stringValue.normalize('NFKC')
+          : stringValue;
+        return normalized.toLowerCase();
+      }
       function createChip(option, handler){
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'est-chip';
         btn.dataset.value = option.id || option.value;
-        btn.dataset.search = (option.label || '').toLowerCase();
+        const searchSource = [option.label, option.value]
+          .filter(Boolean)
+          .map(str => normalizeText(str))
+          .join(' ')
+          .trim();
+        btn.dataset.search = searchSource;
         btn.setAttribute('role', 'listitem');
         btn.setAttribute('aria-pressed', 'false');
         btn.addEventListener('click', () => {
@@ -343,20 +375,37 @@
         return btn;
       }
       function filterQuickPick(term, items, options){
-        const value = (term || '').trim().toLowerCase();
+        const normalized = normalizeText(term);
+        const tokens = normalized ? normalized.split(/\s+/).filter(Boolean) : [];
         let matches = 0;
         items.forEach(item => {
-          const match = !value || (item.dataset.search || '').includes(value);
+          const haystack = item.dataset.search || '';
+          const match = tokens.length === 0 || tokens.every(token => haystack.includes(token));
           item.hidden = !match;
+          if (match){
+            item.style.removeProperty('display');
+            item.setAttribute('aria-hidden', 'false');
+          } else {
+            item.style.display = 'none';
+            item.setAttribute('aria-hidden', 'true');
+          }
           if (match){
             matches += 1;
           }
         });
         if (options && options.tip){
-          options.tip.hidden = Boolean(value);
+          const hideTip = tokens.length > 0;
+          options.tip.hidden = hideTip;
+          if (!hideTip){
+            options.tip.removeAttribute('aria-hidden');
+          } else {
+            options.tip.setAttribute('aria-hidden', 'true');
+          }
         }
         if (options && options.empty){
-          options.empty.hidden = matches > 0;
+          const showEmpty = matches === 0;
+          options.empty.hidden = !showEmpty;
+          options.empty.setAttribute('aria-hidden', showEmpty ? 'false' : 'true');
         }
       }
       function renderCategoryQuickPick(){
@@ -396,12 +445,14 @@
         emptyState.hidden = true;
         clear.addEventListener('click', () => {
           input.value = '';
-          filterQuickPick('', chips, filterState);
+          filterQuickPick(input.value, chips, filterState);
+
 
           input.focus();
         });
         input.addEventListener('input', () => {
-          filterQuickPick('', chips, filterState);
+          filterQuickPick(input.value, chips, filterState);
+
 
         });
         searchWrap.appendChild(searchIcon);
@@ -435,7 +486,8 @@
         wrap.appendChild(list);
         wrap.appendChild(emptyState);
         wrap.appendChild(tip);
-        appendBotBubble(wrap);
+        appendBotBubble(wrap, { ensureVisible: false });
+
         filterQuickPick('', chips, filterState);
 
       }
@@ -599,7 +651,8 @@
           computeQuote();
         });
         wrap.appendChild(button);
-        appendBotBubble(wrap);
+        appendBotBubble(wrap, { ensureVisible: false });
+
       }
 
       function renderResult(result){

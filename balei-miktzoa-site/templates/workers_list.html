@@ -152,6 +152,33 @@
 
 {% block content %}
   <div class="main-content theme-bordeaux" data-field="{{ field_slug|default(field_label|lower|replace(' ','-')) }}">
+    {% set _change_city_map = {'he':'שינוי עיר','en':'Change city','ru':'Сменить город'} %}
+    {% set _choose_city_map = {'he':'בחרו עיר','en':'Choose city','ru':'Выберите город'} %}
+    {% set _city_group_label_map = {
+      'he':'שינוי עיר או חיפוש חדש',
+      'en':'Change area or start a new search',
+      'ru':'Сменить город или начать новый поиск'
+    } %}
+    {% set _city_search_placeholder_map = {'he':'חיפוש עיר','en':'Search city','ru':'Поиск города'} %}
+    {% set _city_search_label_map = {'he':'חיפוש עיר','en':'Search city','ru':'Поиск города'} %}
+    {% set _city_list_empty_map = {
+      'he':'לא נמצאו ערים תואמות.',
+      'en':'No matching cities found.',
+      'ru':'Подходящих городов не найдено.'
+    } %}
+    {% set _city_list_missing_map = {
+      'he':'אין ערים זמינות עבור התחום הזה כרגע.',
+      'en':'No alternative areas are available for this field yet.',
+      'ru':'Для этой категории пока нет других городов.'
+    } %}
+    {% set city_switch_label = _change_city_map.get(g.current_lang, _change_city_map['he']) %}
+    {% set city_choose_label = _choose_city_map.get(g.current_lang, _choose_city_map['he']) %}
+    {% set city_group_label = _city_group_label_map.get(g.current_lang, _city_group_label_map['he']) %}
+    {% set city_search_placeholder = _city_search_placeholder_map.get(g.current_lang, _city_search_placeholder_map['he']) %}
+    {% set city_search_label = _city_search_label_map.get(g.current_lang, _city_search_label_map['he']) %}
+    {% set city_empty_state = _city_list_empty_map.get(g.current_lang, _city_list_empty_map['he']) %}
+    {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
+    {% set close_label = (_('close') if _ else 'סגור') %}
 
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
@@ -167,21 +194,51 @@
 
       <h1 class="title title--priority">
         <span class="t-field">{{ field_label }}</span>
-        {% if area_label %}
-          <span class="t-sep"> ב</span>
-
-          <!-- כאן ההחלפה -->
-          <span class="t-area-wrap">
+        <span class="t-area-wrap">
+          {% if area_label %}
+            <span class="t-sep"> ב</span>
             <span class="t-area">{{ area_label }}</span>
+          {% endif %}
 
-            <span class="city-actions" role="group" aria-label="שינוי עיר או חיפוש חדש">
-              <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
-                <span class="city-switch__label">שינוי עיר</span>
-                <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
-              </button>
-            </span>
+          <span class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
+            <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
+              <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
+              <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
+            </button>
+
+            <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
+              <div class="city-menu__surface">
+                <div class="city-menu__header">
+                  <p class="city-menu__title" id="changeCityTitle">{{ city_choose_label }}</p>
+                  <button type="button" class="city-menu__close" data-city-close aria-label="{{ close_label }}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                  </button>
+                </div>
+
+                {% if city_options %}
+                  <div class="city-menu__search">
+                    <label class="sr-only" for="citySearchInput">{{ city_search_label }}</label>
+                    <input type="search" id="citySearchInput" class="city-menu__input" placeholder="{{ city_search_placeholder }}" autocomplete="off" data-city-search>
+                  </div>
+
+                  <ul class="city-menu__list" role="listbox">
+                    {% for option in city_options %}
+                      <li class="city-menu__item">
+                        <a href="{{ option.url }}" role="option" class="city-menu__option{% if option.is_current %} is-current{% endif %}" data-city-option data-city-key="{{ option.search_key }}" data-city-label="{{ option.label|lower }}" {% if option.is_current %}aria-current="true"{% endif %}>
+                          <span class="city-menu__option-label">{{ option.label }}</span>
+                          {% if option.count %}<span class="city-menu__badge" aria-hidden="true">{{ option.count }}</span>{% endif %}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  <p class="city-menu__empty" data-city-empty hidden>{{ city_empty_state }}</p>
+                {% else %}
+                  <p class="city-menu__empty is-static">{{ city_missing_state }}</p>
+                {% endif %}
+              </div>
+            </div>
           </span>
-        {% endif %}
+        </span>
       </h1>
 
       <p class="brand-sub">קליק אחד והמקצוען בדרך אליכם</p>
@@ -515,6 +572,97 @@
       function closeDrawer(){ overlay.hidden=true; drawer.setAttribute('aria-hidden','true'); openBtn&&openBtn.setAttribute('aria-expanded','false'); document.documentElement.classList.remove('drawer-open'); document.body.style.overflow=''; drawer.hidden=true; }
       openBtn&&openBtn.addEventListener('click', openDrawer); closeBtn&&closeBtn.addEventListener('click', closeDrawer); overlay&&overlay.addEventListener('click', closeDrawer); document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); }, {passive:true});
     })();
+    (function(){
+      const trigger=document.getElementById('changeCityBtn');
+      const menu=document.getElementById('changeCityMenu');
+      if(!trigger||!menu) return;
+      const searchInput=menu.querySelector('[data-city-search]');
+      const emptyState=menu.querySelector('[data-city-empty]');
+      const closeBtn=menu.querySelector('[data-city-close]');
+      const optionLinks=Array.from(menu.querySelectorAll('[data-city-option]'));
+      const optionItems=optionLinks.map(link=>link.closest('.city-menu__item')||link);
+
+      function updateVisibility(term){
+        const value=(term||'').trim().toLowerCase();
+        let visibleCount=0;
+        optionLinks.forEach((link, idx)=>{
+          const item=optionItems[idx];
+          if(!item) return;
+          const key=(link.dataset.cityKey||link.dataset.cityLabel||'').toLowerCase();
+          const match=!value||key.includes(value);
+          item.hidden=!match;
+          if(match) visibleCount++;
+        });
+        if(emptyState){
+          emptyState.hidden=visibleCount!==0;
+        }
+      }
+
+      function openMenu(){
+        if(!menu.hidden) return;
+        menu.hidden=false;
+        menu.setAttribute('aria-hidden','false');
+        trigger.setAttribute('aria-expanded','true');
+        document.addEventListener('click', onDocumentClick, true);
+        document.addEventListener('keydown', onKeyDown, true);
+        updateVisibility(searchInput?searchInput.value:'');
+        requestAnimationFrame(()=>{
+          if(searchInput){
+            searchInput.focus();
+            if(searchInput.select) searchInput.select();
+          }
+        });
+      }
+
+      function closeMenu(){
+        if(menu.hidden) return;
+        menu.setAttribute('aria-hidden','true');
+        trigger.setAttribute('aria-expanded','false');
+        menu.hidden=true;
+        document.removeEventListener('click', onDocumentClick, true);
+        document.removeEventListener('keydown', onKeyDown, true);
+      }
+
+      function onDocumentClick(e){
+        if(menu.contains(e.target)||trigger.contains(e.target)) return;
+        closeMenu();
+      }
+
+      function onKeyDown(e){
+        if(e.key==='Escape'){
+          closeMenu();
+          trigger.focus();
+        }
+      }
+
+      trigger.addEventListener('click',()=>{
+        if(menu.hidden){
+          openMenu();
+        }else{
+          closeMenu();
+        }
+      });
+
+      if(closeBtn){
+        closeBtn.addEventListener('click',()=>{
+          closeMenu();
+          trigger.focus();
+        });
+      }
+
+      optionLinks.forEach(link=>{
+        link.addEventListener('click',()=>{
+          closeMenu();
+        });
+      });
+
+      if(searchInput){
+        searchInput.addEventListener('input',()=>{
+          updateVisibility(searchInput.value);
+        });
+      }
+    })();
+
 
     document.addEventListener('click', function(e){
       if (e.defaultPrevented) return;

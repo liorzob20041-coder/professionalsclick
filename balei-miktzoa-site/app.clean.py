@@ -8,6 +8,8 @@ from collections import defaultdict
 from typing import Any
 from urllib.parse import urlparse, parse_qs, urljoin
 
+from collections import Counter
+
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, g, jsonify,
     session, send_from_directory, Response, current_app, abort
@@ -2631,12 +2633,80 @@ def show_workers(lang, field, area):
     }
     structured_data_json = json.dumps(structured_data, ensure_ascii=False)
 
+    # רשימת ערים אפשריות למעבר מהיר
+    base_field_slug = localize_field_slug(search_field, lang)
+    query_string_raw = request.query_string.decode('utf-8') if request.query_string else ''
+
+    def _with_qs(url: str) -> str:
+        return f"{url}?{query_string_raw}" if query_string_raw else url
+
+    city_counter: Counter[str] = Counter()
+    total_workers_in_field = 0
+    for candidate in all_workers:
+        if candidate.get('field') != search_field:
+            continue
+        total_workers_in_field += 1
+        raw_cities = []
+        service_areas = candidate.get('service_areas') or []
+        if service_areas:
+            raw_cities.extend(service_areas)
+        else:
+            if candidate.get('base_city'):
+                raw_cities.append(candidate['base_city'])
+            raw_cities.extend(candidate.get('active_cities') or [])
+        for c in raw_cities:
+            if not c:
+                continue
+            city_counter[c.strip()] += 1
+
+    city_options = []
+    for he_city, count in city_counter.items():
+        city_slug = localize_city_slug(he_city, lang)
+        city_label = _label_city(he_city, lang)
+        if not city_slug or not city_label:
+            continue
+        option_url = _with_qs(url_for('show_workers', lang=lang, field=base_field_slug, area=city_slug))
+        search_key = ' '.join(
+            filter(None, [
+                city_label.lower(),
+                str(he_city).lower(),
+                city_slug.lower(),
+            ])
+        )
+        city_options.append({
+            'label': city_label,
+            'url': option_url,
+            'count': count,
+            'is_current': search_area == he_city,
+            'search_key': search_key,
+        })
+
+    city_options.sort(key=lambda opt: opt['label'])
+
+    if total_workers_in_field:
+        all_label_map = {
+            'he': 'כל הארץ',
+            'en': 'All areas',
+            'ru': 'Вся страна',
+        }
+        all_label = all_label_map.get(lang, 'All areas')
+        city_options.insert(0, {
+            'label': all_label,
+            'url': _with_qs(url_for('show_workers', lang=lang, field=base_field_slug)),
+            'count': total_workers_in_field,
+            'is_current': not bool(search_area),
+            'search_key': ' '.join(filter(None, [all_label.lower()])),
+        })
+
     # רינדור (שומר את כל הפרמטרים שהיו + SEO חדשים)
     return render_template(
         'workers_list.html',
         workers=workers,
         field=field_key,
         area=area_key,
+        field_slug=base_field_slug,
+        area_slug=localize_city_slug(search_area, lang) if search_area else None,
+        city_options=city_options,
         current_list_url=current_list_url,
         field_label=field_label,
         area_label=area_label,

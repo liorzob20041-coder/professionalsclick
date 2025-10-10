@@ -219,6 +219,13 @@ body {
   opacity: 0.9;
 }
 
+.masthead--ripple .t-area-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .t-area {
   position: relative;
   display: inline-block;
@@ -227,6 +234,12 @@ body {
   background: linear-gradient(90deg, #b01345, #7a0026);
   background-clip: text;
   color: transparent;
+}
+
+@media (width <=760px) {
+  .masthead--ripple .t-area-wrap {
+    gap: 10px;
+  }
 }
 
 .masthead--ripple .brand-sub {
@@ -302,9 +315,20 @@ body {
 
 /* === City Switch: base === */
 .masthead--ripple .city-actions {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+}
+
+.masthead--ripple .city-actions.city-actions--solo {
+  margin-inline-start: 12px;
+}
+
+[dir="ltr"] .masthead--ripple .city-actions.city-actions--solo {
+  margin-inline-start: 0;
+  margin-inline-end: 12px;
 }
 
 .masthead--ripple .city-switch {
@@ -325,6 +349,157 @@ body {
     transform 0.15s ease,
     box-shadow 0.15s ease,
     filter 0.15s ease;
+}
+
+.masthead--ripple .city-menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 12px);
+  min-width: min(340px, 92vw);
+  max-width: min(360px, 92vw);
+  border-radius: 16px;
+  border: 1px solid var(--soft-border);
+  box-shadow: 0 20px 38px rgb(15 23 42 / 18%);
+  background: #fff;
+  z-index: 40;
+}
+
+.masthead--ripple .city-menu__surface {
+  display: flex;
+  flex-direction: column;
+  max-height: min(70vh, 520px);
+}
+
+.masthead--ripple .city-menu__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px 8px;
+  gap: 12px;
+}
+
+.masthead--ripple .city-menu__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.masthead--ripple .city-menu__close {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-size: 1.08rem;
+  line-height: 1;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.masthead--ripple .city-menu__close:hover,
+.masthead--ripple .city-menu__close:focus-visible {
+  background: rgb(var(--brand-50-rgb), 0.85);
+  color: var(--brand-600);
+  outline: none;
+}
+
+.masthead--ripple .city-menu__search {
+  padding: 0 18px 10px;
+}
+
+.masthead--ripple .city-menu__input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--soft-border-strong);
+  padding: 10px 12px;
+  font-family: var(--city-font-stack);
+  font-size: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.masthead--ripple .city-menu__input:focus {
+  outline: none;
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px rgb(var(--brand-400-rgb), 0.25);
+}
+
+.masthead--ripple .city-menu__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  max-height: 360px;
+}
+
+.masthead--ripple .city-menu__item {
+  border-top: 1px solid rgb(15 23 42 / 6%);
+}
+
+.masthead--ripple .city-menu__item:first-child {
+  border-top: 0;
+}
+
+.masthead--ripple .city-menu__option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px 18px;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.masthead--ripple .city-menu__option:hover,
+.masthead--ripple .city-menu__option:focus-visible {
+  background: rgb(var(--brand-50-rgb), 0.9);
+  color: var(--brand-700);
+  outline: none;
+}
+
+.masthead--ripple .city-menu__option.is-current {
+  color: var(--brand-600);
+  background: rgb(var(--brand-50-rgb), 0.55);
+}
+
+.masthead--ripple .city-menu__option-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.masthead--ripple .city-menu__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgb(var(--brand-600-rgb), 0.12);
+  color: var(--brand-600);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.masthead--ripple .city-menu__empty {
+  margin: 0;
+  padding: 18px;
+  color: var(--text-light);
+  font-weight: 600;
+  text-align: center;
+}
+
+.masthead--ripple .city-menu__empty.is-static {
+  border-top: 1px solid rgb(15 23 42 / 8%);
+}
+
+@media (width <=640px) {
+  .masthead--ripple .city-menu {
+    inset-inline: 0 auto;
+    min-width: min(100vw - 32px, 360px);
+  }
 }
 
 /* label + chevron */
@@ -1647,23 +1822,3 @@ select:focus-visible,
 .worker-card .lang-row {
   color: #111827; /* טקסט כהה נוח לקריאה */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

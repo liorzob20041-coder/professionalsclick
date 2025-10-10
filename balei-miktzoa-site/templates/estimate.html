@@ -20,11 +20,8 @@
     <header class="est-header">
       <div class="est-header__row">
         <div class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</div>
-        <button type="button" class="est-toggle" data-est-toggle aria-pressed="false" aria-label="דפדוף לפי רשימה">
-          <span class="est-toggle__icon" aria-hidden="true"><i class="fa-solid fa-table-cells-large"></i></span>
-          <span class="est-toggle__label" data-label-convo>דפדוף לפי רשימה</span>
-          <span class="est-toggle__label" data-label-split>חזרה לשיחה</span>
-        </button>
+        <p class="est-header__lead">אני כאן לעזור לכם לקבל הערכת מחיר מדויקת ומהירה.</p>
+
       </div>
       <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
         <div class="est-progress__bar"></div>
@@ -37,26 +34,8 @@
       </ol>
     </header>
 
-    <section class="est-layout" data-mode="convo">
-      <aside class="est-panel" data-est-panel aria-label="בחירה מתוך רשימת תחומים">
-        <header class="est-panel__head">
-          <h2 class="est-panel__title">{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</h2>
-          <p class="est-panel__subtitle">בחרו מהרשימה או הקלידו כדי לסנן.</p>
-        </header>
-        <div class="est-panel__search">
-          <label class="sr-only" for="est-panel-search">{{ t.get('ui.ask_category', 'בחרו תחום עבודה') }}</label>
-          <div class="est-search">
-            <span class="est-search__leading" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="search" id="est-panel-search" class="est-search__input" placeholder="...חיפוש מהיר" data-est-panel-search autocomplete="off">
-            <button type="button" class="est-search__clear" data-est-panel-clear aria-label="ניקוי החיפוש">
-              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-            </button>
-          </div>
+    <section class="est-layout">
 
-        </div>
-        <div class="est-panel__chips" data-est-panel-list role="list"></div>
-        <p class="est-panel__tip">אנחנו שואלים כדי לדייק את הטווח המשוער שלכם.</p>
-      </aside>
 
       <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
         <div class="est-convo__body" data-est-body aria-live="polite"></div>
@@ -81,13 +60,9 @@
         renovation: 'fa-screwdriver-wrench'
       };
       const els = {
-        list: document.querySelector('[data-est-categories]'),
-        layout: document.querySelector('.est-layout'),
+
         body: document.querySelector('[data-est-body]'),
-        panelList: document.querySelector('[data-est-panel-list]'),
-        panelSearch: document.querySelector('[data-est-panel-search]'),
-        panelClear: document.querySelector('[data-est-panel-clear]'),
-        toggle: document.querySelector('[data-est-toggle]'),
+
         progress: document.querySelector('[data-est-progress]'),
         crumbs: Array.from(document.querySelectorAll('[data-est-crumb]'))
       };
@@ -269,7 +244,6 @@
         updateProgress('category');
         clearFeed();
         renderOnboarding();
-        filterCategories('');
       }
 
       function createChip(option, handler){
@@ -332,12 +306,10 @@
         clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
         clear.addEventListener('click', () => {
           input.value = '';
-          filterCategories('');
           filterQuickPick('', chips);
           input.focus();
         });
         input.addEventListener('input', () => {
-          filterCategories(input.value);
           filterQuickPick(input.value, chips);
         });
         searchWrap.appendChild(searchIcon);
@@ -380,44 +352,10 @@
         });
       }
 
-      function populatePanel(){
-        if (!els.panelList) return;
-        els.panelList.innerHTML = '';
-        categories.forEach(cat => {
-          const option = {
-            id: cat.id,
-            value: cat.id,
-            label: cat.label,
-            icon: iconMap[cat.id] || cat.icon || 'fa-circle'
-          };
-          const chip = createChip(option, () => {
-            handleCategoryPick(option);
-          });
-          chip.classList.add('est-chip--ghost');
-          els.panelList.appendChild(chip);
-        });
 
-      }
-
-      function filterCategories(term){
-        const value = (term || '').trim().toLowerCase();
-        if (!els.panelList) return;
-        Array.from(els.panelList.children).forEach(node => {
-          if (!(node instanceof HTMLElement)) return;
-          const match = !value || (node.dataset.search || '').includes(value);
-          node.hidden = !match;
-        });
-      }
 
       function setActiveCategory(id){
-        if (els.panelList){
-          Array.from(els.panelList.children).forEach(node => {
-            if (!(node instanceof HTMLElement)) return;
-            const selected = node.dataset.value === id;
-            node.classList.toggle('est-chip--active', selected);
-            node.setAttribute('aria-pressed', selected ? 'true' : 'false');
-          });
-        }
+
         document.querySelectorAll('.est-quickpick__grid .est-chip').forEach(btn => {
           if (!(btn instanceof HTMLElement)) return;
           const selected = btn.dataset.value === id;
@@ -440,13 +378,7 @@
             crumb.classList.toggle('is-complete', idx < index);
           });
         }
-        const disableSearch = index > 0;
-        if (els.panelSearch){
-          els.panelSearch.disabled = disableSearch;
-        }
-        if (els.panelClear){
-          els.panelClear.disabled = disableSearch;
-        }
+
       }
 
       function renderOnboarding(){
@@ -806,32 +738,7 @@
         });
       }
 
-      if (els.panelSearch){
-        els.panelSearch.addEventListener('input', (event) => {
-          filterCategories(event.target.value);
-        });
-      }
 
-      if (els.panelClear){
-        els.panelClear.addEventListener('click', () => {
-          if (!els.panelSearch) return;
-          els.panelSearch.value = '';
-          filterCategories('');
-          els.panelSearch.focus();
-        });
-      }
-
-      if (els.toggle && els.layout){
-        els.toggle.addEventListener('click', () => {
-          const mode = els.layout.dataset.mode === 'split' ? 'convo' : 'split';
-          els.layout.dataset.mode = mode;
-          const pressed = mode === 'split';
-          els.toggle.setAttribute('aria-pressed', pressed ? 'true' : 'false');
-          els.toggle.setAttribute('aria-label', pressed ? 'חזרה לשיחה' : 'דפדוף לפי רשימה');
-        });
-      }
-
-      populatePanel();
       resetFlow();
     })();
   </script>

@@ -66,6 +66,7 @@
         progress: document.querySelector('[data-est-progress]'),
         crumbs: Array.from(document.querySelectorAll('[data-est-crumb]'))
       };
+      const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
       const state = {
         category: null,
         categoryLabel: '',
@@ -117,6 +118,39 @@
         els.body.innerHTML = '';
         activeBotBubble = null;
       }
+      function scrollFeedToBottom(){
+        if (!els.body) return;
+        const scrollHeight = els.body.scrollHeight || 0;
+        if (typeof els.body.scrollTo === 'function'){
+          els.body.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+        } else {
+          els.body.scrollTop = scrollHeight;
+        }
+      }
+
+      function focusFirstInteractive(scope){
+        if (!scope) return;
+        const target = scope.querySelector(focusableSelector);
+        if (target && typeof target.focus === 'function'){
+          try {
+            target.focus({ preventScroll: true });
+          } catch (err) {
+            target.focus();
+          }
+        }
+      }
+
+      function ensureBubbleInView(bubble, shouldFocus){
+        if (!bubble) return;
+        requestAnimationFrame(() => {
+          if (typeof bubble.scrollIntoView === 'function'){
+            bubble.scrollIntoView({ block: 'end', behavior: 'smooth' });
+          }
+          if (shouldFocus){
+            focusFirstInteractive(bubble);
+          }
+        });
+      }
 
       function createBubble(type){
         const article = document.createElement('article');
@@ -128,14 +162,15 @@
         return article;
       }
 
-      function appendBubble(bubble){
+      function appendBubble(bubble, options){
+
         if (!els.body || !bubble) return bubble;
         els.body.appendChild(bubble);
-        if (typeof els.body.scrollTo === 'function'){
-          els.body.scrollTo({ top: els.body.scrollHeight, behavior: 'smooth' });
-        } else {
-          els.body.scrollTop = els.body.scrollHeight;
-        }
+        scrollFeedToBottom();
+        const shouldFocus = options && Object.prototype.hasOwnProperty.call(options, 'focusInteractive')
+          ? options.focusInteractive !== false
+          : true;
+        ensureBubbleInView(bubble, shouldFocus);
         return bubble;
       }
 
@@ -146,7 +181,8 @@
         } else if (content){
           bubble.appendChild(content);
         }
-        activeBotBubble = appendBubble(bubble);
+        activeBotBubble = appendBubble(bubble, { focusInteractive: true });
+
         return activeBotBubble;
       }
 
@@ -166,7 +202,8 @@
         span.textContent = label;
         inner.appendChild(span);
         bubble.appendChild(inner);
-        appendBubble(bubble);
+        appendBubble(bubble, { focusInteractive: false });
+
         return bubble;
       }
 
@@ -174,14 +211,16 @@
         if (!text) return null;
         const bubble = createBubble('meta');
         bubble.textContent = text;
-        appendBubble(bubble);
+        appendBubble(bubble, { focusInteractive: false });
+
         return bubble;
       }
 
       function appendErrorBubble(text){
         const bubble = createBubble('error');
         bubble.textContent = text;
-        appendBubble(bubble);
+        appendBubble(bubble, { focusInteractive: false });
+
         return bubble;
       }
 

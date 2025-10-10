@@ -370,7 +370,8 @@ main, section, article { direction: rtl; }
 .est-botcard__title { margin: 0; font-size: 16px; font-weight: 700; color: var(--primary); }
 .est-botcard__why { margin: -6px 0 0; font-size: 13px; color: var(--muted); }
 .est-botcard__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.est-botcard__empty { margin: 0; font-size: 14px; color: var(--muted); }
+.est-botcard__empty,
+.est-quickpick__empty { margin: 0; font-size: 14px; color: var(--muted); }
 .est-botcard--cta { align-items: flex-start; }
 
 /* Loading */

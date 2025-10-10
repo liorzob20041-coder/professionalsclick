@@ -1,14 +1,13 @@
-<!doctype html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>בעלי מקצוע בקליק — מחשבון</title>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/estimate.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}בעלי מקצוע בקליק — מחשבון{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('css/estimate.css') }}">
+{% endblock %}
+
+{% block content %}
   {% set t = i18n_est or {} %}
   {% set categories = [
     {"id": "electricity", "emoji": "\u26A1\uFE0E", "label": t.get('categories.electricity', 'חשמל')},
@@ -16,7 +15,8 @@
     {"id": "painting", "emoji": "\U0001F58C\uFE0E", "label": t.get('categories.painting', 'צביעה')},
     {"id": "renovation", "emoji": "\U0001F6E0\uFE0E", "label": t.get('categories.renovation', 'שיפוצים')}
   ] %}
-  <main class="est-page">
+  <section class="est-page" aria-label="מחשבון הצעת מחיר">
+
     <header class="est-header">
       <div class="est-header__row">
         <div class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</div>
@@ -38,16 +38,19 @@
         <div class="est-convo__body" data-est-body aria-live="polite"></div>
       </section>
     </section>
-  </main>
+  </section>
+
   <script id="est-i18n" type="application/json">{{ t|tojson }}</script>
   <script id="est-cats" type="application/json">{{ categories|tojson }}</script>
-  <script>
-    const i18n = JSON.parse(document.getElementById('est-i18n')?.textContent || '{}');
-    const categories = JSON.parse(document.getElementById('est-cats')?.textContent || '[]');
-  </script>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
 
   <script>
     (function(){
+      const i18n = JSON.parse(document.getElementById('est-i18n')?.textContent || '{}');
+      const categories = JSON.parse(document.getElementById('est-cats')?.textContent || '[]');
       const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
       const emojiFallback = {
         electricity: '\u26A1\uFE0E',
@@ -106,7 +109,6 @@
         'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.'
       };
       const steps = ['category', 'job', 'subtype', 'quote'];
-      const metaSample = 'מבוסס על 2,847 פרויקטים דומים.';
       let activeBotBubble = null;
 
       function t(key){
@@ -340,7 +342,23 @@
         btn.appendChild(span);
         return btn;
       }
-
+      function filterQuickPick(term, items, options){
+        const value = (term || '').trim().toLowerCase();
+        let matches = 0;
+        items.forEach(item => {
+          const match = !value || (item.dataset.search || '').includes(value);
+          item.hidden = !match;
+          if (match){
+            matches += 1;
+          }
+        });
+        if (options && options.tip){
+          options.tip.hidden = Boolean(value);
+        }
+        if (options && options.empty){
+          options.empty.hidden = matches > 0;
+        }
+      }
       function renderCategoryQuickPick(){
         const wrap = document.createElement('div');
         wrap.className = 'est-quickpick';
@@ -370,13 +388,21 @@
         clear.className = 'est-search__clear';
         clear.setAttribute('aria-label', 'ניקוי החיפוש');
         clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        const list = document.createElement('div');
+        list.className = 'est-quickpick__list';
+        const emptyState = document.createElement('p');
+        emptyState.className = 'est-quickpick__empty';
+        emptyState.textContent = 'לא נמצאו תחומים תואמים לחיפוש.';
+        emptyState.hidden = true;
         clear.addEventListener('click', () => {
           input.value = '';
-          filterQuickPick('', chips);
+          filterQuickPick('', chips, filterState);
+
           input.focus();
         });
         input.addEventListener('input', () => {
-          filterQuickPick(input.value, chips);
+          filterQuickPick('', chips, filterState);
+
         });
         searchWrap.appendChild(searchIcon);
         searchWrap.appendChild(input);
@@ -384,8 +410,7 @@
         wrap.appendChild(label);
         wrap.appendChild(searchWrap);
 
-        const list = document.createElement('div');
-        list.className = 'est-quickpick__list';
+
         const chips = categories.map(cat => {
           const option = {
             id: cat.id,
@@ -400,22 +425,19 @@
           list.appendChild(chip);
           return chip;
         });
-        wrap.appendChild(list);
 
         const tip = document.createElement('p');
         tip.className = 'est-quickpick__tip';
         tip.textContent = 'אנחנו שואלים כדי לדייק את הטווח המשוער.';
+
+        const filterState = { empty: emptyState, tip };
+
+        wrap.appendChild(list);
+        wrap.appendChild(emptyState);
         wrap.appendChild(tip);
         appendBotBubble(wrap);
-        filterQuickPick('', chips);
-      }
+        filterQuickPick('', chips, filterState);
 
-      function filterQuickPick(term, items){
-        const value = (term || '').trim().toLowerCase();
-        items.forEach(item => {
-          const match = !value || (item.dataset.search || '').includes(value);
-          item.hidden = !match;
-        });
       }
 
       function setActiveCategory(id){
@@ -474,7 +496,6 @@
         state.resultNote = '';
         setActiveCategory(option.id);
         appendUserBubble(state.categoryLabel, emojiMap[option.id]);
-        appendMetaBubble(metaSample);
         updateProgress('job');
         loadJobs();
       }
@@ -522,6 +543,8 @@
           const chip = createChip(option, () => {
             selectJob(job);
           });
+          chip.classList.add('est-chip--ghost', 'est-chip--full');
+
           grid.appendChild(chip);
         });
         wrap.appendChild(grid);
@@ -555,81 +578,8 @@
           const chip = createChip(option, () => {
             selectSubtype(sub);
           });
-          grid.appendChild(chip);
-        });
-        wrap.appendChild(grid);
-        replaceBotBubbleContent(wrap);
-      }
+          chip.classList.add('est-chip--ghost', 'est-chip--full');
 
-      function renderQuestions(questions){
-        if (!questions.length){
-          const wrap = document.createElement('div');
-          wrap.className = 'est-botcard';
-          const note = document.createElement('p');
-          note.className = 'est-botcard__empty';
-          note.textContent = t('ui.no_questions');
-          wrap.appendChild(note);
-          replaceBotBubbleContent(wrap);
-          appendMetaBubble(metaSample);
-          renderComputeCallToAction();
-          return;
-        }
-        state.questions = questions;
-        askQuestion(0);
-      }
-
-      function askQuestion(index){
-        const q = state.questions[index];
-        if (!q){
-          renderComputeCallToAction();
-          return;
-        }
-        const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
-        const title = document.createElement('h3');
-        title.className = 'est-botcard__title';
-        title.textContent = q.text || '';
-        wrap.appendChild(title);
-        let whyId = '';
-        if (q.meta && q.meta.why){
-          whyId = `why-${q.id}`;
-          const why = document.createElement('p');
-          why.className = 'est-botcard__why';
-          why.id = whyId;
-          why.textContent = q.meta.why;
-          wrap.appendChild(why);
-        }
-        const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
-        grid.setAttribute('role', 'list');
-        (q.options || []).forEach(opt => {
-          const option = {
-            id: opt.value,
-            value: opt.value,
-            label: opt.label || opt.value
-          };
-          const chip = createChip(option, () => {
-            if (grid.dataset.locked === 'true') return;
-            grid.dataset.locked = 'true';
-            Array.from(grid.children).forEach(child => {
-              if (child instanceof HTMLButtonElement){
-                child.disabled = true;
-                child.classList.add('is-disabled');
-                child.setAttribute('aria-pressed', child === chip ? 'true' : 'false');
-              }
-            });
-            state.answers[q.id] = opt.value;
-            finalizeBotBubble(q.text || '', q.meta && q.meta.why ? q.meta.why : '');
-            appendUserBubble(option.label);
-            appendMetaBubble(metaSample);
-            askQuestion(index + 1);
-          });
-          if (whyId){
-            chip.setAttribute('aria-describedby', whyId);
-          }
-          if (opt.hint){
-            chip.dataset.hint = opt.hint;
-          }
           grid.appendChild(chip);
         });
         wrap.appendChild(grid);
@@ -684,10 +634,7 @@
           extra.textContent = extraCopy;
           wrap.appendChild(extra);
         }
-        const confidence = document.createElement('p');
-        confidence.className = 'est-resultcard__confidence';
-        confidence.textContent = 'מבוסס על 2,847 פרויקטים דומים.';
-        wrap.appendChild(confidence);
+
         const actions = document.createElement('div');
         actions.className = 'est-resultcard__actions';
         const resetBtn = document.createElement('button');
@@ -731,7 +678,6 @@
         state.questions = [];
         state.resultNote = '';
         appendUserBubble(state.jobLabel);
-        appendMetaBubble(metaSample);
         updateProgress('subtype');
         loadSubtypes();
       }
@@ -744,7 +690,6 @@
         state.answers = {};
         state.questions = [];
         appendUserBubble(state.subtypeLabel);
-        appendMetaBubble(metaSample);
         updateProgress('quote');
         loadQuestions();
       }
@@ -791,6 +736,83 @@
           showError('ui.err_load_qs');
         });
       }
+      function renderQuestions(questions){
+        if (!questions.length){
+          const wrap = document.createElement('div');
+          wrap.className = 'est-botcard';
+          const note = document.createElement('p');
+          note.className = 'est-botcard__empty';
+          note.textContent = t('ui.no_questions');
+          wrap.appendChild(note);
+          replaceBotBubbleContent(wrap);
+          renderComputeCallToAction();
+          return;
+        }
+        state.questions = questions;
+        askQuestion(0);
+      }
+
+      function askQuestion(index){
+        const q = state.questions[index];
+        if (!q){
+          renderComputeCallToAction();
+          return;
+        }
+        showQuestion(q, index);
+      }
+
+      function showQuestion(question, index){
+        const wrap = document.createElement('div');
+        wrap.className = 'est-botcard';
+        const title = document.createElement('h3');
+        title.className = 'est-botcard__title';
+        title.textContent = question.text || '';
+        wrap.appendChild(title);
+        let whyId = '';
+        if (question.meta && question.meta.why){
+          whyId = `why-${question.id}`;
+          const why = document.createElement('p');
+          why.className = 'est-botcard__why';
+          why.id = whyId;
+          why.textContent = question.meta.why;
+          wrap.appendChild(why);
+        }
+        const grid = document.createElement('div');
+        grid.className = 'est-botcard__grid';
+        grid.setAttribute('role', 'list');
+        (question.options || []).forEach(opt => {
+          const option = {
+            id: opt.value,
+            value: opt.value,
+            label: opt.label || opt.value
+          };
+          const chip = createChip(option, () => {
+            if (grid.dataset.locked === 'true') return;
+            grid.dataset.locked = 'true';
+            Array.from(grid.children).forEach(child => {
+              if (child instanceof HTMLButtonElement){
+                child.disabled = true;
+                child.classList.add('is-disabled');
+                child.setAttribute('aria-pressed', child === chip ? 'true' : 'false');
+              }
+            });
+            state.answers[question.id] = opt.value;
+            finalizeBotBubble(question.text || '', question.meta && question.meta.why ? question.meta.why : '');
+            appendUserBubble(option.label);
+            askQuestion(index + 1);
+          });
+          if (whyId){
+            chip.setAttribute('aria-describedby', whyId);
+          }
+          if (opt.hint){
+            chip.dataset.hint = opt.hint;
+          }
+          grid.appendChild(chip);
+        });
+        wrap.appendChild(grid);
+        replaceBotBubbleContent(wrap);
+      }
+
 
       function computeQuote(){
         showLoading('ui.computing');
@@ -805,5 +827,4 @@
       resetFlow();
     })();
   </script>
-</body>
-</html>
+{% endblock %}

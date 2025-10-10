@@ -4233,6 +4233,32 @@ def sitemap_xml():
 
 
 
+# ===== Lightweight tracking endpoint =====
+@app.route('/api/track', methods=['POST'])
+def api_track_events():
+    """Collects lightweight UI telemetry without failing the client."""
+    try:
+        payload = request.get_json(silent=True) or {}
+    except Exception:
+        payload = {}
+    try:
+        event = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "ip": request.headers.get('X-Forwarded-For', request.remote_addr),
+            "ua": request.headers.get('User-Agent', ''),
+        }
+        if isinstance(payload, dict):
+            event.update({k: payload[k] for k in payload.keys() if not str(k).startswith('_')})
+        log_path = os.path.join(DATA_FOLDER, 'events.log')
+        os.makedirs(DATA_FOLDER, exist_ok=True)
+        with open(log_path, 'a', encoding='utf-8') as fh:
+            fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+        return jsonify({"ok": True})
+    except Exception as exc:
+        logging.warning("api_track failed: %s", exc)
+        return jsonify({"ok": False})
+
+
 # ===== Autocomplete: API בסיסי לבדיקה =====
 # ===== Autocomplete: API בסיסי לבדיקה =====
 @app.route('/api/suggest', methods=['GET'])

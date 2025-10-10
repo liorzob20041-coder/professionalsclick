@@ -114,7 +114,14 @@
       function t(key){
         return Object.prototype.hasOwnProperty.call(i18n, key) ? i18n[key] : (fallback[key] || '');
       }
-
+      function setBusy(isBusy){
+        if (!els.body) return;
+        if (isBusy){
+          els.body.setAttribute('aria-busy', 'true');
+        } else {
+          els.body.removeAttribute('aria-busy');
+        }
+      }
       function clearFeed(){
         if (!els.body) return;
         els.body.innerHTML = '';
@@ -321,6 +328,7 @@
         resetState();
         updateProgress('category');
         clearFeed();
+        setBusy(false);
         renderOnboarding();
       }
       function normalizeText(value){
@@ -555,9 +563,13 @@
       function showLoading(key){
         const node = makeLoadingNode(t(key) || key);
         appendBotBubble(node);
+        setBusy(true);
+
       }
 
       function showError(key){
+        setBusy(false);
+
         const message = t(key) || key || 'בעיה זמנית.';
         if (activeBotBubble){
           activeBotBubble.className = 'est-bubble est-bubble--error';
@@ -569,6 +581,8 @@
       }
 
       function renderJobs(jobs){
+        setBusy(false);
+
         const wrap = document.createElement('div');
         wrap.className = 'est-botcard';
         const title = document.createElement('h3');
@@ -604,6 +618,8 @@
       }
 
       function renderSubtypes(subtypes){
+        setBusy(false);
+
         const wrap = document.createElement('div');
         wrap.className = 'est-botcard';
         const title = document.createElement('h3');
@@ -639,6 +655,8 @@
       }
 
       function renderComputeCallToAction(){
+        setBusy(false);
+
         const wrap = document.createElement('div');
         wrap.className = 'est-botcard est-botcard--cta';
         const button = document.createElement('button');
@@ -656,6 +674,8 @@
       }
 
       function renderResult(result){
+        setBusy(false);
+
         const wrap = document.createElement('div');
         wrap.className = 'est-resultcard';
         const heading = document.createElement('h3');
@@ -762,6 +782,8 @@
         if (!state.category || !state.job) return;
         showLoading('ui.preparing_opts');
         fetchEstimate({ category: state.category, job: state.job }).then((data) => {
+          setBusy(false);
+
           const subtypes = data.subtypes || [];
           if (!subtypes.length){
             state.subtype = state.job;
@@ -781,6 +803,8 @@
         if (!state.category || !state.job || !state.subtype) return;
         showLoading('ui.loading_questions');
         fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype }).then((data) => {
+          setBusy(false);
+
           state.questions = data.questions || [];
           state.resultNote = data.result_note || state.resultNote;
           renderQuestions(state.questions);
@@ -790,6 +814,8 @@
         });
       }
       function renderQuestions(questions){
+        setBusy(false);
+
         if (!questions.length){
           const wrap = document.createElement('div');
           wrap.className = 'est-botcard';
@@ -870,6 +896,8 @@
       function computeQuote(){
         showLoading('ui.computing');
         fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype, answers: state.answers }).then((data) => {
+          setBusy(false);
+
           renderResult(data);
         }).catch((err) => {
           console.error(err);

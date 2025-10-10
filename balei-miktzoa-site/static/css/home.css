@@ -176,31 +176,33 @@ main > section h3::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  max-width: 1100px;
-  margin: 20px auto 0;
-  padding: 30px 20px;
+  gap: clamp(24px, 4vw, 48px);
+  max-width: 1120px;
+  margin: clamp(32px, 6vw, 72px) auto;
+  padding: clamp(32px, 5vw, 64px) clamp(20px, 5vw, 56px);
   background: #fff;
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow: var(--shadow-md);
-  min-height: 380px;
 }
 
 .hero-info {
   order: 2;
   flex: 1 1 55%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 20px);
 }
 
 .hero-info h1 {
-  margin: 0 0 10px;
-  font-size: clamp(22px, 3vw, 34px);
+  margin: 0;
+  font-size: clamp(24px, 3vw, 36px);
   color: #333;
 }
 
 /* Lead ׳³ֲ³ײ²ֲ§׳³ֲ³ײ²ֲ¦׳³ֲ³ײ²ֲ¨ */
 .hero-lead {
-  margin: 6px 0 12px;
-  font-size: clamp(14px, 1.5vw, 16px);
+  margin: 0;
+  font-size: clamp(15px, 1.6vw, 18px);
   color: #334155;
   line-height: 1.65;
 }
@@ -212,26 +214,21 @@ main > section h3::after {
 
 /* Checklist */
 .hero-checklist {
-  margin: 12px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4px;
+  gap: 12px;
 }
 
 .check-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 6px 0;
-  border-bottom: 1px dashed var(--brd);
+  padding: 0;
   color: #334155;
   font-weight: 700;
-}
-
-.hero-checklist .check-item:last-child {
-  border-bottom: none;
 }
 
 .check-ico {
@@ -1791,9 +1788,10 @@ body.home-pattern .mobile-search {
 body.home-pattern main > section:not(.hero-split) {
   background: rgb(255 255 255 / 92%);
   backdrop-filter: blur(2px);
-  border-radius: 12px;
-  padding: 12px;
-  margin: 16px auto;
+  border-radius: 16px;
+  padding: clamp(24px, 4vw, 48px);
+  margin: clamp(24px, 5vw, 64px) auto;
+  max-width: 1120px;
 }
 
 /* -------------------- Utilities -------------------- */

@@ -364,6 +364,9 @@ main, section, article { direction: rtl; }
 
 /* Botcard */
 .est-botcard { display: flex; flex-direction: column; gap: 14px; }
+.est-botcard--locked { gap: 8px; }
+.est-botcard--locked .est-botcard__title { color: var(--ink); }
+.est-botcard--locked .est-botcard__why { margin: 0; color: var(--muted); }
 .est-botcard__title { margin: 0; font-size: 16px; font-weight: 700; color: var(--primary); }
 .est-botcard__why { margin: -6px 0 0; font-size: 13px; color: var(--muted); }
 .est-botcard__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }

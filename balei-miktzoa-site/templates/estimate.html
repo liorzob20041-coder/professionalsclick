@@ -185,6 +185,28 @@
 
         return activeBotBubble;
       }
+      function finalizeBotBubble(promptText, metaText){
+        if (!activeBotBubble || activeBotBubble.dataset.type !== 'bot'){
+          return;
+        }
+        const summary = document.createElement('div');
+        summary.className = 'est-botcard est-botcard--locked';
+        if (promptText){
+          const heading = document.createElement('h3');
+          heading.className = 'est-botcard__title';
+          heading.textContent = promptText;
+          summary.appendChild(heading);
+        }
+        if (metaText){
+          const meta = document.createElement('p');
+          meta.className = 'est-botcard__why';
+          meta.textContent = metaText;
+          summary.appendChild(meta);
+        }
+        activeBotBubble.innerHTML = '';
+        activeBotBubble.appendChild(summary);
+        activeBotBubble = null;
+      }
 
       function appendUserBubble(label, symbol){
 
@@ -440,6 +462,7 @@
           appendMetaBubble('התחום כבר נבחר. בואו נמשיך.');
           return;
         }
+        finalizeBotBubble(t('ui.ask_category'));
         state.category = option.id;
         state.categoryLabel = option.label || option.id;
         state.job = null;
@@ -596,6 +619,7 @@
               }
             });
             state.answers[q.id] = opt.value;
+            finalizeBotBubble(q.text || '', q.meta && q.meta.why ? q.meta.why : '');
             appendUserBubble(option.label);
             appendMetaBubble(metaSample);
             askQuestion(index + 1);
@@ -698,6 +722,7 @@
 
       function selectJob(job){
         if (!job) return;
+        finalizeBotBubble(t('ui.choose_job'));
         state.job = job.id;
         state.jobLabel = job.label || job.id;
         state.subtype = null;
@@ -713,6 +738,7 @@
 
       function selectSubtype(sub){
         if (!sub) return;
+        finalizeBotBubble(t('ui.where_exactly'));
         state.subtype = sub.id;
         state.subtypeLabel = sub.label || sub.id;
         state.answers = {};

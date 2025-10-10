@@ -11,10 +11,10 @@
 <body>
   {% set t = i18n_est or {} %}
   {% set categories = [
-    {"id": "electricity", "icon": "fa-bolt", "label": t.get('categories.electricity', 'חשמל')},
-    {"id": "plumbing", "icon": "fa-faucet-drip", "label": t.get('categories.plumbing', 'אינסטלציה')},
-    {"id": "painting", "icon": "fa-paint-roller", "label": t.get('categories.painting', 'צביעה')},
-    {"id": "renovation", "icon": "fa-screwdriver-wrench", "label": t.get('categories.renovation', 'שיפוצים')}
+    {"id": "electricity", "emoji": "\u26A1\uFE0E", "label": t.get('categories.electricity', 'חשמל')},
+    {"id": "plumbing", "emoji": "\U0001F6B0\uFE0E", "label": t.get('categories.plumbing', 'אינסטלציה')},
+    {"id": "painting", "emoji": "\U0001F58C\uFE0E", "label": t.get('categories.painting', 'צביעה')},
+    {"id": "renovation", "emoji": "\U0001F6E0\uFE0E", "label": t.get('categories.renovation', 'שיפוצים')}
   ] %}
   <main class="est-page">
     <header class="est-header">
@@ -49,12 +49,18 @@
   <script>
     (function(){
       const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
-      const iconMap = {
-        electricity: 'fa-bolt',
-        plumbing: 'fa-faucet-drip',
-        painting: 'fa-paint-roller',
-        renovation: 'fa-screwdriver-wrench'
+      const emojiFallback = {
+        electricity: '\u26A1\uFE0E',
+        plumbing: '\u{1F6B0}\uFE0E',
+        painting: '\u{1F58C}\uFE0E',
+        renovation: '\u{1F6E0}\uFE0E'
       };
+      const emojiMap = categories.reduce((acc, cat) => {
+        if (cat && cat.id){
+          acc[cat.id] = cat.emoji || emojiFallback[cat.id] || '';
+        }
+        return acc;
+      }, Object.assign({}, emojiFallback));
       const els = {
         body: document.querySelector('[data-est-body]'),
         progress: document.querySelector('[data-est-progress]'),
@@ -144,15 +150,17 @@
         return activeBotBubble;
       }
 
-      function appendUserBubble(label, icon){
+      function appendUserBubble(label, symbol){
+
         const bubble = createBubble('user');
         const inner = document.createElement('div');
         inner.className = 'est-chip est-chip--selected';
-        if (icon){
-          const iconEl = document.createElement('i');
-          iconEl.className = `fa-solid ${icon}`;
-          iconEl.setAttribute('aria-hidden', 'true');
-          inner.appendChild(iconEl);
+        if (symbol){
+          const emojiEl = document.createElement('span');
+          emojiEl.className = 'est-chip__emoji';
+          emojiEl.setAttribute('aria-hidden', 'true');
+          emojiEl.textContent = symbol;
+          inner.appendChild(emojiEl);
         }
         const span = document.createElement('span');
         span.textContent = label;
@@ -254,7 +262,13 @@
             handler(option);
           }
         });
-        if (option.icon){
+        if (option.emoji){
+          const emojiEl = document.createElement('span');
+          emojiEl.className = 'est-chip__emoji';
+          emojiEl.setAttribute('aria-hidden', 'true');
+          emojiEl.textContent = option.emoji;
+          btn.appendChild(emojiEl);
+        } else if (option.icon){
           const iconEl = document.createElement('i');
           iconEl.className = `fa-solid ${option.icon}`;
           iconEl.setAttribute('aria-hidden', 'true');
@@ -309,23 +323,23 @@
         wrap.appendChild(label);
         wrap.appendChild(searchWrap);
 
-        const grid = document.createElement('div');
-        grid.className = 'est-quickpick__grid';
+        const list = document.createElement('div');
+        list.className = 'est-quickpick__list';
         const chips = categories.map(cat => {
           const option = {
             id: cat.id,
             value: cat.id,
             label: cat.label,
-            icon: iconMap[cat.id] || cat.icon || 'fa-circle'
+            emoji: emojiMap[cat.id] || cat.emoji
           };
           const chip = createChip(option, () => {
             handleCategoryPick(option);
           });
-          chip.classList.add('est-chip--ghost');
-          grid.appendChild(chip);
+          chip.classList.add('est-chip--ghost', 'est-chip--full');
+          list.appendChild(chip);
           return chip;
         });
-        wrap.appendChild(grid);
+        wrap.appendChild(list);
 
         const tip = document.createElement('p');
         tip.className = 'est-quickpick__tip';
@@ -344,7 +358,7 @@
       }
 
       function setActiveCategory(id){
-        document.querySelectorAll('.est-quickpick__grid .est-chip').forEach(btn => {
+        document.querySelectorAll('.est-quickpick__list .est-chip').forEach(btn => {
           if (!(btn instanceof HTMLElement)) return;
           const selected = btn.dataset.value === id;
           btn.classList.toggle('est-chip--active', selected);
@@ -397,7 +411,7 @@
         state.questions = [];
         state.resultNote = '';
         setActiveCategory(option.id);
-        appendUserBubble(state.categoryLabel, iconMap[option.id]);
+        appendUserBubble(state.categoryLabel, emojiMap[option.id]);
         appendMetaBubble(metaSample);
         updateProgress('job');
         loadJobs();

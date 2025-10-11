@@ -18,26 +18,36 @@
   <section class="est-page" aria-label="מחשבון הצעת מחיר">
 
     <header class="est-header" data-est-header>
-
-      <div class="est-header__row">
+      {% set header_prefix = t.get('ui.header_title_prefix', 'קבלו הערכת מחיר') %}
+      {% set header_highlight = t.get('ui.header_title_highlight', 'מדויקת') %}
+      {% set header_suffix = t.get('ui.header_title_suffix', 'תוך דקות') %}
+      <div class="est-header__inner">
         <div class="est-header__intro">
-          <p class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</p>
-          <h1 class="est-header__title">{{ t.get('ui.header_title', 'מחשבון המחיר החכם שלנו') }}</h1>
+          <h1 class="est-header__title">
+            {{ header_prefix }}
+            <span class="est-header__highlight">{{ header_highlight }}</span>
+            {{ header_suffix }}
+          </h1>
+          <p class="est-header__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.') }}</p>
         </div>
-        <p class="est-header__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.') }}</p>
-      </div>
-      <div class="est-progresswrap" data-est-progress-wrap>
 
-        <div class="est-progress__meta">
-          <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
-          <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
+
+        <div class="est-header__panel">
+          <div class="est-header__panel-card">
+            <div class="est-progresswrap" data-est-progress-wrap>
+              <div class="est-progress__meta">
+                <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
+                <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
+              </div>
+              <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
+                <div class="est-progress__bar"></div>
+              </div>
+            </div>
+            <div class="est-journey" data-est-journey>
+              <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
+            </div>
+          </div>
         </div>
-        <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-          <div class="est-progress__bar"></div>
-        </div>
-      </div>
-      <div class="est-journey" data-est-journey>
-        <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
       </div>
 
     </header>
@@ -130,8 +140,17 @@
         'ui.no_subtypes': 'אין תתי-סוג זמינים לעבודה הזו.',
         'ui.add_job_btn': 'הוספת עבודה נוספת',
         'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.',
-        'ui.header_title': 'מחשבון המחיר החכם שלנו',
+        'ui.header_title': 'קבלו הערכת מחיר מדויקת תוך דקות',
+        'ui.header_title_prefix': 'קבלו הערכת מחיר',
+        'ui.header_title_highlight': 'מדויקת',
+        'ui.header_title_suffix': 'תוך דקות',
         'ui.header_tagline': 'ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.',
+        'ui.header_badge': 'מחשבון מחיר מדויק',
+        'ui.header_point_speed': 'ענו על כמה שאלות קצרות ותצאו לדרך.',
+        'ui.header_point_accuracy': 'הטווחים מבוססים על אלפי עבודות אמיתיות.',
+        'ui.header_point_confidence': 'אפשר לעדכן תשובות ולהוסיף עבודות בכל שלב.',
+        'ui.assistant_intro': 'שלום! אני כאן כדי לתת לכם הערכת מחיר מדויקת.',
+        'ui.assistant_subtitle': 'נתחיל בשאלות קצרות ומיד נבנה לכם טווח שמתאים בדיוק לעבודה שלכם.',
         'ui.progress_stage_category': 'בוחרים תחום',
         'ui.progress_stage_job': 'בוחרים את סוג העבודה',
         'ui.progress_stage_subtype': 'מדייקים את סוג העבודה',

@@ -17,7 +17,8 @@
   ] %}
   <section class="est-page" aria-label="מחשבון הצעת מחיר">
 
-    <header class="est-header">
+    <header class="est-header" data-est-header>
+
       <div class="est-header__row">
         <div class="est-header__intro">
           <p class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</p>
@@ -25,7 +26,8 @@
         </div>
         <p class="est-header__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.') }}</p>
       </div>
-      <div class="est-progresswrap">
+      <div class="est-progresswrap" data-est-progress-wrap>
+
         <div class="est-progress__meta">
           <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
           <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
@@ -39,7 +41,17 @@
       </div>
 
     </header>
-
+    <div class="est-progresspin" data-est-progress-pin aria-hidden="true">
+      <div class="est-progresspin__inner">
+        <div class="est-progresspin__meta">
+          <span class="est-progresspin__primary" data-est-progress-primary></span>
+          <span class="est-progresspin__secondary" data-est-progress-secondary></span>
+        </div>
+        <div class="est-progress est-progress--compact" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
+          <div class="est-progress__bar"></div>
+        </div>
+      </div>
+    </div>
     <section class="est-layout">
       <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
         <div class="est-convo__body" data-est-body aria-live="polite"></div>
@@ -73,10 +85,12 @@
       }, Object.assign({}, emojiFallback));
       const els = {
         body: document.querySelector('[data-est-body]'),
-        progress: document.querySelector('[data-est-progress]'),
-        progressPrimary: document.querySelector('[data-est-progress-primary]'),
-        progressSecondary: document.querySelector('[data-est-progress-secondary]'),
-        journey: document.querySelector('[data-est-journey]')
+        progress: Array.from(document.querySelectorAll('[data-est-progress]')),
+        progressPrimary: Array.from(document.querySelectorAll('[data-est-progress-primary]')),
+        progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
+        journey: document.querySelector('[data-est-journey]'),
+        progressWrap: document.querySelector('[data-est-progress-wrap]'),
+        progressPin: document.querySelector('[data-est-progress-pin]')
       };
       const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
       const state = {
@@ -241,12 +255,67 @@
         });
       }
       function setProgressPrimary(text){
-        if (!els.progressPrimary) return;
-        els.progressPrimary.textContent = text || '';
+        if (!els.progressPrimary || !els.progressPrimary.length) return;
+        els.progressPrimary.forEach((el) => {
+          if (el){
+            el.textContent = text || '';
+          }
+        });
       }
       function setProgressSecondary(text){
-        if (!els.progressSecondary) return;
-        els.progressSecondary.textContent = text || '';
+        if (!els.progressSecondary || !els.progressSecondary.length) return;
+        els.progressSecondary.forEach((el) => {
+          if (el){
+            el.textContent = text || '';
+          }
+        });
+      }
+      function getProgressPinOffset(){
+        const root = document.documentElement;
+        if (!root || !window.getComputedStyle){
+          return 88;
+        }
+        const styles = window.getComputedStyle(root);
+        const base = parseFloat(styles.getPropertyValue('--site-header-height'));
+        const fallback = Number.isFinite(base) ? base : 72;
+        return Math.max(0, Math.round(fallback + 16));
+      }
+      function setupProgressPin(){
+        const pin = els.progressPin;
+        const progressWrap = els.progressWrap;
+        if (!pin || !progressWrap || typeof progressWrap.getBoundingClientRect !== 'function'){
+          return;
+        }
+        function applyOffset(){
+          const offset = getProgressPinOffset();
+          pin.style.setProperty('--progress-pin-offset', `${offset}px`);
+          return offset;
+        }
+        let currentOffset = applyOffset();
+        let active = false;
+        function evaluate(){
+          if (typeof progressWrap.getBoundingClientRect !== 'function'){
+            return;
+          }
+          const rect = progressWrap.getBoundingClientRect();
+          const shouldShow = rect.top <= currentOffset;
+          if (shouldShow === active){
+            return;
+          }
+          active = shouldShow;
+          pin.classList.toggle('is-active', shouldShow);
+          pin.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        }
+        const onScroll = () => window.requestAnimationFrame(evaluate);
+        const onResize = () => {
+          window.requestAnimationFrame(() => {
+            currentOffset = applyOffset();
+            evaluate();
+          });
+        };
+        evaluate();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize);
       }
       function getStageLabel(stage){
         const key = stageKeyMap[stage];
@@ -636,9 +705,14 @@
         const progressIndex = index < 0 ? 0 : index;
         const denominator = Math.max(totalSteps - 1, 1);
         const percent = (progressIndex / denominator) * 100;
-        if (els.progress){
-          els.progress.setAttribute('aria-valuenow', String(Math.round(percent)));
-          els.progress.style.setProperty('--progress', `${percent}%`);
+        if (els.progress && els.progress.length){
+          const value = String(Math.round(percent));
+          els.progress.forEach((progressEl) => {
+            if (progressEl){
+              progressEl.setAttribute('aria-valuenow', value);
+              progressEl.style.setProperty('--progress', `${percent}%`);
+            }
+          });
         }
         const desiredLabel = options && Object.prototype.hasOwnProperty.call(options, 'label')
           ? options.label
@@ -723,17 +797,7 @@
         updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
         const wrap = document.createElement('div');
         wrap.className = 'est-botcard';
-        const totalQuestions = state.questions.length;
-        const progressOptions = { label: question.text || getStageLabel('quote') };
-        if (totalQuestions > 0){
-          const template = t('ui.progress_question_counter') || fallback['ui.progress_question_counter'] || '';
-          const questionNumber = Math.min(index + 1, totalQuestions);
-          const secondaryText = formatString(template, { current: questionNumber, total: totalQuestions });
-          if (secondaryText){
-            progressOptions.secondary = secondaryText;
-          }
-        }
-        updateProgress('quote', progressOptions);
+
         const title = document.createElement('h3');
         title.className = 'est-botcard__title';
         title.textContent = t('ui.choose_job');
@@ -1067,7 +1131,7 @@
           showError('ui.err_quote');
         });
       }
-
+      setupProgressPin();
       resetFlow();
     })();
   </script>

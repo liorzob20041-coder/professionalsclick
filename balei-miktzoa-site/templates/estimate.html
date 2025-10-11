@@ -19,18 +19,25 @@
 
     <header class="est-header">
       <div class="est-header__row">
-        <div class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</div>
-        <p class="est-header__lead">אני כאן לעזור לכם לקבל הערכת מחיר מדויקת ומהירה.</p>
+        <div class="est-header__intro">
+          <p class="est-header__brand" aria-label="בעלי מקצוע בקליק">בעלי מקצוע בקליק</p>
+          <h1 class="est-header__title">{{ t.get('ui.header_title', 'מחשבון המחיר החכם שלנו') }}</h1>
+        </div>
+        <p class="est-header__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.') }}</p>
       </div>
-      <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-        <div class="est-progress__bar"></div>
+      <div class="est-progresswrap">
+        <div class="est-progress__meta">
+          <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
+          <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
+        </div>
+        <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
+          <div class="est-progress__bar"></div>
+        </div>
       </div>
-      <ol class="est-crumbs" data-est-crumbs>
-        <li class="est-crumb is-active" data-est-crumb="category">תחום</li>
-        <li class="est-crumb" data-est-crumb="job">עבודה</li>
-        <li class="est-crumb" data-est-crumb="subtype">תת-סוג</li>
-        <li class="est-crumb" data-est-crumb="quote">חישוב</li>
-      </ol>
+      <div class="est-journey" data-est-journey>
+        <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
+      </div>
+
     </header>
 
     <section class="est-layout">
@@ -67,7 +74,9 @@
       const els = {
         body: document.querySelector('[data-est-body]'),
         progress: document.querySelector('[data-est-progress]'),
-        crumbs: Array.from(document.querySelectorAll('[data-est-crumb]'))
+        progressPrimary: document.querySelector('[data-est-progress-primary]'),
+        progressSecondary: document.querySelector('[data-est-progress-secondary]'),
+        journey: document.querySelector('[data-est-journey]')
       };
       const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
       const state = {
@@ -106,9 +115,40 @@
         'ui.no_jobs': 'לא נמצאו עבודות זמינות לתחום שנבחר.',
         'ui.no_subtypes': 'אין תתי-סוג זמינים לעבודה הזו.',
         'ui.add_job_btn': 'הוספת עבודה נוספת',
-        'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.'
+        'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.',
+        'ui.header_title': 'מחשבון המחיר החכם שלנו',
+        'ui.header_tagline': 'ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.',
+        'ui.progress_stage_category': 'בוחרים תחום',
+        'ui.progress_stage_job': 'בוחרים את סוג העבודה',
+        'ui.progress_stage_subtype': 'מדייקים את סוג העבודה',
+        'ui.progress_stage_quote': 'עונים על כמה שאלות ממוקדות',
+        'ui.progress_stage_result': 'הנה הטווח המשוער שלכם',
+        'ui.progress_step_counter': 'שלב {current} מתוך {total}',
+        'ui.progress_question_counter': 'שאלה {current} מתוך {total}',
+        'ui.progress_done': 'החישוב הושלם',
+        'ui.journey_empty': 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.',
+        'ui.journey_label': 'מה כבר בחרתם',
+        'ui.category_hint_electricity': 'תיקוני חשמל, לוחות ותאורה',
+        'ui.category_hint_plumbing': 'נזילות, פתיחת סתימות, התקנות',
+        'ui.category_hint_painting': 'צביעת דירות, קירות מיוחדים',
+        'ui.category_hint_renovation': 'שיפוצים, גבס, עבודות גמר',
+        'ui.category_hint_locksmith': 'פריצות והחלפת צילינדרים'
       };
       const steps = ['category', 'job', 'subtype', 'quote'];
+      const stageKeyMap = {
+        category: 'ui.progress_stage_category',
+        job: 'ui.progress_stage_job',
+        subtype: 'ui.progress_stage_subtype',
+        quote: 'ui.progress_stage_quote',
+        result: 'ui.progress_stage_result'
+      };
+      const categoryHintKeyMap = {
+        electricity: 'ui.category_hint_electricity',
+        plumbing: 'ui.category_hint_plumbing',
+        painting: 'ui.category_hint_painting',
+        renovation: 'ui.category_hint_renovation',
+        locksmith: 'ui.category_hint_locksmith'
+      };
       let activeBotBubble = null;
 
       function t(key){
@@ -127,15 +167,7 @@
         els.body.innerHTML = '';
         activeBotBubble = null;
       }
-      function scrollFeedToBottom(){
-        if (!els.body) return;
-        const scrollHeight = els.body.scrollHeight || 0;
-        if (typeof els.body.scrollTo === 'function'){
-          els.body.scrollTo({ top: scrollHeight, behavior: 'smooth' });
-        } else {
-          els.body.scrollTop = scrollHeight;
-        }
-      }
+
 
       function focusFirstInteractive(scope){
         if (!scope) return;
@@ -150,10 +182,19 @@
       }
 
       function ensureBubbleInView(bubble, shouldFocus){
-        if (!bubble) return;
+        if (!bubble || !els.body) return;
         requestAnimationFrame(() => {
-          if (typeof bubble.scrollIntoView === 'function'){
-            bubble.scrollIntoView({ block: 'end', behavior: 'smooth' });
+          if (typeof els.body.getBoundingClientRect === 'function'){
+            const containerRect = els.body.getBoundingClientRect();
+            const bubbleRect = bubble.getBoundingClientRect();
+            const offset = bubbleRect.top - containerRect.top - (containerRect.height * 0.15);
+            if (typeof els.body.scrollBy === 'function' && Math.abs(offset) > 1){
+              els.body.scrollBy({ top: offset, behavior: 'smooth' });
+            } else if (typeof bubble.scrollIntoView === 'function'){
+              bubble.scrollIntoView({ block: 'start', behavior: 'smooth' });
+            }
+          } else if (typeof bubble.scrollIntoView === 'function'){
+            bubble.scrollIntoView({ block: 'start', behavior: 'smooth' });
           }
           if (shouldFocus){
             focusFirstInteractive(bubble);
@@ -172,17 +213,13 @@
       }
 
       function appendBubble(bubble, options){
-
         if (!els.body || !bubble) return bubble;
         els.body.appendChild(bubble);
-        scrollFeedToBottom();
+
         const shouldFocus = options && Object.prototype.hasOwnProperty.call(options, 'focusInteractive')
           ? options.focusInteractive !== false
           : true;
-        const shouldEnsure = options && Object.prototype.hasOwnProperty.call(options, 'ensureVisible')
-          ? options.ensureVisible !== false
-          : true;
-        if (shouldEnsure){
+
         const shouldEnsure = options && Object.prototype.hasOwnProperty.call(options, 'ensureVisible')
           ? options.ensureVisible !== false
           : true;
@@ -191,10 +228,77 @@
         } else if (shouldFocus){
           focusFirstInteractive(bubble);
         }
-        } else if (shouldFocus){
-          focusFirstInteractive(bubble);
-        }
         return bubble;
+      }
+      function formatString(template, values){
+        if (!template) return '';
+        return template.replace(/\{(\w+)\}/g, (match, key) => {
+          if (!values || !Object.prototype.hasOwnProperty.call(values, key)){
+            return '';
+          }
+          const value = values[key];
+          return value === undefined || value === null ? '' : String(value);
+        });
+      }
+      function setProgressPrimary(text){
+        if (!els.progressPrimary) return;
+        els.progressPrimary.textContent = text || '';
+      }
+      function setProgressSecondary(text){
+        if (!els.progressSecondary) return;
+        els.progressSecondary.textContent = text || '';
+      }
+      function getStageLabel(stage){
+        const key = stageKeyMap[stage];
+        return key ? (t(key) || '') : '';
+      }
+      function getCategoryHint(id){
+        const key = categoryHintKeyMap[id];
+        return key ? (t(key) || '') : '';
+      }
+      function cleanLabel(text){
+        return text ? text.replace(/[:：]\s*$/, '') : '';
+      }
+      function updateJourney(){
+        if (!els.journey) return;
+        els.journey.innerHTML = '';
+        const selections = [];
+        if (state.categoryLabel){
+          selections.push({ label: cleanLabel(t('ui.field_label') || fallback['ui.field_label']), value: state.categoryLabel });
+        }
+        if (state.jobLabel){
+          selections.push({ label: cleanLabel(t('ui.job_label') || fallback['ui.job_label']), value: state.jobLabel });
+        }
+        if (state.subtypeLabel && state.subtypeLabel !== state.jobLabel){
+          selections.push({ label: cleanLabel(t('ui.where_label') || fallback['ui.where_label']), value: state.subtypeLabel });
+        }
+        if (!selections.length){
+          const empty = document.createElement('span');
+          empty.className = 'est-journey__empty';
+          empty.textContent = t('ui.journey_empty') || fallback['ui.journey_empty'];
+          els.journey.appendChild(empty);
+          return;
+        }
+        const label = document.createElement('span');
+        label.className = 'est-journey__label';
+        label.textContent = t('ui.journey_label') || fallback['ui.journey_label'];
+        els.journey.appendChild(label);
+        const list = document.createElement('div');
+        list.className = 'est-journey__list';
+        selections.forEach((item) => {
+          const pill = document.createElement('span');
+          pill.className = 'est-journey__item';
+          const labelEl = document.createElement('span');
+          labelEl.className = 'est-journey__item-label';
+          labelEl.textContent = item.label || '';
+          pill.appendChild(labelEl);
+          const valueEl = document.createElement('span');
+          valueEl.className = 'est-journey__item-value';
+          valueEl.textContent = item.value || '';
+          pill.appendChild(valueEl);
+          list.appendChild(pill);
+        });
+        els.journey.appendChild(list);
       }
 
       function appendBotBubble(content, options){
@@ -327,6 +431,7 @@
       function resetFlow(){
         resetState();
         updateProgress('category');
+        updateJourney();
         clearFeed();
         setBusy(false);
         renderOnboarding();
@@ -348,12 +453,16 @@
         btn.type = 'button';
         btn.className = 'est-chip';
         btn.dataset.value = option.id || option.value;
-        const searchSource = [option.label, option.value]
+        const searchSource = [option.label, option.value, option.hint]
+
           .filter(Boolean)
           .map(str => normalizeText(str))
           .join(' ')
           .trim();
         btn.dataset.search = searchSource;
+        if (option.hint){
+          btn.dataset.hint = option.hint;
+        }
         btn.setAttribute('role', 'listitem');
         btn.setAttribute('aria-pressed', 'false');
         btn.addEventListener('click', () => {
@@ -377,9 +486,19 @@
           iconEl.setAttribute('aria-hidden', 'true');
           btn.appendChild(iconEl);
         }
-        const span = document.createElement('span');
-        span.textContent = option.label || option.value;
-        btn.appendChild(span);
+        const textWrap = document.createElement('span');
+        textWrap.className = 'est-chip__text';
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'est-chip__label';
+        labelSpan.textContent = option.label || option.value;
+        textWrap.appendChild(labelSpan);
+        if (option.hint){
+          const hintSpan = document.createElement('span');
+          hintSpan.className = 'est-chip__hint';
+          hintSpan.textContent = option.hint;
+          textWrap.appendChild(hintSpan);
+        }
+        btn.appendChild(textWrap);
         return btn;
       }
       function filterQuickPick(term, items, options){
@@ -419,6 +538,7 @@
       function renderCategoryQuickPick(){
         const wrap = document.createElement('div');
         wrap.className = 'est-quickpick';
+        updateProgress('category', { label: t('ui.ask_category') || getStageLabel('category') });
         const heading = document.createElement('h2');
         heading.className = 'est-quickpick__title';
         heading.textContent = t('ui.ask_category');
@@ -475,7 +595,8 @@
             id: cat.id,
             value: cat.id,
             label: cat.label,
-            emoji: emojiMap[cat.id] || cat.emoji
+            emoji: emojiMap[cat.id] || cat.emoji,
+            hint: getCategoryHint(cat.id)
           };
           const chip = createChip(option, () => {
             handleCategoryPick(option);
@@ -509,18 +630,31 @@
         });
       }
 
-      function updateProgress(step){
+      function updateProgress(step, options){
         const index = steps.indexOf(step);
-        const percent = index < 0 ? 0 : (index / (steps.length - 1)) * 100;
+        const totalSteps = steps.length;
+        const progressIndex = index < 0 ? 0 : index;
+        const denominator = Math.max(totalSteps - 1, 1);
+        const percent = (progressIndex / denominator) * 100;
         if (els.progress){
           els.progress.setAttribute('aria-valuenow', String(Math.round(percent)));
           els.progress.style.setProperty('--progress', `${percent}%`);
         }
-        if (els.crumbs){
-          els.crumbs.forEach((crumb, idx) => {
-            crumb.classList.toggle('is-active', idx === index);
-            crumb.classList.toggle('is-complete', idx < index);
+        const desiredLabel = options && Object.prototype.hasOwnProperty.call(options, 'label')
+          ? options.label
+          : getStageLabel(step);
+        if (typeof desiredLabel === 'string'){
+          setProgressPrimary(desiredLabel);
+        }
+        if (options && typeof options.secondary === 'string'){
+          setProgressSecondary(options.secondary);
+        } else {
+          const counterTemplate = t('ui.progress_step_counter') || fallback['ui.progress_step_counter'] || '';
+          const counterText = formatString(counterTemplate, {
+            current: Math.max(1, progressIndex + 1),
+            total: totalSteps
           });
+          setProgressSecondary(counterText);
         }
       }
 
@@ -556,7 +690,8 @@
         state.resultNote = '';
         setActiveCategory(option.id);
         appendUserBubble(state.categoryLabel, emojiMap[option.id]);
-        updateProgress('job');
+        updateJourney();
+        updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
         loadJobs();
       }
 
@@ -564,7 +699,10 @@
         const node = makeLoadingNode(t(key) || key);
         appendBotBubble(node);
         setBusy(true);
-
+        const label = t(key) || key;
+        if (label){
+          setProgressPrimary(label);
+        }
       }
 
       function showError(key){
@@ -582,9 +720,20 @@
 
       function renderJobs(jobs){
         setBusy(false);
-
+        updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
         const wrap = document.createElement('div');
         wrap.className = 'est-botcard';
+        const totalQuestions = state.questions.length;
+        const progressOptions = { label: question.text || getStageLabel('quote') };
+        if (totalQuestions > 0){
+          const template = t('ui.progress_question_counter') || fallback['ui.progress_question_counter'] || '';
+          const questionNumber = Math.min(index + 1, totalQuestions);
+          const secondaryText = formatString(template, { current: questionNumber, total: totalQuestions });
+          if (secondaryText){
+            progressOptions.secondary = secondaryText;
+          }
+        }
+        updateProgress('quote', progressOptions);
         const title = document.createElement('h3');
         title.className = 'est-botcard__title';
         title.textContent = t('ui.choose_job');
@@ -619,6 +768,7 @@
 
       function renderSubtypes(subtypes){
         setBusy(false);
+        updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
 
         const wrap = document.createElement('div');
         wrap.className = 'est-botcard';
@@ -670,6 +820,7 @@
         });
         wrap.appendChild(button);
         appendBotBubble(wrap, { ensureVisible: false });
+        updateProgress('quote', { label: getStageLabel('quote') });
 
       }
 
@@ -730,14 +881,22 @@
           state.subtypeLabel = '';
           state.answers = {};
           state.questions = [];
-          updateProgress('job');
+          updateJourney();
+          updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
           loadJobs();
         });
         actions.appendChild(resetBtn);
         actions.appendChild(addBtn);
         wrap.appendChild(actions);
         replaceBotBubbleContent(wrap);
-        updateProgress('quote');
+        updateJourney();
+        const resultLabel = getStageLabel('result') || getStageLabel('quote');
+        const doneText = t('ui.progress_done') || fallback['ui.progress_done'] || '';
+        const progressOptions = { label: resultLabel };
+        if (doneText){
+          progressOptions.secondary = doneText;
+        }
+        updateProgress('quote', progressOptions);
       }
 
       function selectJob(job){
@@ -751,7 +910,8 @@
         state.questions = [];
         state.resultNote = '';
         appendUserBubble(state.jobLabel);
-        updateProgress('subtype');
+        updateJourney();
+        updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
         loadSubtypes();
       }
 
@@ -763,7 +923,8 @@
         state.answers = {};
         state.questions = [];
         appendUserBubble(state.subtypeLabel);
-        updateProgress('quote');
+        updateJourney();
+        updateProgress('quote', { label: getStageLabel('quote') });
         loadQuestions();
       }
 
@@ -788,7 +949,8 @@
           if (!subtypes.length){
             state.subtype = state.job;
             state.subtypeLabel = state.jobLabel;
-            updateProgress('quote');
+            updateJourney();
+            updateProgress('quote', { label: getStageLabel('quote') });
             loadQuestions();
             return;
           }
@@ -815,6 +977,7 @@
       }
       function renderQuestions(questions){
         setBusy(false);
+        updateProgress('quote', { label: getStageLabel('quote') });
 
         if (!questions.length){
           const wrap = document.createElement('div');

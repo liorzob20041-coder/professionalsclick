@@ -32,5 +32,22 @@
   "ui.range_label": "Ориентировочный диапазон цены:",
   "ui.subtitle": "Ответьте на несколько вопросов — мы рассчитаем ориентировочный ценовой диапазон по выбранной категории.",
   "ui.where_exactly": "Где именно?",
-  "ui.where_label": "Где:"
+  "ui.where_label": "Где:",
+  "ui.header_title": "Наш умный калькулятор стоимости",
+  "ui.header_tagline": "Ответьте на несколько коротких вопросов и получите персональный ценовой диапазон.",
+  "ui.progress_stage_category": "Выбираем категорию",
+  "ui.progress_stage_job": "Уточняем тип работы",
+  "ui.progress_stage_subtype": "Конкретизируем детали",
+  "ui.progress_stage_quote": "Отвечаем на пару точечных вопросов",
+  "ui.progress_stage_result": "Ваш ориентировочный диапазон",
+  "ui.progress_step_counter": "Шаг {current} из {total}",
+  "ui.progress_question_counter": "Вопрос {current} из {total}",
+  "ui.progress_done": "Готово",
+  "ui.journey_empty": "Вы ещё ничего не выбрали — начните с категории.",
+  "ui.journey_label": "Ваши выборы",
+  "ui.category_hint_electricity": "Ремонт, щиты, освещение",
+  "ui.category_hint_plumbing": "Протечки, засоры, монтаж",
+  "ui.category_hint_painting": "Покраска квартир, акцентные стены",
+  "ui.category_hint_renovation": "Ремонт, гипсокартон, отделка",
+  "ui.category_hint_locksmith": "Вскрытие, замена цилиндров"
 }

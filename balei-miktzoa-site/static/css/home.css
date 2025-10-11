@@ -1426,6 +1426,15 @@ html[dir="rtl"] .niche-rail {
   margin: 0 0 16px;
 }
 
+.niche-rail-wrap {
+  padding: 30px 0;
+}
+
+.niche-rail-wrap h2 {
+  text-align: center;
+  margin: 0 0 16px;
+}
+
 .feature-boxes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

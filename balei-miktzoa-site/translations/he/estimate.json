@@ -32,5 +32,22 @@
   "ui.range_label": "טווח מחיר משוער:",
   "ui.subtitle": "ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.",
   "ui.where_exactly": "איפה בדיוק?",
-  "ui.where_label": "איפה:"
+  "ui.where_label": "איפה:",
+  "ui.header_title": "מחשבון המחיר החכם שלנו",
+  "ui.header_tagline": "ענו על כמה שאלות קצרות וקבלו טווח מחיר שתפור בדיוק למה שאתם צריכים.",
+  "ui.progress_stage_category": "בוחרים תחום",
+  "ui.progress_stage_job": "בוחרים את סוג העבודה",
+  "ui.progress_stage_subtype": "מדייקים את סוג העבודה",
+  "ui.progress_stage_quote": "עונים על כמה שאלות ממוקדות",
+  "ui.progress_stage_result": "הנה הטווח המשוער שלכם",
+  "ui.progress_step_counter": "שלב {current} מתוך {total}",
+  "ui.progress_question_counter": "שאלה {current} מתוך {total}",
+  "ui.progress_done": "החישוב הושלם",
+  "ui.journey_empty": "עוד לא בחרתם כלום — נתחיל בבחירת תחום.",
+  "ui.journey_label": "מה כבר בחרתם",
+  "ui.category_hint_electricity": "תיקוני חשמל, לוחות ותאורה",
+  "ui.category_hint_plumbing": "נזילות, פתיחת סתימות, התקנות",
+  "ui.category_hint_painting": "צביעת דירות, קירות מיוחדים",
+  "ui.category_hint_renovation": "שיפוצים, גבס, עבודות גמר",
+  "ui.category_hint_locksmith": "פריצות והחלפת צילינדרים"
 }

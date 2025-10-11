@@ -32,5 +32,22 @@
   "ui.range_label": "Estimated price range:",
   "ui.subtitle": "Answer a few short questions and we’ll estimate a price range for your chosen field.",
   "ui.where_exactly": "Where exactly?",
-  "ui.where_label": "Where:"
+  "ui.where_label": "Where:",
+  "ui.header_title": "Our smart price calculator",
+  "ui.header_tagline": "Answer a few quick questions and get a tailored price range in seconds.",
+  "ui.progress_stage_category": "Choose a field",
+  "ui.progress_stage_job": "Pick the type of job",
+  "ui.progress_stage_subtype": "Refine the job details",
+  "ui.progress_stage_quote": "Answer a few focused questions",
+  "ui.progress_stage_result": "Here’s your estimated range",
+  "ui.progress_step_counter": "Step {current} of {total}",
+  "ui.progress_question_counter": "Question {current} of {total}",
+  "ui.progress_done": "All done",
+  "ui.journey_empty": "Nothing selected yet — start by choosing a field.",
+  "ui.journey_label": "Selections so far",
+  "ui.category_hint_electricity": "Repairs, panels, lighting",
+  "ui.category_hint_plumbing": "Leaks, clogs, installations",
+  "ui.category_hint_painting": "Apartment painting, feature walls",
+  "ui.category_hint_renovation": "Renovations, drywall, finishing",
+  "ui.category_hint_locksmith": "Emergency entry, cylinder replacement"
 }

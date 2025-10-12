@@ -1,9 +1,9 @@
 ﻿:root {
   --primary: #8b1d3f;
   --primary-rgb: 139 29 63;
-  --accent: #f6eaed;
-  --accent-rgb: 246 234 237;
-  --bg: #fbf7f8;
+  --accent: #f2dce3;
+  --accent-rgb: 242 220 227;
+  --bg: #ffffff;
   --ink: #1f1a1c;
   --muted: #6a5a61;
   --surface: #ffffff;
@@ -50,6 +50,16 @@ main, section, article { direction: rtl; }
   display: flex;
   flex-direction: column;
   gap: clamp(18px, 4vw, 32px);
+  position: relative;
+  z-index: 0;
+}
+.est-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  z-index: -1;
 }
 
 /* Hero */

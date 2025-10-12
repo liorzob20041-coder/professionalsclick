@@ -49,6 +49,7 @@ main, section, article { direction: rtl; }
   padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 28px) clamp(40px, 6vw, 72px);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: clamp(18px, 4vw, 32px);
   position: relative;
   z-index: 0;
@@ -228,63 +229,101 @@ main, section, article { direction: rtl; }
 .est-shell__meta .est-progress::before {
   background: linear-gradient(90deg, #f06292, var(--primary));
 }
-.est-progress--compact {
+.est-progressboard {
+  position: relative;
+  padding-block-start: clamp(38px, 7vw, 48px);
+}
+.est-progressboard .est-progress {
+  position: absolute;
+  inset-inline: 0;
+  top: clamp(18px, 4vw, 24px);
   height: 6px;
+  background: rgba(var(--primary-rgb) / 0.16);
 }
-.est-progresspin {
-  position: fixed;
-  inset-inline: clamp(16px, 6vw, 72px);
-  top: calc(env(safe-area-inset-top, 0px) + var(--progress-pin-offset, calc(var(--site-header-height, 72px) + 16px)));
-  z-index: 1200;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-16px);
-  transition: opacity var(--transition), transform var(--transition);
+.est-progressboard .est-progress::before {
+  background: linear-gradient(90deg, #f06292, var(--primary));
 }
-.est-progresspin.is-active {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
+.est-stepper {
+  --step-count: 4;
+  display: grid;
+  grid-template-columns: repeat(var(--step-count), minmax(0, 1fr));
+  gap: clamp(12px, 3vw, 22px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.est-progresspin__inner {
-  pointer-events: auto;
-  backdrop-filter: blur(14px);
-  background: rgba(var(--primary-rgb) / 0.9);
-  color: #fff;
-  border-radius: clamp(16px, 3vw, 22px);
-  box-shadow: 0 18px 38px rgba(31, 26, 28, 0.24);
-  padding: clamp(12px, 3vw, 18px) clamp(16px, 4vw, 24px);
-  width: min(360px, calc(100vw - clamp(48px, 12vw, 160px)));
+.est-stepper__item {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
+  text-align: center;
+  min-width: 0;
 }
-.est-progresspin__meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-.est-progresspin__primary {
-  font-weight: 700;
-  font-size: clamp(14px, 2.8vw, 16px);
-}
-.est-progresspin__secondary {
-  font-size: clamp(11px, 2.4vw, 13px);
-  opacity: 0.85;
-}
-.est-progresspin .est-progress {
-  background: rgba(255, 255, 255, 0.28);
-} 
-.est-progresspin .est-progress::before {
+.est-stepper__bullet {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(32px, 6vw, 40px);
+  height: clamp(32px, 6vw, 40px);
+  border-radius: 50%;
+  border: 2px solid rgba(var(--primary-rgb) / 0.35);
   background: #fff;
+  color: rgba(var(--primary-rgb) / 0.7);
+  font-weight: 700;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
-@media (max-width: 600px) {
-  .est-progresspin {
-    inset-inline: clamp(12px, 4vw, 24px);
+.est-stepper__bullet::before {
+  content: attr(data-step-index);
+}
+.est-stepper__item.is-active .est-stepper__bullet {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 14px 26px rgba(var(--primary-rgb) / 0.28);
+  transform: translateY(-2px);
+}
+.est-stepper__item.is-complete .est-stepper__bullet {
+  border-color: rgba(var(--primary-rgb) / 0.6);
+  background: rgba(var(--primary-rgb) / 0.16);
+  color: transparent;
+}
+.est-stepper__item.is-complete .est-stepper__bullet::before {
+  content: '✓';
+  color: rgba(var(--primary-rgb) / 0.95);
+  font-size: clamp(14px, 2.4vw, 16px);
+}
+.est-stepper__label {
+  font-size: clamp(12px, 2.8vw, 14px);
+  color: rgba(var(--primary-rgb) / 0.7);
+  line-height: 1.5;
+  min-height: 2.6em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-inline: clamp(4px, 1.4vw, 10px);
+}
+.est-stepper__item.is-active .est-stepper__label {
+  color: var(--ink);
+  font-weight: 700;
+}
+.est-stepper__item.is-complete .est-stepper__label {
+  color: rgba(var(--primary-rgb) / 0.85);
+}
+@media (max-width: 640px) {
+  .est-progressboard {
+    padding-block-start: clamp(44px, 11vw, 58px);
   }
-  .est-progresspin__inner {
-    width: min(320px, calc(100vw - clamp(24px, 8vw, 64px)));
+  .est-progressboard .est-progress {
+    top: clamp(20px, 6vw, 28px);
+  }
+  .est-stepper {
+    gap: clamp(10px, 4vw, 18px);
+  }
+  .est-stepper__label {
+    min-height: unset;
   }
 }
 .est-journey {

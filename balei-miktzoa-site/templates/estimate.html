@@ -15,6 +15,12 @@
     {"id": "painting", "emoji": "\U0001F58C\uFE0E", "label": t.get('categories.painting', 'צביעה')},
     {"id": "renovation", "emoji": "\U0001F6E0\uFE0E", "label": t.get('categories.renovation', 'שיפוצים')}
   ] %}
+  {% set progress_steps = [
+    {"id": "category", "label": t.get('ui.progress_stage_category', 'בוחרים תחום')},
+    {"id": "job", "label": t.get('ui.progress_stage_job', 'בוחרים את סוג העבודה')},
+    {"id": "subtype", "label": t.get('ui.progress_stage_subtype', 'מדייקים את סוג העבודה')},
+    {"id": "quote", "label": t.get('ui.progress_stage_quote', 'עונים על כמה שאלות ממוקדות')}
+  ] %}
   <section class="est-page" aria-label="מחשבון הצעת מחיר">
 
     {% set header_prefix = t.get('ui.header_title_prefix', 'קבלו הערכת מחיר') %}
@@ -32,13 +38,24 @@
     <div class="est-shell">
       <div class="est-shell__card">
         <div class="est-shell__meta">
-          <div class="est-progresswrap" data-est-progress-wrap>
+          <div class="est-progresswrap">
             <div class="est-progress__meta">
               <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
               <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
             </div>
-            <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-              <div class="est-progress__bar"></div>
+            <div class="est-progressboard">
+              <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
+                <div class="est-progress__bar"></div>
+              </div>
+              <ol class="est-stepper" role="list" style="--step-count: {{ progress_steps|length }}">
+                {% for step in progress_steps %}
+                  <li class="est-stepper__item{% if loop.first %} is-active{% endif %}"
+                      data-est-progress-step="{{ step.id }}"{% if loop.first %} aria-current="step"{% endif %}>
+                    <span class="est-stepper__bullet" aria-hidden="true" data-step-index="{{ loop.index }}"></span>
+                    <span class="est-stepper__label" data-est-progress-label data-default-label="{{ step.label }}">{{ step.label }}</span>
+                  </li>
+                {% endfor %}
+              </ol>
             </div>
           </div>
           <div class="est-journey" data-est-journey>
@@ -48,17 +65,6 @@
         <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
           <div class="est-convo__body" data-est-body aria-live="polite"></div>
         </section>
-      </div>
-    </div>
-    <div class="est-progresspin" data-est-progress-pin aria-hidden="true">
-      <div class="est-progresspin__inner">
-        <div class="est-progresspin__meta">
-          <span class="est-progresspin__primary" data-est-progress-primary></span>
-          <span class="est-progresspin__secondary" data-est-progress-secondary></span>
-        </div>
-        <div class="est-progress est-progress--compact" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-          <div class="est-progress__bar"></div>
-        </div>
       </div>
     </div>
 
@@ -93,9 +99,8 @@
         progress: Array.from(document.querySelectorAll('[data-est-progress]')),
         progressPrimary: Array.from(document.querySelectorAll('[data-est-progress-primary]')),
         progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
-        journey: document.querySelector('[data-est-journey]'),
-        progressWrap: document.querySelector('[data-est-progress-wrap]'),
-        progressPin: document.querySelector('[data-est-progress-pin]')
+        progressSteps: Array.from(document.querySelectorAll('[data-est-progress-step]')),
+        journey: document.querySelector('[data-est-journey]')
       };
       const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
       const state = {
@@ -284,53 +289,7 @@
           }
         });
       }
-      function getProgressPinOffset(){
-        const root = document.documentElement;
-        if (!root || !window.getComputedStyle){
-          return 88;
-        }
-        const styles = window.getComputedStyle(root);
-        const base = parseFloat(styles.getPropertyValue('--site-header-height'));
-        const fallback = Number.isFinite(base) ? base : 72;
-        return Math.max(0, Math.round(fallback + 16));
-      }
-      function setupProgressPin(){
-        const pin = els.progressPin;
-        const progressWrap = els.progressWrap;
-        if (!pin || !progressWrap || typeof progressWrap.getBoundingClientRect !== 'function'){
-          return;
-        }
-        function applyOffset(){
-          const offset = getProgressPinOffset();
-          pin.style.setProperty('--progress-pin-offset', `${offset}px`);
-          return offset;
-        }
-        let currentOffset = applyOffset();
-        let active = false;
-        function evaluate(){
-          if (typeof progressWrap.getBoundingClientRect !== 'function'){
-            return;
-          }
-          const rect = progressWrap.getBoundingClientRect();
-          const shouldShow = rect.top <= currentOffset;
-          if (shouldShow === active){
-            return;
-          }
-          active = shouldShow;
-          pin.classList.toggle('is-active', shouldShow);
-          pin.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-        }
-        const onScroll = () => window.requestAnimationFrame(evaluate);
-        const onResize = () => {
-          window.requestAnimationFrame(() => {
-            currentOffset = applyOffset();
-            evaluate();
-          });
-        };
-        evaluate();
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onResize);
-      }
+
       function getStageLabel(stage){
         const key = stageKeyMap[stage];
         return key ? (t(key) || '') : '';
@@ -744,6 +703,30 @@
           });
           setProgressSecondary(counterText);
         }
+        if (els.progressSteps && els.progressSteps.length){
+          els.progressSteps.forEach((stepEl) => {
+            if (!stepEl) return;
+            const stepName = stepEl.getAttribute('data-est-progress-step');
+            const stepIndex = steps.indexOf(stepName);
+            const labelEl = stepEl.querySelector('[data-est-progress-label]');
+            const defaultLabel = labelEl ? labelEl.getAttribute('data-default-label') : '';
+            const isCurrent = stepIndex === progressIndex;
+            const isComplete = stepIndex > -1 && stepIndex < progressIndex;
+            stepEl.classList.toggle('is-active', isCurrent);
+            stepEl.classList.toggle('is-complete', isComplete);
+            if (isCurrent){
+              stepEl.setAttribute('aria-current', 'step');
+              if (labelEl && typeof desiredLabel === 'string'){
+                labelEl.textContent = desiredLabel;
+              }
+            } else {
+              stepEl.removeAttribute('aria-current');
+              if (labelEl && typeof defaultLabel === 'string'){
+                labelEl.textContent = defaultLabel;
+              }
+            }
+          });
+        }
       }
 
       function renderOnboarding(){
@@ -1145,7 +1128,6 @@
           showError('ui.err_quote');
         });
       }
-      setupProgressPin();
       resetFlow();
     })();
   </script>

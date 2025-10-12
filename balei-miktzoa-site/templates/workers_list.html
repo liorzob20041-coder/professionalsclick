@@ -178,6 +178,7 @@
     {% set city_search_label = _city_search_label_map.get(g.current_lang, _city_search_label_map['he']) %}
     {% set city_empty_state = _city_list_empty_map.get(g.current_lang, _city_list_empty_map['he']) %}
     {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
+    {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set close_label = (_('close') if _ else 'סגור') %}
 
     <nav class="crumbs-min" aria-label="ניווט משני">
@@ -368,7 +369,10 @@
                       {% endif %}
                       {% set langs = w.languages or [] %}
                       {% if langs %}
-                        <div class="meta-langs" aria-label="שפות שירות">
+                        {% set lang_badge_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
+                        {% set lang_badge_title = langs|join(', ') %}
+                        <div class="meta-langs" aria-label="{{ lang_badge_label }}" title="{{ lang_badge_title }}">
+                          <span class="sr-only">{{ lang_badge_label }}:</span>
                           {% for L in langs[:2] %}
                             <span class="badge-lang">{{ L }}</span>
                           {% endfor %}
@@ -448,16 +452,8 @@
                     </div>
                   {% endif %}
 
-                  {% set lang_list = w.languages or [] %}
-
-                  {% if lang_list %}
-                    <div class="lang-row">
-                      <i class="fa-solid fa-language icon fa-fw" aria-hidden="true"></i>
-                      <span class="lang-row__label">שפות:</span>
-                      <span class="lang-row__values">{{ ' • '.join(lang_list) }}</span>
-                    </div>
-                  {% endif %}
                   {% set bio_short = (w.bio_short or w.description) %}
+
                   {% if bio_short %}
                     <p class="card-bio">{{ bio_short }}</p>
                   {% endif %}

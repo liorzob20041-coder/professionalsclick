@@ -1156,56 +1156,7 @@ body {
     gap: calc(var(--worker-card-section-gap) * 0.75);
   }
 }
-.lang-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: calc(var(--worker-card-section-gap) * 0.75);
-  margin: calc(var(--worker-card-section-gap) * 0.5) 0;
-  color: #444;
-  font-size: 0.95em;
-}
-.lang-row__label {
-  font-weight: 700;
-}
-.lang-row__values {
-  font-weight: 600;
-}
 
-.lang-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: calc(var(--worker-card-section-gap) * 0.75);
-  margin: calc(var(--worker-card-section-gap) * 0.5) 0;
-  color: #444;
-  font-size: 0.95em;
-}
-.lang-row__label {
-  font-weight: 700;
-}
-.lang-row__values {
-  font-weight: 600;
-}
-
-.icon {
-  font-size: 0.95em;
-  margin-inline-end: calc(var(--worker-card-section-gap) * 0.75);
-  vertical-align: -1px;
-  color: #4b5563;
-}
-
-.icon--accent {
-  color: var(--brand-500);
-}
-
-.icon--success {
-  color: var(--icon-good);
-}
-
-.icon--danger {
-  color: var(--icon-bad);
-}
 
 /* Rating */
 .rating {

@@ -17,39 +17,39 @@
   ] %}
   <section class="est-page" aria-label="מחשבון הצעת מחיר">
 
-    <header class="est-header" data-est-header>
-      {% set header_prefix = t.get('ui.header_title_prefix', 'קבלו הערכת מחיר') %}
-      {% set header_highlight = t.get('ui.header_title_highlight', 'מדויקת') %}
-      {% set header_suffix = t.get('ui.header_title_suffix', 'תוך דקות') %}
-      <div class="est-header__inner">
-        <div class="est-header__intro">
-          <h1 class="est-header__title">
-            {{ header_prefix }} <span class="est-header__highlight">{{ header_highlight }}</span> {{ header_suffix }}
-
-          </h1>
-          <p class="est-header__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות קצרות וקבלו טווח מחיר משוער מבוסס על נתונים ריאליים של אלפי פרויקטים') }}</p>
-        </div>
+    {% set header_prefix = t.get('ui.header_title_prefix', 'קבלו הערכת מחיר') %}
+    {% set header_highlight = t.get('ui.header_title_highlight', 'מדויקת') %}
+    {% set header_suffix = t.get('ui.header_title_suffix', 'תוך דקות') %}
+    <header class="est-hero" data-est-header>
+      <span class="est-hero__badge">{{ t.get('ui.header_badge', 'מחשבון מחיר מדויק') }}</span>
+      <h1 class="est-hero__title">
+        {{ header_prefix }} <span class="est-hero__highlight">{{ header_highlight }}</span> {{ header_suffix }}
+      </h1>
+      <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות קצרות וקבלו טווח מחיר משוער מבוסס על נתונים ריאליים של אלפי פרויקטים') }}</p>
+    </header>
 
 
-        <div class="est-header__panel">
-          <div class="est-header__panel-card">
-            <div class="est-progresswrap" data-est-progress-wrap>
-              <div class="est-progress__meta">
-                <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
-                <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
-              </div>
-              <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-                <div class="est-progress__bar"></div>
-              </div>
+    <div class="est-shell">
+      <div class="est-shell__card">
+        <div class="est-shell__meta">
+          <div class="est-progresswrap" data-est-progress-wrap>
+            <div class="est-progress__meta">
+              <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
+              <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
             </div>
-            <div class="est-journey" data-est-journey>
-              <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
+            <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
+              <div class="est-progress__bar"></div>
             </div>
           </div>
+          <div class="est-journey" data-est-journey>
+            <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
+          </div>
         </div>
+        <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
+          <div class="est-convo__body" data-est-body aria-live="polite"></div>
+        </section>
       </div>
-
-    </header>
+    </div>
     <div class="est-progresspin" data-est-progress-pin aria-hidden="true">
       <div class="est-progresspin__inner">
         <div class="est-progresspin__meta">
@@ -61,11 +61,7 @@
         </div>
       </div>
     </div>
-    <section class="est-layout">
-      <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
-        <div class="est-convo__body" data-est-body aria-live="polite"></div>
-      </section>
-    </section>
+
   </section>
 
   <script id="est-i18n" type="application/json">{{ t|tojson }}</script>

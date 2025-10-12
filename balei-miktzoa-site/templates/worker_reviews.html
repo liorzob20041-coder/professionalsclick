@@ -90,9 +90,19 @@
           <div class="worker-hero-badges" role="list" aria-label="תגיות">
             {% if worker.verified %}<span class="worker-badge worker-badge--verified" role="listitem">מאומת</span>{% endif %}
             {% if worker.years %}<span class="worker-badge worker-badge--years" role="listitem">{{ worker.years }} שנות ניסיון</span>{% endif %}
-            {% if worker.languages %}<span class="worker-badge worker-badge--lang" role="listitem">{{ worker.languages|join(' • ') }}</span>{% endif %}
           </div>
-
+          {% if worker.languages %}
+            {% set _langs_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
+            {% set langs_label = _langs_map.get(g.current_lang, _langs_map['he']) %}
+            <div class="langs-block" aria-label="{{ langs_label }}">
+              <div class="label">{{ langs_label }}</div>
+              <div class="langs">
+                {% for L in worker.languages %}
+                  <span class="badge-lang">{{ L }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
           <!-- כרטיס דירוג – נשאר לדסקטופ, במובייל מוסתר ב-CSS -->
           <div class="hero-rating-card" aria-label="דירוג ממוצע">
             <div class="hero-rating-main">

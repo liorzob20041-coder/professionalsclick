@@ -266,9 +266,12 @@
       {% if request.args.get('verified') %}{% set _ = active.append('מאומתים') %}{% endif %}
       {% if request.args.get('rating_4p') %}{% set _ = active.append('4★+') %}{% endif %}
       {% if request.args.get('nearby_5km') %}{% set _ = active.append('עד 5 ק״מ') %}{% endif %}
-      {% if request.args.get('lang_he') %}{% set _ = active.append('עברית') %}{% endif %}
-      {% if request.args.get('lang_en') %}{% set _ = active.append('English') %}{% endif %}
-      {% if request.args.get('lang_ru') %}{% set _ = active.append('Русский') %}{% endif %}
+      {% set selected_langs = selected_languages if selected_languages is defined else [] %}
+      {% for lang_option in (selected_langs|unique) %}
+        {% if language_choices is not defined or lang_option in language_choices %}
+          {% set _ = active.append(lang_option) %}
+        {% endif %}
+      {% endfor %}
 
       {% if active|length %}
         <div class="chips-scroll" aria-label="מסננים פעילים">
@@ -362,6 +365,17 @@
                       {% endif %}
                       {% if w.offers_emergency %}
                         <span class="worker-badge worker-badge--emergency">24/7</span>
+                      {% endif %}
+                      {% set langs = w.languages or [] %}
+                      {% if langs %}
+                        <div class="meta-langs" aria-label="שפות שירות">
+                          {% for L in langs[:2] %}
+                            <span class="badge-lang">{{ L }}</span>
+                          {% endfor %}
+                          {% if langs|length > 2 %}
+                            <span class="badge-lang">+{{ langs|length - 2 }}</span>
+                          {% endif %}
+                        </div>
                       {% endif %}
                     </div>
                   </div>
@@ -500,8 +514,8 @@
       <div class="drawer-body">
         {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
         <form method="get" action="{{ list_url }}" class="filters-form" id="filtersForm">
-          {% set _filter_keys = ['open_now','verified','rating_4p','nearby_5km','lang_he','lang_en','lang_ru','page','sort'] %}
-          {% for k, v in request.args.items() if k not in _filter_keys %}
+          {% set _filter_keys = ['open_now','verified','rating_4p','nearby_5km','lang','page','sort'] %}
+          {% for k, v in request.args.items(multi=True) if k not in _filter_keys %}
             <input type="hidden" name="{{ k }}" value="{{ v }}">
           {% endfor %}
           <fieldset class="filter-group">
@@ -511,12 +525,19 @@
             <label class="check"><input type="checkbox" name="rating_4p" value="1" {{ 'checked' if request.args.get('rating_4p') else '' }}> 4★+</label>
             <label class="check"><input type="checkbox" name="nearby_5km" value="1" {{ 'checked' if request.args.get('nearby_5km') else '' }}> עד 5 ק״מ</label>
           </fieldset>
+          {% set _lang_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
+          {% set langs_filter_label = _lang_label_map.get(g.current_lang, _lang_label_map['he']) %}
+          {% set selected_langs = selected_languages if selected_languages is defined else [] %}
           <fieldset class="filter-group">
-            <legend class="sr-only">שפה</legend>
-            <div class="checks-grid">
-              <label class="check"><input type="checkbox" name="lang_he" value="1" {{ 'checked' if request.args.get('lang_he') else '' }}> עברית</label>
-              <label class="check"><input type="checkbox" name="lang_en" value="1" {{ 'checked' if request.args.get('lang_en') else '' }}> English</label>
-              <label class="check"><input type="checkbox" name="lang_ru" value="1" {{ 'checked' if request.args.get('lang_ru') else '' }}> Русский</label>
+            <legend class="filter-group__legend">{{ langs_filter_label }}</legend>
+            <div class="filters-langs">
+              {% for opt in language_choices %}
+                {% set checked = opt in selected_langs %}
+                <label>
+                  <input type="checkbox" name="lang" value="{{ opt }}" {% if checked %}checked{% endif %}>
+                  <span class="badge-lang">{{ opt }}</span>
+                </label>
+              {% endfor %}
             </div>
           </fieldset>
           <div class="filters-actions">

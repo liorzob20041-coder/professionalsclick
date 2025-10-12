@@ -463,6 +463,47 @@ html[dir="ltr"] .language-switcher {
   background: #e0e0e0;
 }
 
-
+.badge-lang {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--muted, #ddd);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-inline-end: 6px;
+  background: var(--bg, #fff);
+}
+.meta-langs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.langs-block {
+  margin-top: 12px;
+}
+.langs-block .label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.langs-block .langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filters-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filters-langs label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.filters-langs input[type="checkbox"] {
+  margin: 0;
+}
 
 

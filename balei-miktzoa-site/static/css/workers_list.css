@@ -1517,7 +1517,6 @@ select:focus-visible,
   flex-direction: column;
   gap: 12px;
 }
-
 .filter-group {
   margin: 0;
   padding: 10px 12px;
@@ -1525,6 +1524,12 @@ select:focus-visible,
   border-radius: 12px;
   background: linear-gradient(180deg, #fff, rgb(var(--brand-50-rgb), 0.55));
   box-shadow: 0 2px 10px rgb(var(--brand-700-rgb), 0.05);
+}
+.filter-group__legend {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
 .check {

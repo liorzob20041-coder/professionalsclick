@@ -2454,6 +2454,15 @@ def show_workers(lang, field, area):
     else:
         workers = [w for w in all_workers if w.get('field') == search_field]
 
+    for w in workers:
+        ensure_worker_languages(w)
+
+    requested_langs = request.args.getlist('lang')
+    selected_langs = normalize_worker_languages(requested_langs, default=[])
+    wanted_langs = set(selected_langs)
+    if wanted_langs:
+        workers = [w for w in workers if wanted_langs & set(w.get('languages', []))]
+
     # הכנה לזמינות
     now = datetime.now()
     current_day = now.weekday()
@@ -2470,7 +2479,6 @@ def show_workers(lang, field, area):
 
     # עיבוד נתונים לתצוגה
     for w in workers:
-        ensure_worker_languages(w)
         # זמינות עכשיו
         is_available = False
         for block in w.get('work_blocks', []):
@@ -2536,6 +2544,29 @@ def show_workers(lang, field, area):
                 except ValueError:
                     latest_rating_val = None
         w['latest_review_rating'] = latest_rating_val
+
+    ui_lang_to_label = {"he": "עברית", "en": "אנגלית", "ru": "רוסית"}
+    ui_label = ui_lang_to_label.get(lang)
+
+    def _score_worker(w):
+        base = 0.0
+        rating_val = w.get('rating')
+        if rating_val is not None:
+            try:
+                base += float(rating_val) * 10.0
+            except (TypeError, ValueError):
+                pass
+        reviews_count = w.get('reviews_count')
+        if reviews_count:
+            try:
+                base += min(float(reviews_count), 100.0) * 0.1
+            except (TypeError, ValueError):
+                pass
+        if ui_label and ui_label in (w.get('languages') or []):
+            base += 2.0
+        return base
+
+    workers.sort(key=_score_worker, reverse=True)
 
     # --- Labels לתצוגה בשפת ה-UI ---
     def _label_field(he_value, lang_code):
@@ -2716,7 +2747,9 @@ def show_workers(lang, field, area):
         meta_title=meta_title,
         meta_description=meta_description,
         meta_image=meta_image,
-        structured_data_json=structured_data_json
+        structured_data_json=structured_data_json,
+        language_choices=WORKER_LANGUAGE_CHOICES,
+        selected_languages=selected_langs
     )
 
 

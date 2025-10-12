@@ -9,6 +9,7 @@
 
 {% block content %}
   {% set t = i18n_est or {} %}
+  {% set contact_url = url_for('contact', lang=g.current_lang or 'he') %}
   {% set categories = [
     {"id": "electricity", "emoji": "\u26A1\uFE0E", "label": t.get('categories.electricity', 'חשמל')},
     {"id": "plumbing", "emoji": "\U0001F6B0\uFE0E", "label": t.get('categories.plumbing', 'אינסטלציה')},
@@ -35,7 +36,7 @@
     </header>
 
 
-    <div class="est-shell">
+    <div class="est-shell" data-est-contact="{{ contact_url }}">
       <div class="est-shell__card">
         <div class="est-shell__meta">
           <div class="est-progresswrap">
@@ -67,7 +68,37 @@
         </section>
       </div>
     </div>
-
+    <section class="est-content" aria-labelledby="est-info-heading">
+      <div class="est-content__block">
+        <h2 class="est-content__title" id="est-info-heading">איך המחשבון עובד?</h2>
+        <p class="est-content__text">
+          המחשבון החכם שלנו מוביל אתכם שלב אחר שלב, שואל שאלות קצרות ומחשב טווחי מחיר אמיתיים בהתבסס על פרויקטים דומים.
+          בכל שלב אפשר לעדכן תשובות, להוסיף עבודות נוספות ולשמור על שליטה מלאה בתהליך.
+        </p>
+        <ul class="est-content__list">
+          <li>הנחיה מותאמת אישית בשפה פשוטה וברורה.</li>
+          <li>תמיכה מלאה בכתיבה מימין לשמאל ובמובייל.</li>
+          <li>תוצאה מיידית שניתן לשתף או לשמור להמשך.</li>
+        </ul>
+      </div>
+      <div class="est-content__block" aria-labelledby="est-faq-heading">
+        <h2 class="est-content__title" id="est-faq-heading">שאלות נפוצות</h2>
+        <div class="est-faq">
+          <article class="est-faq__item">
+            <h3 class="est-faq__question">כמה מדויקת התוצאה?</h3>
+            <p class="est-faq__answer">הטווחים מחושבים לפי נתונים אמיתיים ומעודכנים, אך תמיד כדאי לבצע שיחה קצרה עם מומחה לפני התחייבות סופית.</p>
+          </article>
+          <article class="est-faq__item">
+            <h3 class="est-faq__question">אפשר לשנות תשובות באמצע?</h3>
+            <p class="est-faq__answer">בוודאי. אם תרצו לעדכן בחירות, התחילו חישוב חדש או הוסיפו עבודה נוספת כדי לראות תרחישים נוספים.</p>
+          </article>
+          <article class="est-faq__item">
+            <h3 class="est-faq__question">מה קורה אחרי שקיבלתי תוצאה?</h3>
+            <p class="est-faq__answer">לחצו על כפתור יצירת הקשר, ספרו לנו על הפרויקט ונחבר אתכם לבעל המקצוע המדויק ביותר.</p>
+          </article>
+        </div>
+      </div>
+    </section>
   </section>
 
   <script id="est-i18n" type="application/json">{{ t|tojson }}</script>
@@ -101,6 +132,9 @@
         progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
         progressSteps: Array.from(document.querySelectorAll('[data-est-progress-step]')),
         journey: document.querySelector('[data-est-journey]')
+      };
+      const config = {
+        contactUrl: document.querySelector('[data-est-contact]')?.getAttribute('data-est-contact') || ''
       };
       const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
       const state = {
@@ -139,6 +173,18 @@
         'ui.no_jobs': 'לא נמצאו עבודות זמינות לתחום שנבחר.',
         'ui.no_subtypes': 'אין תתי-סוג זמינים לעבודה הזו.',
         'ui.add_job_btn': 'הוספת עבודה נוספת',
+        'ui.reset_btn': 'התחילו חישוב חדש',
+        'ui.meta_ready_pick': 'מוכנים? בחרו תחום כדי שנתחיל.',
+        'ui.meta_category_selected': 'התחום כבר נבחר. בואו נמשיך.',
+        'ui.meta_restart': 'מתחילים מחדש את החישוב.',
+        'ui.meta_add_job': 'בוחרים עבודה נוספת לאותו תחום.',
+        'ui.result_cta_label': 'דברו עם מומחה להתאמת בעל מקצוע',
+        'ui.result_cta_secondary': 'נשמור עבורכם את הטווח ונחזור עם הצעה מדויקת.',
+        'ui.result_chart_heading': 'איך הטווח שלכם נראה במספרים',
+        'ui.result_chart_note': 'התרשים מבוסס על הטווח שחישבנו עבורכם.',
+        'ui.result_chart_columns_min': 'טווח נמוך',
+        'ui.result_chart_columns_mid': 'אמצע הטווח',
+        'ui.result_chart_columns_max': 'טווח גבוה',
         'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.',
         'ui.header_title': 'קבלו הערכת מחיר מדויקת תוך דקות',
         'ui.header_title_prefix': 'קבלו הערכת מחיר',
@@ -183,7 +229,13 @@
         locksmith: 'ui.category_hint_locksmith'
       };
       let activeBotBubble = null;
-
+      const currencyFormatter = (typeof Intl !== 'undefined' && Intl.NumberFormat)
+        ? new Intl.NumberFormat(lang === 'he' ? 'he-IL' : 'en-US', {
+            style: 'currency',
+            currency: 'ILS',
+            maximumFractionDigits: 0
+          })
+        : null;
       function t(key){
         return Object.prototype.hasOwnProperty.call(i18n, key) ? i18n[key] : (fallback[key] || '');
       }
@@ -194,6 +246,37 @@
         } else {
           els.body.removeAttribute('aria-busy');
         }
+      }
+      function parseAmount(value){
+        if (typeof value === 'number' && Number.isFinite(value)){
+          return value;
+        }
+        if (typeof value === 'string'){
+          const normalized = value
+            .replace(/[^0-9,.-]/g, '')
+            .replace(/,(?=\d{3}\b)/g, '')
+            .replace(/,/g, '.');
+          const numeric = Number(normalized);
+          return Number.isFinite(numeric) ? numeric : NaN;
+        }
+        return NaN;
+      }
+      function formatCurrencyValue(value){
+        if (!Number.isFinite(value)){
+          return '—';
+        }
+        if (currencyFormatter){
+          try {
+            return currencyFormatter.format(value);
+          } catch (err) {
+            // ignore and fall back below
+          }
+        }
+        const rounded = Math.round(value);
+        if (typeof rounded.toLocaleString === 'function'){
+          return `₪${rounded.toLocaleString('he-IL')}`;
+        }
+        return `₪${rounded}`;
       }
       function clearFeed(){
         if (!els.body) return;
@@ -416,7 +499,91 @@
 
         return bubble;
       }
-
+      function buildResultChartData(result){
+        if (!result) return null;
+        const min = parseAmount(result.price_min);
+        const max = parseAmount(result.price_max);
+        const single = parseAmount(result.price);
+        const hasRange = Number.isFinite(min) && Number.isFinite(max) && max >= min;
+        const central = Number.isFinite(single)
+          ? single
+          : (hasRange ? (min + max) / 2 : NaN);
+        const items = [];
+        const minLabel = t('ui.result_chart_columns_min') || fallback['ui.result_chart_columns_min'] || '';
+        const midLabel = t('ui.result_chart_columns_mid') || fallback['ui.result_chart_columns_mid'] || '';
+        const maxLabel = t('ui.result_chart_columns_max') || fallback['ui.result_chart_columns_max'] || '';
+        if (Number.isFinite(min)){
+          items.push({ label: minLabel || 'Min', value: min, variant: 'low' });
+        }
+        if (Number.isFinite(central)){
+          items.push({ label: midLabel || 'Mid', value: central, variant: 'highlight' });
+        }
+        if (hasRange && Number.isFinite(max)){
+          items.push({ label: maxLabel || 'Max', value: max, variant: 'high' });
+        } else if (!hasRange && Number.isFinite(max)){
+          items.push({ label: maxLabel || 'Max', value: max, variant: 'high' });
+        }
+        if (!items.length){
+          return null;
+        }
+        const maxValue = Math.max(...items.map(item => item.value));
+        if (!(maxValue > 0)){
+          return null;
+        }
+        return {
+          items: items.map(item => Object.assign({}, item, {
+            ratio: Math.max(0.12, Math.min(1, item.value / maxValue))
+          }))
+        };
+      }
+      function createResultChart(data){
+        if (!data || !data.items || !data.items.length){
+          return null;
+        }
+        const box = document.createElement('div');
+        box.className = 'est-resultcard__chart';
+        const titleText = t('ui.result_chart_heading') || fallback['ui.result_chart_heading'] || '';
+        if (titleText){
+          const title = document.createElement('h4');
+          title.className = 'est-resultchart__title';
+          title.textContent = titleText;
+          box.appendChild(title);
+        }
+        const bars = document.createElement('div');
+        bars.className = 'est-resultchart__bars';
+        data.items.forEach((item) => {
+          const bar = document.createElement('div');
+          bar.className = 'est-resultchart__bar';
+          if (item.variant){
+            bar.classList.add(`is-${item.variant}`);
+          }
+          const value = document.createElement('div');
+          value.className = 'est-resultchart__value';
+          value.textContent = formatCurrencyValue(item.value);
+          bar.appendChild(value);
+          const meter = document.createElement('div');
+          meter.className = 'est-resultchart__meter';
+          const fill = document.createElement('div');
+          fill.className = 'est-resultchart__fill';
+          fill.style.setProperty('--bar-value', `${Math.round(item.ratio * 100)}%`);
+          meter.appendChild(fill);
+          bar.appendChild(meter);
+          const label = document.createElement('div');
+          label.className = 'est-resultchart__label';
+          label.textContent = item.label || '';
+          bar.appendChild(label);
+          bars.appendChild(bar);
+        });
+        box.appendChild(bars);
+        const noteText = t('ui.result_chart_note') || fallback['ui.result_chart_note'] || '';
+        if (noteText){
+          const note = document.createElement('p');
+          note.className = 'est-resultchart__note';
+          note.textContent = noteText;
+          box.appendChild(note);
+        }
+        return box;
+      }
       function makeLoadingNode(message){
         const wrap = document.createElement('div');
         wrap.className = 'est-loading';
@@ -739,14 +906,14 @@
         box.appendChild(title);
         box.appendChild(subtitle);
         appendBotBubble(box);
-        appendMetaBubble('מוכנים? בחרו תחום כדי שנתחיל.');
+        appendMetaBubble(t('ui.meta_ready_pick') || fallback['ui.meta_ready_pick']);
         renderCategoryQuickPick();
       }
 
       function handleCategoryPick(option){
         if (!option) return;
         if (state.category === option.id){
-          appendMetaBubble('התחום כבר נבחר. בואו נמשיך.');
+          appendMetaBubble(t('ui.meta_category_selected') || fallback['ui.meta_category_selected']);
           return;
         }
         finalizeBotBubble(t('ui.ask_category'));
@@ -894,7 +1061,15 @@
         heading.className = 'est-resultcard__title';
         heading.textContent = t('ui.range_label');
         wrap.appendChild(heading);
-        const priceText = result.price || (result.price_min && result.price_max ? `₪${result.price_min}–₪${result.price_max}` : '');
+        const priceValue = parseAmount(result.price);
+        const minValue = parseAmount(result.price_min);
+        const maxValue = parseAmount(result.price_max);
+        let priceText = '';
+        if (Number.isFinite(priceValue)){
+          priceText = formatCurrencyValue(priceValue);
+        } else if (Number.isFinite(minValue) && Number.isFinite(maxValue)){
+          priceText = `${formatCurrencyValue(minValue)} – ${formatCurrencyValue(maxValue)}`;
+        }
         const range = document.createElement('p');
         range.className = 'est-resultcard__range';
         range.textContent = priceText || '—';
@@ -919,21 +1094,50 @@
           extra.textContent = extraCopy;
           wrap.appendChild(extra);
         }
-
+        const chartData = buildResultChartData(result);
+        const chartNode = createResultChart(chartData);
+        if (chartNode){
+          wrap.appendChild(chartNode);
+        }
+        const ctaWrap = document.createElement('div');
+        ctaWrap.className = 'est-resultcard__cta';
+        const ctaNoteText = t('ui.result_cta_secondary') || fallback['ui.result_cta_secondary'] || '';
+        if (ctaNoteText){
+          const ctaNote = document.createElement('p');
+          ctaNote.className = 'est-resultcard__cta-note';
+          ctaNote.textContent = ctaNoteText;
+          ctaWrap.appendChild(ctaNote);
+        }
+        const ctaLabel = t('ui.result_cta_label') || fallback['ui.result_cta_label'] || '';
+        if (ctaLabel){
+          const ctaBtn = document.createElement('a');
+          ctaBtn.className = 'est-btn est-btn--primary est-btn--cta';
+          ctaBtn.textContent = ctaLabel;
+          if (config.contactUrl){
+            ctaBtn.href = config.contactUrl;
+          } else {
+            ctaBtn.href = '#';
+            ctaBtn.setAttribute('aria-disabled', 'true');
+            ctaBtn.setAttribute('tabindex', '-1');
+            ctaBtn.classList.add('is-disabled');
+          }
+          ctaWrap.appendChild(ctaBtn);
+        }
+        wrap.appendChild(ctaWrap);
         const actions = document.createElement('div');
         actions.className = 'est-resultcard__actions';
         const resetBtn = document.createElement('button');
         resetBtn.type = 'button';
         resetBtn.className = 'est-btn est-btn--ghost';
-        resetBtn.textContent = 'התחל מחדש';
+        resetBtn.textContent = t('ui.reset_btn') || fallback['ui.reset_btn'];
         resetBtn.addEventListener('click', () => {
-          appendMetaBubble('מתחילים מחדש את החישוב.');
+          appendMetaBubble(t('ui.meta_restart') || fallback['ui.meta_restart']);
           resetFlow();
         });
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'est-btn est-btn--primary';
-        addBtn.textContent = 'הוסף עבודה נוספת';
+        addBtn.textContent = t('ui.add_job_btn') || fallback['ui.add_job_btn'];
         addBtn.addEventListener('click', () => {
           appendMetaBubble('בוחרים עבודה נוספת לאותו תחום.');
           state.job = null;

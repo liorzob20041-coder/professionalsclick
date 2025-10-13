@@ -777,6 +777,20 @@ html[dir="ltr"] .search-modal__form .input-error {
     }
   }
 }
+
+/* iPhone-specific: hide the language code so chip matches mobile layout */
+@supports (-webkit-touch-callout: none) {
+  @media (width > 420px) and (width <= 480px) {
+    .language-switcher > button.lang-chip .lang-code {
+      display: none !important;
+    }
+
+    .language-switcher > button.lang-chip {
+      min-width: var(--btn-size, 40px) !important;
+      padding: 0 !important;
+    }
+  }
+}
 @media screen and (max-width: 420px) {
   .language-switcher > button.lang-chip .lang-code {
     display: none !important;
@@ -1008,14 +1022,18 @@ html[lang="ru"] .language-switcher {
 
 /* ׳׳•׳‘׳™׳™׳ ג€“ ׳׳ ׳×׳¨׳¦׳” ׳ ׳™׳•׳“ ׳©׳•׳ ׳”, ׳¢׳“׳›׳ ׳›׳׳ ׳₪׳™׳§׳¡׳׳™׳ ׳‘׳׳‘׳“ */
 @media (width <=640px) {
-  html[lang="en"] {
-    --lang-btn-nudge-x: 0px;
-    --lang-btn-nudge-y: 0px;
-  }
+  html[lang="en"],
   html[lang="ru"] {
-    --lang-btn-nudge-x: 0px;
+    --lang-btn-nudge-x: -6px;
     --lang-btn-nudge-y: 0px;
+    --lang-chip-w: var(--btn-size);
   }
+
+  html[lang="en"] .language-switcher > button.lang-chip .lang-code,
+  html[lang="ru"] .language-switcher > button.lang-chip .lang-code {
+    display: none !important;
+  }
+
   html[lang="en"] .language-switcher,
   html[lang="ru"] .language-switcher {
     right: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)) !important;
@@ -1025,6 +1043,7 @@ html[lang="ru"] .language-switcher {
     transform: translate(var(--lang-btn-nudge-x), var(--lang-btn-nudge-y)) !important;
   }
 }
+
 @media screen and (max-width: 640px) {
   html[lang="en"] {
     --lang-btn-nudge-x: 0px;

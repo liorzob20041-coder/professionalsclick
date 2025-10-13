@@ -425,6 +425,49 @@ html[dir="ltr"] .language-switcher {
   }
 }
 
+@media (width <=640px) {
+  html[lang="en"] .language-switcher button,
+  html[lang="ru"] .language-switcher button {
+    padding: 6px;
+    justify-content: center;
+  }
+
+  html[lang="en"] .language-switcher button .lang-code,
+  html[lang="ru"] .language-switcher button .lang-code {
+    display: none;
+  }
+
+  html[lang="en"] .language-switcher,
+  html[lang="ru"] .language-switcher {
+    transform: translateX(-6px);
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (width > 420px) and (width <= 480px) {
+    .language-switcher button {
+      min-width: 40px;
+      padding: 6px;
+      justify-content: center;
+    }
+
+    .language-switcher button .lang-code {
+      display: none;
+    }
+  }
+}
+
+@media (width <=420px) {
+  .language-switcher button {
+    padding: 6px;
+    justify-content: center;
+  }
+
+  .language-switcher button .lang-code {
+    display: none;
+  }
+}
+
 @supports (-webkit-touch-callout: none) {
   @media (width > 420px) and (width <= 480px) {
     .language-switcher button {

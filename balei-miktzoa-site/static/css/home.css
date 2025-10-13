@@ -363,13 +363,29 @@ html[dir="ltr"] .check-item {
 .hero-panel .hs-icon,
 .hero-cta .hs-icon {
   position: absolute;
-  top: 50%;
+  top: calc(var(--hero-input-h) / 2 + 4px);
   transform: translateY(-50%);
   font-size: 14px;
   opacity: 0.9;
   pointer-events: none;
   filter: drop-shadow(0 1px 0 rgb(0 0 0 / 6%));
   color: var(--hero-accent);
+}
+.hero-panel .hs-field .input-error,
+.hero-cta .hs-field .input-error {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b91c1c;
+}
+html[dir="rtl"] .hero-panel .hs-field .input-error,
+html[dir="rtl"] .hero-cta .hs-field .input-error {
+  text-align: right;
+  padding-right: 4px;
+}
+html[dir="ltr"] .hero-panel .hs-field .input-error,
+html[dir="ltr"] .hero-cta .hs-field .input-error {
+  text-align: left;
+  padding-left: 4px;
 }
 
 html[dir="rtl"] .hero-panel .hs-icon,

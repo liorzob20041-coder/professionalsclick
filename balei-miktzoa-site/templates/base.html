@@ -343,13 +343,50 @@
 
 
     <!-- כפתור חיפוש בשורת העליונה -->
-  <a class="search-btn"
-     href="{{ url_for_lang('home') }}?focus=search"
-     aria-label="{{ _('search') if _ else 'חיפוש' }}">
+  <button class="search-btn"
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="globalSearch"
+          aria-label="{{ _('search') if _ else 'חיפוש' }}">
     <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-  </a>
-
-
+  </button>
+  <div class="search-modal" id="globalSearch" role="dialog" aria-modal="true" aria-labelledby="globalSearchTitle" aria-hidden="true" hidden>
+    <div class="search-modal__backdrop" data-search-dismiss></div>
+    <div class="search-modal__panel" role="document">
+      <button class="search-modal__close" type="button" data-search-close aria-label="{{ _('close') if _ else 'סגור' }}">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+      <h2 class="search-modal__title" id="globalSearchTitle">{{ _('homepage.hero_title_overlay') }}</h2>
+      <form class="search-modal__form" role="search" onsubmit="return redirectToCleanURL(event)" novalidate data-search-form="modal">
+        <label class="sr-only" for="globalField">{{ _('homepage.choose_field') }}</label>
+        <div class="hs-field" data-search-field-wrapper>
+          <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+          <input id="globalField" name="field" list="fields" data-search-field placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
+          <span class="input-error" data-search-field-error aria-live="polite"></span>
+        </div>
+        <label class="sr-only" for="globalArea">{{ _('homepage.choose_area') }}</label>
+        <div class="hs-field" data-search-area-wrapper>
+          <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+          <input id="globalArea" name="area" list="areas" data-search-area placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
+          <span class="input-error" data-search-area-error aria-live="polite"></span>
+        </div>
+        <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
+      </form>
+    </div>
+  </div>
+  <datalist id="fields">
+    <option value="{{ _('field_renovations') }}" data-key="renovations">
+    <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
+    <option value="{{ _('field_electricians') }}" data-key="electricians">
+    <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
+  </datalist>
+  <datalist id="areas">
+    <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
+    <option value="{{ _('city_haifa') }}"      data-key="haifa">
+    <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
+    <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
+  </datalist>
   <aside class="mobile-drawer" id="mobileMenu"
          role="dialog" aria-modal="true"
          aria-label="{{ _('main_menu') if _ else 'Main menu' }}"
@@ -433,7 +470,151 @@
     {% endblock %}
   </main>
 
-  {% block extra_scripts %}
+{% block extra_scripts %}
+  <script>
+  (function () {
+    function convertToSlug(text) {
+      var s = (text || '').trim().toLowerCase();
+      if (typeof s.normalize === 'function') {
+        s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+      }
+      s = s.replace(/[^0-9a-z\u0590-\u05FF\u0400-\u04FF\s_-]/g, '')
+           .replace(/[\s_]+/g, '-')
+           .replace(/-+/g, '-')
+           .replace(/^-|-$/g, '');
+      return s;
+    }
+    window.redirectToCleanURL = function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var form = (e && e.target && e.target.closest) ? e.target.closest('form') : document.querySelector('[data-search-form]');
+      if (!form) return false;
+      var areaInput  = form.querySelector('[data-search-area]')  || form.querySelector('#area')  || form.querySelector('#area_m');
+      var fieldInput = form.querySelector('[data-search-field]') || form.querySelector('#field') || form.querySelector('#field_m');
+      var areaError  = form.querySelector('[data-search-area-error]')  || (areaInput  && areaInput.parentElement ? areaInput.parentElement.querySelector('.input-error')  : null);
+      var fieldError = form.querySelector('[data-search-field-error]') || (fieldInput && fieldInput.parentElement ? fieldInput.parentElement.querySelector('.input-error') : null);
+      if (areaError)  areaError.textContent  = '';
+      if (fieldError) fieldError.textContent = '';
+      var areaValue  = areaInput  && areaInput.value  ? areaInput.value.trim()  : '';
+      var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
+      var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+      var msgs = {
+        he: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
+        en: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
+        ru: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" }
+      };
+      var dict = msgs[lang] || msgs.he;
+      var hasError = false;
+      if (!areaValue)  { if (areaError)  areaError.textContent  = dict.area;  hasError = true; }
+      if (!fieldValue) { if (fieldError) fieldError.textContent = dict.field; hasError = true; }
+      if (hasError) return false;
+      var areaSlug  = convertToSlug(areaValue);
+      var fieldSlug = convertToSlug(fieldValue);
+      if (!areaSlug || !fieldSlug) return false;
+      window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
+      return false;
+    };
+    function initGlobalSearchModal() {
+      var modal = document.getElementById('globalSearch');
+      var openBtn = document.querySelector('.search-btn');
+      if (!modal || !openBtn) return;
+      var backdrop = modal.querySelector('[data-search-dismiss]');
+      var closeBtn = modal.querySelector('[data-search-close]');
+      var panel = modal.querySelector('.search-modal__panel');
+      var focusSelector = 'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+      var lastFocus = null;
+      var prevOverflow = '';
+      function clearErrors() {
+        modal.querySelectorAll('.input-error').forEach(function (el) { el.textContent = ''; });
+      }
+      function focusFirst() {
+        var firstInput = modal.querySelector('[data-search-field]') || modal.querySelector('input');
+        if (firstInput && typeof firstInput.focus === 'function') {
+          firstInput.focus({ preventScroll: true });
+        }
+      }
+      function openModal(e) {
+        if (e) e.preventDefault();
+        if (modal.classList.contains('is-open')) return;
+        lastFocus = document.activeElement;
+        prevOverflow = document.body.style.overflow || '';
+        modal.hidden = false;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        openBtn.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('search-modal-open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(focusFirst, 20);
+      }
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.hidden = true;
+        openBtn.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('search-modal-open');
+        document.body.style.overflow = prevOverflow;
+        clearErrors();
+        if (lastFocus && typeof lastFocus.focus === 'function') {
+          try { lastFocus.focus(); } catch (_) {}
+        }
+      }
+      function trapFocus(e) {
+        if (e.key !== 'Tab') return;
+        var focusables = Array.prototype.slice.call(panel.querySelectorAll(focusSelector))
+          .filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+        if (!focusables.length) return;
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+      openBtn.addEventListener('click', openModal);
+      openBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal(e);
+        }
+      });
+      if (backdrop) {
+        backdrop.addEventListener('click', closeModal);
+      }
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          closeModal();
+        });
+      }
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+      modal.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeModal();
+          return;
+        }
+        trapFocus(e);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && (e.metaKey || e.ctrlKey)) {
+          e.preventDefault();
+          openModal(e);
+        }
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initGlobalSearchModal);
+    } else {
+      initGlobalSearchModal();
+    }
+  })();
+  </script>
   <script>
   function toggleLanguageList() {
     const list = document.getElementById('language-list');

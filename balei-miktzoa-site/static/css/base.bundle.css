@@ -1024,16 +1024,17 @@ html[lang="ru"] .language-switcher {
 @media (width <=640px) {
   html[lang="en"],
   html[lang="ru"] {
-    --lang-btn-nudge-x: -6px;
+    --lang-btn-nudge-x: -18px;
     --lang-btn-nudge-y: 0px;
     --lang-chip-w: var(--btn-size);
   }
-
+  html[dir="ltr"] {
+    --lang-menu-shift-mobile: 0px;
+  }
   html[lang="en"] .language-switcher > button.lang-chip .lang-code,
   html[lang="ru"] .language-switcher > button.lang-chip .lang-code {
     display: none !important;
   }
-
   html[lang="en"] .language-switcher,
   html[lang="ru"] .language-switcher {
     right: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)) !important;
@@ -1042,16 +1043,23 @@ html[lang="ru"] .language-switcher {
     translate: var(--lang-btn-nudge-x) var(--lang-btn-nudge-y) !important;
     transform: translate(var(--lang-btn-nudge-x), var(--lang-btn-nudge-y)) !important;
   }
+  html[dir="ltr"] .language-switcher ul#language-list {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    transform: translateX(0) !important;
+  }
 }
-
 @media screen and (max-width: 640px) {
   html[lang="en"] {
-    --lang-btn-nudge-x: 0px;
+    --lang-btn-nudge-x: -18px;
     --lang-btn-nudge-y: 0px;
   }
   html[lang="ru"] {
-    --lang-btn-nudge-x: 0px;
+    --lang-btn-nudge-x: -18px;
     --lang-btn-nudge-y: 0px;
+  }
+  html[dir="ltr"] {
+    --lang-menu-shift-mobile: 0px;
   }
   html[lang="en"] .language-switcher,
   html[lang="ru"] .language-switcher {
@@ -1060,6 +1068,11 @@ html[lang="ru"] .language-switcher {
     top: calc((var(--hdr-h) - var(--chip-h)) / 2) !important;
     translate: var(--lang-btn-nudge-x) var(--lang-btn-nudge-y) !important;
     transform: translate(var(--lang-btn-nudge-x), var(--lang-btn-nudge-y)) !important;
+  }
+  html[dir="ltr"] .language-switcher ul#language-list {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    transform: translateX(0) !important;
   }
 }
 

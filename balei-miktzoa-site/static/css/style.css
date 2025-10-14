@@ -439,7 +439,12 @@ html[dir="ltr"] .language-switcher {
 
   html[lang="en"] .language-switcher,
   html[lang="ru"] .language-switcher {
-    transform: translateX(-6px);
+    transform: translateX(-18px);
+  }
+  html[dir="ltr"] .language-switcher ul {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    transform: none;
   }
 }
 

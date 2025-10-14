@@ -363,7 +363,7 @@ html[dir="ltr"] .check-item {
 .hero-panel .hs-icon,
 .hero-cta .hs-icon {
   position: absolute;
-  top: calc(var(--hero-input-h) / 2 + 4px);
+  top: calc(var(--hero-input-h) / 2);
   transform: translateY(-50%);
   font-size: 14px;
   opacity: 0.9;
@@ -416,6 +416,16 @@ html[dir="ltr"] .hero-cta .hs-icon {
     border-color 0.15s,
     box-shadow 0.15s,
     transform 0.05s;
+}
+.hero-panel .hs-field input[list],
+.hero-cta .hs-field input[list] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: none;
+}
+.hero-panel .hs-field input[list]::-webkit-calendar-picker-indicator,
+.hero-cta .hs-field input[list]::-webkit-calendar-picker-indicator {
+  display: none;
 }
 
 .hero-panel .hs-field input:hover,

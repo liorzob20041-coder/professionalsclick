@@ -733,7 +733,8 @@
                               : (r.bottom + gap) + 'px';
     }
     function attachAutocomplete(input, type) {
-      if (!input) return;
+      if (!input || input._acAttached) return;
+      input._acAttached = true;
       const originalList = input.getAttribute('list') || '';
       input.dataset.origList = originalList;
       function disableNativeDatalist() {
@@ -745,6 +746,7 @@
       list.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); }, { capture:true, passive:false });
       let items = [];
       let idx = -1;
+      let skipNextFetch = false;
       function clearList() {
         list.innerHTML = '';
         list.style.display = 'none';
@@ -789,7 +791,9 @@
         input.dispatchEvent(new Event('input',  { bubbles:true }));
         input.dispatchEvent(new Event('change', { bubbles:true }));
         if (window.__acSuppressNextClick !== undefined) window.__acSuppressNextClick = true;
+        skipNextFetch = true;
         requestAnimationFrame(() => clearList());
+        setTimeout(() => { skipNextFetch = false; }, 220);
       }
       function fetchSuggestions(q = '') {
         const url = new URL('/api/suggest', window.location.origin);
@@ -804,11 +808,16 @@
       }
       const doFetch = debounce(() => {
         disableNativeDatalist();
+        if (skipNextFetch) { skipNextFetch = false; return; }
         const q = (input.value || '').trim();
         fetchSuggestions(q);
       }, 140);
       input.addEventListener('input', doFetch);
-      input.addEventListener('focus', () => { disableNativeDatalist(); fetchSuggestions(''); });
+      input.addEventListener('focus', () => {
+        disableNativeDatalist();
+        if (skipNextFetch) return;
+        fetchSuggestions('');
+      });
       input.addEventListener('keydown', (e) => {
         const total = list.children.length;
         if (!total) return;
@@ -838,10 +847,8 @@
     }
     function init() {
       ensureNoopDatalist();
-      const area = document.getElementById('area');
-      const field = document.getElementById('field');
-      attachAutocomplete(area, 'area');
-      attachAutocomplete(field, 'field');
+      document.querySelectorAll('[data-search-area]').forEach(el => attachAutocomplete(el, 'area'));
+      document.querySelectorAll('[data-search-field]').forEach(el => attachAutocomplete(el, 'field'));
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();

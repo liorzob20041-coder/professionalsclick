@@ -774,13 +774,21 @@ html[dir="ltr"] .input-group:has(#field)::before {
 @media (width <=520px) {
   .hero-slides {
     min-height: 320px !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 18px 16px 24px !important;
   }
 
   .hero-panel {
+    position: relative !important;
     width: min(94vw, 420px);
-    top: 18%;
-    left: 50%;
-    transform: translate(-50%, 0);
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 auto !important;
     padding: 12px;
     gap: 10px;
     background: rgb(0 0 0 / 36%);

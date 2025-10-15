@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לוגו בעלי מקצוע בקליק - כל הגרסאות</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: #8a1538;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .logo-display {
+            background: #f9fafb;
+            border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-display img,
+        .logo-display svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .info {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #1f2937;
+            font-size: 1rem;
+            word-break: break-word;
+        }
+        
+        .download-btn {
+            background: #8a1538;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: #6b0f2a;
+            transform: scale(1.02);
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+            padding: 20px;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 לוגו בעלי מקצוע בקליק - כל הגרסאות</h1>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>Favicon</h2>
+                <div class="logo-display">
+                    <img src="{{ static_rel("branding/logo-kit/favicon.svg") }}" alt="Favicon של בעלי מקצוע בקליק">
+                </div>
+                <div class="info">
+                    <div class="info-label">גודל</div>
+                    <div class="info-value">32x32 פיקסלים</div>
+                </div>
+                <div class="info">
+                    <div class="info-label">שימוש</div>
+                    <div class="info-value">אייקון בלשונית הדפדפן</div>
+                </div>
+                <div class="info">
+                    <div class="info-label">קובץ</div>
+                    <div class="info-value">static/branding/logo-kit/favicon.svg</div>
+                </div>
+                <button class="download-btn" data-url="{{ static_rel("branding/logo-kit/favicon.svg") }}" data-name="favicon.svg">📥 הורד Favicon</button>
+            </div>
+            
+            <div class="card">
+                <h2>Apple Touch Icon</h2>
+                <div class="logo-display">
+                    <img src="{{ static_rel("branding/logo-kit/apple-touch-icon.svg") }}" alt="Apple Touch Icon של בעלי מקצוע בקליק">
+                </div>
+                <div class="info">
+                    <div class="info-label">גודל</div>
+                    <div class="info-value">180x180 פיקסלים</div>
+                </div>
+                <div class="info">
+                    <div class="info-label">שימוש</div>
+                    <div class="info-value">אייקון למסכי בית במכשירי Apple</div>
+                </div>
+                <div class="info">
+                    <div class="info-label">קובץ</div>
+                    <div class="info-value">static/branding/logo-kit/apple-touch-icon.svg</div>
+                </div>
+                <button class="download-btn" data-url="{{ static_rel("branding/logo-kit/apple-touch-icon.svg") }}" data-name="apple-touch-icon.svg">📥 הורד Apple Icon</button>
+            </div>
+            
+            <div class="card">
+                <h2>OG Image (שיתוף ברשתות)</h2>
+                <div class="logo-display" style="padding: 20px;">
+                    <img src="{{ static_rel("branding/logo-kit/og-image.svg") }}" alt="OG Image של בעלי מקצוע בקליק">
+                </div>
+                <div class="info">
+                    <div class="info-label">גודל</div>
+                    <div class="info-value">1200x630 פיקסלים</div>
+                </div>
+                <div class="info">
+                    <div class="info-label">שימוש</div>
+                    <div class="info-value">שיתוף בפייסבוק, טוויטר, ווטסאפ ועוד</div>
+                </div>
+                <div class="info">
+                    <div class="info-label">קובץ</div>
+                    <div class="info-value">static/branding/logo-kit/og-image.svg</div>
+                </div>
+                <button class="download-btn" data-url="{{ static_rel("branding/logo-kit/og-image.svg") }}" data-name="og-image.svg">📥 הורד OG Image</button>
+            </div>
+        </div>
+        
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>📖 הוראות שימוש</h2>
+            <div style="line-height: 1.8; color: #4b5563;">
+                <p style="margin-bottom: 15px;">
+                    <strong>1. הורדה:</strong> לחץ על כפתור ההורדה מתחת לכל לוגו. הקובץ יישמר במחשב שלך.
+                </p>
+                <p style="margin-bottom: 15px;">
+                    <strong>2. פורמט:</strong> כל הקבצים הם SVG - פורמט וקטורי שמבטיח איכות מושלמת בכל גודל.
+                </p>
+                <p style="margin-bottom: 15px;">
+                    <strong>3. המרה ל-PNG:</strong> אם אתה צריך PNG, השתמש באתר <a href="https://svgtopng.com" target="_blank" style="color: #8a1538;">svgtopng.com</a>
+                </p>
+                <p style="margin-bottom: 15px;">
+                    <strong>4. שינוי צבעים:</strong> פתח את קובץ ה-SVG בעורך טקסט וחפש את <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">#8A1538</code> לשינוי צבע המותג.
+                </p>
+                <p>
+                    <strong>5. שימוש בקוד:</strong> הלוגו זמין גם כקובץ SVG בתיקייה <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">static/branding/logo-kit/</code>
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🚀 בעלי מקצוע בקליק - פלטפורמה למציאת בעלי מקצוע אמינים</p>
+            <p style="margin-top: 10px;">
+                <a href="{{ static_rel("branding/logo-kit/LOGO_DOWNLOAD_GUIDE.md") }}" target="_blank">📘 מדריך מלא להורדה</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        function downloadFile(url, downloadName) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = downloadName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const url = btn.getAttribute('data-url');
+                const name = btn.getAttribute('data-name');
+                downloadFile(url, name);
+            });
+        });
+    </script>
+</body>
+</html>

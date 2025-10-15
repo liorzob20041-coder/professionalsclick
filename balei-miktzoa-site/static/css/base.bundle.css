@@ -583,6 +583,12 @@ html[dir="ltr"] .search-btn {
   outline: 2px solid rgb(90 100 120 / 35%);
   outline-offset: 2px;
 }
+
+@media (width >= 640px) {
+  .search-modal__title {
+    padding-inline: clamp(40px, 10vw, 72px);
+  }
+}
 .search-modal__form {
   display: grid;
   gap: var(--hero-gap, 8px);
@@ -607,6 +613,14 @@ html[dir="ltr"] .search-btn {
     border-color 0.15s,
     box-shadow 0.15s,
     transform 0.05s;
+}
+.search-modal__form .hs-field input[list] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: none;
+}
+.search-modal__form .hs-field input[list]::-webkit-calendar-picker-indicator {
+  display: none;
 }
 .search-modal__form .hs-field input:hover {
   border-color: rgb(138 21 56 / 55%);

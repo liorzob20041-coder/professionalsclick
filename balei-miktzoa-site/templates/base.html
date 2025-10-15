@@ -2,7 +2,8 @@
 <html lang="{{ g.current_lang }}" dir="{{ 'rtl' if g.current_lang == 'he' else 'ltr' }}">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
   <meta http-equiv="Content-Security-Policy"
       content="default-src 'self';
                img-src 'self' https: data: blob:;
@@ -300,7 +301,9 @@
   })();
   </script>
 
-  <link rel="icon" type="image/x-icon" href="{{ static_rel('icons/favicon.ico') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ static_rel('branding/logo-kit/favicon.svg') }}">
+  <link rel="alternate icon" type="image/x-icon" href="{{ static_rel('icons/favicon.ico') }}">
+  <link rel="apple-touch-icon" href="{{ static_rel('branding/logo-kit/apple-touch-icon.svg') }}">
 
   {% block extra_head %}{% endblock %}
 

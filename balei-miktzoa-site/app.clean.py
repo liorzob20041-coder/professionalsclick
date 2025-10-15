@@ -4480,6 +4480,12 @@ def _debug_img(name):
     return Response(data, mimetype=mt or "application/octet-stream")
 
 
+@app.route("/logo-showcase")
+def logo_showcase_page():
+    """דף עם כל גרסאות הלוגו והורדות הקבצים."""
+    return render_template("logo_showcase.html")
+
+
 @app.route("/test_static")
 def test_static():
     return render_template("test_static.html")

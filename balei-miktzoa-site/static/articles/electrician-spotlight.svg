@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">חשמלאי מקצועי</title>
+  <desc id="desc">איור של חשמלאי שעובד בצורה בטוחה עם לוח חשמל מואר</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e0f2fe" />
+      <stop offset="100%" stop-color="#bfdbfe" />
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(59,130,246,0.22)" />
+      <stop offset="100%" stop-color="rgba(13,148,136,0.15)" />
+    </linearGradient>
+  </defs>
+  <rect width="720" height="480" fill="url(#bg)" rx="36" />
+  <path d="M520 60h76c18 0 32 14 32 32v296c0 18-14 32-32 32h-76c-18 0-32-14-32-32V92c0-18 14-32 32-32z" fill="#0f172a" opacity="0.1" />
+  <path d="M160 112l320-48 64 224-320 48z" fill="url(#beam)" opacity="0.8" />
+  <g transform="translate(160 96)">
+    <rect x="64" y="48" width="160" height="220" rx="24" fill="#f8fafc" stroke="#bae6fd" stroke-width="4" />
+    <rect x="88" y="80" width="112" height="24" rx="12" fill="#1d4ed8" opacity="0.35" />
+    <rect x="88" y="120" width="88" height="18" rx="9" fill="#0ea5e9" opacity="0.45" />
+    <rect x="88" y="156" width="128" height="18" rx="9" fill="#38bdf8" opacity="0.55" />
+    <circle cx="144" cy="216" r="18" fill="#facc15" />
+    <path d="M140 200l8 12h-16z" fill="#f97316" />
+  </g>
+  <g transform="translate(340 160)">
+    <path d="M70 40c0-22 18-40 40-40s40 18 40 40-18 40-40 40-40-18-40-40z" fill="#38bdf8" />
+    <path d="M102 72c32 0 58 24 58 54v38c0 8-6 14-14 14H60c-8 0-14-6-14-14v-38c0-30 26-54 58-54z" fill="#0f172a" opacity="0.85" />
+    <path d="M78 96h48v120H78z" fill="#1d4ed8" />
+    <path d="M78 216l-18 62c-2 6 2 12 8 12h108c6 0 10-6 8-12l-18-62z" fill="#0ea5e9" />
+    <path d="M70 216h104l12 34H58z" fill="#38bdf8" />
+    <circle cx="126" cy="16" r="12" fill="#facc15" />
+    <circle cx="134" cy="8" r="6" fill="#fde047" />
+  </g>
+  <g transform="translate(440 152)">
+    <rect x="0" y="0" width="112" height="184" rx="18" fill="#1e293b" />
+    <rect x="18" y="26" width="76" height="28" rx="10" fill="#334155" />
+    <rect x="18" y="74" width="76" height="18" rx="8" fill="#475569" />
+    <rect x="18" y="106" width="76" height="18" rx="8" fill="#475569" />
+    <rect x="18" y="138" width="76" height="18" rx="8" fill="#475569" />
+    <circle cx="88" cy="24" r="8" fill="#facc15" />
+    <circle cx="24" cy="154" r="6" fill="#f87171" />
+    <circle cx="44" cy="154" r="6" fill="#fbbf24" />
+    <circle cx="64" cy="154" r="6" fill="#4ade80" />
+  </g>
+</svg>

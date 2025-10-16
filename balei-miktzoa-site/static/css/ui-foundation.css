@@ -210,6 +210,79 @@ textarea:focus {
   margin-right: 0;
 }
 
+* Featured article */
+.featured-article {
+  padding-block: var(--gap-6);
+}
+
+.featured-article__card {
+  background: #fff;
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-1);
+  padding: var(--gap-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-4);
+  align-items: stretch;
+}
+
+.featured-article__media {
+  flex: 1 1 0;
+  min-height: 240px;
+}
+
+.featured-article__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-m);
+}
+
+.featured-article__content {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--gap-3);
+}
+
+[dir="rtl"] .featured-article__content {
+  text-align: right;
+}
+
+.featured-article__content p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.featured-article__cta {
+  align-self: flex-start;
+}
+
+@media (min-width: 768px) {
+  .featured-article__card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .featured-article__content {
+    padding-inline: var(--gap-4);
+  }
+
+  [dir="rtl"] .featured-article__card {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  [dir="rtl"] .featured-article__content {
+    padding-inline: var(--gap-4);
+  }
+}
+
+[dir="rtl"] .featured-article__cta {
+  align-self: flex-end;
+}
+
 .muted { color: var(--muted); }
 
 /* Reduced motion */
@@ -220,4 +293,32 @@ textarea:focus {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+/* Keep form icons visible above the input on focus */
+.hs-field {
+  position: relative;
+}
+.hs-field .hs-icon {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+.hs-field input {
+  position: relative;
+  z-index: 1;
+}
+/* Modal – targeted reinforcement */
+.search-modal__form .hs-field {
+  position: relative;
+}
+.search-modal__form .hs-icon {
+  z-index: 3;
+}
+.search-modal__form .hs-field input {
+  position: relative;
+  z-index: 1;
+}
+/* Prevent stacking context shifts on focus */
+.hs-field input:focus {
+  transform: none;
 }

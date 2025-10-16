@@ -1,6 +1,6 @@
 {
   "category": "electricity",
-  "base_price": [250, 400],
+  "base_price": [300, 480],
   "result_note": {
     "he": "המחיר המוצג הוא טווח משוער לפי התשובות והמקובל בענף. המחיר הסופי נקבע בשטח לפי גישה, מורכבות, חומרים/חלקים, תקנים ותנאי עבודה."
   },
@@ -12,7 +12,7 @@
         {
           "id": "partial_outage",
           "label": { "he": "נפילת חשמל – חלק מהבית" },
-          "base_price": [280, 420],
+          "base_price": [320, 520],
           "result_note": { "he": "כולל אבחון בלוח/מעגלים. חלקים אינם כלולים." },
           "questions": [
             {
@@ -55,7 +55,7 @@
         {
           "id": "full_outage",
           "label": { "he": "נפילת חשמל – כל הבית" },
-          "base_price": [320, 520],
+          "base_price": [360, 600],
           "questions": [
             {
               "id": "main_state",
@@ -88,7 +88,7 @@
         {
           "id": "rcd_tripping",
           "label": { "he": "ממסר פחת קופץ" },
-          "base_price": [300, 500],
+          "base_price": [340, 560],
           "result_note": { "he": "ייתכן הצורך בהחלפת פחת/תיקון בידוד." },
           "questions": [
             {
@@ -129,7 +129,7 @@
         {
           "id": "replace_socket",
           "label": { "he": "החלפת שקע" },
-          "base_price": [240, 360],
+          "base_price": [250, 450],
           "result_note": { "he": "לא כולל שקע מותג פרימיום – ניתן לבחור אספקה דרכנו." },
           "questions": [
             {
@@ -164,7 +164,7 @@
         {
           "id": "add_socket_surface",
           "label": { "he": "תוספת שקע – התקנה חיצונית" },
-          "base_price": [320, 520],
+          "base_price": [360, 600],
           "questions": [
             {
               "id": "length",
@@ -190,7 +190,7 @@
         {
           "id": "add_socket_chase",
           "label": { "he": "תוספת שקע – חציבה/הטמעה" },
-          "base_price": [380, 700],
+          "base_price": [450, 850],
           "result_note": { "he": "כולל חציבה קלה ותיקון נקודתי. אריחים/חומרים מיוחדים עשויים לייקר." },
           "questions": [
             {
@@ -227,7 +227,7 @@
         {
           "id": "replace_switch",
           "label": { "he": "החלפת מפסק תאורה" },
-          "base_price": [200, 320],
+          "base_price": [220, 360],
           "questions": [
             {
               "id": "gangs",
@@ -252,7 +252,7 @@
         {
           "id": "install_dimmer",
           "label": { "he": "התקנת דימר" },
-          "base_price": [260, 420],
+          "base_price": [280, 460],
           "questions": [
             {
               "id": "led",
@@ -284,7 +284,7 @@
         {
           "id": "replace_fixture",
           "label": { "he": "החלפת גוף תאורה קיים" },
-          "base_price": [180, 320],
+          "base_price": [220, 360],
           "questions": [
             {
               "id": "qty",
@@ -309,7 +309,7 @@
         {
           "id": "chandelier_heavy",
           "label": { "he": "נברשת/גוף כבד" },
-          "base_price": [280, 520],
+          "base_price": [340, 600],
           "questions": [
             {
               "id": "weight",
@@ -334,7 +334,7 @@
         {
           "id": "recessed_spot",
           "label": { "he": "ספוטים שקועים / תקרת גבס" },
-          "base_price": [300, 550],
+          "base_price": [320, 600],
           "result_note": { "he": "כולל חיבור לנקודה קיימת. הוספת מעגל/שנאים – בתוספת." },
           "questions": [
             {
@@ -361,7 +361,7 @@
         {
           "id": "ceiling_fan",
           "label": { "he": "התקנת מאוורר תקרה" },
-          "base_price": [280, 550],
+          "base_price": [320, 600],
           "questions": [
             {
               "id": "point",
@@ -393,7 +393,7 @@
         {
           "id": "replace_breaker",
           "label": { "he": "החלפת מאמ\"ת (פיוז/ממסר מעגל)" },
-          "base_price": [280, 500],
+          "base_price": [300, 520],
           "questions": [
             {
               "id": "poles",
@@ -418,7 +418,7 @@
         {
           "id": "replace_rcd",
           "label": { "he": "החלפת ממסר פחת (RCD)" },
-          "base_price": [450, 700],
+          "base_price": [400, 650],
           "questions": [
             {
               "id": "phase",
@@ -443,7 +443,7 @@
         {
           "id": "add_circuit",
           "label": { "he": "הוספת מעגל בלוח" },
-          "base_price": [450, 900],
+          "base_price": [550, 1100],
           "questions": [
             {
               "id": "length",
@@ -468,7 +468,7 @@
         {
           "id": "replace_panel_single",
           "label": { "he": "החלפת לוח – חד־פאזי" },
-          "base_price": [1200, 2000],
+          "base_price": [1400, 2300],
           "result_note": { "he": "כולל לוח תקני עם ממסרים. אישורי בדיקה/חברת חשמל אם נדרשים – בתוספת." },
           "questions": [
             {
@@ -494,7 +494,7 @@
         {
           "id": "replace_panel_three",
           "label": { "he": "החלפת לוח – תלת־פאזי" },
-          "base_price": [2000, 3500],
+          "base_price": [2300, 3600],
           "questions": [
             {
               "id": "circuits",
@@ -526,7 +526,7 @@
         {
           "id": "ac_line",
           "label": { "he": "קו למזגן / שקע כוח" },
-          "base_price": [600, 900],
+          "base_price": [700, 1200],
           "result_note": { "he": "כולל מאמ\"ת ושקע כוח. אורך/תוואי עשויים לייקר." },
           "questions": [
             {
@@ -552,7 +552,7 @@
         {
           "id": "oven_line",
           "label": { "he": "קו תנור אפייה" },
-          "base_price": [600, 900],
+          "base_price": [650, 1000],
           "questions": [
             {
               "id": "length",
@@ -578,7 +578,7 @@
         {
           "id": "induction_line",
           "label": { "he": "קו כיריים אינדוקציה" },
-          "base_price": [900, 1400],
+          "base_price": [1100, 1700],
           "result_note": { "he": "לעיתים נדרש תלת־פאזי ומוליכי חתך גדול." },
           "questions": [
             {
@@ -603,7 +603,7 @@
         {
           "id": "dryer_line",
           "label": { "he": "קו למייבש כביסה" },
-          "base_price": [500, 800],
+          "base_price": [550, 900],
           "questions": [
             {
               "id": "length",
@@ -619,7 +619,7 @@
         {
           "id": "ev_prep",
           "label": { "he": "הכנה לעמדת טעינה (ללא העמדה)" },
-          "base_price": [1500, 2500],
+          "base_price": [1800, 3200],
           "result_note": { "he": "מחיר לעבודה וכבל/הגנות בסיסיות. לא כולל העמדה עצמה/אישורי חברת חשמל." },
           "questions": [
             {
@@ -651,7 +651,7 @@
         {
           "id": "switch_replace",
           "label": { "he": "החלפת מפסק דוד" },
-          "base_price": [220, 360],
+          "base_price": [240, 380],
           "questions": [
             {
               "id": "type",
@@ -667,7 +667,7 @@
         {
           "id": "timer_install",
           "label": { "he": "התקנת טיימר לדוד" },
-          "base_price": [300, 500],
+          "base_price": [360, 600],
           "questions": [
             {
               "id": "supply",
@@ -690,7 +690,7 @@
         {
           "id": "doorbell",
           "label": { "he": "פעמון דלת" },
-          "base_price": [220, 360],
+          "base_price": [240, 380],
           "questions": [
             {
               "id": "type",
@@ -715,7 +715,7 @@
         {
           "id": "intercom",
           "label": { "he": "אינטרקום ביתי" },
-          "base_price": [300, 500],
+          "base_price": [360, 650],
           "questions": [
             {
               "id": "issue",
@@ -738,7 +738,7 @@
         {
           "id": "smart_switch",
           "label": { "he": "מפסק חכם" },
-          "base_price": [260, 420],
+          "base_price": [280, 460],
           "questions": [
             {
               "id": "gangs",
@@ -763,7 +763,7 @@
         {
           "id": "smart_relay",
           "label": { "he": "ריליי חכם מאחורי מפסק" },
-          "base_price": [260, 420],
+          "base_price": [280, 460],
           "questions": [
             {
               "id": "space",
@@ -786,7 +786,7 @@
         {
           "id": "test_report",
           "label": { "he": "בדיקה מלאה + דוח" },
-          "base_price": [600, 1000],
+          "base_price": [700, 1200],
           "questions": [
             {
               "id": "apt_size",
@@ -802,7 +802,7 @@
         {
           "id": "ground_only",
           "label": { "he": "בדיקת הארקה בלבד" },
-          "base_price": [300, 500],
+          "base_price": [350, 550],
           "questions": [
             {
               "id": "access",

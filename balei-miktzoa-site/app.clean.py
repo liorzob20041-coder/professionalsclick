@@ -17,6 +17,7 @@ from flask import (
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.routing import BuildError
 
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -2112,6 +2113,11 @@ def niches(lang):
 def contact(lang):
     g.current_lang = lang
     return render_template("contact.html")
+
+@app.route('/<lang>/articles/how-to-choose-electrician')
+def article_electrician(lang):
+    g.current_lang = lang
+    return render_template('articles/how-to-choose-electrician.html')
 
 # -------- Legal pages (with lang) --------
 @app.route('/<lang>/privacy')
@@ -4585,7 +4591,13 @@ def url_for_lang(endpoint=None, lang=None, **kwargs):
     if endpoint:
         endpoint = ENDPOINT_ALIASES.get(endpoint, endpoint)
         kwargs["lang"] = new_lang
-        return url_for(endpoint, **kwargs)
+        try:
+            return url_for(endpoint, **kwargs)
+        except BuildError:
+            current_app.logger.warning(
+                "url_for_lang: failed to build endpoint '%s' with args %r", endpoint, kwargs, exc_info=True
+            )
+            return "#"
 
     # אין endpoint => מחליפים שפה באותו הנתיב (כולל שמירת ה־query string)
     new_path = _swap_lang_in_path(request.path, new_lang)

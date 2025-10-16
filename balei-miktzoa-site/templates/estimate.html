@@ -251,6 +251,7 @@
         }
         if (typeof value === 'string'){
           const normalized = value
+            .replace(/[\u2012\u2013\u2014\u2015\u2212]/g, '-')
             .replace(/[^0-9,.-]/g, '')
             .replace(/,(?=\d{3}\b)/g, '')
             .replace(/,/g, '.');

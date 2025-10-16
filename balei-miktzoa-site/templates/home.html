@@ -161,6 +161,7 @@
   </div>
 </section>
 
+
 <!-- POPULAR FIELDS -->
 <section class="niche-rail-wrap" id="niches" aria-label="{{ _('homepage.popular_fields_title') }}">
   <div class="container">
@@ -191,6 +192,59 @@
         <span class="np-label">{{ _('homepage.popular_fields.locksmiths') }}</span>
       </button>
     </nav>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="home-articles" id="articles" aria-label="{{ _('homepage.articles.title') }}">
+  <div class="container">
+    <header class="articles-head">
+      <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
+      <h2>{{ _('homepage.articles.title') }}</h2>
+      <p class="articles-subtitle">{{ _('homepage.articles.subtitle') }}</p>
+    </header>
+
+    {% set articles = [
+      {
+        'icon': 'fa-solid fa-bolt',
+        'title': _('homepage.articles.electric.title'),
+        'excerpt': _('homepage.articles.electric.excerpt'),
+        'href': url_for('static', filename='articles/how-to-choose-electrician.html'),
+        'cta': _('homepage.articles.electric.link')
+      },
+      {
+        'icon': 'fa-solid fa-droplet',
+        'title': _('homepage.articles.plumber.title'),
+        'excerpt': _('homepage.articles.plumber.excerpt'),
+        'href': url_for('static', filename='articles/plumbing-quote-checklist.html'),
+        'cta': _('homepage.articles.plumber.link')
+      },
+      {
+        'icon': 'fa-solid fa-helmet-safety',
+        'title': _('homepage.articles.renovation.title'),
+        'excerpt': _('homepage.articles.renovation.excerpt'),
+        'href': url_for('static', filename='articles/renovation-prep-checklist.html'),
+        'cta': _('homepage.articles.renovation.link')
+      }
+    ] %}
+
+    <div class="articles-grid">
+      {% for article in articles %}
+        <article class="article-card">
+          <div class="article-icon" aria-hidden="true">
+            <i class="{{ article.icon }}"></i>
+          </div>
+          <div class="article-body">
+            <h3>{{ article.title }}</h3>
+            <p>{{ article.excerpt }}</p>
+            <a class="article-cta" href="{{ article.href }}">
+              <span>{{ article.cta }}</span>
+              <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
   </div>
 </section>
 

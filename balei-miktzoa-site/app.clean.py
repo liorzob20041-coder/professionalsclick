@@ -1,5 +1,5 @@
 # === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta, date, timezone, time as dt_time
@@ -2114,6 +2114,11 @@ def contact(lang):
     g.current_lang = lang
     return render_template("contact.html")
 
+@app.route('/<lang>/articles')
+def articles_index(lang):
+    g.current_lang = lang
+    return render_template('articles/index.html')
+
 @app.route('/<lang>/articles/how-to-choose-electrician')
 def article_electrician(lang):
     g.current_lang = lang
@@ -3080,7 +3085,21 @@ def add_review(lang):
             reviews_list.insert(0, new_review)
 
         # סנכרון לשיטס (Webhook) - לא חוסם את הזרימה
-        sync_review_to_sheets(new_review, lang=lang)
+        def _sync_to_sheets_async(_review: dict, _lang: str):
+            try:
+                sync_review_to_sheets(_review, lang=_lang)
+            except Exception as e:
+                try:
+                    with open(os.path.join(DATA_FOLDER, 'reviews_errors.log'), 'a', encoding='utf-8') as f:
+                        f.write(f"{datetime.now().isoformat()}Z\tsheets_sync\t{repr(e)}\n")
+                except Exception:
+                    pass
+
+        threading.Thread(
+            target=_sync_to_sheets_async,
+            args=(copy.deepcopy(new_review), lang),
+            daemon=True
+        ).start()
 
 
 

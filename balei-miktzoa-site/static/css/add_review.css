@@ -171,7 +171,6 @@ form[action*="add_review"] {
   gap: 14px 16px;
   align-items: end;
 }
-
 form[action*="add-review"] > h1,
 form[action*="add_review"] > h1 {
   grid-column: 1 / -1;
@@ -179,6 +178,41 @@ form[action*="add_review"] > h1 {
   text-align: center;
   color: #333;
   font-size: 2rem;
+}
+.add-review-form button[type="submit"],
+form[action*="add-review"] button[type="submit"],
+form[action*="add_review"] button[type="submit"] {
+  justify-self: start;
+  min-width: 200px;
+}
+@media (max-width: 860px) {
+  .add-review-page {
+    padding: 0 14px 36px;
+  }
+  .add-review-page h1 {
+    font-size: 1.75rem;
+  }
+  .add-review-form,
+  form[action*="add-review"],
+  form[action*="add_review"] {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .add-review-form label,
+  form[action*="add-review"] label,
+  form[action*="add_review"] label {
+    margin-inline: 2px;
+  }
+  .add-review-form button[type="submit"],
+  form[action*="add-review"] button[type="submit"],
+  form[action*="add_review"] button[type="submit"] {
+    justify-self: stretch;
+    width: 100%;
+    min-width: 0;
+  }
+  #ratingWidget {
+    justify-self: center;
+  }
 }
 
 /* =========================================
@@ -249,43 +283,7 @@ form[action*="add_review"] > h1 {
   color: #ffa500;
 }
 
-/* =========================================
-   BACK BUTTON
-   ========================================= */
-.add-review-page .ar-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-  background: #fafafa;
-  color: #333;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 4%);
-  transition:
-    background 0.2s,
-    box-shadow 0.2s,
-    transform 0.05s;
-}
 
-.add-review-page .ar-back:hover {
-  background: #f3f3f3;
-  box-shadow: 0 4px 10px rgb(0 0 0 / 6%);
-}
-
-.add-review-page .ar-back:active {
-  transform: translateY(1px);
-}
-
-.add-review-page .ar-back::before {
-  content: "׳’ג€ ֲ©";
-  font-size: 1rem;
-  line-height: 1;
-  opacity: 0.9;
-}
 
 /* =========================================
    ׳³ג€˜׳³ֲ§׳³ֲ¨ ׳³ג€÷׳³ג€¢׳³ג€÷׳³ג€˜׳³ג„¢׳³ֲ ׳³ג€˜׳³ֲ׳³ג„¢ hover (ar-stars-ctrl)

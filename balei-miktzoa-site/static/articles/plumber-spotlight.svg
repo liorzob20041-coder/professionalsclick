@@ -1,0 +1,26 @@
+<svg width="360" height="260" viewBox="0 0 360 260" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">אילוסטרציה של אינסטלטור בעבודה</title>
+  <desc id="desc">דמות אינסטלטור מחזיקה מפתח צינורות ליד כיור, על רקע אלמנטים בגווני בורדו ותכלת.</desc>
+  <rect width="360" height="260" rx="28" fill="#F6F2F3"/>
+  <path d="M44 188C44 160.386 66.3863 138 94 138H262C289.614 138 312 160.386 312 188V204C312 214.493 303.493 223 293 223H63C52.5066 223 44 214.493 44 204V188Z" fill="#E5EEF0"/>
+  <path d="M96 74C96 60.7452 106.745 50 120 50H174C187.255 50 198 60.7452 198 74V84C198 97.2548 187.255 108 174 108H120C106.745 108 96 97.2548 96 84V74Z" fill="#D5E7EA"/>
+  <rect x="130" y="94" width="36" height="48" rx="8" fill="#8A1538"/>
+  <path d="M168 122C168 113.716 174.716 107 183 107H207C215.284 107 222 113.716 222 122V138C222 146.284 215.284 153 207 153H189C177.954 153 168 143.046 168 132V122Z" fill="#B42452"/>
+  <path d="M203 122H216C222.627 122 228 127.373 228 134C228 140.627 222.627 146 216 146H205.5" stroke="#F7E7EC" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="140" cy="78" r="16" fill="#8A1538"/>
+  <path d="M141 66C141 61.5817 144.582 58 149 58H160C164.418 58 168 61.5817 168 66V78" stroke="#B42452" stroke-width="8" stroke-linecap="round"/>
+  <path d="M160 154L174 174" stroke="#1F2B3A" stroke-width="12" stroke-linecap="round"/>
+  <path d="M144 154L128 174" stroke="#1F2B3A" stroke-width="12" stroke-linecap="round"/>
+  <rect x="100" y="112" width="48" height="62" rx="16" fill="#1F2B3A"/>
+  <circle cx="124" cy="102" r="14" fill="#F7E7EC"/>
+  <path d="M124 116L122 126" stroke="#F7E7EC" stroke-width="6" stroke-linecap="round"/>
+  <rect x="112" y="170" width="24" height="44" rx="10" fill="#2F3D4A"/>
+  <rect x="148" y="170" width="24" height="44" rx="10" fill="#2F3D4A"/>
+  <rect x="216" y="146" width="50" height="18" rx="9" fill="#8A1538"/>
+  <rect x="246" y="96" width="44" height="10" rx="5" fill="#8A1538"/>
+  <path d="M258 106V144" stroke="#8A1538" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="252" cy="188" r="20" fill="#F7E7EC"/>
+  <path d="M240 188H264" stroke="#8A1538" stroke-width="8" stroke-linecap="round"/>
+  <path d="M136 58C136 49.7157 142.716 43 151 43H159" stroke="#F7E7EC" stroke-width="8" stroke-linecap="round"/>
+  <path d="M190 188H214" stroke="#8A1538" stroke-width="10" stroke-linecap="round"/>
+</svg>

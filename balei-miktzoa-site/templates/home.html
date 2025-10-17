@@ -4,6 +4,7 @@
   {{ super() }}
   <link rel="preload" as="image" href="{{ url_for('static', filename='photo1.jpg') }}">
   <link rel="stylesheet" href="{{ static_rel('css/home.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
 {% endblock %}
 
 {% block title %}{{ _('homepage.seo_title') }}{% endblock %}
@@ -200,51 +201,53 @@
   <div class="container">
     <header class="articles-head">
       <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
-      <h2>{{ _('homepage.articles.title') }}</h2>
-      <p class="articles-subtitle">{{ _('homepage.articles.subtitle') }}</p>
+      <h2 class="articles-title">{{ _('homepage.articles.title') }}</h2>
+      <p class="articles-intro">{{ _('homepage.articles.subtitle') }}</p>
     </header>
-
     {% set articles = [
       {
-        'icon': 'fa-solid fa-bolt',
+        'img': url_for('static', filename='articles/electrician-spotlight.svg'),
+        'img_alt': _('homepage.articles.electric.alt'),
         'title': _('homepage.articles.electric.title'),
         'excerpt': _('homepage.articles.electric.excerpt'),
-        'href': url_for('static', filename='articles/how-to-choose-electrician.html'),
-        'cta': _('homepage.articles.electric.link')
+        'href': url_for('static', filename='articles/how-to-choose-electrician.html')
       },
       {
-        'icon': 'fa-solid fa-droplet',
+        'img': url_for('static', filename='articles/plumber-spotlight.svg'),
+        'img_alt': _('homepage.articles.plumber.alt'),
         'title': _('homepage.articles.plumber.title'),
         'excerpt': _('homepage.articles.plumber.excerpt'),
-        'href': url_for('static', filename='articles/plumbing-quote-checklist.html'),
-        'cta': _('homepage.articles.plumber.link')
+        'href': url_for('static', filename='articles/plumbing-quote-checklist.html')
       },
       {
-        'icon': 'fa-solid fa-helmet-safety',
+        'img': url_for('static', filename='articles/renovation-spotlight.svg'),
+        'img_alt': _('homepage.articles.renovation.alt'),
         'title': _('homepage.articles.renovation.title'),
         'excerpt': _('homepage.articles.renovation.excerpt'),
-        'href': url_for('static', filename='articles/renovation-prep-checklist.html'),
-        'cta': _('homepage.articles.renovation.link')
+        'href': url_for('static', filename='articles/renovation-prep-checklist.html')
       }
     ] %}
-
-    <div class="articles-grid">
+    <div class="articles-list" role="list">
       {% for article in articles %}
-        <article class="article-card">
-          <div class="article-icon" aria-hidden="true">
-            <i class="{{ article.icon }}"></i>
-          </div>
-          <div class="article-body">
-            <h3>{{ article.title }}</h3>
-            <p>{{ article.excerpt }}</p>
-            <a class="article-cta" href="{{ article.href }}">
-              <span>{{ article.cta }}</span>
-              <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
+        <article class="article-card" role="listitem">
+          <a class="article-thumb" href="{{ article.href }}">
+            <img src="{{ article.img }}" alt="{{ article.img_alt }}" loading="lazy" decoding="async">
+          </a>
+          <div class="article-content">
+            <h3 class="article-title"><a href="{{ article.href }}">{{ article.title }}</a></h3>
+            <p class="article-excerpt">{{ article.excerpt }}</p>
+            <a class="article-read-more" href="{{ article.href }}">
+              <span>{{ _('homepage.articles.read_more') }}</span>
+              <span class="icon" aria-hidden="true"><i class="fa-solid fa-arrow-left-long dir-flip"></i></span>
             </a>
           </div>
         </article>
       {% endfor %}
     </div>
+    <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="all-articles-btn">
+      <span>{{ _('homepage.articles.all_articles') }}</span>
+      <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+    </a>
   </div>
 </section>
 

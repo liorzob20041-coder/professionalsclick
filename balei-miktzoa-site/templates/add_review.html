@@ -8,13 +8,9 @@
 
 {% block content %}
 <div class="add-review-page">
-
-  <a href="#" class="ar-back" onclick="history.back(); return false;">חזרה לתוצאות חיפוש</a>
-
   <h1>הוספת ביקורת</h1>
-
   {% if success_message %}
-    <p class="ar-success">{{ success_message }}</p>
+    <p class="ar-success" role="status" aria-live="polite">{{ success_message }}</p>
   {% endif %}
 
   <form class="add-review-form" method="POST" action="{{ url_for('add_review', lang=lang) }}">

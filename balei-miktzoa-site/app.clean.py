@@ -2124,6 +2124,18 @@ def article_electrician(lang):
     g.current_lang = lang
     return render_template('articles/how-to-choose-electrician.html')
 
+
+@app.route('/<lang>/articles/plumbing-quote-checklist')
+def article_plumbing_quote(lang):
+    g.current_lang = lang
+    return render_template('articles/plumbing-quote-checklist.html')
+
+
+@app.route('/<lang>/articles/renovation-prep-checklist')
+def article_renovation_prep(lang):
+    g.current_lang = lang
+    return render_template('articles/renovation-prep-checklist.html')
+
 # -------- Legal pages (with lang) --------
 @app.route('/<lang>/privacy')
 def privacy(lang):

@@ -206,25 +206,25 @@
     </header>
     {% set articles = [
       {
-        'img': url_for('static', filename='articles/electrician-spotlight.svg'),
+        'img': url_for('static', filename='articles/electrician-spotlight.jpg'),
         'img_alt': _('homepage.articles.electric.alt'),
         'title': _('homepage.articles.electric.title'),
         'excerpt': _('homepage.articles.electric.excerpt'),
-        'href': url_for('static', filename='articles/how-to-choose-electrician.html')
+        'href': url_for_lang('article_electrician')
       },
       {
-        'img': url_for('static', filename='articles/plumber-spotlight.svg'),
+        'img': url_for('static', filename='articles/plumber-spotlight.jpg'),
         'img_alt': _('homepage.articles.plumber.alt'),
         'title': _('homepage.articles.plumber.title'),
         'excerpt': _('homepage.articles.plumber.excerpt'),
-        'href': url_for('static', filename='articles/plumbing-quote-checklist.html')
+        'href': url_for_lang('article_plumbing_quote')
       },
       {
-        'img': url_for('static', filename='articles/renovation-spotlight.svg'),
+        'img': url_for('static', filename='articles/renovation-spotlight.jpg'),
         'img_alt': _('homepage.articles.renovation.alt'),
         'title': _('homepage.articles.renovation.title'),
         'excerpt': _('homepage.articles.renovation.excerpt'),
-        'href': url_for('static', filename='articles/renovation-prep-checklist.html')
+        'href': url_for_lang('article_renovation_prep')
       }
     ] %}
     <div class="articles-list" role="list">

@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% set canonical_url = url_for_lang('article_renovation_prep', lang=g.current_lang, _external=True) %}
+
+{% block title %}איך להתכונן לשיפוץ דירה? | בעלי מקצוע בקליק{% endblock %}
+
+{% block head_seo %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="description" content="השלבים הקריטיים לפני שיפוץ דירה: תקציב, רישוי, אנשי מקצוע ותיאום לוחות זמנים.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="איך להתכונן לשיפוץ דירה? | בעלי מקצוע בקליק">
+  <meta property="og:description" content="רשימת בדיקה שתעזור לכם לצלוח את השיפוץ בביטחון ובשקט נפשי.">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:image" content="{{ static_abs('articles/renovation-spotlight.svg') }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="איך להתכונן לשיפוץ דירה? | בעלי מקצוע בקליק">
+  <meta name="twitter:description" content="תכנון תקציב, בחירת אנשי מקצוע וניהול לו״ז – כל מה שחייבים לדעת.">
+  <meta name="twitter:image" content="{{ static_abs('articles/renovation-spotlight.svg') }}">
+{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Rubik", "Heebo", "Arial", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top right, rgba(236, 72, 153, 0.12), transparent 55%),
+        radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.12), transparent 50%),
+        linear-gradient(180deg, #fdf2f8 0%, #eff6ff 100%);
+      color: #0f172a;
+    }
+
+    .article-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: clamp(24px, 5vw, 48px);
+      padding: clamp(32px, 6vw, 80px) clamp(20px, 5vw, 60px);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .article-shell {
+      width: min(1024px, 100%);
+    }
+
+    .article-card {
+      position: relative;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.14);
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .article-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, rgba(236, 72, 153, 0.08), rgba(59, 130, 246, 0.06), transparent 70%);
+      pointer-events: none;
+    }
+
+    .article-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .article__header,
+    .article__content,
+    .article__footer {
+      padding: clamp(28px, 5vw, 56px) clamp(26px, 6vw, 72px);
+    }
+
+    .article__header {
+      display: grid;
+      gap: clamp(18px, 3vw, 28px);
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(14, 165, 233, 0.08));
+    }
+
+    .article__header h1 {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 46px);
+      color: #db2777;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .article__intro {
+      max-width: 72ch;
+      font-size: clamp(18px, 2.4vw, 21px);
+      color: rgba(15, 23, 42, 0.88);
+    }
+
+    .article__hero {
+      margin: 0;
+      padding: 0 clamp(32px, 5vw, 72px) clamp(32px, 5vw, 56px);
+    }
+
+    .hero-media {
+      border-radius: 30px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.16), rgba(59, 130, 246, 0.12));
+      box-shadow: 0 40px 70px rgba(15, 23, 42, 0.18);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: clamp(18px, 4vw, 32px);
+    }
+
+    .hero-media img {
+      display: block;
+      width: min(720px, 100%);
+      height: auto;
+    }
+
+    .article__content {
+      display: grid;
+      gap: clamp(32px, 4vw, 44px);
+      background: linear-gradient(180deg, rgba(254, 226, 226, 0.25), transparent);
+    }
+
+    .guide-block {
+      background: rgba(255, 247, 237, 0.92);
+      border-radius: 26px;
+      padding: clamp(24px, 4vw, 40px);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+      display: grid;
+      gap: clamp(16px, 3vw, 24px);
+    }
+
+    .guide-block:nth-of-type(even) {
+      background: rgba(254, 215, 226, 0.85);
+    }
+
+    .guide-block h2 {
+      margin: 0;
+      font-size: clamp(24px, 3.2vw, 32px);
+      color: #c026d3;
+      line-height: 1.35;
+    }
+
+    .guide-block p,
+    .guide-block li {
+      margin: 0;
+      font-size: clamp(17px, 2.1vw, 20px);
+      color: rgba(15, 23, 42, 0.86);
+      line-height: 1.75;
+    }
+
+    .guide-block ul {
+      margin: 0;
+      padding: 0 1.1rem 0 0;
+      list-style: disc;
+      display: grid;
+      gap: 12px;
+    }
+
+    .article__footer {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(59, 130, 246, 0.1));
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      display: grid;
+      gap: 14px;
+    }
+
+    .article__footer p {
+      margin: 0;
+      font-size: clamp(18px, 2.3vw, 21px);
+      font-weight: 500;
+    }
+
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 999px;
+      background: #ec4899;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-shadow: 0 15px 30px rgba(15, 23, 42, 0.18);
+      width: fit-content;
+    }
+
+    .cta-link:hover,
+    .cta-link:focus {
+      transform: translateY(-2px);
+      background: #db2777;
+      box-shadow: 0 20px 36px rgba(15, 23, 42, 0.22);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="article-page">
+    <div class="article-shell">
+      <article class="article-card">
+        <header class="article__header">
+          <h1>איך להתכונן לשיפוץ דירה?</h1>
+          <p class="article__intro">
+            שיפוץ מוצלח מתחיל בהיערכות נכונה: הגדרת תקציב, קבלת אישורים והכנת הבית לקראת העבודות. כך תימנעו מהפתעות
+            ותחסכו זמן וכסף.
+          </p>
+        </header>
+        <figure class="article__hero">
+          <div class="hero-media">
+            <img
+              src="{{ url_for('static', filename='articles/renovation-spotlight.svg') }}"
+              alt="איור של זוג שמתכנן שיפוץ בית"
+              loading="lazy"
+              decoding="async"
+              width="720"
+              height="480">
+          </div>
+        </figure>
+        <div class="article__content">
+          <section class="guide-block">
+            <h2>תכנון תקציב ומקדמות</h2>
+            <p>
+              גבשו מסגרת תקציבית הכוללת רזרבה להפתעות. בקשו מהקבלן פירוט שלבי תשלום והגדירו מראש מה כלול בכל מקדמה,
+              כדי לשמור על תזרים מסודר לאורך הפרויקט.
+            </p>
+          </section>
+          <section class="guide-block">
+            <h2>בדיקת היתרים ואישורים</h2>
+            <p>
+              עבודות מבניות, שינויי אינסטלציה או חשמל דורשים לעיתים אישורים מהרשות המקומית או מחברת החשמל. בדקו מבעוד
+              מועד אילו מסמכים צריך להגיש ומי מטפל בכך.
+            </p>
+          </section>
+          <section class="guide-block">
+            <h2>בחירת בעלי מקצוע מתאימים</h2>
+            <p>
+              אספו המלצות, בקשו לראות עבודות קודמות וודאו שלקבלן יש ביטוח ואחריות. כדאי לבחור קבלן שמרכז עבורכם את כל
+              בעלי המקצוע הרלוונטיים ומנהל אותם במקומכם.
+            </p>
+          </section>
+          <section class="guide-block">
+            <h2>היערכות ליום שאחרי</h2>
+            <p>
+              תכננו מראש מה עושים עם הריהוט, האם צריך מגורים חלופיים וכיצד מגנים על החדרים שאינם בשיפוץ. הכנה מוקדמת
+              תאפשר להתחיל את הפרויקט בראש שקט ולחזור לשגרה מהר יותר.
+            </p>
+          </section>
+        </div>
+        <footer class="article__footer">
+          <p>
+            מחפשים קבלן שיפוצים מנוסה שינהל עבורכם את כל התהליך? השאירו פרטים ונחזור אליכם עם הצעות מותאמות.
+          </p>
+          <a class="cta-link" href="{{ url_for_lang('request_professional') }}">השאירו פרטים וקבלו הצעות</a>
+        </footer>
+      </article>
+    </div>
+  </div>
+{% endblock %}

@@ -65,14 +65,18 @@
   position: relative;
   display: block;
   background: #faf6f7;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;          /* חדש: חותך את עודפי התמונה */
 }
+
 .article-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: clamp(20px, 4vw, 32px);
+  object-fit: cover;         /* היה contain -> cover */
+  display: block;            /* כדי למנוע רווח inline */
+  /* הסר את ה-padding שהיה כאן */
 }
+
 .article-content {
   display: flex;
   flex-direction: column;

@@ -179,7 +179,8 @@
     {% set city_empty_state = _city_list_empty_map.get(g.current_lang, _city_list_empty_map['he']) %}
     {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
-    {% set close_label = (_('close') if _ else 'סגור') %}
+    {% set languages_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
+    {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}    {% set close_label = (_('close') if _ else 'סגור') %}
     {% set view_profile_label_map = {'he':'הצג פרופיל','en':'View profile','ru':'Просмотреть профиль'} %}
     {% set call_cta_label_map = {'he':'התקשר','en':'Call','ru':'Позвонить'} %}
     {% set view_profile_label = view_profile_label_map.get(g.current_lang, view_profile_label_map['he']) %}
@@ -287,14 +288,6 @@
     </div>
 
     <div class="wr-container">
-      <section class="wr-guide" aria-label="איך לבחור נכון">
-        <h2>איך לבחור נכון</h2>
-        <ul>
-          <li>בדקו ניסיון רלוונטי וביקורות עדכניות.</li>
-          <li>השוו טווחי מחיר וזמינות קרובה.</li>
-          <li>בקשו הצעת מחיר כתובה וממוקדת.</li>
-        </ul>
-      </section>
       <main class="wr-list" aria-label="{{ _('workers_list_aria') }}">
         {% if workers|length == 0 %}
           <div class="empty-state clean" role="status">
@@ -326,6 +319,11 @@
               {% set services_text = (w.services_list or w.sub_services or [])|join(', ') %}
               {% set languages = w.languages or [] %}
               {% set bio_short = (w.bio_short or w.description) %}
+              {% set has_meta = (w.offers_emergency or w.experience_text) %}
+              {% set services_label_map = {'he':'התמחויות עיקריות','en':'Key services','ru':'Основные услуги'} %}
+              {% set availability_label_map = {'he':'זמינות','en':'Availability','ru':'Доступность'} %}
+              {% set services_label = services_label_map.get(g.current_lang, services_label_map['he']) %}
+              {% set availability_label = availability_label_map.get(g.current_lang, availability_label_map['he']) %}
               <article class="wr-card" role="listitem" data-href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
                 <a class="wr-media" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="{{ w.company_name or w.name }}">
                   <img class="wr-img" src="{{ image_url }}" alt="{{ w.company_name or w.name }}">
@@ -336,39 +334,79 @@
                   {% endif %}
                 </a>
                 <div class="wr-body">
+                  {% if w.rating or has_meta %}
+                    <div class="wr-topline">
+                      {% if w.rating %}
+                        <div class="wr-rating wr-rating--top" aria-label="דירוג {{ '%.1f'|format(w.rating|float) }}">
+                          <i class="fa-solid fa-star" aria-hidden="true"></i>
+                          <span class="wr-rating__value">{{ '%.1f'|format(w.rating|float) }}</span>
+                          {% if w.reviews_count %}<span class="wr-rating__count">{{ w.reviews_count }} {{ reviews_label_map.get(g.current_lang, reviews_label_map['he']) }}</span>{% endif %}
+                        </div>
+                      {% endif %}
+                      {% if has_meta %}
+                        <div class="wr-meta">
+                          {% if w.offers_emergency %}<span class="pill pill--emg">24/7</span>{% endif %}
+                          {% if w.experience_text %}<span class="pill">{{ w.experience_text }}</span>{% endif %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
                   <header class="wr-head">
-                    <h3 class="wr-title">
-                      <a href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
-                        {{ w.company_name or w.name }}
-                      </a>
-                    </h3>
-                    <div class="wr-meta">
-                      {% if w.offers_emergency %}<span class="pill pill--emg">24/7</span>{% endif %}
-                      {% if w.experience_text %}<span class="pill">{{ w.experience_text }}</span>{% endif %}
+                    <div class="wr-title-row">
+                      <div class="wr-avatar">
+                        <img src="{{ image_url }}" alt="{{ w.company_name or w.name }}">
+                      </div>
+                      <div class="wr-title-stack">
+                        <h3 class="wr-title">
+                          <a href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
+                            {{ w.company_name or w.name }}
+                          </a>
+                        </h3>
+                      </div>
                     </div>
                   </header>
-                  {% if services_text %}
-                    <div class="wr-line wr-services" title="{{ services_text }}">{{ services_text }}</div>
-                  {% endif %}
-                  {% if languages %}
-                    <div class="wr-line wr-langs" title="שפות: {{ languages|join(', ') }}">שפות: {{ languages|join(', ') }}</div>
-                  {% endif %}
-                  {% if w.is_available_now is not none %}
-                    <div class="wr-line wr-status {{ 'is-on' if w.is_available_now else 'is-off' }}">{{ _('call_now') if w.is_available_now else _('not_available') }}</div>
+                  {% set has_summary = services_text or languages or (w.is_available_now is not none) %}
+                  {% if has_summary %}
+                    <div class="wr-summary">
+                      {% if services_text %}
+                        <div class="wr-summary__item" title="{{ services_text }}">
+                          <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                          <div class="wr-summary__text">
+                            <span class="wr-summary__label">{{ services_label }}</span>
+                            <span class="wr-summary__value">{{ services_text }}</span>
+                          </div>
+                        </div>
+                      {% endif %}
+                      {% if languages %}
+                        <div class="wr-summary__item" title="{{ languages_label }}: {{ languages|join(', ') }}">
+                          <i class="fa-solid fa-language" aria-hidden="true"></i>
+                          <div class="wr-summary__text">
+                            <span class="wr-summary__label">{{ languages_label }}</span>
+                            <span class="wr-summary__value">{{ languages|join(', ') }}</span>
+                          </div>
+                        </div>
+                      {% endif %}
+                      {% if w.is_available_now is not none %}
+                        <div class="wr-summary__item">
+                          <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                          <div class="wr-summary__text">
+                            <span class="wr-summary__label">{{ availability_label }}</span>
+                            <span class="wr-summary__value {{ 'is-on' if w.is_available_now else 'is-off' }}">{{ _('call_now') if w.is_available_now else _('not_available') }}</span>
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
                   {% endif %}
                   {% if bio_short %}
-                    <p class="wr-desc lc-3">{{ bio_short }}</p>
+                    <p class="wr-desc lc-2">{{ bio_short }}</p>
                   {% endif %}
                   {% if w.latest_review %}
-                    <p class="wr-desc lc-3" dir="auto">“{{ w.latest_review }}”</p>
+                    <p class="wr-quote" dir="auto">
+                      <i class="fa-solid fa-quote-right" aria-hidden="true"></i>
+                      <span>“{{ w.latest_review }}”</span>
+                    </p>
                   {% endif %}
                   <footer class="wr-foot">
-                    {% if w.rating %}
-                      <div class="wr-rating" aria-label="דירוג {{ '%.1f'|format(w.rating|float) }}">
-                        ⭐ <b>{{ '%.1f'|format(w.rating|float) }}</b>
-                        {% if w.reviews_count %}<span class="muted">({{ w.reviews_count }} ביקורות)</span>{% endif %}
-                      </div>
-                    {% endif %}
                     <div class="wr-cta">
                       <a class="btn btn-primary" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ view_profile_label }}</a>
                       {% set phone_number = (w.phone_formatted or w.phone) %}

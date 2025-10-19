@@ -1,4 +1,4 @@
-﻿﻿/* ================================
+﻿﻿﻿/* ================================
    WORKERS LIST ג€” clean masthead + sticky toolbar + cards
    ================================ */
 
@@ -1130,42 +1130,53 @@ body {
 
 /* -------- Card -------- */
 .worker-card {
+  --brand-main: #b0183c;
+  --brand-accent: #253b80;
+  --star-color: #ffb400;
   --space-1: 6px;
   --space-2: 10px;
   --space-3: 16px;
   --space-4: 24px;
   display: grid;
-  grid-template-columns: 240px 1fr 210px;
+  grid-template-columns: 260px 1fr 210px;
+  grid-template-areas: "media main actions";
   gap: 20px;
   align-items: center;
   padding: var(--space-4);
   width: 100%;
   background: #fff;
-  border: 1px solid var(--border, #ececec);
+  border: 1px solid #ececec;
   border-radius: 16px;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 6%);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
+  line-height: 1.5;
+  direction: rtl;
+  text-align: right;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     transform 0.2s ease;
 }
 .worker-card + .worker-card {
-  margin-block: 16px;
+  margin-block: 20px;
 }
 .worker-card:hover {
-  border-color: rgb(var(--brand-400-rgb, 176 19 69) / 40%);
-  box-shadow: 0 10px 26px rgb(15 23 42 / 12%);
+  border-color: rgb(176 19 60 / 40%);
+  box-shadow: 0 12px 28px rgb(15 23 42 / 16%);
   transform: translateY(-2px);
 }
 .worker-card[data-href]:hover {
   cursor: pointer;
 }
 .card-media {
-  aspect-ratio: 16 / 9;
+  grid-area: media;
+}
+.media-box {
+  position: relative;
   width: 100%;
+  max-width: 260px;
+  aspect-ratio: 16 / 9;
   border-radius: 16px;
   overflow: hidden;
-  position: relative;
   background: #f6f6f6;
 }
 .card-media video,
@@ -1175,10 +1186,31 @@ body {
   object-fit: cover;
   display: block;
 }
+.media-box video {
+  background: #000;
+}
+.media-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.media-play svg {
+  width: 82px;
+  height: 82px;
+}
+.media-play circle {
+  fill: rgb(0 0 0 / 45%);
+}
+.media-play path {
+  fill: var(--brand-main);
+}
 .media-thumb {
   position: absolute;
-  inset-inline-start: 10px;
-  inset-block-end: 10px;
+  left: 10px;
+  bottom: 10px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -1187,28 +1219,21 @@ body {
   object-fit: cover;
 }
 .card-main {
+  grid-area: main;
   display: grid;
   row-gap: var(--space-2);
-  line-height: 1.5;
   min-width: 0;
-}
-.card-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--space-3);
 }
 .card-title {
   margin: 0;
-  font: 700 1.25rem/1.3 var(--font, inherit);
-  color: #101828;
-  min-width: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
 }
 .card-title a {
   display: inline-flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   gap: var(--space-1);
   color: inherit;
   text-decoration: none;
@@ -1219,74 +1244,140 @@ body {
   outline: none;
 }
 .card-title .company {
-  font-weight: 600;
-  color: var(--muted, #555);
+  font-weight: 700;
+}
+.card-title .person {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #444;
+}
+.card-title .divider {
+  color: #bbb;
 }
 .card-rating {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
   font-size: 0.95rem;
-  color: var(--muted, #555);
+  color: #555;
 }
 .card-rating .stars {
-  color: #c7c7c7;
-  letter-spacing: 0.4ch;
-  font-size: 0.95rem;
+  display: inline-flex;
+  gap: 2px;
+}
+.card-rating .star {
+  color: #d4d4d4;
+  font-size: 1.05rem;
+}
+.card-rating .star--full {
+  color: var(--star-color);
+}
+.card-rating .star--half {
+  background: linear-gradient(90deg, var(--star-color) 50%, #d4d4d4 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .card-rating .avg {
   font-weight: 600;
   color: #1f2937;
 }
-.card-specialties,
-.card-bio,
-.card-langs,
-.card-reviews-link {
-  font-size: 0.95rem;
-  color: var(--muted, #50555a);
+.card-rating .count {
+  color: #666;
 }
 .card-specialties {
-  white-space: nowrap;
+  font-size: 0.9rem;
+  color: #555;
+  min-height: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .card-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 8px;
 }
 .chip {
+  display: inline-flex;
+  align-items: center;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #f2f2f2;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #4b5563;
-  white-space: nowrap;
+  color: #2f2f2f;
+  background: #f0f2f5;
 }
-.chip--success {
-  background: #e8f7ee;
-  color: #107e3e;
+.chip--experience {
+  background: #eef1f5;
+  color: #2d3748;
 }
-.chip--muted {
-  background: #f4f4f5;
-  color: #52525b;
+.chip--availability {
+  background: #e5f8f0;
+  color: #116149;
+}
+.chip--emergency {
+  background: #eef3fd;
+  color: var(--brand-accent);
 }
 .card-bio {
+  font-size: 0.85rem;
+  color: #444;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.card-last-review {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #4a4a4a;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 10px;
+}
+.last-review-meta {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-weight: 600;
+  color: #333;
+}
+.last-review-text {
+  color: #555;
+}
+.reviews-link {
+  font-weight: 600;
+  color: var(--brand-main);
+  text-decoration: underline;
+  width: fit-content;
+}
+.reviews-link:hover,
+.reviews-link:focus-visible {
+  color: #8d0f2d;
+}
 .card-langs {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #666;
 }
-.card-langs i {
-  color: var(--icon-muted, #6b7280);
+.lang-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--brand-accent), #4f6bb8);
+  position: relative;
+}
+.lang-icon::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  opacity: 0.85;
 }
 .card-actions {
+  grid-area: actions;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1297,52 +1388,68 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   height: 44px;
   padding: 0 16px;
-  border-radius: 12px;
-  font-weight: 700;
+  border-radius: 8px;
+  font-weight: 600;
   font-size: 1rem;
   white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
-.worker-card .btn-primary {
-  background: var(--brand-700, #8a1538);
+.btn-call {
+  background: var(--brand-main);
   color: #fff;
   border: none;
 }
-.worker-card .btn-outline {
-  border: 1px solid var(--brand-700, #8a1538);
-  color: var(--brand-700, #8a1538);
-  background: transparent;
+.btn-call:hover,
+.btn-call:focus-visible {
+  background: #c12b53;
 }
-.worker-card .btn-outline:hover,
-.worker-card .btn-outline:focus-visible {
-  background: rgb(138 21 56 / 8%);
+.btn-whatsapp {
+  background: #25d366;
+  color: #fff;
+  border: none;
+}
+.btn-whatsapp:hover,
+.btn-whatsapp:focus-visible {
+  background: #1eb257;
+}
+.btn-profile {
+  border: 1px solid var(--brand-main);
+  color: var(--brand-main);
+  background: #fff;
+}
+.btn-profile:hover,
+.btn-profile:focus-visible {
+  background: rgb(176 24 60 / 8%);
 }
 .worker-card .btn:focus-visible {
-  outline: 2px solid var(--soft-ring, rgba(138, 21, 56, 0.4));
+  outline: 2px solid rgb(176 24 60 / 40%);
   outline-offset: 2px;
-}
-.card-reviews-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-weight: 600;
-  color: var(--brand-700, #8a1538);
-  text-decoration: none;
-}
-.card-reviews-link:hover,
-.card-reviews-link:focus-visible {
-  text-decoration: underline;
 }
 @media (max-width: 1100px) {
   .worker-card {
-    grid-template-columns: 220px 1fr 200px;
+    grid-template-columns: 240px 1fr 200px;
     gap: 18px;
+  }
+  .media-box {
+    max-width: 240px;
   }
 }
 @media (max-width: 900px) {
   .worker-card {
-    grid-template-columns: 200px 1fr 180px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "media actions"
+      "main main";
+    align-items: flex-start;
+  }
+  .card-actions {
+    align-self: stretch;
+  }
+  .media-box {
+    max-width: 100%;
   }
 }
 @media (max-width: 768px) {
@@ -1350,6 +1457,10 @@ body {
     grid-template-columns: 1fr;
     gap: 14px;
     padding: 16px;
+    grid-template-areas:
+      "media"
+      "main"
+      "actions";
   }
   .card-actions {
     flex-direction: row;

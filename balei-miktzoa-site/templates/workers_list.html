@@ -337,7 +337,8 @@
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
               {% set phone_number = (w.phone_formatted or w.phone) %}
-              {% set rating_label_map = {'he':'דירוג %.1f מתוך 5','en':'Rating %.1f out of 5','ru':'Оценка %.1f из 5'} %}
+              {% set whatsapp_number = (w.whatsapp_phone or w.phone_whatsapp or w.phone or '') %}
+              {% set rating_label_map = {'he':'דירוג %.2f מתוך 5','en':'Rating %.2f out of 5','ru':'Оценка %.2f из 5'} %}
               {% set rating_label_template = rating_label_map.get(g.current_lang, rating_label_map['he']) %}
               {% set name_ns = namespace(first=(w.first_name or '')|trim, last=(w.last_name or '')|trim) %}
               {% if not name_ns.first or not name_ns.last %}
@@ -353,63 +354,129 @@
                 {% set display_name = (w.name or w.company_name or '') %}
               {% endif %}
               {% set company_display = w.company_name %}
+
+              {# דירוג: תומך גם ב-rating_avg וגם ב-rating, בלי להפיל שגיאה כשחסר #}
+              {% set rating_source = none %}
+              {% if w.rating_avg is defined and w.rating_avg is not none and w.rating_avg != '' %}
+                {% set rating_source = w.rating_avg %}
+              {% elif w.rating is defined and w.rating is not none and w.rating != '' %}
+                {% set rating_source = w.rating %}
+              {% endif %}
+
               {% set rating_value = none %}
-              {% if w.rating is not none and w.rating != '' %}
-                {% set rating_value = '%.1f'|format(w.rating|float) %}
+              {% set rating_numeric = none %}
+              {% if rating_source is not none and rating_source != '' %}
+                {% set rating_numeric = rating_source|float %}
+                {% set rating_value = '%.2f'|format(rating_numeric) %}
+              {% endif %}
+
+              {% set sanitized_phone = (phone_number or '')|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '') %}
+              {% set whatsapp_clean = whatsapp_number|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '')|replace('+', '') %}
+              {% set last_review_author = (w.last_review_author or '')|trim %}
+              {% set last_review_rating = w.last_review_rating %}
+              {% set last_review_text = (w.last_review_text or '')|trim %}
+              {% if not last_review_author and w.last_review_name %}
+                {% set last_review_author = (w.last_review_name or '')|trim %}
+              {% endif %}
+              {% if last_review_author %}
+                {% set author_parts = last_review_author.split(' ', 1) %}
+                {% if author_parts|length > 1 %}
+                  {% set last_initial = author_parts[1][0:1] %}
+                  {% if last_initial %}
+                    {% set last_review_author = author_parts[0] ~ ' ' ~ last_initial ~ '.' %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+              {% if last_review_text %}
+                {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
               <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
                 <div class="card-media">
-                  {% if w.video_url %}
-                    <video src="{{ w.video_url }}" controls preload="none" playsinline muted poster="{{ image_url }}"></video>
-                    <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
-                  {% else %}
-                    <img class="media-photo" src="{{ image_url }}" alt="{{ display_name }}">
-                  {% endif %}
-                </div>
-                <div class="card-main">
-                  <div class="card-head">
-                    <h3 class="card-title">
-                      <a href="{{ profile_url }}">
-                        <span class="person-name">{{ display_name }}</span>
-                        {% if company_display %}<span class="company"> · {{ company_display }}</span>{% endif %}
-                      </a>
-                    </h3>
-                    {% if rating_value %}
-                      <div class="card-rating" aria-label="{{ rating_label_template|replace('%.1f', rating_value) }}">
-                        <span class="stars" aria-hidden="true">★★★★★</span>
-                        <span class="avg">{{ rating_value }}</span>
-                        {% if w.reviews_count %}<span class="count">({{ w.reviews_count }} {{ reviews_label }})</span>{% endif %}
-                      </div>
+                  <div class="media-box">
+                    {% if w.video_url %}
+                      <video src="{{ w.video_url }}" controls preload="none" playsinline muted poster="{{ image_url }}"></video>
+                      <span class="media-play" aria-hidden="true">
+                        <svg viewBox="0 0 60 60" role="presentation" focusable="false"><circle cx="30" cy="30" r="30" opacity="0.72"/><path d="M25 20v20l16-10z"/></svg>
+                      </span>
+                      <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
+                    {% else %}
+                      <img class="media-photo" src="{{ image_url }}" alt="{{ display_name }}">
+                      <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                     {% endif %}
                   </div>
+                </div>
+                <div class="card-main">
+                  <div class="card-title">
+                    <a href="{{ profile_url }}">
+                      {% if company_display %}
+                        <span class="company">{{ company_display }}</span>
+                        {% if display_name %}<span class="divider">·</span><span class="person">{{ display_name }}</span>{% endif %}
+                      {% else %}
+                        <span class="person">{{ display_name }}</span>
+                      {% endif %}
+                    </a>
+                  </div>
+                  {% if rating_value %}
+                    <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
+                      <span class="stars" aria-hidden="true">
+                        {% for i in range(1, 6) %}
+                          {% set star_class = 'star' %}
+                          {% if rating_numeric is not none and rating_numeric >= i %}
+                            {% set star_class = star_class ~ ' star--full' %}
+                          {% elif rating_numeric is not none and rating_numeric > (i - 1) %}
+                            {% set star_class = star_class ~ ' star--half' %}
+                          {% endif %}
+                          <span class="{{ star_class }}">★</span>
+                        {% endfor %}
+                      </span>
+                      <span class="avg">{{ rating_value }}</span>
+                      {% if w.reviews_count %}<span class="count">({{ w.reviews_count }} {{ reviews_label }})</span>{% endif %}
+                    </div>
+                  {% endif %}
                   {% if specialties_trim %}
                     <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
                   {% endif %}
                   {% if has_badges %}
                     <div class="card-badges">
-                      {% if experience_chip %}<span class="chip">{{ experience_chip }}</span>{% endif %}
-                      {% if w.offers_emergency %}<span class="chip chip--success">24/7</span>{% endif %}
-                      {% if w.is_available_now %}<span class="chip chip--muted">{{ availability_chip }}</span>{% endif %}
+                      {% if experience_chip %}<span class="chip chip--experience">{{ experience_chip }}</span>{% endif %}
+                      {% if w.offers_emergency %}<span class="chip chip--availability">24/7</span>{% endif %}
+                      {% if w.is_available_now %}<span class="chip chip--emergency">{{ availability_chip }}</span>{% endif %}
                     </div>
                   {% endif %}
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>
                   {% endif %}
-                  {% if languages|length %}
-                    <div class="card-langs">
-                      <i class="fa fa-language" aria-hidden="true"></i>
-                      <span class="langs-list" title="{{ languages_full }}">{{ languages_trim }}</span>
+                  {% if last_review_author or last_review_snippet %}
+                    <div class="card-last-review">
+                      <div class="last-review-meta">
+                        {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
+                        {% if last_review_rating %}
+                          <span class="rating">{% if last_review_author %}• {% endif %}{{ '%.0f'|format(last_review_rating|float) }}★</span>
+                        {% endif %}
+                      </div>
+                      {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
+                      <a class="reviews-link" href="{{ profile_url }}#reviews">{{ _('read_reviews')|default('קראו ביקורות') }}</a>
+                    </div>
+                  {% elif w.reviews_count %}
+                    <div class="card-last-review">
+                      <a class="reviews-link" href="{{ profile_url }}#reviews">{{ _('read_reviews')|default('קראו ביקורות') }}</a>
                     </div>
                   {% endif %}
-                  {% if w.reviews_count %}
-                    <a class="card-reviews-link" href="{{ profile_url }}#reviews">{{ _('read_reviews')|default('קראו ביקורות') }}</a>
+                  {% if languages|length %}
+                    <div class="card-langs">
+                      <span class="lang-icon" aria-hidden="true"></span>
+                      <span class="langs-list" title="{{ languages_full }}">{{ languages_trim }}</span>
+                    </div>
                   {% endif %}
                 </div>
                 <div class="card-actions">
                   {% if phone_number %}
-                    <a class="btn btn-primary btn-call" href="tel:{{ phone_number|replace(' ', '')|replace('-', '') }}">{{ call_cta_label }} · {{ phone_number }}</a>
+                    <a class="btn btn-call" href="tel:{{ sanitized_phone or phone_number }}">📞 {{ phone_number }}</a>
                   {% endif %}
-                  <a class="btn btn-outline btn-profile" href="{{ profile_url }}">{{ view_profile_label }}</a>
+                  {% if whatsapp_clean %}
+                    <a class="btn btn-whatsapp" href="https://wa.me/{{ whatsapp_clean }}" target="_blank" rel="noopener">📱 WhatsApp</a>
+                  {% endif %}
+                  <a class="btn btn-profile" href="{{ profile_url }}">{{ view_profile_label }}</a>
                 </div>
               </article>
             {% endfor %}

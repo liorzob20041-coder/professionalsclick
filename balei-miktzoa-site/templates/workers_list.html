@@ -151,7 +151,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="main-content theme-bordeaux" data-field="{{ field_slug|default(field_label|lower|replace(' ','-')) }}">
+  <div class="main-content theme-bordeaux wr-page" data-field="{{ field_slug|default(field_label|lower|replace(' ','-')) }}">
     {% set _change_city_map = {'he':'שינוי עיר','en':'Change city','ru':'Сменить город'} %}
     {% set _choose_city_map = {'he':'בחרו עיר','en':'Choose city','ru':'Выберите город'} %}
     {% set _city_group_label_map = {
@@ -180,6 +180,10 @@
     {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set close_label = (_('close') if _ else 'סגור') %}
+    {% set view_profile_label_map = {'he':'הצג פרופיל','en':'View profile','ru':'Просмотреть профиль'} %}
+    {% set call_cta_label_map = {'he':'התקשר','en':'Call','ru':'Позвонить'} %}
+    {% set view_profile_label = view_profile_label_map.get(g.current_lang, view_profile_label_map['he']) %}
+    {% set call_cta_label = call_cta_label_map.get(g.current_lang, call_cta_label_map['he']) %}
 
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
@@ -282,25 +286,16 @@
       {% endif %}
     </div>
 
-    <div class="results-wrap page-grid">
-      <aside class="info-aside" aria-label="מדריך מהיר">
-        <div class="aside-block guide-min">
-          <h2 class="aside-title">איך לבחור נכון</h2>
-          <ul>
-            <li>בדקו ניסיון רלוונטי וביקורות עדכניות.</li>
-            <li>השוו טווחי מחיר וזמינות קרובה.</li>
-            <li>בקשו הצעת מחיר כתובה וממוקדת.</li>
-          </ul>
-        </div>
-        <div class="aside-block faq">
-          <h2 class="aside-title">FAQ</h2>
-          <details><summary>{{ faq_q1 }}</summary><p>{{ faq_a1 }}</p></details>
-          <details><summary>{{ faq_q2 }}</summary><p>{{ faq_a2 }}</p></details>
-          <details><summary>{{ faq_q3 }}</summary><p>{{ faq_a3 }}</p></details>
-        </div>
-      </aside>
-
-      <section class="results-section" aria-label="{{ _('workers_list_aria') }}">
+    <div class="wr-container">
+      <section class="wr-guide" aria-label="איך לבחור נכון">
+        <h2>איך לבחור נכון</h2>
+        <ul>
+          <li>בדקו ניסיון רלוונטי וביקורות עדכניות.</li>
+          <li>השוו טווחי מחיר וזמינות קרובה.</li>
+          <li>בקשו הצעת מחיר כתובה וממוקדת.</li>
+        </ul>
+      </section>
+      <main class="wr-list" aria-label="{{ _('workers_list_aria') }}">
         {% if workers|length == 0 %}
           <div class="empty-state clean" role="status">
             <h3>לא מצאנו תוצאות תואמות</h3>
@@ -312,172 +307,78 @@
             </div>
           </div>
         {% else %}
-          <div class="workers-grid" id="workersGrid">
+          <section class="wr-stack" role="list">
             {% for w in workers %}
-              <div class="worker-card" data-href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
-                {% set image_url = w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg') %}
-                {% set raw_video = w.video_url or w.video_local %}
-                {% if raw_video %}
-                  {% if w.video_local and not w.video_url %}
-                    {% set video_src = url_for('static', filename=w.video_local) %}
-                  {% else %}
-                    {% set video_src = raw_video %}
-                  {% endif %}
-                  {% set kind = video_src|video_kind %}
+              {% set image_url = w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg') %}
+              {% set raw_video = w.video_url or w.video_local %}
+              {% set video_src = none %}
+              {% if raw_video %}
+                {% if w.video_local and not w.video_url %}
+                  {% set video_src = url_for('static', filename=w.video_local) %}
+                {% else %}
+                  {% set video_src = raw_video %}
                 {% endif %}
-
-                <div class="card-media">
-                  {% if raw_video %}
-                    {% if kind == 'mp4' %}
-                      <div class="media-player" data-kind="mp4" data-src="{{ video_src }}" data-fallback="{{ image_url }}" style="--poster:url('{{ image_url }}')">
-                        <div class="media-dim" aria-hidden="true"></div>
-                        <div class="media-inner">
-                          <div class="preview"><div class="center-bg"></div><button class="play-overlay" aria-label="{{ _('play_video')|default('נגן וידאו') }}"><span class="triangle"></span></button></div>
-                        </div>
-                      </div>
-                    {% elif kind in ['youtube','vimeo'] %}
-                      <div class="media-player" data-kind="embed" data-src="{{ video_src|to_embed_url }}" data-fallback="{{ image_url }}" style="--poster:url('{{ image_url }}')">
-                        <div class="media-dim" aria-hidden="true"></div>
-                        <div class="media-inner">
-                          <div class="preview"><div class="center-bg"></div><button class="play-overlay" aria-label="{{ _('play_video')|default('נגן וידאו') }}"><span class="triangle"></span></button></div>
-                        </div>
-                      </div>
-                    {% else %}
-                      <img src="{{ image_url }}" alt="תמונה של {{ w.name }}" class="worker-img" style="width:100%;height:100%;object-fit:cover;">
-                    {% endif %}
-                  {% else %}
-                    <img src="{{ image_url }}" alt="תמונה של {{ w.name }}" class="worker-img" style="width:100%;height:100%;object-fit:cover;">
+                {% set video_kind = video_src|video_kind %}
+                {% if video_kind in ['youtube','vimeo'] %}
+                  {% set video_src = video_src|to_embed_url %}
+                {% endif %}
+              {% endif %}
+              {% set services_text = (w.services_list or w.sub_services or [])|join(', ') %}
+              {% set languages = w.languages or [] %}
+              {% set bio_short = (w.bio_short or w.description) %}
+              <article class="wr-card" role="listitem" data-href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
+                <a class="wr-media" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="{{ w.company_name or w.name }}">
+                  <img class="wr-img" src="{{ image_url }}" alt="{{ w.company_name or w.name }}">
+                  {% if raw_video and video_src %}
+                    <button type="button" class="wr-play" data-video="{{ video_src }}" data-kind="{{ video_kind }}" aria-label="{{ _('play_video')|default('נגן וידאו') }}">
+                      <i class="fa-solid fa-play"></i>
+                    </button>
                   {% endif %}
-
-                  <div class="card-avatar"><img src="{{ image_url }}" alt="תמונת פרופיל קטנה של {{ w.name }}"></div>
-                </div>
-
-                <div class="worker-info">
-                  <div class="worker-header-row">
-                    <h2 class="worker-name">
-                      <a class="worker-link" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="פרופיל של {{ w.company_name }}">
-                        {{ w.company_name }}
+                </a>
+                <div class="wr-body">
+                  <header class="wr-head">
+                    <h3 class="wr-title">
+                      <a href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
+                        {{ w.company_name or w.name }}
                       </a>
-                    </h2>
-                    <div class="worker-meta">
-                      <span class="worker-person-name">({{ w.name }})</span>
-                      {% if w.experience_text %}
-                        <span class="worker-badge worker-badge--experience">{{ w.experience_text }}</span>
-                      {% endif %}
-                      {% if w.offers_emergency %}
-                        <span class="worker-badge worker-badge--emergency">24/7</span>
-                      {% endif %}
-                      {% set langs = w.languages or [] %}
-                      {% if langs %}
-                        {% set lang_badge_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
-                        {% set lang_badge_title = langs|join(', ') %}
-                        <div class="meta-langs" aria-label="{{ lang_badge_label }}" title="{{ lang_badge_title }}">
-                          <span class="sr-only">{{ lang_badge_label }}:</span>
-                          {% for L in langs[:2] %}
-                            <span class="badge-lang">{{ L }}</span>
-                          {% endfor %}
-                          {% if langs|length > 2 %}
-                            <span class="badge-lang">+{{ langs|length - 2 }}</span>
-                          {% endif %}
-                        </div>
-                      {% endif %}
+                    </h3>
+                    <div class="wr-meta">
+                      {% if w.offers_emergency %}<span class="pill pill--emg">24/7</span>{% endif %}
+                      {% if w.experience_text %}<span class="pill">{{ w.experience_text }}</span>{% endif %}
                     </div>
-                  </div>
-
-                  {% if w.rating %}
-                    {% set r = w.rating|float %}
-                    {% set full = r|int %}
-                    {% set half = 1 if (r - full) >= 0.5 and full < 5 else 0 %}
-                    {% set empty = 5 - full - half %}
-                    {% set rc = (w.reviews_count if w.reviews_count is defined else None) %}
-                    <div class="rating worker-rating-inline" title="{{ '%.1f'|format(r) }}/5">
-                      <span class="rating__stars" aria-hidden="true">
-                        {% for i in range(full) %}<i class="fa-solid fa-star"></i>{% endfor %}
-                        {% if half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
-                        {% for i in range(empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
-                      </span>
-                      <span class="rating__score">{{ '%.1f'|format(r) }}</span>
-                      {% if rc %}
-                        <a class="rating__count" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">({{ rc }} ביקורות)</a>
-                      {% endif %}
-                    </div>
+                  </header>
+                  {% if services_text %}
+                    <div class="wr-line wr-services" title="{{ services_text }}">{{ services_text }}</div>
                   {% endif %}
-
-                  {% if w.latest_review %}
-                    {% if g.current_lang == 'en' %}
-                      {% set latest_review_heading = 'Latest review' %}
-                    {% elif g.current_lang == 'ru' %}
-                      {% set latest_review_heading = 'Последний отзыв' %}
-                    {% else %}
-                      {% set latest_review_heading = 'ביקורת אחרונה' %}
-                    {% endif %}
-                    {% set lr = none %}
-                    {% if w.latest_review_rating is not none %}
-                      {% set lr = w.latest_review_rating|float %}
-                      {% set lr_full = lr|int %}
-                      {% set lr_half = 1 if (lr - lr_full) >= 0.5 and lr_full < 5 else 0 %}
-                      {% set lr_empty = 5 - lr_full - lr_half %}
-                      {% set lr_display = '%.1f'|format(lr) %}
-                    {% endif %}
-                    <div class="worker-review-card" aria-label="{{ latest_review_heading }}">
-                      {% if (w.latest_review_author or w.latest_review_date_short) or lr is not none %}
-                        <div class="worker-review-card__rows">
-                          {% if w.latest_review_author or w.latest_review_date_short %}
-                            <div class="worker-review-card__row worker-review-card__row--header">
-                              {% if w.latest_review_author %}
-                                <span class="worker-review-card__reviewer" title="{{ w.latest_review_author }}">{{ w.latest_review_author }}</span>
-                              {% endif %}
-                              {% if w.latest_review_date_short %}
-                                {% if w.latest_review_author %}<span class="worker-review-card__divider" aria-hidden="true">•</span>{% endif %}
-                                <time class="worker-review-card__date" datetime="{{ w.latest_review_date_iso or '' }}" title="{{ w.latest_review_date_full or '' }}" aria-label="{{ w.latest_review_date_full or '' }}">{{ w.latest_review_date_short }}</time>
-                              {% endif %}
-                            </div>
-                          {% endif %}
-                          {% if lr is not none %}
-                            <div class="worker-review-card__row worker-review-card__row--meta" role="group" aria-label="{{ lr_display }}/5">
-                              <span class="worker-review-card__stars" aria-hidden="true">
-                                {% for i in range(lr_full) %}<i class="fa-solid fa-star"></i>{% endfor %}
-                                {% if lr_half %}<i class="fa-solid fa-star-half-stroke"></i>{% endif %}
-                                {% for i in range(lr_empty) %}<i class="fa-regular fa-star"></i>{% endfor %}
-                              </span>
-                              <span class="worker-review-card__badge" aria-label="{{ lr_display }}/5">{{ lr_display }}</span>
-                            </div>
-                          {% endif %}
-                        </div>
-                      {% endif %}
-                      {% if w.latest_review %}
-                        <p class="worker-review-card__text" dir="auto">“{{ w.latest_review }}”</p>
-                      {% endif %}
-                      <a class="worker-review-card__more" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ _('more_reviews') }}</a>
-                    </div>
+                  {% if languages %}
+                    <div class="wr-line wr-langs" title="שפות: {{ languages|join(', ') }}">שפות: {{ languages|join(', ') }}</div>
                   {% endif %}
-
-                  {% set bio_short = (w.bio_short or w.description) %}
-
+                  {% if w.is_available_now is not none %}
+                    <div class="wr-line wr-status {{ 'is-on' if w.is_available_now else 'is-off' }}">{{ _('call_now') if w.is_available_now else _('not_available') }}</div>
+                  {% endif %}
                   {% if bio_short %}
-                    <p class="card-bio">{{ bio_short }}</p>
+                    <p class="wr-desc lc-3">{{ bio_short }}</p>
                   {% endif %}
-
-                  {% set svc_list = (w.services_list or w.sub_services or []) %}
-                  {% if svc_list %}
-                    {% set top3 = svc_list[:3] %}
-                    <div class="mini-services">
-                      <span>{{ ', '.join(top3) }}{% if svc_list|length > 3 %}…{% endif %}</span>
+                  {% if w.latest_review %}
+                    <p class="wr-desc lc-3" dir="auto">“{{ w.latest_review }}”</p>
+                  {% endif %}
+                  <footer class="wr-foot">
+                    {% if w.rating %}
+                      <div class="wr-rating" aria-label="דירוג {{ '%.1f'|format(w.rating|float) }}">
+                        ⭐ <b>{{ '%.1f'|format(w.rating|float) }}</b>
+                        {% if w.reviews_count %}<span class="muted">({{ w.reviews_count }} ביקורות)</span>{% endif %}
+                      </div>
+                    {% endif %}
+                    <div class="wr-cta">
+                      <a class="btn btn-primary" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ view_profile_label }}</a>
+                      {% set phone_number = (w.phone_formatted or w.phone) %}
+                      {% if phone_number %}<a class="btn btn-ghost" href="tel:{{ phone_number|replace(' ', '')|replace('-', '') }}">{{ call_cta_label }}</a>{% endif %}
                     </div>
-                  {% endif %}
-
-                  {% if w.is_available_now %}
-                    <a href="tel:{{ w.phone_formatted }}" class="phone-button" data-track="call" data-worker="{{ w.worker_id }}" aria-label="{{ _('call_now') }} {{ w.company_name }} {{ w.phone_formatted }}">
-                      <i class="fa-solid fa-phone fa-fw" aria-hidden="true"></i>{{ _('call_now') }}: <span dir="ltr" class="phone-num">{{ w.phone }}</span>
-                    </a>
-                  {% else %}
-                    <p class="status status--bad"><i class="fa-solid fa-circle-xmark fa-fw" aria-hidden="true"></i>{{ _('not_available') }}</p>
-                  {% endif %}
+                  </footer>
                 </div>
-              </div>
+              </article>
             {% endfor %}
-          </div>
-
+          </section>
           {% if pagination %}
             <nav class="pager" aria-label="עמוד">
               {% if pagination.prev %}<a class="page-nav prev" href="{{ pagination.prev_url }}">&laquo; הקודם</a>{% endif %}
@@ -488,7 +389,13 @@
             </nav>
           {% endif %}
         {% endif %}
-      </section>
+        <section class="wr-faq">
+          <h2>שאלות נפוצות</h2>
+          <details><summary>{{ faq_q1 }}</summary><p>{{ faq_a1 }}</p></details>
+          <details><summary>{{ faq_q2 }}</summary><p>{{ faq_a2 }}</p></details>
+          <details><summary>{{ faq_q3 }}</summary><p>{{ faq_a3 }}</p></details>
+        </section>
+      </main>
     </div>
 
     <section class="cta-min" aria-label="פרסום בעלי מקצוע">
@@ -558,26 +465,24 @@
       computeHeaderH(); window.addEventListener('resize', computeHeaderH); window.addEventListener('orientationchange', computeHeaderH); window.addEventListener('load', computeHeaderH);
     })();
 
-    (function(){
-      document.querySelectorAll('.media-player[data-kind="mp4"]').forEach(mp=>{
-        const src = mp.dataset.src; const fallback = mp.dataset.fallback||'';
-        try{ const v=document.createElement('video'); v.preload='auto'; v.src=src; v.crossOrigin='anonymous'; v.muted=true;
-          v.addEventListener('loadedmetadata', ()=>{
-            const t=Math.min(0.2,(v.duration||1)/10);
-            const snap=()=>{ const c=document.createElement('canvas'); c.width=v.videoWidth||640; c.height=v.videoHeight||360; const ctx=c.getContext('2d'); ctx.drawImage(v,0,0,c.width,c.height); try{ const url=c.toDataURL('image/jpeg',0.85); if(url&&url.startsWith('data:image')) mp.style.setProperty('--poster',`url('${url}')`);}catch(e){ if(fallback) mp.style.setProperty('--poster',`url('${fallback}')`);} };
-            const onSeeked=()=>{ snap(); v.removeEventListener('seeked',onSeeked); };
-            v.addEventListener('seeked',onSeeked); try{ v.currentTime=t; }catch(e){ snap(); }
-          },{once:true}); v.load();
-        }catch(e){ if(fallback) mp.style.setProperty('--poster',`url('${fallback}')`); }
-      });
-    })();
-
-    document.addEventListener('click', function(e){
-      const play = e.target.closest('.play-overlay'); if(!play) return;
-      const mp = play.closest('.media-player'); const inner=mp.querySelector('.media-inner');
-      const kind=mp.dataset.kind; const src=mp.dataset.src; mp.classList.add('is-playing');
-      if(kind==='mp4'){ const v=document.createElement('video'); v.controls=true; v.playsInline=true; v.autoplay=true; v.muted=false; v.style.objectFit='contain'; v.innerHTML='<source src="'+src+'" type="video/mp4">'; inner.innerHTML=''; inner.appendChild(v); if(v.play) v.play().catch(()=>{}); }
-      else { const url = src + (src.includes('?')?'&':'?') + 'autoplay=1&mute=1&playsinline=1&fs=1&rel=0&modestbranding=1&controls=1'; const iframe=document.createElement('iframe'); iframe.src=url; iframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen'); iframe.setAttribute('allowfullscreen','1'); iframe.style.width='100%'; iframe.style.height='100%'; iframe.style.border='0'; inner.innerHTML=''; inner.appendChild(iframe); }
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.wr-play');
+      if(!btn) return;
+      const url = btn.dataset.video;
+      if(!url) return;
+      const kind = (btn.dataset.kind || '').toLowerCase();
+      const wrap = document.createElement('div');
+      wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:9999';
+      const media = (kind==='youtube'||kind==='vimeo')
+        ? `<iframe src="${url}${url.includes('?')?'&':'?'}autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe>`
+        : `<video src="${url}" controls autoplay style="width:100%;height:100%;object-fit:contain"></video>`;
+      wrap.innerHTML = `
+        <div style="max-width:min(920px,92vw);width:100%;aspect-ratio:16/9;background:#000;position:relative;border-radius:12px;overflow:hidden">
+          <button aria-label="{{ close_label }}" style="position:absolute;inset:10px 10px auto auto;background:#fff;border:0;border-radius:10px;padding:6px 10px;cursor:pointer">✕</button>
+          ${media}
+        </div>`;
+      wrap.addEventListener('click', ev=>{ if(ev.target===wrap || ev.target.tagName==='BUTTON') wrap.remove(); });
+      document.body.appendChild(wrap);
     }, {passive:true});
 
     (function(){
@@ -690,9 +595,9 @@
 
     document.addEventListener('click', function(e){
       if (e.defaultPrevented) return;
-      const ignoreTarget = e.target.closest('a, button, .phone-button, .play-overlay');
+      const ignoreTarget = e.target.closest('a, button, .wr-play');
       if (ignoreTarget) return;
-      const card = e.target.closest('.worker-card');
+      const card = e.target.closest('.wr-card');
       if (!card) return;
       const href = card.dataset.href;
       if (!href) return;

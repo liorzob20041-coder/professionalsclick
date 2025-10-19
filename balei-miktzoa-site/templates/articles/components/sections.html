@@ -1,0 +1,64 @@
+{#
+  Reusable macros for article body content.
+  Usage example:
+  {% import 'articles/components/sections.html' as article_sections %}
+  {% call article_sections.section('Section title') %}
+    <p>Content...</p>
+  {% endcall %}
+#}
+{% macro _variant_classes(variant) %}
+  {%- if variant -%}
+    {{- ' article-section--' + variant | replace(' ', ' article-section--') -}}
+  {%- endif -%}
+{% endmacro %}
+{% macro section(title=None, kicker=None, variant=None, icon=None, classes=None) %}
+  {%- set section_classes = 'article-section' + _variant_classes(variant) -%}
+  {%- if classes -%}
+    {%- set section_classes = section_classes + ' ' + classes -%}
+  {%- endif -%}
+  <section class="{{ section_classes }}">
+    {%- if kicker or icon -%}
+      <header class="article-section__meta">
+        {%- if icon -%}
+          <span class="article-section__icon" aria-hidden="true">{{ icon | safe }}</span>
+        {%- endif -%}
+        {%- if kicker -%}
+          <span class="article-section__kicker">{{ kicker }}</span>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+    {%- if title -%}
+      <h2 class="article-section__title">{{ title }}</h2>
+    {%- endif -%}
+    <div class="article-section__content">
+      {%- if caller is defined -%}
+        {{ caller() }}
+      {%- endif -%}
+    </div>
+  </section>
+{% endmacro %}
+{% macro checklist(title=None, items=None, kicker=None, icon=None, classes=None) %}
+  {%- set items = items or [] -%}
+  {% call section(title, kicker, 'checklist', icon, classes) %}
+    <ul class="article-list article-list--check">
+      {%- for item in items -%}
+        <li>{{ item }}</li>
+      {%- endfor -%}
+    </ul>
+  {% endcall %}
+{% endmacro %}
+{% macro steps(title=None, items=None, kicker=None, icon=None, classes=None) %}
+  {%- set items = items or [] -%}
+  {% call section(title, kicker, 'steps', icon, classes) %}
+    <ol class="article-list article-list--numbered">
+      {%- for item in items -%}
+        <li>{{ item }}</li>
+      {%- endfor -%}
+    </ol>
+  {% endcall %}
+{% endmacro %}
+{% macro callout(title=None, kicker=None, icon=None, classes=None) %}
+  {% call section(title, kicker, 'callout', icon, classes) %}
+    {{ caller() if caller is defined else '' }}
+  {% endcall %}
+{% endmacro %}

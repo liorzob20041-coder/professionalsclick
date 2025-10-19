@@ -303,116 +303,80 @@
           <section class="wr-stack" role="list">
             {% for w in workers %}
               {% set image_url = w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg') %}
-              {% set raw_video = w.video_url or w.video_local %}
-              {% set video_src = none %}
-              {% if raw_video %}
-                {% if w.video_local and not w.video_url %}
-                  {% set video_src = url_for('static', filename=w.video_local) %}
-                {% else %}
-                  {% set video_src = raw_video %}
-                {% endif %}
-                {% set video_kind = video_src|video_kind %}
-                {% if video_kind in ['youtube','vimeo'] %}
-                  {% set video_src = video_src|to_embed_url %}
+              {% set specialties_list = (w.services_list or w.sub_services or []) %}
+              {% set specialties_text = specialties_list|join(', ') %}
+              {% set specialties_trim = specialties_text %}
+              {% if specialties_trim %}
+                {% set max_specialties = 110 %}
+                {% if specialties_trim|length > max_specialties %}
+                  {% set specialties_trim = specialties_trim[:max_specialties].rsplit(' ', 1)[0] ~ '…' %}
                 {% endif %}
               {% endif %}
-              {% set services_text = (w.services_list or w.sub_services or [])|join(', ') %}
               {% set languages = w.languages or [] %}
-              {% set bio_short = (w.bio_short or w.description) %}
-              {% set has_meta = (w.offers_emergency or w.experience_text) %}
-              {% set services_label_map = {'he':'התמחויות עיקריות','en':'Key services','ru':'Основные услуги'} %}
-              {% set availability_label_map = {'he':'זמינות','en':'Availability','ru':'Доступность'} %}
-              {% set services_label = services_label_map.get(g.current_lang, services_label_map['he']) %}
-              {% set availability_label = availability_label_map.get(g.current_lang, availability_label_map['he']) %}
-              <article class="wr-card" role="listitem" data-href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
-                <a class="wr-media" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}" aria-label="{{ w.company_name or w.name }}">
-                  <img class="wr-img" src="{{ image_url }}" alt="{{ w.company_name or w.name }}">
-                  {% if raw_video and video_src %}
-                    <button type="button" class="wr-play" data-video="{{ video_src }}" data-kind="{{ video_kind }}" aria-label="{{ _('play_video')|default('נגן וידאו') }}">
-                      <i class="fa-solid fa-play"></i>
-                    </button>
-                  {% endif %}
-                </a>
-                <div class="wr-body">
-                  {% if w.rating or has_meta %}
-                    <div class="wr-topline">
-                      {% if w.rating %}
-                        <div class="wr-rating wr-rating--top" aria-label="דירוג {{ '%.1f'|format(w.rating|float) }}">
-                          <i class="fa-solid fa-star" aria-hidden="true"></i>
-                          <span class="wr-rating__value">{{ '%.1f'|format(w.rating|float) }}</span>
-                          {% if w.reviews_count %}<span class="wr-rating__count">{{ w.reviews_count }} {{ reviews_label_map.get(g.current_lang, reviews_label_map['he']) }}</span>{% endif %}
-                        </div>
-                      {% endif %}
-                      {% if has_meta %}
-                        <div class="wr-meta">
-                          {% if w.offers_emergency %}<span class="pill pill--emg">24/7</span>{% endif %}
-                          {% if w.experience_text %}<span class="pill">{{ w.experience_text }}</span>{% endif %}
-                        </div>
-                      {% endif %}
-                    </div>
-                  {% endif %}
-                  <header class="wr-head">
-                    <div class="wr-title-row">
-                      <div class="wr-avatar">
-                        <img src="{{ image_url }}" alt="{{ w.company_name or w.name }}">
+              {% set languages_full = languages|join(', ') %}
+              {% set more_label_map = {'he':'עוד','en':'more','ru':'ещё'} %}
+              {% set more_label = more_label_map.get(g.current_lang, more_label_map['he']) %}
+              {% set languages_compact = '' %}
+              {% if languages|length > 0 %}
+                {% set languages_compact = ', '.join(languages[:2]) %}
+                {% if languages|length > 2 %}
+                  {% set languages_compact = languages_compact ~ ' +' ~ more_label %}
+                {% endif %}
+              {% endif %}
+              {% set bio_source = (w.bio_short or w.description or '') %}
+              {% set bio_text = bio_source.strip() %}
+              {% set has_badges = (w.experience_text or w.offers_emergency or w.is_available_now) %}
+              {% set availability_chip_map = {'he':'זמינות: חי״ג','en':'Availability: on-call','ru':'Доступность: срочно'} %}
+              {% set availability_chip = availability_chip_map.get(g.current_lang, availability_chip_map['he']) %}
+              {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
+              {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
+              {% set phone_number = (w.phone_formatted or w.phone) %}
+              {% set rating_label_map = {'he':'דירוג %.1f מתוך 5','en':'Rating %.1f out of 5','ru':'Оценка %.1f из 5'} %}
+              {% set rating_label_template = rating_label_map.get(g.current_lang, rating_label_map['he']) %}
+              <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
+                <img class="card-avatar" src="{{ image_url }}" alt="{{ w.company_name or w.name }}">
+                <div class="card-main">
+                  <div class="card-head">
+                    <h3 class="card-name">
+                      <a href="{{ profile_url }}">{{ w.company_name or w.name }}</a>
+                    </h3>
+                    {% if w.rating %}
+                      <div class="card-rating" aria-label="{{ rating_label_template|replace('%.1f', '%.1f'|format(w.rating|float)) }}">
+                        <span class="card-stars" aria-hidden="true">★★★★★</span>
+                        <span class="rating-num">{{ '%.1f'|format(w.rating|float) }}</span>
+                        {% if w.reviews_count %}<span class="rating-count">({{ w.reviews_count }} {{ reviews_label }})</span>{% endif %}
                       </div>
-                      <div class="wr-title-stack">
-                        <h3 class="wr-title">
-                          <a href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">
-                            {{ w.company_name or w.name }}
-                          </a>
-                        </h3>
-                      </div>
-                    </div>
-                  </header>
-                  {% set has_summary = services_text or languages or (w.is_available_now is not none) %}
-                  {% if has_summary %}
-                    <div class="wr-summary">
-                      {% if services_text %}
-                        <div class="wr-summary__item" title="{{ services_text }}">
-                          <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
-                          <div class="wr-summary__text">
-                            <span class="wr-summary__label">{{ services_label }}</span>
-                            <span class="wr-summary__value">{{ services_text }}</span>
-                          </div>
-                        </div>
-                      {% endif %}
-                      {% if languages %}
-                        <div class="wr-summary__item" title="{{ languages_label }}: {{ languages|join(', ') }}">
-                          <i class="fa-solid fa-language" aria-hidden="true"></i>
-                          <div class="wr-summary__text">
-                            <span class="wr-summary__label">{{ languages_label }}</span>
-                            <span class="wr-summary__value">{{ languages|join(', ') }}</span>
-                          </div>
-                        </div>
-                      {% endif %}
-                      {% if w.is_available_now is not none %}
-                        <div class="wr-summary__item">
-                          <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                          <div class="wr-summary__text">
-                            <span class="wr-summary__label">{{ availability_label }}</span>
-                            <span class="wr-summary__value {{ 'is-on' if w.is_available_now else 'is-off' }}">{{ _('call_now') if w.is_available_now else _('not_available') }}</span>
-                          </div>
-                        </div>
-                      {% endif %}
+                    {% endif %}
+                  </div>
+                  {% if specialties_trim %}
+                    <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
+                  {% endif %}
+                  {% if has_badges %}
+                    <div class="card-badges">
+                      {% if w.experience_text %}<span class="chip">{{ w.experience_text }}</span>{% endif %}
+                      {% if w.offers_emergency %}<span class="chip chip--success">24/7</span>{% endif %}
+                      {% if w.is_available_now %}<span class="chip chip--muted">{{ availability_chip }}</span>{% endif %}
                     </div>
                   {% endif %}
-                  {% if bio_short %}
-                    <p class="wr-desc lc-2">{{ bio_short }}</p>
+                  {% if bio_text %}
+                    <div class="card-bio">{{ bio_text }}</div>
                   {% endif %}
-                  {% if w.latest_review %}
-                    <p class="wr-quote" dir="auto">
-                      <i class="fa-solid fa-quote-right" aria-hidden="true"></i>
-                      <span>“{{ w.latest_review }}”</span>
-                    </p>
-                  {% endif %}
-                  <footer class="wr-foot">
-                    <div class="wr-cta">
-                      <a class="btn btn-primary" href="{{ url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) }}">{{ view_profile_label }}</a>
-                      {% set phone_number = (w.phone_formatted or w.phone) %}
-                      {% if phone_number %}<a class="btn btn-ghost" href="tel:{{ phone_number|replace(' ', '')|replace('-', '') }}">{{ call_cta_label }}</a>{% endif %}
+                  {% if languages %}
+                    <div class="card-langs">
+                      <i class="fa fa-language" aria-hidden="true"></i>
+                      <span class="langs-full">{{ languages_full }}</span>
+                      <span class="langs-compact">{{ languages_compact }}</span>
                     </div>
-                  </footer>
+                  {% endif %}
+                  {% if w.reviews_count %}
+                    <a class="card-reviews-link" href="{{ profile_url }}#reviews">{{ _('read_reviews')|default('קראו ביקורות') }}</a>
+                  {% endif %}
+                </div>
+                <div class="card-actions">
+                  {% if phone_number %}
+                    <a class="btn btn-primary btn-call" href="tel:{{ phone_number|replace(' ', '')|replace('-', '') }}">{{ call_cta_label }} · {{ phone_number }}</a>
+                  {% endif %}
+                  <a class="btn btn-outline btn-profile" href="{{ profile_url }}">{{ view_profile_label }}</a>
                 </div>
               </article>
             {% endfor %}
@@ -635,7 +599,7 @@
       if (e.defaultPrevented) return;
       const ignoreTarget = e.target.closest('a, button, .wr-play');
       if (ignoreTarget) return;
-      const card = e.target.closest('.wr-card');
+      const card = e.target.closest('.worker-card');
       if (!card) return;
       const href = card.dataset.href;
       if (!href) return;

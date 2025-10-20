@@ -183,8 +183,10 @@
     {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}    {% set close_label = (_('close') if _ else 'סגור') %}
     {% set view_profile_label_map = {'he':'הצג פרופיל','en':'View profile','ru':'Просмотреть профиль'} %}
     {% set call_cta_label_map = {'he':'התקשר','en':'Call','ru':'Позвонить'} %}
+    {% set play_video_label_map = {'he':'נגן וידאו','en':'Play video','ru':'Воспроизвести видео'} %}
     {% set view_profile_label = view_profile_label_map.get(g.current_lang, view_profile_label_map['he']) %}
     {% set call_cta_label = call_cta_label_map.get(g.current_lang, call_cta_label_map['he']) %}
+    {% set play_video_label = play_video_label_map.get(g.current_lang, play_video_label_map['he']) %}
 
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
@@ -302,7 +304,7 @@
         {% else %}
           <section class="wr-stack" role="list">
             {% for w in workers %}
-              {% set image_url = w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg') %}
+              {% set image_url = w.card_image_url or (w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg')) %}
               {% set specialties_list = (w.services_list or w.sub_services or []) %}
               {% set specialties_text = specialties_list|join(', ') %}
               {% set specialties_trim = specialties_text %}
@@ -391,18 +393,30 @@
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
               <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
+                {% set video_kind = w.card_video_kind %}
+                {% set video_src = w.card_video_src %}
+                {% set video_thumb = w.card_video_thumb or image_url %}
+                {% set video_poster = w.card_video_poster or image_url %}
                 <div class="card-media">
-                  <div class="media-box">
-                    {% if w.video_url %}
-                      <video src="{{ w.video_url }}" controls preload="none" playsinline muted poster="{{ image_url }}"></video>
-                      <span class="media-play" aria-hidden="true">
-                        <svg viewBox="0 0 60 60" role="presentation" focusable="false"><circle cx="30" cy="30" r="30" opacity="0.72"/><path d="M25 20v20l16-10z"/></svg>
-                      </span>
-                      <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
+                  <div class="media-box{% if w.card_has_video %} media-box--has-video{% endif %}">
+                    {% if video_src and video_kind == 'mp4' %}
+                      <video src="{{ video_src }}" controls preload="metadata" playsinline poster="{{ video_poster }}"></video>
+                    {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
+                      <button type="button"
+                              class="wr-play"
+                              data-video="{{ video_src }}"
+                              data-kind="{{ video_kind }}"
+                              aria-label="{{ play_video_label }} – {{ display_name }}">
+                        <span class="sr-only">{{ play_video_label }}</span>
+                        <img class="media-photo" src="{{ video_thumb }}" alt="{{ display_name }}">
+                        <span class="media-play" aria-hidden="true">
+                          <svg viewBox="0 0 60 60" role="presentation" focusable="false"><circle cx="30" cy="30" r="30" opacity="0.72"/><path d="M25 20v20l16-10z"/></svg>
+                        </span>
+                      </button>
                     {% else %}
                       <img class="media-photo" src="{{ image_url }}" alt="{{ display_name }}">
-                      <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                     {% endif %}
+                    <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                   </div>
                 </div>
                 <div class="card-main">
@@ -697,7 +711,7 @@
 
     document.addEventListener('click', function(e){
       if (e.defaultPrevented) return;
-      const ignoreTarget = e.target.closest('a, button, .wr-play');
+      const ignoreTarget = e.target.closest('a, button, .wr-play, video');
       if (ignoreTarget) return;
       const card = e.target.closest('.worker-card');
       if (!card) return;

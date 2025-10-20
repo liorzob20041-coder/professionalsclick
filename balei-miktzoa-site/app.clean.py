@@ -2502,7 +2502,7 @@ def show_workers(lang, field, area):
 
     # עיבוד נתונים לתצוגה
     for w in workers:
-        # זמינות עכשיו
+        # זמינות עכשיו␊
         is_available = False
         for block in w.get('work_blocks', []):
             start = int(block.get('start_hour', 0))
@@ -2519,6 +2519,41 @@ def show_workers(lang, field, area):
         # התחום המתורגם לתצוגה
         field_lang_key = f'field_{lang}' if lang in ['en', 'ru'] else 'field'
         w['field_translated'] = w.get(field_lang_key, w.get('field', 'Unknown'))
+
+        # מדיה לכרטיס הרשימה
+        image_filename = (w.get('image_filename') or '').strip()
+        if image_filename:
+            card_image_url = url_for('static', filename=image_filename)
+        else:
+            card_image_url = url_for('static', filename='default-worker.jpg')
+
+        w['card_image_url'] = card_image_url
+        w['card_video_src'] = None
+        w['card_video_kind'] = None
+        w['card_video_thumb'] = card_image_url
+        w['card_video_poster'] = card_image_url
+
+        video_local = (w.get('video_local') or '').strip()
+        video_url = (w.get('video_url') or '').strip()
+
+        if video_local:
+            w['card_video_kind'] = 'mp4'
+            w['card_video_src'] = url_for('static', filename=video_local)
+        elif video_url:
+            vid_kind = video_kind(video_url)
+            embed_src = to_embed_url(video_url)
+            w['card_video_kind'] = vid_kind
+            w['card_video_src'] = embed_src
+
+            if vid_kind == 'youtube':
+                yt_id = _youtube_id(video_url)
+                if yt_id:
+                    w['card_video_thumb'] = f"https://img.youtube.com/vi/{yt_id}/hqdefault.jpg"
+            elif vid_kind == 'mp4':
+                # קבצי MP4 חיצוניים נטענים ישירות ב-<video>
+                w['card_video_poster'] = card_image_url
+
+        w['card_has_video'] = bool(w['card_video_src'])
 
         # טאגליין לפי קובץ תרגום (משתמשת בתבנית שטענו פעם אחת)
         w['tagline'] = default_template.format(

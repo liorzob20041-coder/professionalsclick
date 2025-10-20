@@ -181,12 +181,6 @@
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set languages_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
     {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}    {% set close_label = (_('close') if _ else 'סגור') %}
-    {% set view_profile_label_map = {'he':'הצג פרופיל','en':'View profile','ru':'Просмотреть профиль'} %}
-    {% set call_cta_label_map = {'he':'התקשר','en':'Call','ru':'Позвонить'} %}
-    {% set play_video_label_map = {'he':'נגן וידאו','en':'Play video','ru':'Воспроизвести видео'} %}
-    {% set view_profile_label = view_profile_label_map.get(g.current_lang, view_profile_label_map['he']) %}
-    {% set call_cta_label = call_cta_label_map.get(g.current_lang, call_cta_label_map['he']) %}
-    {% set play_video_label = play_video_label_map.get(g.current_lang, play_video_label_map['he']) %}
 
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
@@ -333,9 +327,8 @@
               {% elif w.experience_text %}
                 {% set experience_chip = w.experience_text %}
               {% endif %}
-              {% set has_badges = (experience_chip or w.offers_emergency or w.is_available_now) %}
-              {% set availability_chip_map = {'he':'זמינות: חי״ג','en':'Availability: on-call','ru':'Доступность: срочно'} %}
-              {% set availability_chip = availability_chip_map.get(g.current_lang, availability_chip_map['he']) %}
+              {% set has_badges = (experience_chip or w.offers_emergency) %}
+
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
               {% set phone_number = (w.phone_formatted or w.phone) %}
@@ -357,7 +350,7 @@
               {% endif %}
               {% set company_display = w.company_name %}
 
-              {# דירוג: תומך גם ב-rating_avg וגם ב-rating, בלי להפיל שגיאה כשחסר #}
+              {# דירוג ממוצע #}
               {% set rating_source = none %}
               {% if w.rating_avg is defined and w.rating_avg is not none and w.rating_avg != '' %}
                 {% set rating_source = w.rating_avg %}
@@ -374,61 +367,51 @@
 
               {% set sanitized_phone = (phone_number or '')|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '') %}
               {% set whatsapp_clean = whatsapp_number|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '')|replace('+', '') %}
-              {% set last_review_author = (w.last_review_author or '')|trim %}
-              {% set last_review_rating = w.last_review_rating %}
-              {% set last_review_text = (w.last_review_text or '')|trim %}
-              {% if not last_review_author and w.last_review_name %}
-                {% set last_review_author = (w.last_review_name or '')|trim %}
+
+              {# --- SAFE last-review block --- #}
+              {% set last_review_author = (w.last_review_author|default('')|trim) %}
+              {% if not last_review_author and (w.last_review_name is defined) %}
+                {% set last_review_author = (w.last_review_name|default('')|trim) %}
               {% endif %}
-              {% if last_review_author %}
-                {% set author_parts = last_review_author.split(' ', 1) %}
-                {% if author_parts|length > 1 %}
-                  {% set last_initial = author_parts[1][0:1] %}
-                  {% if last_initial %}
-                    {% set last_review_author = author_parts[0] ~ ' ' ~ last_initial ~ '.' %}
-                  {% endif %}
-                {% endif %}
+              {% set last_review_text = (w.last_review_text|default('')|trim) %}
+              {% set last_review_rating_raw = (w.last_review_rating if w.last_review_rating is defined else none) %}
+              {% set last_review_rating_value = none %}
+              {% if last_review_rating_raw is not none and last_review_rating_raw != '' %}
+                {% set last_review_rating_value = (last_review_rating_raw|string)|float %}
               {% endif %}
               {% if last_review_text %}
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
+
               <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
                 {% set video_kind = w.card_video_kind %}
                 {% set video_src = w.card_video_src %}
-                {% set video_thumb = w.card_video_thumb or image_url %}
                 {% set video_poster = w.card_video_poster or image_url %}
                 <div class="card-media">
-                  <div class="media-box{% if w.card_has_video %} media-box--has-video{% endif %}"{% if video_src and video_kind == 'mp4' %} data-inline-video{% endif %}>
+                  <div class="media-box">
                     {% if video_src and video_kind == 'mp4' %}
-                      <div class="media-inline">
-                        <video src="{{ video_src }}" controls preload="metadata" playsinline poster="{{ video_poster }}"></video>
-                        <button type="button"
-                                class="media-inline-play"
-                                data-inline-play
-                                aria-label="{{ play_video_label }} – {{ display_name }}">
-                          <span class="sr-only">{{ play_video_label }}</span>
-                          <span class="media-play" aria-hidden="true">
-                            <svg viewBox="0 0 60 60" role="presentation" focusable="false"><circle cx="30" cy="30" r="30" opacity="0.72"/><path d="M25 20v20l16-10z"/></svg>
-                          </span>
-                        </button>
-                      </div>
-                    {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
-                      <button type="button"
-                              class="wr-play"
-                              data-video="{{ video_src }}"
-                              data-kind="{{ video_kind }}"
-                              aria-label="{{ play_video_label }} – {{ display_name }}">
-                        <span class="sr-only">{{ play_video_label }}</span>
-                        <img class="media-photo" src="{{ video_thumb }}" alt="{{ display_name }}">
-                        <span class="media-play" aria-hidden="true">
-                          <svg viewBox="0 0 60 60" role="presentation" focusable="false"><circle cx="30" cy="30" r="30" opacity="0.72"/><path d="M25 20v20l16-10z"/></svg>
-                        </span>
-                      </button>
+                      <video class="media-video"
+                             src="{{ video_src }}"
+                             autoplay
+                             muted
+                             loop
+                             playsinline{% if video_poster %}
+                             poster="{{ video_poster }}"{% endif %}></video>
                     {% else %}
-                      <img class="media-photo" src="{{ image_url }}" alt="{{ display_name }}">
+                      <img class="media-video" src="{{ image_url }}" alt="{{ display_name }}">
                     {% endif %}
                     <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                   </div>
+                  {% if phone_number or whatsapp_clean %}
+                    <div class="card-actions">
+                      {% if phone_number %}
+                        <a class="btn btn-call" href="tel:{{ sanitized_phone or phone_number }}">📞 {{ phone_number }}</a>
+                      {% endif %}
+                      {% if whatsapp_clean %}
+                        <a class="btn btn-whatsapp" href="https://wa.me/{{ whatsapp_clean }}" target="_blank" rel="noopener">💬 WhatsApp</a>
+                      {% endif %}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="card-main">
                   <div class="card-title">
@@ -464,8 +447,7 @@
                   {% if has_badges %}
                     <div class="card-badges">
                       {% if experience_chip %}<span class="chip chip--experience">{{ experience_chip }}</span>{% endif %}
-                      {% if w.offers_emergency %}<span class="chip chip--availability">24/7</span>{% endif %}
-                      {% if w.is_available_now %}<span class="chip chip--emergency">{{ availability_chip }}</span>{% endif %}
+                      {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
                     </div>
                   {% endif %}
                   {% if bio_text %}
@@ -475,8 +457,12 @@
                     <div class="card-last-review">
                       <div class="last-review-meta">
                         {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
-                        {% if last_review_rating %}
-                          <span class="rating">{% if last_review_author %}• {% endif %}{{ '%.0f'|format(last_review_rating|float) }}★</span>
+                        {% if last_review_rating_value is not none %}
+                          <span class="last-review-stars" aria-hidden="true">
+                            {% for i in range(1, 6) %}
+                              <span class="star{{ ' star--full' if last_review_rating_value >= i else '' }}">★</span>
+                            {% endfor %}
+                          </span>
                         {% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
@@ -494,16 +480,8 @@
                     </div>
                   {% endif %}
                 </div>
-                <div class="card-actions">
-                  {% if phone_number %}
-                    <a class="btn btn-call" href="tel:{{ sanitized_phone or phone_number }}">📞 {{ phone_number }}</a>
-                  {% endif %}
-                  {% if whatsapp_clean %}
-                    <a class="btn btn-whatsapp" href="https://wa.me/{{ whatsapp_clean }}" target="_blank" rel="noopener">📱 WhatsApp</a>
-                  {% endif %}
-                  <a class="btn btn-profile" href="{{ profile_url }}">{{ view_profile_label }}</a>
-                </div>
               </article>
+
             {% endfor %}
           </section>
           {% if pagination %}
@@ -611,6 +589,7 @@
       wrap.addEventListener('click', ev=>{ if(ev.target===wrap || ev.target.tagName==='BUTTON') wrap.remove(); });
       document.body.appendChild(wrap);
     }, {passive:true});
+
     (function(){
       const boxes = Array.from(document.querySelectorAll('.media-box[data-inline-video]'));
       boxes.forEach(box => {
@@ -636,6 +615,7 @@
         video.addEventListener('ended', ()=>setPlayingState(false));
       });
     })();
+
     (function(){
       const openBtn=document.getElementById('filtersOpenBtn');
       const overlay=document.getElementById('filtersOverlay');
@@ -645,6 +625,7 @@
       function closeDrawer(){ overlay.hidden=true; drawer.setAttribute('aria-hidden','true'); openBtn&&openBtn.setAttribute('aria-expanded','false'); document.documentElement.classList.remove('drawer-open'); document.body.style.overflow=''; drawer.hidden=true; }
       openBtn&&openBtn.addEventListener('click', openDrawer); closeBtn&&closeBtn.addEventListener('click', closeDrawer); overlay&&overlay.addEventListener('click', closeDrawer); document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); }, {passive:true});
     })();
+
     (function(){
       const trigger=document.getElementById('changeCityBtn');
       const menu=document.getElementById('changeCityMenu');
@@ -742,7 +723,6 @@
         });
       }
     })();
-
 
     document.addEventListener('click', function(e){
       if (e.defaultPrevented) return;

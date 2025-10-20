@@ -1181,6 +1181,7 @@ body {
 }
 .media-box--has-video {
   background: #000;
+  aspect-ratio: 3 / 4;
 }
 .card-media video,
 .card-media .media-photo {
@@ -1191,6 +1192,8 @@ body {
 }
 .media-box video {
   background: #000;
+  object-fit: contain;
+  object-position: center;
 }
 .media-box .wr-play {
   width: 100%;

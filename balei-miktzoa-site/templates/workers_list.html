@@ -398,9 +398,20 @@
                 {% set video_thumb = w.card_video_thumb or image_url %}
                 {% set video_poster = w.card_video_poster or image_url %}
                 <div class="card-media">
-                  <div class="media-box{% if w.card_has_video %} media-box--has-video{% endif %}">
+                  <div class="media-box{% if w.card_has_video %} media-box--has-video{% endif %}"{% if video_src and video_kind == 'mp4' %} data-inline-video{% endif %}>
                     {% if video_src and video_kind == 'mp4' %}
-                      <video src="{{ video_src }}" controls preload="metadata" playsinline poster="{{ video_poster }}"></video>
+                      <div class="media-inline">
+                        <video src="{{ video_src }}" controls preload="metadata" playsinline poster="{{ video_poster }}"></video>
+                        <button type="button"
+                                class="media-inline-play"
+                                data-inline-play
+                                aria-label="{{ play_video_label }} – {{ display_name }}">
+                          <span class="sr-only">{{ play_video_label }}</span>
+                          <span class="media-play" aria-hidden="true">
+                            <svg viewBox="0 0 60 60" role="presentation" focusable="false"><circle cx="30" cy="30" r="30" opacity="0.72"/><path d="M25 20v20l16-10z"/></svg>
+                          </span>
+                        </button>
+                      </div>
                     {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
                       <button type="button"
                               class="wr-play"
@@ -600,7 +611,31 @@
       wrap.addEventListener('click', ev=>{ if(ev.target===wrap || ev.target.tagName==='BUTTON') wrap.remove(); });
       document.body.appendChild(wrap);
     }, {passive:true});
-
+    (function(){
+      const boxes = Array.from(document.querySelectorAll('.media-box[data-inline-video]'));
+      boxes.forEach(box => {
+        const video = box.querySelector('video');
+        const playBtn = box.querySelector('[data-inline-play]');
+        if(!video || !playBtn) return;
+        function setPlayingState(isPlaying){
+          box.classList.toggle('is-playing', isPlaying);
+        }
+        if(!video.paused && !video.ended){
+          setPlayingState(true);
+        }
+        playBtn.addEventListener('click', (event)=>{
+          event.preventDefault();
+          event.stopPropagation();
+          const playPromise = video.play();
+          if(playPromise && typeof playPromise.then === 'function'){
+            playPromise.catch(()=>{});
+          }
+        });
+        video.addEventListener('play', ()=>setPlayingState(true));
+        video.addEventListener('pause', ()=>setPlayingState(false));
+        video.addEventListener('ended', ()=>setPlayingState(false));
+      });
+    })();
     (function(){
       const openBtn=document.getElementById('filtersOpenBtn');
       const overlay=document.getElementById('filtersOverlay');

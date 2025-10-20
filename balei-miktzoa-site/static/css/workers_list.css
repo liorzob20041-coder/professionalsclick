@@ -1215,6 +1215,30 @@ body {
   object-fit: cover;
   display: block;
 }
+.media-inline {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.media-inline-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.media-inline-play:focus-visible {
+  outline: 3px solid var(--brand-main);
+  outline-offset: 3px;
+}
+.media-inline-play .media-play {
+  position: static;
+}
 .media-play {
   position: absolute;
   inset: 0;
@@ -1243,6 +1267,16 @@ body {
   border: 2px solid #fff;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+.media-box.is-playing .media-inline-play {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.media-box.is-playing .media-thumb {
+  opacity: 0;
+  visibility: hidden;
 }
 .card-main {
   grid-area: main;

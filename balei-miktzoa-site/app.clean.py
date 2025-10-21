@@ -825,12 +825,61 @@ def deslugify(slug, lang_map):
 
 
 def format_phone(phone):
+    """Return a normalized international representation for click-to-call links."""
     if not phone:
         return ''
-    phone = phone.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
-    if phone.startswith('0'):
-        phone = '+972' + phone[1:]
-    return phone
+
+    # keep only digits for normalization while preserving a leading '+' if present
+    phone_str = str(phone).strip()
+    digits_only = re.sub(r'[^0-9]', '', phone_str)
+
+    if not digits_only:
+        return ''
+
+    # strip leading international prefixes like 00 and store the national number
+    if digits_only.startswith('00'):
+        digits_only = digits_only[2:]
+
+    if digits_only.startswith('972'):
+        national = digits_only[3:]
+    elif digits_only.startswith('0'):
+        national = digits_only[1:]
+    else:
+        national = digits_only
+
+    return ('+972' + national) if national else ''
+
+
+def format_phone_display(phone):
+    """Return a human-friendly local representation for UI display (e.g. 050-1234567)."""
+    if not phone:
+        return ''
+
+    digits = re.sub(r'[^0-9]', '', str(phone))
+    if not digits:
+        return ''
+
+    # normalize different country-code prefixes to a local leading zero
+    if digits.startswith('00'):
+        digits = digits[2:]
+    if digits.startswith('972'):
+        digits = '0' + digits[3:]
+    elif not digits.startswith('0'):
+        digits = '0' + digits
+
+    length = len(digits)
+
+    if length == 10:
+        # mobile numbers and area codes like 072/073
+        return f"{digits[:3]}-{digits[3:]}"
+    if length == 9:
+        # landline area codes such as 02/03/04/08/09
+        return f"{digits[:2]}-{digits[2:]}"
+    if length == 8:
+        return f"{digits[:2]}-{digits[2:]}"
+    if length > 4:
+        return f"{digits[:-4]}-{digits[-4:]}"
+    return digits
 
 
 def normalize_slug(text):
@@ -2515,6 +2564,7 @@ def show_workers(lang, field, area):
 
         # טלפון בפורמט
         w['phone_formatted'] = format_phone(w.get('phone'))
+        w['phone_display'] = format_phone_display(w.get('phone'))
 
         # התחום המתורגם לתצוגה
         field_lang_key = f'field_{lang}' if lang in ['en', 'ru'] else 'field'
@@ -2885,6 +2935,7 @@ def worker_reviews(lang, worker_id):
 
     # --- HERO meta בסיסי ---
     worker['phone_formatted'] = format_phone(worker.get('phone'))
+    worker['phone_display'] = format_phone_display(worker.get('phone'))
     if lang == 'en':
         worker['field_display'] = worker.get('field_en', worker.get('field'))
     elif lang == 'ru':

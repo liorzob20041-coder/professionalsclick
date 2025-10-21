@@ -331,7 +331,8 @@
 
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
-              {% set phone_number = (w.phone_formatted or w.phone) %}
+              {% set phone_tel = (w.phone_formatted or w.phone) %}
+              {% set phone_display = (w.phone_display or phone_tel or '') %}
               {% set whatsapp_number = (w.whatsapp_phone or w.phone_whatsapp or w.phone or '') %}
               {% set rating_label_map = {'he':'דירוג %.2f מתוך 5','en':'Rating %.2f out of 5','ru':'Оценка %.2f из 5'} %}
               {% set rating_label_template = rating_label_map.get(g.current_lang, rating_label_map['he']) %}
@@ -365,7 +366,7 @@
                 {% set rating_value = '%.2f'|format(rating_numeric) %}
               {% endif %}
 
-              {% set sanitized_phone = (phone_number or '')|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '') %}
+              {% set sanitized_phone = (phone_tel or '')|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '') %}
               {% set whatsapp_clean = whatsapp_number|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '')|replace('+', '') %}
 
               {# --- SAFE last-review block --- #}
@@ -402,13 +403,23 @@
                     {% endif %}
                     <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                   </div>
-                  {% if phone_number or whatsapp_clean %}
+                  {% if phone_tel or whatsapp_clean %}
                     <div class="card-actions">
-                      {% if phone_number %}
-                        <a class="btn btn-call" href="tel:{{ sanitized_phone or phone_number }}">📞 {{ phone_number }}</a>
+                      {% if phone_tel %}
+                        <a class="btn btn-call"
+                           href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
+                           aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
+                          📞 {{ phone_display }}
+                        </a>
                       {% endif %}
                       {% if whatsapp_clean %}
-                        <a class="btn btn-whatsapp" href="https://wa.me/{{ whatsapp_clean }}" target="_blank" rel="noopener">💬 WhatsApp</a>
+                        <a class="btn btn-whatsapp"
+                           href="https://wa.me/{{ whatsapp_clean }}"
+                           target="_blank" rel="noopener"
+                           aria-label="שליחת הודעת WhatsApp ל{{ display_name }}">
+                          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                          <span class="sr-only">WhatsApp</span>
+                        </a>
                       {% endif %}
                     </div>
                   {% endif %}

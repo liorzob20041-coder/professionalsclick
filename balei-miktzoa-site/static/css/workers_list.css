@@ -1424,8 +1424,15 @@ body {
   color: #fff;
   border: none;
   box-shadow: 0 2px 8px rgb(37 211 102 / 25%);
-  font-size: 0.9rem;
-  height: 42px;
+  font-size: 1.4rem;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+}
+.btn-whatsapp i {
+  line-height: 1;
 }
 .btn-whatsapp:hover,
 .btn-whatsapp:focus-visible {

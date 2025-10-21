@@ -366,15 +366,43 @@
               {% set whatsapp_clean = whatsapp_number|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '')|replace('+', '') %}
 
               {# --- SAFE last-review block --- #}
-              {% set last_review_author = (w.last_review_author|default('')|trim) %}
-              {% if not last_review_author and (w.last_review_name is defined) %}
-                {% set last_review_author = (w.last_review_name|default('')|trim) %}
+              {% set last_review_author = '' %}
+              {% if w.latest_review_author is defined and w.latest_review_author %}
+                {% set last_review_author = w.latest_review_author|trim %}
+              {% elif w.last_review_author is defined and w.last_review_author %}
+                {% set last_review_author = w.last_review_author|trim %}
+              {% elif w.last_review_name is defined and w.last_review_name %}
+                {% set last_review_author = w.last_review_name|trim %}
               {% endif %}
-              {% set last_review_text = (w.last_review_text|default('')|trim) %}
-              {% set last_review_rating_raw = (w.last_review_rating if w.last_review_rating is defined else none) %}
+              {% set last_review_text = '' %}
+              {% if w.latest_review is defined and w.latest_review %}
+                {% set last_review_text = w.latest_review|trim %}
+              {% elif w.latest_review_text is defined and w.latest_review_text %}
+                {% set last_review_text = w.latest_review_text|trim %}
+              {% elif w.last_review_text is defined and w.last_review_text %}
+                {% set last_review_text = w.last_review_text|trim %}
+              {% endif %}
+              {% set last_review_rating_raw = none %}
+              {% if w.latest_review_rating is defined and w.latest_review_rating is not none and w.latest_review_rating != '' %}
+                {% set last_review_rating_raw = w.latest_review_rating %}
+              {% elif w.last_review_rating is defined and w.last_review_rating is not none and w.last_review_rating != '' %}
+                {% set last_review_rating_raw = w.last_review_rating %}
+              {% endif %}
               {% set last_review_rating_value = none %}
               {% if last_review_rating_raw is not none and last_review_rating_raw != '' %}
-                {% set last_review_rating_value = (last_review_rating_raw|string)|float %}
+                {% set last_review_rating_value = (last_review_rating_raw|string)|replace(',', '.')|float %}
+              {% endif %}
+              {% set last_review_date_short = '' %}
+              {% set last_review_date_full = '' %}
+              {% set last_review_date_iso = '' %}
+              {% if w.latest_review_date_short is defined and w.latest_review_date_short %}
+                {% set last_review_date_short = w.latest_review_date_short %}
+                {% set last_review_date_full = w.latest_review_date_full|default(w.latest_review_date_short) %}
+                {% set last_review_date_iso = w.latest_review_date_iso|default('') %}
+              {% elif w.last_review_date_short is defined and w.last_review_date_short %}
+                {% set last_review_date_short = w.last_review_date_short %}
+                {% set last_review_date_full = w.last_review_date_full|default(w.last_review_date_short) %}
+                {% set last_review_date_iso = w.last_review_date_iso|default('') %}
               {% endif %}
               {% if last_review_text %}
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
@@ -389,11 +417,17 @@
                     {% if video_src and video_kind == 'mp4' %}
                       <video class="media-video"
                              src="{{ video_src }}"
-                             autoplay
-                             muted
-                             loop
+                             controls
+                             preload="metadata"
                              playsinline{% if video_poster %}
                              poster="{{ video_poster }}"{% endif %}></video>
+                    {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
+                      <iframe class="media-video"
+                              src="{{ video_src }}"
+                              title="{{ display_name }}"
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowfullscreen></iframe>
                     {% else %}
                       <img class="media-video" src="{{ image_url }}" alt="{{ display_name }}">
                     {% endif %}
@@ -469,6 +503,11 @@
                               <span class="star{{ ' star--full' if last_review_rating_value >= i else '' }}">★</span>
                             {% endfor %}
                           </span>
+                        {% endif %}
+                        {% if last_review_date_short %}
+                          <time class="last-review-date"
+                                datetime="{{ last_review_date_iso or last_review_date_short }}"
+                                title="{{ last_review_date_full or last_review_date_short }}">{{ last_review_date_short }}</time>
                         {% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}

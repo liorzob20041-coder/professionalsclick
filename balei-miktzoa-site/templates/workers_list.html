@@ -180,7 +180,24 @@
     {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set languages_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
-    {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}    {% set close_label = (_('close') if _ else 'סגור') %}
+    {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}
+    {% set video_controls_label_map = {'he':'פקדי וידאו','en':'Video controls','ru':'Управление видео'} %}
+    {% set video_seek_label_map = {'he':'ניווט בסרטון','en':'Seek video','ru':'Перемотка видео'} %}
+    {% set video_play_label_map = {'he':'נגן וידאו','en':'Play video','ru':'Воспроизвести видео'} %}
+    {% set video_pause_label_map = {'he':'השהה וידאו','en':'Pause video','ru':'Пауза видео'} %}
+    {% set video_mute_label_map = {'he':'השתק','en':'Mute','ru':'Выключить звук'} %}
+    {% set video_unmute_label_map = {'he':'בטל השתקה','en':'Unmute','ru':'Включить звук'} %}
+    {% set video_fullscreen_label_map = {'he':'מסך מלא','en':'Fullscreen','ru':'Полноэкранный режим'} %}
+    {% set video_exit_fullscreen_label_map = {'he':'צא ממסך מלא','en':'Exit fullscreen','ru':'Выйти из полноэкранного режима'} %}
+    {% set video_controls_label = video_controls_label_map.get(g.current_lang, video_controls_label_map['he']) %}
+    {% set video_seek_label = video_seek_label_map.get(g.current_lang, video_seek_label_map['he']) %}
+    {% set video_play_label = video_play_label_map.get(g.current_lang, video_play_label_map['he']) %}
+    {% set video_pause_label = video_pause_label_map.get(g.current_lang, video_pause_label_map['he']) %}
+    {% set video_mute_label = video_mute_label_map.get(g.current_lang, video_mute_label_map['he']) %}
+    {% set video_unmute_label = video_unmute_label_map.get(g.current_lang, video_unmute_label_map['he']) %}
+    {% set video_fullscreen_label = video_fullscreen_label_map.get(g.current_lang, video_fullscreen_label_map['he']) %}
+    {% set video_exit_fullscreen_label = video_exit_fullscreen_label_map.get(g.current_lang, video_exit_fullscreen_label_map['he']) %}
+    {% set close_label = (_('close') if _ else 'סגור') %}
 
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
@@ -413,14 +430,56 @@
                 {% set video_src = w.card_video_src %}
                 {% set video_poster = w.card_video_poster or image_url %}
                 <div class="card-media">
-                  <div class="media-box">
+                  <div class="media-box"{% if video_src and video_kind == 'mp4' %} data-inline-video{% endif %}>
                     {% if video_src and video_kind == 'mp4' %}
                       <video class="media-video"
                              src="{{ video_src }}"
-                             controls
                              preload="metadata"
                              playsinline{% if video_poster %}
                              poster="{{ video_poster }}"{% endif %}></video>
+                      <div class="media-inline-controls" role="group" aria-label="{{ video_controls_label }}">
+                        <input type="range"
+                               class="media-inline-progress"
+                               dir="ltr"
+                               value="0"
+                               min="0"
+                               max="100"
+                               step="0.1"
+                               data-inline-progress
+                               aria-label="{{ video_seek_label }}">
+                        <div class="media-inline-buttons">
+                          <button type="button"
+                                  class="media-inline-btn"
+                                  data-inline-play
+                                  data-label-play="{{ video_play_label }}"
+                                  data-label-pause="{{ video_pause_label }}"
+                                  aria-label="{{ video_play_label }}"
+                                  aria-pressed="false">
+                            <i class="fa-solid fa-play" aria-hidden="true"></i>
+                            <span class="sr-only">{{ video_play_label }}</span>
+                          </button>
+                          <button type="button"
+                                  class="media-inline-btn"
+                                  data-inline-mute
+                                  data-label-mute="{{ video_mute_label }}"
+                                  data-label-unmute="{{ video_unmute_label }}"
+                                  aria-label="{{ video_mute_label }}"
+                                  aria-pressed="false">
+                            <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
+                            <span class="sr-only">{{ video_mute_label }}</span>
+                          </button>
+                          <button type="button"
+                                  class="media-inline-btn"
+                                  data-inline-fullscreen
+                                  data-label-enter="{{ video_fullscreen_label }}"
+                                  data-label-exit="{{ video_exit_fullscreen_label }}"
+                                  aria-label="{{ video_fullscreen_label }}"
+                                  aria-pressed="false">
+                            <i class="fa-solid fa-expand" aria-hidden="true"></i>
+                            <span class="sr-only">{{ video_fullscreen_label }}</span>
+                          </button>
+                        </div>
+                      </div>
                     {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
                       <iframe class="media-video"
                               src="{{ video_src }}"
@@ -665,25 +724,193 @@
       const boxes = Array.from(document.querySelectorAll('.media-box[data-inline-video]'));
       boxes.forEach(box => {
         const video = box.querySelector('video');
+        if(!video) return;
         const playBtn = box.querySelector('[data-inline-play]');
-        if(!video || !playBtn) return;
-        function setPlayingState(isPlaying){
-          box.classList.toggle('is-playing', isPlaying);
-        }
-        if(!video.paused && !video.ended){
-          setPlayingState(true);
-        }
-        playBtn.addEventListener('click', (event)=>{
-          event.preventDefault();
-          event.stopPropagation();
+        const muteBtn = box.querySelector('[data-inline-mute]');
+        const fullscreenBtn = box.querySelector('[data-inline-fullscreen]');
+        const progress = box.querySelector('[data-inline-progress]');
+        let isSeeking = false;
+        video.removeAttribute('controls');
+        video.controls = false;
+        function safePlay(){
           const playPromise = video.play();
           if(playPromise && typeof playPromise.then === 'function'){
             playPromise.catch(()=>{});
           }
+        }
+        function updatePlayState(){
+          const isPlaying = !video.paused && !video.ended;
+          box.classList.toggle('is-playing', isPlaying);
+          if(playBtn){
+            const icon = playBtn.querySelector('i');
+            if(icon){
+              icon.classList.toggle('fa-play', !isPlaying);
+              icon.classList.toggle('fa-pause', isPlaying);
+            }
+            const labelPlay = playBtn.dataset.labelPlay || '';
+            const labelPause = playBtn.dataset.labelPause || '';
+            const label = isPlaying ? labelPause : labelPlay;
+            playBtn.setAttribute('aria-label', label);
+            playBtn.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+            const sr = playBtn.querySelector('.sr-only');
+            if(sr){ sr.textContent = label; }
+          }
+        }
+        function updateMuteState(){
+          if(!muteBtn) return;
+          const isMuted = video.muted || video.volume === 0;
+          const icon = muteBtn.querySelector('i');
+          if(icon){
+            icon.classList.toggle('fa-volume-high', !isMuted);
+            icon.classList.toggle('fa-volume-xmark', isMuted);
+          }
+          const labelMute = muteBtn.dataset.labelMute || '';
+          const labelUnmute = muteBtn.dataset.labelUnmute || '';
+          const label = isMuted ? labelUnmute : labelMute;
+          muteBtn.setAttribute('aria-label', label);
+          muteBtn.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
+          const sr = muteBtn.querySelector('.sr-only');
+          if(sr){ sr.textContent = label; }
+        }
+        function isFullscreen(){
+          return document.fullscreenElement === video ||
+                 document.fullscreenElement === box ||
+                 document.webkitFullscreenElement === video ||
+                 document.webkitFullscreenElement === box ||
+                 !!video.webkitDisplayingFullscreen;
+        }
+        function updateFullscreenState(){
+          if(!fullscreenBtn) return;
+          const active = isFullscreen();
+          const icon = fullscreenBtn.querySelector('i');
+          if(icon){
+            icon.classList.toggle('fa-expand', !active);
+            icon.classList.toggle('fa-compress', active);
+          }
+          const labelEnter = fullscreenBtn.dataset.labelEnter || '';
+          const labelExit = fullscreenBtn.dataset.labelExit || '';
+          const label = active ? labelExit : labelEnter;
+          fullscreenBtn.setAttribute('aria-label', label);
+          fullscreenBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+          const sr = fullscreenBtn.querySelector('.sr-only');
+          if(sr){ sr.textContent = label; }
+        }
+        function updateProgress(){
+          if(!progress) return;
+          if(!isFinite(video.duration) || video.duration <= 0){
+            progress.disabled = true;
+            progress.value = 0;
+            progress.style.setProperty('--progress-value', '0%');
+            return;
+          }
+          progress.disabled = false;
+          if(!isSeeking){
+            const value = (video.currentTime / video.duration) * 100;
+            progress.value = value;
+            progress.style.setProperty('--progress-value', value + '%');
+          }
+        }
+        updatePlayState();
+        updateMuteState();
+        updateFullscreenState();
+        updateProgress();
+        if(playBtn){
+          playBtn.addEventListener('click', (event)=>{
+            event.preventDefault();
+            event.stopPropagation();
+            if(video.paused || video.ended){
+              safePlay();
+            }else{
+              video.pause();
+            }
+          });
+        }
+        video.addEventListener('click', (event)=>{
+          event.preventDefault();
+          event.stopPropagation();
+          if(video.paused || video.ended){
+            safePlay();
+          }else{
+            video.pause();
+          }
         });
-        video.addEventListener('play', ()=>setPlayingState(true));
-        video.addEventListener('pause', ()=>setPlayingState(false));
-        video.addEventListener('ended', ()=>setPlayingState(false));
+        if(muteBtn){
+          muteBtn.addEventListener('click', (event)=>{
+            event.preventDefault();
+            event.stopPropagation();
+            video.muted = !video.muted;
+            updateMuteState();
+          });
+        }
+        if(fullscreenBtn){
+          fullscreenBtn.addEventListener('click', (event)=>{
+            event.preventDefault();
+            event.stopPropagation();
+            if(isFullscreen()){
+              if(document.exitFullscreen){
+                document.exitFullscreen();
+              }else if(document.webkitExitFullscreen){
+                document.webkitExitFullscreen();
+              }else if(document.mozCancelFullScreen){
+                document.mozCancelFullScreen();
+              }else if(document.msExitFullscreen){
+                document.msExitFullscreen();
+              }else if(video.webkitExitFullscreen){
+                video.webkitExitFullscreen();
+              }
+            }else{
+              const target = video.requestFullscreen ? video : (box.requestFullscreen ? box : video);
+              if(target.requestFullscreen){
+                target.requestFullscreen().catch(()=>{});
+              }else if(target.webkitRequestFullscreen){
+                target.webkitRequestFullscreen();
+              }else if(video.webkitEnterFullscreen){
+                video.webkitEnterFullscreen();
+              }
+            }
+          });
+          document.addEventListener('fullscreenchange', updateFullscreenState);
+          document.addEventListener('webkitfullscreenchange', updateFullscreenState);
+          if('webkitDisplayingFullscreen' in video){
+            video.addEventListener('webkitbeginfullscreen', updateFullscreenState);
+            video.addEventListener('webkitendfullscreen', updateFullscreenState);
+          }
+        }
+        if(progress){
+          const stopEvent = (event)=>{ event.stopPropagation(); };
+          progress.addEventListener('mousedown', stopEvent);
+          progress.addEventListener('touchstart', stopEvent, {passive:true});
+          progress.addEventListener('click', stopEvent);
+          progress.addEventListener('input', (event)=>{
+            event.stopPropagation();
+            if(!isFinite(video.duration) || video.duration <= 0) return;
+            isSeeking = true;
+            const raw = parseFloat(progress.value || '0');
+            const percent = isNaN(raw) ? 0 : raw;
+            const next = (percent / 100) * video.duration;
+            if(!Number.isNaN(next)){
+              video.currentTime = next;
+            }
+            progress.style.setProperty('--progress-value', percent + '%');
+          });
+          progress.addEventListener('change', ()=>{
+            isSeeking = false;
+          });
+        }
+        video.addEventListener('play', updatePlayState);
+        video.addEventListener('pause', updatePlayState);
+        video.addEventListener('ended', ()=>{
+          updatePlayState();
+          if(progress){
+            isSeeking = false;
+            progress.value = 0;
+            progress.style.setProperty('--progress-value', '0%');
+          }
+        });
+        video.addEventListener('volumechange', updateMuteState);
+        video.addEventListener('timeupdate', updateProgress);
+        video.addEventListener('durationchange', updateProgress);
+        video.addEventListener('loadedmetadata', updateProgress);
       });
     })();
 

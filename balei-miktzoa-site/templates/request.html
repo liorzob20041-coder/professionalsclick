@@ -74,7 +74,12 @@
     .btn-primary:hover{ transform:translateY(-1px); }
     .btn-secondary{ background:#f3f4f6; border:1px solid var(--line); color:#111827; }
     .btn-row{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
-
+    .form-status{ margin-top:16px; font-weight:700; font-size:1rem; }
+    .form-status--pending{ color:var(--muted); }
+    .form-status--success{ color:#047857; }
+    .form-status--error{ color:#b91c1c; }
+    .form-status__details{ margin:6px 0 0; padding:0 0 0 1.1em; font-size:.95rem; font-weight:500; color:var(--muted); }
+    [dir="rtl"] .form-status__details{ padding:0 1.1em 0 0; }
     .work-block{ border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:10px 0; background:#fff; }
     .days{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
     .day{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); padding:6px 10px; border-radius:999px; background:#fff; user-select:none; }
@@ -345,6 +350,7 @@
       <div class="btn-row" style="justify-content:flex-end">
         <button type="submit" class="btn btn-primary">שליחה</button>
       </div>
+      <div id="request_status" class="form-status" role="status" aria-live="polite"></div>
     </form>
   </div>
 
@@ -576,6 +582,97 @@
       if (fieldEl.value) renderSubservices(fieldEl.value);
       fieldEl.addEventListener('input', () => renderSubservices(fieldEl.value));
       fieldEl.addEventListener('blur',  () => renderSubservices(fieldEl.value));
+    })();
+    // ===== שליחת טופס אסינכרונית עם פידבק מידי =====
+    (function(){
+      const form = document.querySelector('form');
+      if (!form || !window.fetch || !window.FormData) return;
+      const statusEl = document.getElementById('request_status');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.textContent : '';
+      const TEXTS = {
+        pending: 'שולחים את הבקשה… זה עלול לקחת כמה שניות.',
+        slow: 'הבקשה נשלחת ברקע – אפשר להמשיך לגלוש, ניצור קשר אחרי האישור.',
+        successFallback: 'הבקשה נקלטה! ניצור קשר בהקדם 🙏',
+        errorFallback: 'אירעה תקלה בשליחת הבקשה. נסו שוב בעוד רגע.'
+      };
+      function setStatus(state, text){
+        if (!statusEl) return;
+        statusEl.className = 'form-status';
+        if (state) statusEl.classList.add(`form-status--${state}`);
+        statusEl.textContent = text || '';
+      }
+      function appendDetails(messages){
+        if (!statusEl || !messages || !messages.length) return;
+        const list = document.createElement('ul');
+        list.className = 'form-status__details';
+        messages.forEach(msg => {
+          const item = document.createElement('li');
+          item.textContent = msg;
+          list.appendChild(item);
+        });
+        statusEl.appendChild(list);
+      }
+      form.addEventListener('submit', async (event) => {
+        if (form.dataset.submitting === 'true') {
+          event.preventDefault();
+          return;
+        }
+        if (!window.fetch) return;
+        event.preventDefault();
+        form.dataset.submitting = 'true';
+        let slowNoticeTimer = null;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'שולחים…';
+        }
+        setStatus('pending', TEXTS.pending);
+        slowNoticeTimer = window.setTimeout(() => {
+          if (form.dataset.submitting === 'true') {
+            setStatus('pending', TEXTS.slow);
+          }
+        }, 6000);
+        try {
+          const formData = new FormData(form);
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+          let payload = null;
+          try {
+            payload = await response.json();
+          } catch (err) {
+            payload = null;
+          }
+          const messages = payload && Array.isArray(payload.messages) ? payload.messages : [];
+          const successMessage = messages.find(m => m && m.category === 'success');
+          const errorMessages = messages.filter(m => m && m.category === 'error').map(m => m.text).filter(Boolean);
+          if (response.ok && payload && payload.ok) {
+            setStatus('success', (successMessage && successMessage.text) || TEXTS.successFallback);
+            if (errorMessages.length) {
+              appendDetails(errorMessages);
+            }
+            form.reset();
+            renderSubservices('');
+          } else {
+            const fallback = (payload && payload.error) || TEXTS.errorFallback;
+            setStatus('error', fallback);
+            if (errorMessages.length) {
+              appendDetails(errorMessages);
+            }
+          }
+        } catch (err) {
+          setStatus('error', TEXTS.errorFallback);
+        } finally {
+          window.clearTimeout(slowNoticeTimer);
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+          }
+          delete form.dataset.submitting;
+        }
+      });
     })();
   </script>
 </body>

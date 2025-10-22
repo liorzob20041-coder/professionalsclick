@@ -2362,6 +2362,15 @@ def request_professional(lang):
         abort(403)
 
     if request.method == 'POST':
+        wants_json = 'application/json' in (request.headers.get('Accept') or '') \
+            or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+        form_messages = []
+
+        def add_message(category, text):
+            flash(text, category)
+            form_messages.append({"category": category, "text": text})
+
         # --- איסוף נתונים מהטופס ---
         name = request.form.get('name')
         company_name = request.form.get('company_name')
@@ -2411,14 +2420,14 @@ def request_professional(lang):
                     size_mb = video_file.stream.tell() / (1024 * 1024)
                     video_file.stream.seek(0)
                     if size_mb > MAX_VIDEO_MB:
-                        flash(f"וידאו גדול מדי (>{MAX_VIDEO_MB}MB). נסה/י קובץ קטן יותר.", "error")
+                        add_message("error", f"וידאו גדול מדי (>{MAX_VIDEO_MB}MB). נסה/י קובץ קטן יותר.")
                     else:
                         video_file.save(save_path)
                         saved_video_relpath = f"upload_pending/videos/{safe_name}"
                 except Exception:
-                    flash("אירעה שגיאה בשמירת הווידאו. נסה/י שוב.", "error")
+                    add_message("error", "אירעה שגיאה בשמירת הווידאו. נסה/י שוב.")
             else:
-                flash("סוג הקובץ אינו נתמך. מותר: mp4, webm, ogg", "error")
+                add_message("error", "סוג הקובץ אינו נתמך. מותר: mp4, webm, ogg")
 
         he_field   = _canon_he_field(field)
         i18n_field = FIELD_I18N.get(he_field, {"he": he_field, "en": he_field, "ru": he_field})
@@ -2463,7 +2472,14 @@ def request_professional(lang):
         with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
             pending_list.append(new_request)
 
-        flash("הבקשה נשלחה בהצלחה! תודה רבה.")
+        add_message("success", "הבקשה נשלחה בהצלחה! תודה רבה.")
+
+        if wants_json:
+            return jsonify({
+                "ok": True,
+                "messages": form_messages,
+            })
+
         # שומרים את ה-key גם בחזרה, כדי שהעמוד יישאר נגיש ברענון
         return redirect(url_for('request_professional', lang=lang, key=invite_key))
 

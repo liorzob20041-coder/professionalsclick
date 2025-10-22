@@ -1,34 +1,28 @@
 {% extends "base.html" %}
-
 {% block title %}
   {% if area_label %}{{ field_label }} ב{{ area_label }} – {{ _("site_name") }}
   {% else %}{{ field_label }} – {{ _("site_name") }}{% endif %}
 {% endblock %}
-
 {% block head_seo %}
   {% set canonical_base = url_for('show_workers', lang=g.current_lang, field=field, area=area, _external=True) %}
   {% set canonical = (canonical_url if canonical_url is defined and canonical_url else (page is defined and page>1 and (canonical_base ~ '?page=' ~ page)) or canonical_base) %}
   <link rel="canonical" href="{{ canonical }}">
-
   {% set href_he = (hreflang_urls.he if hreflang_urls is defined and hreflang_urls and hreflang_urls.he
                     else url_for('show_workers', lang='he', field=field, area=area, _external=True)) %}
   {% set href_en = (hreflang_urls.en if hreflang_urls is defined and hreflang_urls and hreflang_urls.en
                     else url_for('show_workers', lang='en', field=field, area=area, _external=True)) %}
   {% set href_ru = (hreflang_urls.ru if hreflang_urls is defined and hreflang_urls and hreflang_urls.ru
                     else url_for('show_workers', lang='ru', field=field, area=area, _external=True)) %}
-
   <link rel="alternate" hreflang="he" href="{{ href_he }}">
   <link rel="alternate" hreflang="en" href="{{ href_en }}">
   <link rel="alternate" hreflang="ru" href="{{ href_ru }}">
   <link rel="alternate" hreflang="x-default" href="{{ href_he }}">
-
   {% if page is defined and page|int > 1 %}
     <link rel="prev" href="{{ canonical_base }}{% if page|int > 2 %}?page={{ page|int - 1 }}{% endif %}">
   {% endif %}
   {% if page is defined and has_next %}
     <link rel="next" href="{{ canonical_base }}?page={{ page|int + 1 }}">
   {% endif %}
-
   {% if g.current_lang == 'he' %}
     {% set meta_description = (area_label and (field_label ~ ' ב' ~ area_label ~ ' – בעלי מקצוע מאומתים, ביקורות אמיתיות ומחירון שקוף.')) or (field_label ~ ' – בעלי מקצוע מאומתים, ביקורות אמיתיות ומחירון שקוף.') %}
     {% set og_title = (area_label and (field_label ~ ' ב' ~ area_label)) or field_label %}
@@ -42,11 +36,9 @@
     {% set og_title = (area_label and (field_label ~ ' в ' ~ area_label)) or field_label %}
     {% set og_locale = 'ru_RU' %}
   {% endif %}
-
   {% set results_count = workers|length %}
   <meta name="description" content="{{ meta_description }}">
   <meta name="robots" content="{{ 'noindex,follow' if results_count == 0 else 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1' }}">
-
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ _("site_name") }}">
   <meta property="og:locale" content="{{ og_locale }}">
@@ -60,12 +52,10 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="{{ og_title }}">
-
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ og_title }}">
   <meta name="twitter:description" content="{{ meta_description }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='og/home-' ~ g.current_lang ~ '.jpg', _external=True) }}">
-
   {% set __lang = (g.current_lang or 'he') %}
   {% set __country = 'IL' %}
   {% set __page = (page|int if page is defined else 1) %}
@@ -106,7 +96,6 @@
     ]
   }
   </script>
-
   {% set home_url = url_for_lang('home', _external=True) %}
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
@@ -114,7 +103,6 @@
     {"@type":"ListItem","position":2,"name": {{ (area_label and (field_label ~ ' ' ~ (g.current_lang=='he' and 'ב' or (g.current_lang=='ru' and 'в' or 'in')) ~ ' ' ~ area_label) or field_label)|tojson }},"item": {{ canonical|tojson }}}
   ]}
   </script>
-
   {% if g.current_lang == 'he' %}
     {% set noun_map = {'שיפוצים':'שיפוצניקים','אינסטלטורים':'אינסטלטורים','חשמלאים':'חשמלאים','מנעולנים':'מנעולנים'} %}
     {% set field_noun = noun_map.get(field_label, field_label) %}
@@ -143,13 +131,11 @@
     {% set faq_a3 = 'Да. Мы публикуем проверенные отзывы клиентов с датами и кратким описанием, чтобы вы могли принять взвешенное решение.' %}
   {% endif %}
 {% endblock %}
-
 {% block extra_head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/workers_list.css') }}">
 {% endblock %}
-
 {% block content %}
   <div class="main-content theme-bordeaux wr-page" data-field="{{ field_slug|default(field_label|lower|replace(' ','-')) }}">
     {% set _change_city_map = {'he':'שינוי עיר','en':'Change city','ru':'Сменить город'} %}
@@ -198,19 +184,16 @@
     {% set video_fullscreen_label = video_fullscreen_label_map.get(g.current_lang, video_fullscreen_label_map['he']) %}
     {% set video_exit_fullscreen_label = video_exit_fullscreen_label_map.get(g.current_lang, video_exit_fullscreen_label_map['he']) %}
     {% set close_label = (_('close') if _ else 'סגור') %}
-
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
       <span>›</span>
       <span class="current">{{ field_label }}{% if area_label %} / {{ area_label }}{% endif %}</span>
     </nav>
-
     <section class="masthead masthead--ripple" aria-label="כותרת עמוד">
       <div class="dot-grid" aria-hidden="true"></div>
       <div class="click-ripple" aria-hidden="true">
         <span></span><span></span><span></span>
       </div>
-
       <h1 class="title title--priority">
         <span class="t-field">{{ field_label }}</span>
         <span class="t-area-wrap">
@@ -218,13 +201,11 @@
             <span class="t-sep"> ב</span>
             <span class="t-area">{{ area_label }}</span>
           {% endif %}
-
           <span class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
             <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
               <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
               <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
             </button>
-
             <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
               <div class="city-menu__surface">
                 <div class="city-menu__header">
@@ -233,13 +214,11 @@
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                   </button>
                 </div>
-
                 {% if city_options %}
                   <div class="city-menu__search">
                     <label class="sr-only" for="citySearchInput">{{ city_search_label }}</label>
                     <input type="search" id="citySearchInput" class="city-menu__input" placeholder="{{ city_search_placeholder }}" autocomplete="off" data-city-search>
                   </div>
-
                   <ul class="city-menu__list" role="listbox">
                     {% for option in city_options %}
                       <li class="city-menu__item">
@@ -259,18 +238,14 @@
           </span>
         </span>
       </h1>
-
       <p class="brand-sub">קליק אחד והמקצוען בדרך אליכם</p>
-
       <div class="trust-pills" role="list" aria-label="הבטחות השירות">
         <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> מאומת</span>
         <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> ביקורות אמיתיות</span>
         <span class="pill" role="listitem"><i class="fa-solid fa-phone"></i> חייגו בלחיצה</span>
       </div>
-
       <div class="accent-line" aria-hidden="true"></div>
     </section>
-
     <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
       <div class="toolbar-row">
         <button type="button" class="btn-filter" id="filtersOpenBtn" aria-controls="filtersDrawer" aria-expanded="false">
@@ -278,7 +253,6 @@
         </button>
         <div class="hint">לטשו את התוצאות עד שתגיעו להתאמה המושלמת.</div>
       </div>
-
       {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
       {% set active = [] %}
       {% if request.args.get('open_now') %}{% set _ = active.append('פתוחים עכשיו') %}{% endif %}
@@ -291,7 +265,6 @@
           {% set _ = active.append(lang_option) %}
         {% endif %}
       {% endfor %}
-
       {% if active|length %}
         <div class="chips-scroll" aria-label="מסננים פעילים">
           {% for chip in active %}<span class="chip is-on">{{ chip }}</span>{% endfor %}
@@ -299,7 +272,6 @@
         </div>
       {% endif %}
     </div>
-
     <div class="wr-container">
       <main class="wr-list" aria-label="{{ _('workers_list_aria') }}">
         {% if workers|length == 0 %}
@@ -341,7 +313,6 @@
                 {% set experience_chip = w.experience_text %}
               {% endif %}
               {% set has_badges = (experience_chip or w.offers_emergency) %}
-
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
               {% set phone_tel = (w.phone_formatted or w.phone) %}
@@ -363,7 +334,6 @@
                 {% set display_name = (w.name or w.company_name or '') %}
               {% endif %}
               {% set company_display = w.company_name %}
-
               {# דירוג ממוצע #}
               {% set rating_source = none %}
               {% if w.rating_avg is defined and w.rating_avg is not none and w.rating_avg != '' %}
@@ -371,17 +341,14 @@
               {% elif w.rating is defined and w.rating is not none and w.rating != '' %}
                 {% set rating_source = w.rating %}
               {% endif %}
-
               {% set rating_value = none %}
               {% set rating_numeric = none %}
               {% if rating_source is not none and rating_source != '' %}
                 {% set rating_numeric = rating_source|float %}
                 {% set rating_value = '%.2f'|format(rating_numeric) %}
               {% endif %}
-
               {% set sanitized_phone = (phone_tel or '')|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '') %}
               {% set whatsapp_clean = whatsapp_number|replace(' ', '')|replace('-', '')|replace('(', '')|replace(')', '')|replace('+', '') %}
-
               {# --- SAFE last-review block --- #}
               {% set last_review_author = '' %}
               {% if w.latest_review_author is defined and w.latest_review_author %}
@@ -424,65 +391,22 @@
               {% if last_review_text %}
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
-
               <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
                 {% set video_kind = w.card_video_kind %}
                 {% set video_src = w.card_video_src %}
                 {% set video_poster = w.card_video_poster or image_url %}
                 <div class="card-media">
-                  <div class="media-box"{% if video_src and video_kind == 'mp4' %} data-inline-video{% endif %}>
+                  <div class="media-box">
                     {% if video_src and video_kind == 'mp4' %}
                       {% set _target_aspect = w.card_video_aspect_ratio|default(None) %}
                       <div class="video-orientation-frame video-orientation-frame--fill card-video-frame"
                            {% if _target_aspect %}style="--video-target-aspect: {{ '%.6f' % _target_aspect }}"{% endif %}>
                         <video class="media-video"
                                src="{{ video_src }}"
-                               preload="metadata"
-                               playsinline{% if video_poster %}
+                               controls
+                               playsinline
+                               preload="metadata"{% if video_poster %}
                                poster="{{ video_poster }}"{% endif %}></video>
-                      </div>
-                      <div class="media-inline-controls" role="group" aria-label="{{ video_controls_label }}">
-                        <input type="range"
-                               class="media-inline-progress"
-                               dir="ltr"
-                               value="0"
-                               min="0"
-                               max="100"
-                               step="0.1"
-                               data-inline-progress
-                               aria-label="{{ video_seek_label }}">
-                        <div class="media-inline-buttons">
-                          <button type="button"
-                                  class="media-inline-btn"
-                                  data-inline-play
-                                  data-label-play="{{ video_play_label }}"
-                                  data-label-pause="{{ video_pause_label }}"
-                                  aria-label="{{ video_play_label }}"
-                                  aria-pressed="false">
-                            <i class="fa-solid fa-play" aria-hidden="true"></i>
-                            <span class="sr-only">{{ video_play_label }}</span>
-                          </button>
-                          <button type="button"
-                                  class="media-inline-btn"
-                                  data-inline-mute
-                                  data-label-mute="{{ video_mute_label }}"
-                                  data-label-unmute="{{ video_unmute_label }}"
-                                  aria-label="{{ video_mute_label }}"
-                                  aria-pressed="false">
-                            <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
-                            <span class="sr-only">{{ video_mute_label }}</span>
-                          </button>
-                          <button type="button"
-                                  class="media-inline-btn"
-                                  data-inline-fullscreen
-                                  data-label-enter="{{ video_fullscreen_label }}"
-                                  data-label-exit="{{ video_exit_fullscreen_label }}"
-                                  aria-label="{{ video_fullscreen_label }}"
-                                  aria-pressed="false">
-                            <i class="fa-solid fa-expand" aria-hidden="true"></i>
-                            <span class="sr-only">{{ video_fullscreen_label }}</span>
-                          </button>
-                        </div>
                       </div>
                     {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
                       <iframe class="media-video"
@@ -615,7 +539,6 @@
                   {% endif %}
                 </div>
               </article>
-
             {% endfor %}
           </section>
           {% if pagination %}
@@ -636,7 +559,6 @@
         </section>
       </main>
     </div>
-
     <section class="cta-min" aria-label="פרסום בעלי מקצוע">
       <div class="cta-min__box">
         <div>
@@ -646,7 +568,6 @@
         <a class="btn-min" href="{{ url_for_lang('contact') }}">דברו איתנו</a>
       </div>
     </section>
-
     <div class="drawer-overlay" id="filtersOverlay" hidden></div>
     <aside class="drawer-panel" id="filtersDrawer" aria-hidden="true" aria-modal="true" role="dialog" aria-labelledby="filtersTitle" hidden>
       <div class="drawer-head">
@@ -691,7 +612,6 @@
     </aside>
   </div>
 {% endblock %}
-
 {% block extra_scripts %}
   {{ super() }}
   <script>
@@ -703,7 +623,6 @@
       }
       computeHeaderH(); window.addEventListener('resize', computeHeaderH); window.addEventListener('orientationchange', computeHeaderH); window.addEventListener('load', computeHeaderH);
     })();
-
     document.addEventListener('click', (e)=>{
       const btn = e.target.closest('.wr-play');
       if(!btn) return;
@@ -723,201 +642,18 @@
       wrap.addEventListener('click', ev=>{ if(ev.target===wrap || ev.target.tagName==='BUTTON') wrap.remove(); });
       document.body.appendChild(wrap);
     }, {passive:true});
-
-    (function(){
-      const boxes = Array.from(document.querySelectorAll('.media-box[data-inline-video]'));
-      boxes.forEach(box => {
-        const video = box.querySelector('video');
-        if(!video) return;
-        const playBtn = box.querySelector('[data-inline-play]');
-        const muteBtn = box.querySelector('[data-inline-mute]');
-        const fullscreenBtn = box.querySelector('[data-inline-fullscreen]');
-        const progress = box.querySelector('[data-inline-progress]');
-        let isSeeking = false;
-        video.removeAttribute('controls');
-        video.controls = false;
-        function safePlay(){
-          const playPromise = video.play();
-          if(playPromise && typeof playPromise.then === 'function'){
-            playPromise.catch(()=>{});
-          }
-        }
-        function updatePlayState(){
-          const isPlaying = !video.paused && !video.ended;
-          box.classList.toggle('is-playing', isPlaying);
-          if(playBtn){
-            const icon = playBtn.querySelector('i');
-            if(icon){
-              icon.classList.toggle('fa-play', !isPlaying);
-              icon.classList.toggle('fa-pause', isPlaying);
-            }
-            const labelPlay = playBtn.dataset.labelPlay || '';
-            const labelPause = playBtn.dataset.labelPause || '';
-            const label = isPlaying ? labelPause : labelPlay;
-            playBtn.setAttribute('aria-label', label);
-            playBtn.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
-            const sr = playBtn.querySelector('.sr-only');
-            if(sr){ sr.textContent = label; }
-          }
-        }
-        function updateMuteState(){
-          if(!muteBtn) return;
-          const isMuted = video.muted || video.volume === 0;
-          const icon = muteBtn.querySelector('i');
-          if(icon){
-            icon.classList.toggle('fa-volume-high', !isMuted);
-            icon.classList.toggle('fa-volume-xmark', isMuted);
-          }
-          const labelMute = muteBtn.dataset.labelMute || '';
-          const labelUnmute = muteBtn.dataset.labelUnmute || '';
-          const label = isMuted ? labelUnmute : labelMute;
-          muteBtn.setAttribute('aria-label', label);
-          muteBtn.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
-          const sr = muteBtn.querySelector('.sr-only');
-          if(sr){ sr.textContent = label; }
-        }
-        function isFullscreen(){
-          return document.fullscreenElement === video ||
-                 document.fullscreenElement === box ||
-                 document.webkitFullscreenElement === video ||
-                 document.webkitFullscreenElement === box ||
-                 !!video.webkitDisplayingFullscreen;
-        }
-        function updateFullscreenState(){
-          if(!fullscreenBtn) return;
-          const active = isFullscreen();
-          const icon = fullscreenBtn.querySelector('i');
-          if(icon){
-            icon.classList.toggle('fa-expand', !active);
-            icon.classList.toggle('fa-compress', active);
-          }
-          const labelEnter = fullscreenBtn.dataset.labelEnter || '';
-          const labelExit = fullscreenBtn.dataset.labelExit || '';
-          const label = active ? labelExit : labelEnter;
-          fullscreenBtn.setAttribute('aria-label', label);
-          fullscreenBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
-          const sr = fullscreenBtn.querySelector('.sr-only');
-          if(sr){ sr.textContent = label; }
-        }
-        function updateProgress(){
-          if(!progress) return;
-          if(!isFinite(video.duration) || video.duration <= 0){
-            progress.disabled = true;
-            progress.value = 0;
-            progress.style.setProperty('--progress-value', '0%');
-            return;
-          }
-          progress.disabled = false;
-          if(!isSeeking){
-            const value = (video.currentTime / video.duration) * 100;
-            progress.value = value;
-            progress.style.setProperty('--progress-value', value + '%');
-          }
-        }
-        updatePlayState();
-        updateMuteState();
-        updateFullscreenState();
-        updateProgress();
-        if(playBtn){
-          playBtn.addEventListener('click', (event)=>{
-            event.preventDefault();
-            event.stopPropagation();
-            if(video.paused || video.ended){
-              safePlay();
-            }else{
-              video.pause();
-            }
-          });
-        }
-        video.addEventListener('click', (event)=>{
-          event.preventDefault();
-          event.stopPropagation();
-          if(video.paused || video.ended){
-            safePlay();
-          }else{
-            video.pause();
-          }
-        });
-        if(muteBtn){
-          muteBtn.addEventListener('click', (event)=>{
-            event.preventDefault();
-            event.stopPropagation();
-            video.muted = !video.muted;
-            updateMuteState();
-          });
-        }
-        if(fullscreenBtn){
-          fullscreenBtn.addEventListener('click', (event)=>{
-            event.preventDefault();
-            event.stopPropagation();
-            if(isFullscreen()){
-              if(document.exitFullscreen){
-                document.exitFullscreen();
-              }else if(document.webkitExitFullscreen){
-                document.webkitExitFullscreen();
-              }else if(document.mozCancelFullScreen){
-                document.mozCancelFullScreen();
-              }else if(document.msExitFullscreen){
-                document.msExitFullscreen();
-              }else if(video.webkitExitFullscreen){
-                video.webkitExitFullscreen();
-              }
-            }else{
-              const target = video.requestFullscreen ? video : (box.requestFullscreen ? box : video);
-              if(target.requestFullscreen){
-                target.requestFullscreen().catch(()=>{});
-              }else if(target.webkitRequestFullscreen){
-                target.webkitRequestFullscreen();
-              }else if(video.webkitEnterFullscreen){
-                video.webkitEnterFullscreen();
-              }
-            }
-          });
-          document.addEventListener('fullscreenchange', updateFullscreenState);
-          document.addEventListener('webkitfullscreenchange', updateFullscreenState);
-          if('webkitDisplayingFullscreen' in video){
-            video.addEventListener('webkitbeginfullscreen', updateFullscreenState);
-            video.addEventListener('webkitendfullscreen', updateFullscreenState);
-          }
-        }
-        if(progress){
-          const stopEvent = (event)=>{ event.stopPropagation(); };
-          progress.addEventListener('mousedown', stopEvent);
-          progress.addEventListener('touchstart', stopEvent, {passive:true});
-          progress.addEventListener('click', stopEvent);
-          progress.addEventListener('input', (event)=>{
-            event.stopPropagation();
-            if(!isFinite(video.duration) || video.duration <= 0) return;
-            isSeeking = true;
-            const raw = parseFloat(progress.value || '0');
-            const percent = isNaN(raw) ? 0 : raw;
-            const next = (percent / 100) * video.duration;
-            if(!Number.isNaN(next)){
-              video.currentTime = next;
-            }
-            progress.style.setProperty('--progress-value', percent + '%');
-          });
-          progress.addEventListener('change', ()=>{
-            isSeeking = false;
-          });
-        }
-        video.addEventListener('play', updatePlayState);
-        video.addEventListener('pause', updatePlayState);
-        video.addEventListener('ended', ()=>{
-          updatePlayState();
-          if(progress){
-            isSeeking = false;
-            progress.value = 0;
-            progress.style.setProperty('--progress-value', '0%');
-          }
-        });
-        video.addEventListener('volumechange', updateMuteState);
-        video.addEventListener('timeupdate', updateProgress);
-        video.addEventListener('durationchange', updateProgress);
-        video.addEventListener('loadedmetadata', updateProgress);
-      });
-    })();
-
+    document.querySelectorAll('.media-box video').forEach(video => {
+      const box = video.closest('.media-box');
+      if(!box) return;
+      const updateState = () => {
+        const isPlaying = !video.paused && !video.ended;
+        box.classList.toggle('is-playing', isPlaying);
+      };
+      updateState();
+      video.addEventListener('play', updateState);
+      video.addEventListener('pause', updateState);
+      video.addEventListener('ended', updateState);
+    });
     (function(){
       const openBtn=document.getElementById('filtersOpenBtn');
       const overlay=document.getElementById('filtersOverlay');
@@ -927,7 +663,6 @@
       function closeDrawer(){ overlay.hidden=true; drawer.setAttribute('aria-hidden','true'); openBtn&&openBtn.setAttribute('aria-expanded','false'); document.documentElement.classList.remove('drawer-open'); document.body.style.overflow=''; drawer.hidden=true; }
       openBtn&&openBtn.addEventListener('click', openDrawer); closeBtn&&closeBtn.addEventListener('click', closeDrawer); overlay&&overlay.addEventListener('click', closeDrawer); document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); }, {passive:true});
     })();
-
     (function(){
       const trigger=document.getElementById('changeCityBtn');
       const menu=document.getElementById('changeCityMenu');
@@ -937,7 +672,6 @@
       const closeBtn=menu.querySelector('[data-city-close]');
       const optionLinks=Array.from(menu.querySelectorAll('[data-city-option]'));
       const optionItems=optionLinks.map(link=>link.closest('.city-menu__item')||link);
-
       function updateVisibility(term){
         const value=(term||'').trim().toLowerCase();
         let visibleCount=0;
@@ -953,7 +687,6 @@
           emptyState.hidden=visibleCount!==0;
         }
       }
-
       function openMenu(){
         if(!menu.hidden) return;
         menu.hidden=false;
@@ -969,7 +702,6 @@
           }
         });
       }
-
       function closeMenu(){
         if(menu.hidden) return;
         menu.setAttribute('aria-hidden','true');
@@ -982,19 +714,16 @@
           updateVisibility('');
         }
       }
-
       function onDocumentClick(e){
         if(menu.contains(e.target)||trigger.contains(e.target)) return;
         closeMenu();
       }
-
       function onKeyDown(e){
         if(e.key==='Escape'){
           closeMenu();
           trigger.focus();
         }
       }
-
       trigger.addEventListener('click',()=>{
         if(menu.hidden){
           openMenu();
@@ -1002,20 +731,17 @@
           closeMenu();
         }
       });
-
       if(closeBtn){
         closeBtn.addEventListener('click',()=>{
           closeMenu();
           trigger.focus();
         });
       }
-
       optionLinks.forEach(link=>{
         link.addEventListener('click',()=>{
           closeMenu();
         });
       });
-
       if(searchInput){
         searchInput.addEventListener('input',()=>{
           updateVisibility(searchInput.value);
@@ -1025,7 +751,6 @@
         });
       }
     })();
-
     document.addEventListener('click', function(e){
       if (e.defaultPrevented) return;
       const ignoreTarget = e.target.closest('a, button, .wr-play, video');

@@ -1,9 +1,13 @@
 from __future__ import annotations
+import json
+import logging
 import math
+import subprocess
 import struct
 from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Optional, Sequence, Tuple
+logger = logging.getLogger(__name__)
 VideoMeta = Dict[str, float]
 def get_local_video_metadata(static_root: Path | str, relative_path: str | None) -> VideoMeta:
     """Return orientation metadata for a video stored under the static folder."""
@@ -48,6 +52,107 @@ def _read_video_metadata_cached(full_path: str) -> VideoMeta:
                 meta["aspect_landscape"] = aspect_landscape
                 meta["aspect_portrait"] = float(height) / float(width)
     return meta
+def normalize_video_file(
+    in_path: str | Path,
+    out_path: str | Path,
+    *,
+    ffprobe_executable: str = "ffprobe",
+    ffmpeg_executable: str = "ffmpeg",
+) -> bool:
+    """Transcode *in_path* into a normalized MP4 stored at *out_path*.
+    The resulting file is encoded as H.264/AAC, uses the yuv420p pixel format,
+    applies the correct rotation fix based on the metadata of the input file and
+    clears the rotate tag on the output. Returns ``True`` on successful
+    transcoding. If a required binary is missing or transcoding fails, the
+    function logs a warning and returns ``False``.
+    """
+    src = Path(in_path)
+    dst = Path(out_path)
+    if not src.exists():
+        logger.warning("normalize_video_file: source %s does not exist", src)
+        return False
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    rotate = 0
+    try:
+        probe = subprocess.run(
+            [
+                ffprobe_executable,
+                "-v",
+                "error",
+                "-select_streams",
+                "v:0",
+                "-show_entries",
+                "stream=width,height:stream_tags=rotate",
+                "-of",
+                "json",
+                str(src),
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        data = json.loads(probe.stdout or "{}")
+        streams = data.get("streams") or [{}]
+        first = streams[0] if isinstance(streams, list) and streams else {}
+        rotate_raw = (
+            first.get("tags", {}).get("rotate")
+            if isinstance(first, dict)
+            else None
+        )
+        if rotate_raw not in (None, ""):
+            rotate = int(float(str(rotate_raw)))
+            # Normalise to one of 0/90/180/270 to avoid unexpected filters.
+            rotate = (int(round(rotate / 90.0)) * 90) % 360
+    except FileNotFoundError:
+        logger.warning("ffprobe executable not found; cannot normalise video")
+        return False
+    except subprocess.CalledProcessError as exc:
+        logger.warning("ffprobe failed for %s: %s", src, exc)
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        logger.warning("ffprobe output parsing failed for %s: %s", src, exc)
+    filters: list[str] = []
+    if rotate == 90:
+        filters.append("transpose=1")
+    elif rotate == 270:
+        filters.append("transpose=2")
+    elif rotate == 180:
+        filters.extend(["hflip", "vflip"])
+    filters.append("format=yuv420p")
+    vf_arg = ",".join(filters)
+    cmd = [
+        ffmpeg_executable,
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-i",
+        str(src),
+        "-vf",
+        vf_arg,
+        "-metadata:s:v:0",
+        "rotate=0",
+        "-movflags",
+        "+faststart",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "23",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "128k",
+        str(dst),
+    ]
+    try:
+        subprocess.run(cmd, check=True)
+        return True
+    except FileNotFoundError:
+        logger.warning("ffmpeg executable not found; cannot normalise video")
+    except subprocess.CalledProcessError as exc:
+        logger.warning("ffmpeg failed for %s: %s", src, exc)
+    return False
 def _extract_mp4_track_metadata(path: Path) -> Tuple[Optional[float], Optional[float], Optional[float]]:
     with path.open("rb") as fh:
         moov = _find_box(fh, ["moov"])

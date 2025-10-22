@@ -1,5 +1,5 @@
 # === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy, shutil, uuid
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta, date, timezone, time as dt_time
@@ -42,7 +42,7 @@ from services.ai_variants import list_variants, assign_variant
 from services.worker_descriptions import generate_worker_descriptions
 from services.json_store import atomic_write_json
 from services.translation import translate as translate_text
-from services.video_utils import get_local_video_metadata
+from services.video_utils import get_local_video_metadata, normalize_video_file
 
 
 
@@ -424,6 +424,11 @@ VIDEO_UPLOAD_SUBDIR = os.path.join(UPLOAD_FOLDER, 'videos')
 os.makedirs(VIDEO_UPLOAD_SUBDIR, exist_ok=True)
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'ogg'}
 MAX_VIDEO_MB = 50  # רף רך – אופציונלי
+
+# וידאו מאושר – נרמול ושמירה בתיקייה קבועה
+WORKER_VIDEO_UPLOAD_DIR = BASE_DIR / 'static' / 'uploads' / 'worker_videos'
+os.makedirs(WORKER_VIDEO_UPLOAD_DIR, exist_ok=True)
+WORKER_VIDEO_UPLOAD_REL = 'uploads/worker_videos'
 
 # דומיין בסיס של האתר (בפרודקשן עדכן לדומיין הסופי)
 BASE_DOMAIN = os.environ.get('BASE_DOMAIN', 'https://baley-mikzoa.co.il')
@@ -3673,6 +3678,51 @@ def approve_professional(index):
         return s
 
     item = popped_item
+
+    # --- נרמול וידאו מקומי (אם קיים) לפני העברת הרשומה ל-approved ---
+    video_rel = (item.get('video_local') or '').strip()
+    if video_rel:
+        static_root = Path(STATIC_DIR)
+        src_path = (static_root / video_rel).resolve()
+        try:
+            src_path.relative_to(static_root)
+        except ValueError:
+            src_path = None
+
+        if src_path and src_path.exists():
+            dest_name = f"{uuid.uuid4().hex}.mp4"
+            dest_path = WORKER_VIDEO_UPLOAD_DIR / dest_name
+            normalized_ok = False
+            try:
+                normalized_ok = normalize_video_file(src_path, dest_path)
+            except FileNotFoundError:
+                app.logger.warning("ffmpeg/ffprobe missing – skipping video normalisation for %s", src_path)
+            except Exception as exc:
+                app.logger.warning("video normalisation failed for %s: %s", src_path, exc)
+
+            if not normalized_ok:
+                try:
+                    shutil.copy2(src_path, dest_path)
+                    normalized_ok = dest_path.exists()
+                except Exception as copy_exc:
+                    app.logger.warning("fallback copy failed for %s: %s", src_path, copy_exc)
+                    normalized_ok = False
+
+            if normalized_ok:
+                rel_path = f"{WORKER_VIDEO_UPLOAD_REL}/{dest_name}"
+                item['video_local'] = rel_path.replace('\\', '/')
+                # מנקים מטא דאטה ישנה שלא נחוצה לאחר הנרמול
+                for stale_key in (
+                    'card_video_rotation',
+                    'card_video_aspect_landscape',
+                    'card_video_aspect_portrait',
+                    'card_video_aspect_ratio',
+                ):
+                    item.pop(stale_key, None)
+            else:
+                app.logger.warning("leaving original video path for %s due to normalisation failure", src_path)
+        else:
+            app.logger.warning("video file %s not found under static directory", video_rel)
 
     # קנוניזציה + מילוי שדות
     normalize_worker_fields(item)

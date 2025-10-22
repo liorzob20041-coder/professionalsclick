@@ -1192,6 +1192,11 @@ body {
   object-position: center;
   display: block;
 }
+/* keep worker preview images cropped, but show full video without zoom */
+.card-media video.media-video {
+  object-fit: contain;
+  background-color: #000;
+}
 .card-media iframe.media-video {
   border: 0;
 }

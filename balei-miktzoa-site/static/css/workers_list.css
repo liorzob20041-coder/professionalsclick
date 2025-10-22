@@ -1192,10 +1192,37 @@ body {
   object-position: center;
   display: block;
 }
-/* keep worker preview images cropped, but show full video without zoom */
-.card-media video.media-video {
+/* === VIDEO orientation helpers (shared with worker page) === */
+.video-orientation-frame {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: inherit;
+  overflow: hidden;
+  --video-default-aspect: calc(16 / 9);
+}
+.video-orientation-frame::before {
+  content: '';
+  display: block;
+  padding-top: calc(100% / var(--video-target-aspect, var(--video-default-aspect)));
+}
+.video-orientation-frame.video-orientation-frame--fill {
+  height: 100%;
+}
+.video-orientation-frame.video-orientation-frame--fill::before {
+  display: none;
+}
+.video-orientation-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  background-color: #000;
+  border-radius: inherit;
+  background: #000;
+}
+.card-video-frame {
+  border-radius: 0;
 }
 .card-media iframe.media-video {
   border: 0;

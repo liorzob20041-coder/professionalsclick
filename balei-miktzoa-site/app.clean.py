@@ -42,6 +42,7 @@ from services.ai_variants import list_variants, assign_variant
 from services.worker_descriptions import generate_worker_descriptions
 from services.json_store import atomic_write_json
 from services.translation import translate as translate_text
+from services.video_utils import get_local_video_metadata
 
 
 
@@ -2582,13 +2583,21 @@ def show_workers(lang, field, area):
         w['card_video_kind'] = None
         w['card_video_thumb'] = card_image_url
         w['card_video_poster'] = card_image_url
+        w.pop('card_video_rotation', None)
+        w.pop('card_video_aspect_landscape', None)
+        w.pop('card_video_aspect_portrait', None)
+        w.pop('card_video_aspect_ratio', None)
 
         video_local = (w.get('video_local') or '').strip()
         video_url = (w.get('video_url') or '').strip()
+        video_meta = {}
 
         if video_local:
             w['card_video_kind'] = 'mp4'
             w['card_video_src'] = url_for('static', filename=video_local)
+            static_root = current_app.static_folder if current_app else app.static_folder
+            if static_root:
+                video_meta = get_local_video_metadata(static_root, video_local)
         elif video_url:
             vid_kind = video_kind(video_url)
             embed_src = to_embed_url(video_url)
@@ -2604,6 +2613,18 @@ def show_workers(lang, field, area):
                 w['card_video_poster'] = card_image_url
 
         w['card_has_video'] = bool(w['card_video_src'])
+        if video_meta:
+            rotation = int(video_meta.get('rotation', 0)) if video_meta.get('rotation') else 0
+            width = float(video_meta.get('width', 0) or 0)
+            height = float(video_meta.get('height', 0) or 0)
+            if width > 0 and height > 0:
+                display_w, display_h = width, height
+                if rotation in (90, 270):
+                    display_w, display_h = height, width
+                if display_h > 0:
+                    aspect_ratio = display_w / display_h
+                    if aspect_ratio >= 1.0:
+                        w['card_video_aspect_ratio'] = aspect_ratio
 
         # טאגליין לפי קובץ תרגום (משתמשת בתבנית שטענו פעם אחת)
         w['tagline'] = default_template.format(
@@ -2946,17 +2967,38 @@ def worker_reviews(lang, worker_id):
     image_rel = worker.get('image_filename')
     worker['image_url'] = url_for('static', filename=image_rel) if image_rel else None
 
-    video_local = worker.get('video_local')
-    video_url   = worker.get('video_url')
+    video_local = (worker.get('video_local') or '').strip()
+    video_url   = (worker.get('video_url') or '').strip()
+    worker.pop('hero_video_rotation', None)
+    worker.pop('hero_video_aspect_landscape', None)
+    worker.pop('hero_video_aspect_portrait', None)
+    worker.pop('hero_video_aspect_ratio', None)
+    video_meta = {}
     if video_local:
         worker['hero_video_src']  = url_for('static', filename=video_local)
         worker['hero_video_kind'] = 'mp4'
+        static_root = current_app.static_folder if current_app else app.static_folder
+        if static_root:
+            video_meta = get_local_video_metadata(static_root, video_local)
     elif video_url:
         worker['hero_video_src']  = to_embed_url(video_url)
         worker['hero_video_kind'] = video_kind(video_url)
     else:
         worker['hero_video_src']  = None
         worker['hero_video_kind'] = 'unknown'
+
+    if video_meta:
+        rotation = int(video_meta.get('rotation', 0)) if video_meta.get('rotation') else 0
+        width = float(video_meta.get('width', 0) or 0)
+        height = float(video_meta.get('height', 0) or 0)
+        if width > 0 and height > 0:
+            display_w, display_h = width, height
+            if rotation in (90, 270):
+                display_w, display_h = height, width
+            if display_h > 0:
+                aspect_ratio = display_w / display_h
+                if aspect_ratio >= 1.0:
+                    worker['hero_video_aspect_ratio'] = aspect_ratio
 
     # --- תוכן מסודר ללא כפילויות ---
     def _clean_about(txt: str) -> str:

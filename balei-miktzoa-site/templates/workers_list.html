@@ -432,11 +432,15 @@
                 <div class="card-media">
                   <div class="media-box"{% if video_src and video_kind == 'mp4' %} data-inline-video{% endif %}>
                     {% if video_src and video_kind == 'mp4' %}
-                      <video class="media-video"
-                             src="{{ video_src }}"
-                             preload="metadata"
-                             playsinline{% if video_poster %}
-                             poster="{{ video_poster }}"{% endif %}></video>
+                      {% set _target_aspect = w.card_video_aspect_ratio|default(None) %}
+                      <div class="video-orientation-frame video-orientation-frame--fill card-video-frame"
+                           {% if _target_aspect %}style="--video-target-aspect: {{ '%.6f' % _target_aspect }}"{% endif %}>
+                        <video class="media-video"
+                               src="{{ video_src }}"
+                               preload="metadata"
+                               playsinline{% if video_poster %}
+                               poster="{{ video_poster }}"{% endif %}></video>
+                      </div>
                       <div class="media-inline-controls" role="group" aria-label="{{ video_controls_label }}">
                         <input type="range"
                                class="media-inline-progress"

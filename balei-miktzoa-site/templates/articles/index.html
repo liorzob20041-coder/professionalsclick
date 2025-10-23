@@ -27,6 +27,13 @@
     </header>
     {% set articles = [
       {
+        'img': None,
+        'placeholder': t('homepage.articles.mold_damp.placeholder', 'home'),
+        'title': t('homepage.articles.mold_damp.title', 'home'),
+        'excerpt': t('homepage.articles.mold_damp.excerpt', 'home'),
+        'href': url_for_lang('article_mold_damp')
+      },
+      {
         'img': url_for('static', filename='articles/electrician-spotlight.jpg'),
         'img_alt': t('homepage.articles.electric.alt', 'home'),
         'title': t('homepage.articles.electric.title', 'home'),
@@ -51,8 +58,13 @@
     <div class="articles-list" role="list">
       {% for article in articles %}
         <article class="article-card" role="listitem">
-          <a class="article-thumb" href="{{ article.href }}">
-            <img src="{{ article.img }}" alt="{{ article.img_alt }}" loading="lazy" decoding="async">
+          <a class="article-thumb{% if not article.img %} is-placeholder{% endif %}" href="{{ article.href }}">
+            {% if article.img %}
+              <img src="{{ article.img }}" alt="{{ article.img_alt }}" loading="lazy" decoding="async">
+            {% else %}
+              <span class="article-thumb__placeholder">{{ article.placeholder or article.title }}</span>
+            {% endif %}
+
           </a>
           <div class="article-content">
             <h2 class="article-title"><a href="{{ article.href }}">{{ article.title }}</a></h2>

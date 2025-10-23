@@ -52,6 +52,25 @@
 /* Thumb with tag overlay — forced 16:9 cover */
 .a-thumb{ position:relative; display:block; aspect-ratio:16/9; overflow:hidden; background:#f7f5f6; }
 .a-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.a-thumb.is-placeholder,
+.article-thumb.is-placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+  background:linear-gradient(135deg, rgba(138,21,56,.12), rgba(138,21,56,.04));
+  color:var(--brand-ink);
+  padding:clamp(18px,2.8vw,32px);
+}
+.a-thumb__placeholder,
+.article-thumb__placeholder{
+  display:block;
+  font-weight:800;
+  font-size:clamp(1rem,1.9vw,1.2rem);
+  line-height:1.45;
+}
+.article-thumb__placeholder{ padding-inline: clamp(6px,2vw,12px); }
 .a-tag{
   position:absolute; inset-inline-start:14px; inset-block-start:14px;
   background:rgba(255,255,255,.9); color:var(--brand-ink);

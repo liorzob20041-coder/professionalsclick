@@ -206,6 +206,14 @@
     </header>
     {% set articles = [
       {
+        'tag': _('homepage.tags.moisture'),
+        'img': None,
+        'placeholder': _('homepage.articles.mold_damp.placeholder'),
+        'title': _('homepage.articles.mold_damp.title'),
+        'excerpt': _('homepage.articles.mold_damp.excerpt'),
+        'href': url_for_lang('article_mold_damp', lang=g.current_lang)
+      },
+      {
         'tag': _('homepage.tags.electric'),
         'img': url_for('static', filename='articles/electrician-spotlight.jpg'),
         'img_alt': _('homepage.articles.electric.alt'),
@@ -233,8 +241,12 @@
     <div class="articles-masonry" role="list">
       {% for a in articles %}
       <article class="a-card reveal" role="listitem">
-        <a class="a-thumb" href="{{ a.href }}" aria-label="{{ a.title }}">
-          <img src="{{ a.img }}" alt="{{ a.img_alt }}" loading="lazy" decoding="async">
+        <a class="a-thumb{% if not a.img %} is-placeholder{% endif %}" href="{{ a.href }}" aria-label="{{ a.title }}">
+          {% if a.img %}
+            <img src="{{ a.img }}" alt="{{ a.img_alt }}" loading="lazy" decoding="async">
+          {% else %}
+            <span class="a-thumb__placeholder">{{ a.placeholder or a.title }}</span>
+          {% endif %}
           <span class="a-tag">{{ a.tag }}</span>
         </a>
         <div class="a-body">

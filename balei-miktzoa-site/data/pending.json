@@ -421,5 +421,52 @@
     "ai_updated_at": "2025-10-19T08:33:35Z",
     "ai_model": "deterministic-variants+policy+voiceecho",
     "ai_variant_cursor": 1
+  },
+  {
+    "company_name": "ניני",
+    "name": "חגיגי",
+    "field": "שיפוצים",
+    "field_en": "Renovations",
+    "field_ru": "ремонт",
+    "base_city": "תל אביב",
+    "work_radius": 30,
+    "active_cities": [
+      "תל אביב",
+      "פתח תקווה",
+      "נתניה",
+      "ראשון לציון"
+    ],
+    "phone": "050-6779832",
+    "experience": 20,
+    "description": "",
+    "reviews": "",
+    "image_filename": "",
+    "video_url": null,
+    "video_local": null,
+    "work_blocks": [
+      {
+        "start_hour": 8,
+        "end_hour": 9,
+        "days": [
+          "ראשון",
+          "שני",
+          "שלישי",
+          "חמישי",
+          "שבת"
+        ]
+      }
+    ],
+    "sub_services": [
+      "עבודות צבע",
+      "ריצוף וחיפוי",
+      "שיפוץ חדרי רחצה",
+      "שבירת קירות"
+    ],
+    "offers_emergency": true,
+    "languages": [
+      "עברית",
+      "רוסית",
+      "צרפתית"
+    ]
   }
 ]

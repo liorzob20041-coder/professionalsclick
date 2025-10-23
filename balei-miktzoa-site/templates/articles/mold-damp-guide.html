@@ -1,0 +1,373 @@
+{% extends 'articles/base_article.html' %}
+{% block article_styles %}
+  <link rel="stylesheet" href="{{ static_rel('articles/theme-moisture.css') }}">
+{% endblock %}
+{% set canonical_url = url_for_lang('article_mold_damp', lang=g.current_lang, _external=True) %}
+{% set meta_description = 'מדריך מלא לזיהוי מוקדם, טיפול ומניעה של רטיבות ועובש בבית בישראל, כולל טווחי מחירים והמלצות לבעלי מקצוע.' %}
+{% set og_image = static_abs('og/home-' ~ g.current_lang ~ '.jpg') %}
+{% set article_id = 'mold-damp-guide' %}
+{% set article_theme = 'moisture' %}
+{% set article_heading = 'רטיבות ועובש בבית: זיהוי, טיפול, מניעה ועלויות בישראל' %}
+{% set article_intro %}
+  רטיבות ועובש הם נזקים שכיחים בבתים רבים בישראל, במיוחד בעונות המעבר ובחורף. מעבר לפגיעה במבנה ובאסתטיקה,
+  מדובר גם בסיכון בריאותי, בעיקר לבעלי רגישות ואסתמה. איתור מוקדם, טיפול נכון ומניעה מתמשכת הם המפתח לשמירה על בית בריא ועמיד.
+  מדריך זה מרכז הסבר ברור על הגורמים, דרכי הזיהוי, הפתרונות והעלויות המשוערות בישראל.
+{% endset %}
+{% set article_attributes = {'dir': 'rtl', 'lang': 'he'} %}
+{% set article_footer_text %}
+  בעת גילוי סימני רטיבות או עובש, מומלץ לתעד את המצב בצילומים ולבקש שתי הצעות מחיר לפחות מבעלי מקצוע מאומתים.
+  כך תשוו חומרים, אחריות וזמני ביצוע לפני החלטה.
+{% endset %}
+{% set article_cta_href = url_for_lang('workers', field=field_slug('שיפוצים')) %}
+{% set article_cta_text = 'השוו הצעות מאומתות' %}
+{% block title %}רטיבות ועובש בבית: זיהוי, טיפול, מניעה ועלויות בישראל – בעלי מקצוע בקליק{% endblock %}
+{% block head_seo %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="description" content="{{ meta_description }}">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="בעלי מקצוע בקליק">
+  <meta property="og:title" content="רטיבות ועובש בבית: זיהוי, טיפול, מניעה ועלויות בישראל – בעלי מקצוע בקליק">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:locale" content="he_IL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="רטיבות ועובש בבית: זיהוי, טיפול, מניעה ועלויות בישראל – בעלי מקצוע בקליק">
+  <meta name="twitter:description" content="{{ meta_description }}">
+  <meta name="twitter:image" content="{{ og_image }}">
+{% endblock %}
+{% block article_preamble %}
+  <nav class="article-breadcrumbs worker-breadcrumbs" aria-label="פירורי לחם" dir="rtl">
+    <ol>
+      <li><a href="{{ url_for_lang('home') }}">דף הבית</a></li>
+      <li><a href="{{ url_for_lang('articles_index') }}">מדריכים וטיפים</a></li>
+      <li aria-current="page">רטיבות ועובש בבית</li>
+    </ol>
+  </nav>
+{% endblock %}
+{% block article_meta %}
+  <p class="article-meta">עודכן לאחרונה: <time datetime="{{ today_iso }}">{{ today_iso }}</time></p>
+{% endblock %}
+{% block article_body %}
+  <nav class="article-jump" aria-label="תפריט מהיר">
+    <h2 class="sr-only">ניווט מהיר</h2>
+    <ul>
+      <li><a href="#why">למה זה קורה</a></li>
+      <li><a href="#identification">זיהוי</a></li>
+      <li><a href="#treatment">טיפול</a></li>
+      <li><a href="#prevention">מניעה</a></li>
+      <li><a href="#pricing">מחירים</a></li>
+      <li><a href="#faq">שאלות נפוצות</a></li>
+    </ul>
+  </nav>
+  <section id="why" aria-labelledby="why-heading">
+    <h2 id="why-heading">למה זה קורה</h2>
+    <p>בעיות רטיבות ועובש נגרמות לרוב ממספר מקורות עיקריים:</p>
+    <ul>
+      <li>חדירת מי גשם דרך גגות, קירות חוץ או סדקים באיטום.</li>
+      <li>נזילות מצנרת נסתרת או חיבורים רופפים במערכות מים וביוב.</li>
+      <li>עיבוי – כאשר אדי מים מתעבים על קירות קרים, בעיקר בעונת החורף.</li>
+      <li>גשרי קור – נקודות במעטפת המבנה המעבירות לחות פנימה.</li>
+      <li>אוורור לקוי במטבח, אמבטיה או חדרים סגורים שאין בהם זרימת אוויר סדירה.</li>
+    </ul>
+    <p>הצטברות ממושכת של לחות יוצרת תנאים אידיאליים להופעת עובש ולפגיעה מתמשכת בתשתיות.</p>
+  </section>
+  <section id="identification" aria-labelledby="identification-heading">
+    <h2 id="identification-heading">סימני זיהוי</h2>
+    <ul>
+      <li>כתמי רטיבות כהים בפינות הקירות, בתקרה או סביב חלונות.</li>
+      <li>קילופי צבע, התנפחות טיח או התנפחות פרקט וריצוף.</li>
+      <li>ריח טחב עיקש הנובע מנוכחות עובש פעיל.</li>
+      <li>דפורמציה בארונות, בקירות גבס ובמשקופים.</li>
+      <li>שימוש במצלמה תרמית יכול לחשוף מוקדים נסתרים של רטיבות.</li>
+      <li>מד לחות מאפשר לבדוק אם הקיר רווי במים מעבר לרמה תקינה.</li>
+    </ul>
+    <div class="article-table-wrap">
+      <table>
+        <caption>טבלת אבחון מהיר</caption>
+        <thead>
+          <tr>
+            <th scope="col">סימפטום</th>
+            <th scope="col">סיבה אפשרית</th>
+            <th scope="col">בדיקה מומלצת</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>כתם כהה בקיר חיצוני</td>
+            <td>חדירת מי גשם או איטום לקוי</td>
+            <td>בדיקת איטום חיצונית ומרזבים</td>
+          </tr>
+          <tr>
+            <td>ריח טחב בחדר</td>
+            <td>עובש בשל עיבוי או אוורור לקוי</td>
+            <td>בדיקת רמת לחות ואוורור</td>
+          </tr>
+          <tr>
+            <td>התנפחות בטיח או פרקט</td>
+            <td>נזילה תת-רצפתית או צנרת פגומה</td>
+            <td>איתור נזילות באמצעות מצלמה תרמית</td>
+          </tr>
+          <tr>
+            <td>קילופי צבע סביב חלון</td>
+            <td>גשרי קור או סדקים באיטום</td>
+            <td>בדיקת טמפרטורה נקודתית ומריחת חומר איטום</td>
+          </tr>
+          <tr>
+            <td>עובש בחדר אמבטיה</td>
+            <td>אוורור לא מספק</td>
+            <td>בדיקת ונטה ומניעת לחות מתמשכת</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section id="treatment" aria-labelledby="treatment-heading">
+    <h2 id="treatment-heading">אבחון צעד-אחר-צעד</h2>
+    <h3>בדיקה עצמית ראשונית</h3>
+    <ul>
+      <li>סגרו את כל הברזים ודלקו על מד המים. אם הוא ממשיך לפעול, ייתכן שיש נזילה.</li>
+    </ul>
+    <h3>בדיקה חזותית</h3>
+    <ul>
+      <li>בחנו אזורים מועדים — תקרות, קירות חיצוניים ופינות.</li>
+    </ul>
+    <h3>בדיקות לחות</h3>
+    <ul>
+      <li>ניתן להשתמש במד לחות זמין או להזמין בדיקה מקצועית לזיהוי מוקדם.</li>
+    </ul>
+    <h3>מתי להזמין בעל מקצוע</h3>
+    <ul>
+      <li>במקרים של כתמים חוזרים או מתפשטים.</li>
+      <li>כאשר מופיע עובש נרחב או ריח חזק.</li>
+      <li>סימני רטיבות בתקרה או מתחת לריצוף.</li>
+    </ul>
+    <p>
+      במקרים אלו מומלץ לפנות ל
+      <a href="{{ url_for_lang('workers', field=field_slug('אינסטלטורים')) }}">אינסטלטורים מקצועיים</a>
+      לאיתור נזילות, או לבחון עבודה מול
+      <a href="{{ url_for_lang('workers', field=field_slug('שיפוצים')) }}">קבלני שיפוצים ואיטום</a>
+      כאשר נדרש שיקום רחב יותר.
+    </p>
+    <section aria-labelledby="solutions-heading">
+      <h3 id="solutions-heading">פתרונות לפי מקור הבעיה</h3>
+      <article>
+        <h4>חדירת גשם ואיטום גג/קירות חוץ</h4>
+        <p>
+          יש לבדוק את תקינות היריעות או הציפוי ולחדש את האיטום במידת הצורך. סדקים קטנים ניתן לאטום נקודתית בחומר מתאים,
+          אך כאשר האיטום כולו לקוי – נדרש איטום גג כולל עם ייבוש מסודר בין שכבות.
+        </p>
+      </article>
+      <article>
+        <h4>נזילות צנרת נסתרות</h4>
+        <p>
+          איתור מדויק מתבצע במצלמה תרמית ולרוב מחייב החלפת קטע הצנרת הפגום. חשוב לוודא שהאזור מיובש היטב לפני סגירה מחדש כדי למנוע חזרת רטיבות.
+        </p>
+      </article>
+      <article>
+        <h4>עיבוי ועובש בחדרים סגורים</h4>
+        <p>
+          שפרו אוורור והתקינו ונטה או מייבש אוויר במקומות עם אדי מים רבים. מומלץ להשתמש בצבע ייעודי נגד עובש לאחר ניקוי עם כפפות ומסכה.
+        </p>
+      </article>
+      <article>
+        <h4>ייבוש תשתיות ושיקום טיח וצבע</h4>
+        <p>
+          לאחר טיפול במקור הרטיבות יש לייבש את האזור באמצעות מאווררים או ייבוש מקצועי. הסירו טיח רופף, מרחו חומר נגד רטיבות וצבעו מחדש בצבע נשימתי.
+        </p>
+      </article>
+    </section>
+  </section>
+  <section id="health" aria-labelledby="health-heading">
+    <h2 id="health-heading">בריאות ובטיחות</h2>
+    <ul>
+      <li>עובש פעיל עלול לגרום לגירוי בעיניים, לדרכי הנשימה או לתחושת צריבה.</li>
+      <li>הימנעו משהייה ממושכת באזורים נגועים ונקו את העובש עם תמיסה מתאימה תוך שימוש במסכה, כפפות ומשקפי מגן.</li>
+      <li>בעת עבודות איטום או תיקון יש להקפיד על אוורור מלא של המקום ולדאוג לפינוי לחות עודפת.</li>
+    </ul>
+  </section>
+  <section id="prevention" aria-labelledby="prevention-heading">
+    <h2 id="prevention-heading">מניעה לטווח ארוך</h2>
+    <ul>
+      <li>הקפידו על אוורור יומי של חדרים, במיוחד בחורף.</li>
+      <li>נקו מרזבים לפני עונת הגשמים וודאו ניקוז תקין.</li>
+      <li>אטמו סדקים בקירות חוץ מיד כשמתגלים.</li>
+      <li>התקינו מחסום אדים בגגות רעפים או אזורי מרתף לחים.</li>
+      <li>בצעו בדיקות עונתיות וחידוש איטום אחת לשנה-שנתיים.</li>
+      <li>שמרו על זרימת אוויר גם בארונות סגורים כדי למנוע עובש סמוי.</li>
+    </ul>
+  </section>
+  <section id="pricing" aria-labelledby="pricing-heading">
+    <h2 id="pricing-heading">טווחי מחירים מייצגים בישראל (הערכה בלבד)</h2>
+    <div class="article-table-wrap">
+      <table>
+        <caption>טווחי מחירים לעבודות טיפול ברטיבות</caption>
+        <thead>
+          <tr>
+            <th scope="col">עבודה</th>
+            <th scope="col">מי מבצע</th>
+            <th scope="col">טווח מחיר (₪)</th>
+            <th scope="col">זמן ביצוע</th>
+            <th scope="col">אחריות אופיינית</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>איתור נזילות תרמי</td>
+            <td>מאתר נזילות מוסמך</td>
+            <td>700–1,200</td>
+            <td>שעה–שעתיים</td>
+            <td>דו"ח ממצאים כתוב</td>
+          </tr>
+          <tr>
+            <td>איטום מקומי לקיר/גג</td>
+            <td>קבלן איטום</td>
+            <td>1,500–3,500</td>
+            <td>חצי יום–יום</td>
+            <td>5–10 שנים</td>
+          </tr>
+          <tr>
+            <td>איטום גג מלא ביריעות</td>
+            <td>קבלן איטום מורשה</td>
+            <td>6,000–12,000</td>
+            <td>יומיים–שלושה</td>
+            <td>8–12 שנים</td>
+          </tr>
+          <tr>
+            <td>החלפת קטע צנרת</td>
+            <td>אינסטלטור</td>
+            <td>800–2,500</td>
+            <td>3–6 שעות</td>
+            <td>עד שנה</td>
+          </tr>
+          <tr>
+            <td>ייבוש תת-רצפתי ממוקד</td>
+            <td>חברת שיקום נזקי מים</td>
+            <td>2,500–6,000</td>
+            <td>2–5 ימים</td>
+            <td>לפי היקף הנזק</td>
+          </tr>
+          <tr>
+            <td>שיקום טיח וצבע</td>
+            <td>קבלן צבע</td>
+            <td>800–2,000</td>
+            <td>יום אחד</td>
+            <td>עד שנה</td>
+          </tr>
+          <tr>
+            <td>טיפול מקצועי בעובש</td>
+            <td>קבלן ניקוי/שיקום</td>
+            <td>500–1,800 לחדר</td>
+            <td>חצי יום</td>
+            <td>עד שנה</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">הסכומים משוערים בלבד ועשויים להשתנות בהתאם לגודל השטח, עומק הנזק, נגישות המקום וסוג החומרים.</p>
+  </section>
+  <section id="faq" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">שאלות נפוצות</h2>
+    <dl class="article-faq">
+      <div>
+        <dt>איך יודעים אם הבעיה נובעת מנזילה או מעיבוי?</dt>
+        <dd>אם הכתם משתנה לפי מזג האוויר – כנראה עיבוי. אם הוא קבוע, ייתכן שמדובר בנזילה.</dd>
+      </div>
+      <div>
+        <dt>האם ניתן לטפל בעובש לבד?</dt>
+        <dd>כן, אך רק בעובש שטחי ומוגבל. במקרים נרחבים כדאי להזמין טיפול מקצועי.</dd>
+      </div>
+      <div>
+        <dt>האם הרטיבות מסוכנת למבנה?</dt>
+        <dd>בהחלט. רטיבות ממושכת עלולה להחליש את הטיח, לפגוע בחשמל ולהביא לבלאי מהיר.</dd>
+      </div>
+      <div>
+        <dt>כל כמה זמן מומלץ לחדש איטום גג?</dt>
+        <dd>בממוצע כל 7–10 שנים, בהתאם לסוג החומר ולחשיפה לשמש.</dd>
+      </div>
+      <div>
+        <dt>האם ריח טחב נעלם אחרי ייבוש?</dt>
+        <dd>ברוב המקרים כן, אך אם הריח נמשך ייתכן שנותר עובש פעיל בקיר.</dd>
+      </div>
+      <div>
+        <dt>האם ביטוח דירה מכסה נזקי רטיבות?</dt>
+        <dd>ברוב הפוליסות – כן, אולם רק אם הבעיה נובעת מאירוע פתאומי ולא מהזנחה מתמשכת.</dd>
+      </div>
+    </dl>
+  </section>
+  <aside class="article-tip">
+    <h2>טיפ לסגירת הצעות</h2>
+    <p>
+      בקשו מכל ספק לפרט בהצעה את שלבי העבודה, זמני הייבוש והאחריות הכתובה. מומלץ גם לשמור העתק חתום ולתאם ביקור חוזר לביקורת לאחר הגשם הראשון.
+    </p>
+  </aside>
+{% endblock %}
+{% block extra_scripts %}
+  {{ super() }}
+  <script type="application/ld+json">
+    {{ {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "רטיבות ועובש בבית: זיהוי, טיפול, מניעה ועלויות בישראל",
+      "description": meta_description,
+      "inLanguage": "he-IL",
+      "mainEntityOfPage": canonical_url,
+      "datePublished": today_iso,
+      "dateModified": today_iso,
+      "image": [og_image],
+      "author": {
+        "@type": "Organization",
+        "name": "בעלי מקצוע בקליק"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "בעלי מקצוע בקליק",
+        "url": url_for('home', lang='he', _external=True),
+        "logo": {
+          "@type": "ImageObject",
+          "url": static_abs('logo.jpeg'),
+          "width": 512,
+          "height": 512
+        }
+      }
+    } | tojson(indent=2) | safe }}
+  </script>
+  <script type="application/ld+json">
+    {{ {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "איך יודעים אם הבעיה נובעת מנזילה או מעיבוי?",
+          "acceptedAnswer": {"@type": "Answer", "text": "אם הכתם משתנה לפי מזג האוויר – כנראה עיבוי. אם הוא קבוע, ייתכן שמדובר בנזילה."}
+        },
+        {
+          "@type": "Question",
+          "name": "האם ניתן לטפל בעובש לבד?",
+          "acceptedAnswer": {"@type": "Answer", "text": "כן, אך רק בעובש שטחי ומוגבל. במקרים נרחבים כדאי להזמין טיפול מקצועי."}
+        },
+        {
+          "@type": "Question",
+          "name": "האם הרטיבות מסוכנת למבנה?",
+          "acceptedAnswer": {"@type": "Answer", "text": "בהחלט. רטיבות ממושכת עלולה להחליש את הטיח, לפגוע בחשמל ולהביא לבלאי מהיר."}
+        },
+        {
+          "@type": "Question",
+          "name": "כל כמה זמן מומלץ לחדש איטום גג?",
+          "acceptedAnswer": {"@type": "Answer", "text": "בממוצע כל 7–10 שנים, בהתאם לסוג החומר ולחשיפה לשמש."}
+        },
+        {
+          "@type": "Question",
+          "name": "האם ריח טחב נעלם אחרי ייבוש?",
+          "acceptedAnswer": {"@type": "Answer", "text": "ברוב המקרים כן, אך אם הריח נמשך ייתכן שנותר עובש פעיל בקיר."}
+        },
+        {
+          "@type": "Question",
+          "name": "האם ביטוח דירה מכסה נזקי רטיבות?",
+          "acceptedAnswer": {"@type": "Answer", "text": "ברוב הפוליסות – כן, אולם רק אם הבעיה נובעת מאירוע פתאומי ולא מהזנחה מתמשכת."}
+        }
+      ]
+    } | tojson(indent=2) | safe }}
+  </script>
+{% endblock %}

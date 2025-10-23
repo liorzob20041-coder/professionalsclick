@@ -90,15 +90,20 @@
 .a-card:hover .a-more i{ transform: translateX(-4px); transition:transform .18s ease; }
 html[dir="ltr"] .a-card:hover .a-more i{ transform: scaleX(-1) translateX(-4px); }
 /* Big CTA */
-.all-articles-cta{
+.articles-actions{
   margin: clamp(28px,5vw,44px) auto 0;
+  display:flex;
+  justify-content:center;
+}
+.articles-more-btn{
   display:inline-flex; align-items:center; gap:12px;
   padding:12px 28px; border-radius:999px;
   border:2px solid var(--brand); color:var(--brand); font-weight:800; text-decoration:none;
   background:#fff;
   transition: color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
 }
-.all-articles-cta:hover, .all-articles-cta:focus-visible{
+.articles-more-btn:hover,
+.articles-more-btn:focus-visible{
   background:var(--brand); color:#fff; box-shadow:0 16px 34px rgba(138,21,56,.28); transform: translateY(-2px);
 }
 /* Reveal on scroll */

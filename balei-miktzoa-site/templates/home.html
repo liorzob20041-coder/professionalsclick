@@ -228,14 +228,6 @@
         'title': _('homepage.articles.plumber.title'),
         'excerpt': _('homepage.articles.plumber.excerpt'),
         'href': url_for_lang('article_plumbing_quote',  lang=g.current_lang)
-      },
-      {
-        'tag': _('homepage.tags.renovation'),
-        'img': url_for('static', filename='articles/renovation-spotlight.jpg'),
-        'img_alt': _('homepage.articles.renovation.alt'),
-        'title': _('homepage.articles.renovation.title'),
-        'excerpt': _('homepage.articles.renovation.excerpt'),
-        'href': url_for_lang('article_renovation_prep', lang=g.current_lang)
       }
     ] %}
     <div class="articles-masonry" role="list">
@@ -260,10 +252,12 @@
       </article>
       {% endfor %}
     </div>
-    <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="all-articles-cta">
-      <span>{{ _('homepage.articles.all_articles') }}</span>
-      <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
-    </a>
+    <div class="articles-actions">
+      <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="articles-more-btn">
+        <span>{{ _('homepage.articles.all_articles') }}</span>
+        <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+      </a>
+    </div>
   </div>
 </section>
 

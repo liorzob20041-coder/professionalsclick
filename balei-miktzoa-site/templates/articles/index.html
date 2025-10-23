@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
+
 {% block extra_head %}
   {{ super() }}
   <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
 {% endblock %}
+
 {% block title %}{{ _('articles_index.seo_title') }}{% endblock %}
+
 {% block head_seo %}
 <link rel="canonical" href="{{ url_for_lang('articles_index', lang=g.current_lang, _external=True) }}">
 <meta name="description" content="{{ _('articles_index.meta_description') }}">
@@ -17,67 +20,124 @@
 <meta name="twitter:description" content="{{ _('articles_index.meta_description') }}">
 <meta name="twitter:image" content="{{ static_abs('og/home-' ~ g.current_lang ~ '.jpg') }}">
 {% endblock %}
+
 {% block content %}
 <section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}">
   <div class="container">
-    <header class="articles-head">
-      <span class="articles-kicker">{{ t('homepage.articles.kicker', 'home') }}</span>
-      <h1 class="articles-title">{{ _('articles_index.heading') }}</h1>
-      <p class="articles-intro">{{ _('articles_index.lead') }}</p>
-    </header>
+    {% set categories = [
+      {'value': 'all', 'label': _('articles_index.category_all')},
+      {'value': 'electric', 'label': 'חשמל'},
+      {'value': 'plumbing', 'label': 'אינסטלציה'},
+      {'value': 'renovation', 'label': 'שיפוצים'},
+      {'value': 'maintenance', 'label': 'תחזוקת בית'},
+      {'value': 'safety', 'label': 'בטיחות'},
+      {'value': 'budget', 'label': 'תקציב'},
+      {'value': 'planning', 'label': 'תכנון'}
+    ] %}
+
     {% set articles = [
       {
         'img': None,
         'placeholder': t('homepage.articles.mold_damp.placeholder', 'home'),
         'title': t('homepage.articles.mold_damp.title', 'home'),
         'excerpt': t('homepage.articles.mold_damp.excerpt', 'home'),
-        'href': url_for_lang('article_mold_damp')
+        'href': url_for_lang('article_mold_damp'),
+        'tags': ['maintenance', 'safety'],
+        'tag_labels': ['תחזוקת בית', 'בטיחות'],
+        'popular': True
       },
       {
         'img': url_for('static', filename='articles/electrician-spotlight.jpg'),
         'img_alt': t('homepage.articles.electric.alt', 'home'),
         'title': t('homepage.articles.electric.title', 'home'),
         'excerpt': t('homepage.articles.electric.excerpt', 'home'),
-        'href': url_for_lang('article_electrician')
+        'href': url_for_lang('article_electrician'),
+        'tags': ['electric', 'safety'],
+        'tag_labels': ['חשמל', 'בטיחות'],
+        'popular': True
       },
       {
         'img': url_for('static', filename='articles/plumber-spotlight.jpg'),
         'img_alt': t('homepage.articles.plumber.alt', 'home'),
         'title': t('homepage.articles.plumber.title', 'home'),
         'excerpt': t('homepage.articles.plumber.excerpt', 'home'),
-        'href': url_for_lang('article_plumbing_quote')
+        'href': url_for_lang('article_plumbing_quote'),
+        'tags': ['plumbing', 'budget'],
+        'tag_labels': ['אינסטלציה', 'תקציב'],
+        'popular': True
       },
       {
         'img': url_for('static', filename='articles/renovation-spotlight.jpg'),
         'img_alt': t('homepage.articles.renovation.alt', 'home'),
         'title': t('homepage.articles.renovation.title', 'home'),
         'excerpt': t('homepage.articles.renovation.excerpt', 'home'),
-        'href': url_for_lang('article_renovation_prep')
+        'href': url_for_lang('article_renovation_prep'),
+        'tags': ['renovation', 'planning'],
+        'tag_labels': ['שיפוצים', 'תכנון'],
+        'popular': False
       }
     ] %}
-    <div class="articles-list" role="list">
-      {% for article in articles %}
-        <article class="article-card" role="listitem">
-          <a class="article-thumb{% if not article.img %} is-placeholder{% endif %}" href="{{ article.href }}">
-            {% if article.img %}
-              <img src="{{ article.img }}" alt="{{ article.img_alt }}" loading="lazy" decoding="async">
-            {% else %}
-              <span class="article-thumb__placeholder">{{ article.placeholder or article.title }}</span>
-            {% endif %}
 
+    <!-- חיפוש/סינון -->
+    <div class="filters-rail" role="toolbar" aria-label="{{ _('articles_index.filters_toolbar') }}">
+      <input type="search" class="filter-chip" placeholder="{{ _('articles_index.search_placeholder') or 'חיפוש מאמרים' }}" autocomplete="off" data-filter-q>
+    </div>
+
+    <!-- גריד רספונסיבי -->
+    <div class="articles-masonry" role="list">
+      {% for article in articles %}
+        <article class="a-card reveal" role="listitem" data-title="{{ article.title|lower }}">
+          <a class="a-thumb{% if not article.img %} is-placeholder{% endif %}" href="{{ article.href }}">
+            {% if article.img %}
+              <img src="{{ article.img }}" alt="{{ article.img_alt or article.title }}" loading="lazy" decoding="async">
+            {% else %}
+              <span class="a-thumb__placeholder">{{ article.placeholder or article.title }}</span>
+            {% endif %}
+            {% if article.tag %}<span class="a-tag">{{ article.tag }}</span>{% endif %}
           </a>
-          <div class="article-content">
-            <h2 class="article-title"><a href="{{ article.href }}">{{ article.title }}</a></h2>
-            <p class="article-excerpt">{{ article.excerpt }}</p>
-            <a class="article-read-more" href="{{ article.href }}">
-              <span>{{ t('homepage.articles.read_more', 'home') }}</span>
-              <span class="icon" aria-hidden="true"><i class="fa-solid fa-arrow-left-long dir-flip"></i></span>
+          <div class="a-body">
+            <h2 class="a-title"><a href="{{ article.href }}">{{ article.title }}</a></h2>
+            <p class="a-excerpt">{{ article.excerpt }}</p>
+            <a class="a-more" href="{{ article.href }}">
+              {{ t('homepage.articles.read_more', 'home') }}
+              <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
             </a>
           </div>
         </article>
       {% endfor %}
     </div>
+
+    <div class="articles-actions">
+      <a class="articles-more-btn" href="{{ url_for_lang('articles_index') }}">
+        {{ _('articles_index.more_btn') or 'כל המאמרים' }}
+        <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+      </a>
+    </div>
+
     <p class="articles-note">{{ _('articles_index.note') }}</p>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ super() }}
+  <script>
+  (function(){
+    const q = document.querySelector('[data-filter-q]');
+    const cards = Array.from(document.querySelectorAll('.a-card'));
+    if(q){
+      q.addEventListener('input', function(){
+        const term = (q.value || '').trim().toLowerCase();
+        cards.forEach(c => {
+          const t = (c.dataset.title || '').toLowerCase();
+          c.style.display = !term || t.includes(term) ? '' : 'none';
+        });
+      });
+    }
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+    }, {threshold: 0.1});
+    cards.forEach(c => c.classList.contains('reveal') && io.observe(c));
+  })();
+  </script>
 {% endblock %}

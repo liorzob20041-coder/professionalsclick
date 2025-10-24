@@ -144,6 +144,7 @@ html[dir="ltr"] .a-card:hover .a-more i{ transform: scaleX(-1) translateX(-4px);
 .articles-hero-quick{ display:flex; flex-wrap:wrap; gap:14px 18px; align-items:center; justify-content:center; }
 .hero-stat{ display:inline-flex; align-items:baseline; gap:10px; padding:8px 14px; border:1px solid rgba(15,23,42,.08); border-radius:999px; background:#fff; }
 .hero-stat strong{ font-size:1.25rem; color:var(--brand-ink); }
+.hero-cats{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; }
 .hero-cats .chip--ghost{ background:transparent; border:1px dashed rgba(138,21,56,.4); color:var(--brand); }
 /* ===== FILTER BAR ===== */
 .filters-bar{ display:grid; gap:12px; grid-template-columns: 1fr minmax(180px,220px); align-items:center; margin: clamp(14px,3vw,20px) auto; }

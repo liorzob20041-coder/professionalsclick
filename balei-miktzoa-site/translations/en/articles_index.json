@@ -3,6 +3,17 @@
   "articles_index.meta_description": "Browse practical guides that help you solve home issues, compare quotes and hire trusted pros.",
   "articles_index.heading": "All of our articles in one place",
   "articles_index.lead": "Scan quick tips and how-to guides that explain what to ask, what to double-check and how to avoid surprises.",
-  "articles_index.aria_label": "Professional articles from Baalei Mikzoa Bklik",
+  "articles_index.aria_label": "Articles archive",
+  "articles_index.filters_toolbar": "Article filter toolbar",
+  "articles_index.search_label": "Search articles",
+  "articles_index.search_placeholder": "Search articles",
+  "articles_index.category_label": "Choose category",
+  "articles_index.category_all": "All categories",
+  "articles_index.quick_cats": "Popular categories",
+  "articles_index.popular_heading": "Popular right now",
+  "articles_index.all_heading": "All articles",
+  "articles_index.results_suffix": "results",
+  "articles_index.empty": "No matching articles were found.",
+  "articles_index.count_label": "Available articles",
   "articles_index.note": "We update this knowledge center regularly with real homeowner questions so you approach every job informed and confident."
 }

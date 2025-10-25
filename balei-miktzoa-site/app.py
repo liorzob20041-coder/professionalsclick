@@ -2572,8 +2572,12 @@ def show_workers(lang, field, area):
     # 🔹 טוענים קובץ תרגום פעם אחת (לא לכל עובד)
     translations = {}
     translation_file = os.path.join(TRANSLATIONS_FOLDER, lang, 'show_workers.json')
-    if os.path.exists(translation_file):
-        with open(translation_file, 'r', encoding='utf-8') as f:
+    safe_root = os.path.abspath(TRANSLATIONS_FOLDER)
+    normalized_path = os.path.abspath(os.path.normpath(translation_file))
+    if not normalized_path.startswith(safe_root + os.sep):
+        abort(403)
+    if os.path.exists(normalized_path):
+        with open(normalized_path, 'r', encoding='utf-8') as f:
             translations = json.load(f)
     default_template = translations.get('default_tagline', 'Professional in the field of {field}')
 

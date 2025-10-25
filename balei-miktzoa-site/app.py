@@ -2191,6 +2191,12 @@ def article_renovation_prep(lang):
     g.current_lang = lang
     return render_template('articles/renovation-prep-checklist.html')
 
+@app.route('/<lang>/articles/mold-damp-guide')
+def article_mold_damp(lang):
+    g.current_lang = lang
+    today_iso = date.today().isoformat()
+    return render_template('articles/mold-damp-guide.html', today_iso=today_iso)
+
 # -------- Legal pages (with lang) --------
 @app.route('/<lang>/privacy')
 def privacy(lang):
@@ -4401,6 +4407,33 @@ def sitemap_xml():
                     site_last_any or today,
                     changefreq="weekly",
                     priority="0.8" if ep == "home" else "0.6"
+                )
+            )
+
+    # ---- מדריכי תוכן ומאמרים ----
+    article_endpoints = [
+        ("article_electrician", {}),
+        ("article_plumbing_quote", {}),
+        ("article_renovation_prep", {}),
+        ("article_mold_damp", {}),
+    ]
+    for ep, params in article_endpoints:
+        if ep not in app.view_functions:
+            continue
+        group = {}
+        for L in SUPPORTED_LANGS:
+            try:
+                group[L] = url_for(ep, lang=L, **params)
+            except BuildError:
+                group = {}
+                break
+        if group:
+            url_items.append(
+                url_entry_with_alternates(
+                    group,
+                    today,
+                    changefreq="monthly",
+                    priority="0.55"
                 )
             )
 

@@ -50,12 +50,20 @@ jobs:
           HOST: "127.0.0.1"
           PORT: "5000"
         run: |
-          python balei-miktzoa-site/app.clean.py > server.log 2>&1 & echo $! > flask.pid
-          for i in {1..20}; do
+          # locate entry point
+          if [ -f "app.py" ]; then ENTRY="app.py";
+          elif [ -f "balei-miktzoa-site/app.py" ]; then ENTRY="balei-miktzoa-site/app.py";
+          elif [ -f "balei-miktzoa-site/app.clean.py" ]; then ENTRY="balei-miktzoa-site/app.clean.py";
+          else echo "No Flask entry point found" >&2; ls -la; exit 1; fi
+
+          echo "Using entry: $ENTRY"
+          python "$ENTRY" > server.log 2>&1 & echo $! > flask.pid
+
+          for i in {1..30}; do
             curl -sSf http://127.0.0.1:5000/ >/dev/null && exit 0
             sleep 1
           done
-          echo "Server did not start"; cat server.log || true
+          echo "Server did not start"; tail -n +1 server.log || true
           exit 1
 
       - name: Lighthouse collect
@@ -91,7 +99,3 @@ jobs:
         if: always()
         run: |
           kill $(cat flask.pid) || true
-
-
-
-

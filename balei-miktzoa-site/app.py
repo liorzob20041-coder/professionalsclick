@@ -1511,7 +1511,7 @@ def _vimeo_id(url: str):
     try:
         p = urlparse(url)
         host = (p.netloc or "").lower()
-        if "vimeo.com" in host:
+        if host == "vimeo.com" or host.endswith(".vimeo.com"):
             parts = [s for s in p.path.split("/") if s]
             # מזהה בסיסי (מספרי) של וימאו
             return parts[0] if parts and parts[0].isdigit() else None
@@ -1565,7 +1565,13 @@ def load_translations(lang):
         endpoint = request.endpoint or 'home'
         file_name = f"{endpoint}.json"
         path = os.path.join(TRANSLATIONS_FOLDER, lang, file_name)
-        with open(path, 'r', encoding='utf-8') as f:
+        normalized_path = os.path.normpath(path)
+        # Check path containment (ensure normalized_path is within TRANSLATIONS_FOLDER)
+        translations_folder_abs = os.path.abspath(TRANSLATIONS_FOLDER)
+        normalized_path_abs = os.path.abspath(normalized_path)
+        if not normalized_path_abs.startswith(translations_folder_abs + os.sep):
+            raise Exception("Invalid translation path")
+        with open(normalized_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except:
         return {}
@@ -1583,7 +1589,12 @@ def _load_bundle(lang: str, bundle: str) -> dict:
     """
     try:
         path = os.path.join(TRANSLATIONS_FOLDER, lang, f"{bundle}.json")
-        with open(path, "r", encoding="utf-8") as f:
+        normalized_path = os.path.normpath(path)
+        translations_folder_abs = os.path.abspath(TRANSLATIONS_FOLDER)
+        normalized_path_abs = os.path.abspath(normalized_path)
+        if not normalized_path_abs.startswith(translations_folder_abs + os.sep):
+            raise Exception("Invalid translation path")
+        with open(normalized_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}

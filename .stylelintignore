@@ -1,0 +1,6 @@
+node_modules
+**/*.min.css
+static/vendor/**
+static/**/vendor/**
+static/**/dist/**
+static/**/build/**

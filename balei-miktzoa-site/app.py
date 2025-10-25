@@ -3342,7 +3342,17 @@ def smart_alias(lang, term, area):
         target = url_for(reserved_endpoint, lang=target_lang)
         if request.query_string:
             qs = request.query_string.decode('utf-8', 'ignore')
-            target = f"{target}?{qs}"
+            # Only allow a safe set of query params; block common redirect hints
+            SAFE_QUERY_KEYS = {'foo', 'bar'}  # TODO: Fill with actual safe keys relevant to app domain
+            parsed_qs = parse_qs(qs, keep_blank_values=True)
+            filtered_qs = {k: v for k, v in parsed_qs.items() if k in SAFE_QUERY_KEYS}
+            if filtered_qs:
+                safe_qs = "&".join(
+                    f"{key}={val}"
+                    for key, values in filtered_qs.items()
+                    for val in values
+                )
+                target = f"{target}?{safe_qs}"
         return redirect(target, code=302)
 
     # מפרק למילים, מנרמל HE/EN/RU

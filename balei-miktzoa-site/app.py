@@ -390,7 +390,27 @@ def build_call_to_action(blocks: list[dict], lang: str, *, now: datetime | None 
 # קבועים ותיקיות
 # ------------------------------
 TRANSLATIONS_FOLDER = os.path.join(os.path.dirname(__file__), 'translations')
+def _resolve_translation_path(*components: str) -> str | None:
+    """Resolve a path inside the translations directory in a safe manner."""
 
+    base = os.path.abspath(TRANSLATIONS_FOLDER)
+    parts = [str(c) for c in components if c]
+    try:
+        candidate = safe_join(base, *parts)
+    except (NotFound, ValueError):
+        return None
+
+    if not candidate:
+        return None
+
+    candidate = os.path.abspath(candidate)
+    try:
+        if os.path.commonpath([base, candidate]) != base:
+            return None
+    except ValueError:
+        return None
+
+    return candidate
 # בסיס הפרויקט: התיקייה שבה נמצא קובץ זה
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = str(BASE_DIR / 'static')
@@ -1634,15 +1654,10 @@ def load_translations(lang):
         # Validate lang and bundle (endpoint as bundle)
         if not is_safe_component(lang) or not is_safe_component(endpoint):
             raise Exception("Invalid language or bundle name")
-        path = os.path.join(TRANSLATIONS_FOLDER, lang, file_name)
-        normalized_path = os.path.normpath(path)
-        # Check path containment (ensure normalized_path is within TRANSLATIONS_FOLDER)
-        translations_folder_abs = os.path.abspath(TRANSLATIONS_FOLDER)
-        normalized_path_abs = os.path.abspath(normalized_path)
-        # Robust containment check: normalized_path_abs must be inside translations_folder_abs
-        if os.path.commonpath([translations_folder_abs, normalized_path_abs]) != translations_folder_abs:
+        resolved_path = _resolve_translation_path(lang, file_name)
+        if not resolved_path or not os.path.isfile(resolved_path):
             raise Exception("Invalid translation path")
-        with open(normalized_path, 'r', encoding='utf-8') as f:
+        with open(resolved_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except:
         return {}
@@ -1659,14 +1674,10 @@ def _load_bundle(lang: str, bundle: str) -> dict:
     returns {} if missing
     """
     try:
-        path = os.path.join(TRANSLATIONS_FOLDER, lang, f"{bundle}.json")
-        normalized_path = os.path.normpath(path)
-        translations_folder_abs = os.path.abspath(TRANSLATIONS_FOLDER)
-        normalized_path_abs = os.path.abspath(normalized_path)
-        # Robust containment check: normalized_path_abs must be inside translations_folder_abs
-        if os.path.commonpath([translations_folder_abs, normalized_path_abs]) != translations_folder_abs:
+        resolved_path = _resolve_translation_path(lang, f"{bundle}.json")
+        if not resolved_path or not os.path.isfile(resolved_path):
             raise Exception("Invalid translation path")
-        with open(normalized_path, "r", encoding="utf-8") as f:
+        with open(resolved_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}
@@ -2168,12 +2179,10 @@ def inject_csrf():
 
 def load_reviews_keys(lang):
     try:
-        base_dir = os.path.realpath(TRANSLATIONS_FOLDER)
-        path = os.path.join(base_dir, lang, 'reviews_keys.json')
-        norm_path = os.path.realpath(path)
-        if not norm_path.startswith(base_dir + os.sep):
+        resolved_path = _resolve_translation_path(lang, 'reviews_keys.json')
+        if not resolved_path or not os.path.isfile(resolved_path):
             return {}
-        with open(norm_path, 'r', encoding='utf-8') as f:
+        with open(resolved_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except:
         return {}
@@ -2681,14 +2690,9 @@ def show_workers(lang, field, area):
 
     # 🔹 טוענים קובץ תרגום פעם אחת (לא לכל עובד)
     translations = {}
-    translation_file = os.path.join(TRANSLATIONS_FOLDER, safe_lang, 'show_workers.json')
-    safe_root = os.path.abspath(TRANSLATIONS_FOLDER)
-    normalized_path = os.path.abspath(os.path.normpath(translation_file))
-    # Ensure the file is inside TRANSLATIONS_FOLDER, preventing path traversal
-    if os.path.commonpath([normalized_path, safe_root]) != safe_root:
-        abort(403)
-    if os.path.exists(normalized_path):
-        with open(normalized_path, 'r', encoding='utf-8') as f:
+    translation_path = _resolve_translation_path(safe_lang, 'show_workers.json')
+    if translation_path and os.path.isfile(translation_path):
+        with open(translation_path, 'r', encoding='utf-8') as f:
             translations = json.load(f)
     default_template = translations.get('default_tagline', 'Professional in the field of {field}')
 
@@ -4241,7 +4245,9 @@ def analysis_all_time():
 
 @app.route('/admin/analysis/login', methods=['GET', 'POST'], endpoint='admin_login')
 def admin_login():
-    next_url = request.args.get('next') or url_for('analysis_index')
+    fallback_url = url_for('analysis_index')
+    raw_next = request.form.get('next') if request.method == 'POST' else request.args.get('next')
+    next_url = sanitize_local_redirect(raw_next, fallback=fallback_url)
     if request.method == 'POST':
         pwd = (request.form.get('password') or '').strip()
 
@@ -4254,8 +4260,6 @@ def admin_login():
         if ok:
             session.permanent = True          # ← הוסף שורה זו
             session['is_admin'] = True
-            if not is_safe_url(next_url):
-                next_url = url_for('analysis_index')
             return redirect(next_url)
 
 
@@ -4919,10 +4923,8 @@ def normalize_lang(lang: str) -> str:
 def load_estimate_i18n(lang: str):
     """טוען translations/<lang>/estimate.json; מחזיר {} אם אין."""
     lang = normalize_lang(lang)
-    base_dir = os.path.join(app.root_path, "translations")
-    path = os.path.join(base_dir, lang, "estimate.json")
-    norm_path = os.path.realpath(path)
-    if not norm_path.startswith(os.path.realpath(base_dir) + os.sep):
+    norm_path = _resolve_translation_path(lang, "estimate.json")
+    if not norm_path or not os.path.isfile(norm_path):
         return {}
     try:
         with open(norm_path, "r", encoding="utf-8") as f:

@@ -2554,7 +2554,13 @@ def show_workers(lang, field, area):
         if safe_qs:
             target = f"{target}?{safe_qs}"
         # Validate target is a relative URL (no scheme or netloc) before redirecting
-
+        clean_target = target.replace('\\', '')
+        parsed_target = urlparse(clean_target)
+        if not parsed_target.scheme and not parsed_target.netloc:
+            return redirect(clean_target, code=301)
+        else:
+            # Fallback: redirect to canonical URL only (without query string)
+            return redirect(url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug), code=301)
     # 4) מכאן נעבוד תמיד עם שמות עברית קנוניים לסינון
     search_field = resolved_field_he
     search_area  = resolved_area_he

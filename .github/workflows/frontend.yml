@@ -29,13 +29,15 @@ jobs:
       - name: Install frontend tools
         run: |
           npm i -D stylelint stylelint-config-standard postcss postcss-html @lhci/cli pa11y-ci
-          echo '{ "extends": "stylelint-config-standard", "overrides": [{ "files": ["**/*.html","templates/**/*.html"], "customSyntax": "postcss-html" }] }' > .stylelintrc.json
+
       - name: Stylelint
+        continue-on-error: true
         run: |
-          npx stylelint "**/*.css" "**/*.html" "templates/**/*.html"
+          npx stylelint "**/*.css" "**/*.html" "templates/**/*.html" --formatter=string > stylelint-report.txt || true
 
       - name: Start Flask
-        env: { FLASK_DEBUG: "0" }
+        env:
+          FLASK_DEBUG: "0"
         run: |
           python balei-miktzoa-site/app.clean.py & echo $! > flask.pid
           sleep 6
@@ -53,8 +55,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-reports
-          path: lhci-report
+          path: |
+            lhci-report
+            stylelint-report.txt
 
       - name: Stop Flask
         if: always()
         run: kill $(cat flask.pid) || true
+

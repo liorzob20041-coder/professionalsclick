@@ -3411,7 +3411,13 @@ def smart_alias(lang, term, area):
         canon_area_slug  = localize_city_slug(he_area, lang) if he_area else None
         target = url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug)
         if qs: target = f"{target}?{qs}"
-        return redirect(target, code=301)
+        # Prevent open redirect by validating target
+        safe_target = target.replace('\\', '')
+        parsed = urlparse(safe_target)
+        if not parsed.netloc and not parsed.scheme:
+            return redirect(safe_target, code=301)
+        # If potentially unsafe, redirect to homepage instead
+        return redirect('/', code=301)
 
     # לא זיהינו כלום → 404
     return not_found(404)

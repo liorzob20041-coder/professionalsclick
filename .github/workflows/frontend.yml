@@ -40,11 +40,16 @@ jobs:
           FLASK_DEBUG: "0"
         run: |
           python balei-miktzoa-site/app.clean.py & echo $! > flask.pid
-          sleep 6
+          sleep 12
 
       - name: Lighthouse
         run: |
-          npx lhci autorun --collect.url=http://127.0.0.1:5000/ --collect.numberOfRuns=1 --upload.target=filesystem --upload.outputDir=./lhci-report
+          npx lhci autorun \
+            --collect.url=http://127.0.0.1:5000/ \
+            --collect.numberOfRuns=1 \
+            --collect.settings.chromeFlags="--no-sandbox" \
+            --upload.target=filesystem \
+            --upload.outputDir=./lhci-report
 
       - name: Accessibility (Pa11y)
         run: |
@@ -61,5 +66,7 @@ jobs:
 
       - name: Stop Flask
         if: always()
-        run: kill $(cat flask.pid) || true
+        run: |
+          kill $(cat flask.pid) || true
+
 

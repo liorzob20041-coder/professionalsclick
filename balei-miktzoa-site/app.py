@@ -3351,16 +3351,39 @@ def smart_alias(lang, term, area):
             # Only allow a safe set of query params; block common redirect hints
             SAFE_QUERY_KEYS = {'foo', 'bar'}  # TODO: Fill with actual safe keys relevant to app domain. DO NOT REDIRECT on user values for keys not explicitly trusted.
             parsed_qs = parse_qs(qs, keep_blank_values=True)
-            filtered_qs = {k: v for k, v in parsed_qs.items() if k in SAFE_QUERY_KEYS}
+            def is_safe_value(val: str) -> bool:
+                # Disallow values that look like URLs, contain control, whitespace, or are suspicious
+                # Adjust logic according to app semantics as required
+                if not isinstance(val, str):
+                    return False
+                _val = val.strip().lower()
+                if _val.startswith(('http://', 'https://', '//')):  # Looks like a URL
+                    return False
+                if re.search(r'[<>\"\'`]', _val):  # dangerous chars
+                    return False
+                if re.search(r'(?:/|\\)', _val):  # path traversal attempt
+                    return False
+                return True
+            filtered_qs = {
+                k: [v for v in values if is_safe_value(v)]
+                for k, values in parsed_qs.items() if k in SAFE_QUERY_KEYS
+            }
             if filtered_qs:
                 safe_qs = "&".join(
                     f"{quote_plus(str(key))}={quote_plus(str(val))}"
                     for key, values in filtered_qs.items()
                     for val in values
                 )
-                target = f"{target}?{safe_qs}"
-        return redirect(target, code=302)
-
+                candidate_target = f"{target}?{safe_qs}"
+                # Final check: only allow local redirects
+                parsed_target = urlparse(candidate_target.replace('\\', ''))
+                if not parsed_target.netloc and not parsed_target.scheme:
+                    target = candidate_target
+        parsed_final = urlparse(target.replace('\\', ''))
+        if not parsed_final.netloc and not parsed_final.scheme:
+            return redirect(target, code=302)
+        # Fallback: unsafe, redirect to home page
+        return redirect('/', code=302)
     # מפרק למילים, מנרמל HE/EN/RU
     def _tokens(s: str):
         s = normalize_slug(s or "") or ""

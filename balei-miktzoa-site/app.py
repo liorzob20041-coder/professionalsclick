@@ -1569,7 +1569,8 @@ def load_translations(lang):
         # Check path containment (ensure normalized_path is within TRANSLATIONS_FOLDER)
         translations_folder_abs = os.path.abspath(TRANSLATIONS_FOLDER)
         normalized_path_abs = os.path.abspath(normalized_path)
-        if not normalized_path_abs.startswith(translations_folder_abs + os.sep):
+        # Robust containment check: normalized_path_abs must be inside translations_folder_abs
+        if os.path.commonpath([translations_folder_abs, normalized_path_abs]) != translations_folder_abs:
             raise Exception("Invalid translation path")
         with open(normalized_path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -1592,7 +1593,8 @@ def _load_bundle(lang: str, bundle: str) -> dict:
         normalized_path = os.path.normpath(path)
         translations_folder_abs = os.path.abspath(TRANSLATIONS_FOLDER)
         normalized_path_abs = os.path.abspath(normalized_path)
-        if not normalized_path_abs.startswith(translations_folder_abs + os.sep):
+        # Robust containment check: normalized_path_abs must be inside translations_folder_abs
+        if os.path.commonpath([translations_folder_abs, normalized_path_abs]) != translations_folder_abs:
             raise Exception("Invalid translation path")
         with open(normalized_path, "r", encoding="utf-8") as f:
             return json.load(f)

@@ -1562,8 +1562,14 @@ def register_jinja_filters(flask_app):
 # ------------------------------
 def load_translations(lang):
     try:
+        def is_safe_component(s):
+            # Only allow a-z, A-Z, 0-9, underscore, dash; no separators or dots
+            return bool(re.match(r"^[a-zA-Z0-9_-]+$", s))
         endpoint = request.endpoint or 'home'
         file_name = f"{endpoint}.json"
+        # Validate lang and bundle (endpoint as bundle)
+        if not is_safe_component(lang) or not is_safe_component(endpoint):
+            raise Exception("Invalid language or bundle name")
         path = os.path.join(TRANSLATIONS_FOLDER, lang, file_name)
         normalized_path = os.path.normpath(path)
         # Check path containment (ensure normalized_path is within TRANSLATIONS_FOLDER)
@@ -1635,7 +1641,12 @@ def t(key: str, bundle: str | None = None) -> str:
     t('some.key')                 -> falls back to current endpoint's bundle via g.translations
     """
     lang = getattr(g, "current_lang", "he")
+    def is_safe_component(s):
+        return bool(re.match(r"^[a-zA-Z0-9_-]+$", s))
     if bundle:
+        if not is_safe_component(lang) or not is_safe_component(bundle):
+            # Don't return translation if bundle or lang is not safe
+            return key
         data = _load_bundle(lang, bundle)
     else:
         # fallback: use the endpoint-based dict already loaded into g.translations

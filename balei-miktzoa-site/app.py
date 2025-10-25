@@ -1832,8 +1832,11 @@ def img_proxy(filename):
 @csrf.exempt
 @app.get("/api/diag-static")
 def api_diag_static():
-    rel = (request.args.get("path") or "").lstrip("/").replace("..", "")
-    full = os.path.join(STATIC_DIR, rel)
+    rel = request.args.get("path") or ""
+    # Sanitize: resolve path and ensure it's within STATIC_DIR
+    full = os.path.normpath(os.path.join(STATIC_DIR, rel))
+    if not full.startswith(os.path.abspath(STATIC_DIR) + os.sep):
+        return abort(400, description="Invalid path")
     exists = os.path.isfile(full)
     ext = os.path.splitext(rel)[1].lower()
     guessed, _ = mimetypes.guess_type(rel)

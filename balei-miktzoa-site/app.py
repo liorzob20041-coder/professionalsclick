@@ -2545,8 +2545,14 @@ def show_workers(lang, field, area):
     if incoming_field_slug != canon_field_slug or incoming_area_slug != canon_area_slug:
         target = url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug)
         qs = request.query_string.decode('utf-8') if request.query_string else ''
-        if qs:
-            target = f"{target}?{qs}"
+        # Only allow filtered/expected query params (whitelist)
+        allowed_qs_keys = {'filter', 'area', 'field', 'q', 'page', 'sort'}  # Customize this set to match actual filtering params
+        parsed_qs = parse_qs(qs, keep_blank_values=True)
+        safe_qs_dict = {k: v for k, v in parsed_qs.items() if k in allowed_qs_keys}
+        from urllib.parse import urlencode
+        safe_qs = urlencode(safe_qs_dict, doseq=True)
+        if safe_qs:
+            target = f"{target}?{safe_qs}"
         return redirect(target, code=301)
 
     # 4) מכאן נעבוד תמיד עם שמות עברית קנוניים לסינון

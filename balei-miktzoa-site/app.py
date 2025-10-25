@@ -30,6 +30,7 @@ from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
 try:
     from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 except ImportError:  # Python < 3.9 or zoneinfo backport not installed
+
     ZoneInfo = None
 
     class ZoneInfoNotFoundError(Exception):

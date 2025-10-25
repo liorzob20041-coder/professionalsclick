@@ -4896,7 +4896,14 @@ def api_estimate():
         base_root = os.path.join(app.root_path, "data", "estimate_ai")
 
         def get_path(cat: str, lng: str):
-            return os.path.join(base_root, lng, f"{cat}.json")
+            # Remove dangerous slash/traversal patterns from components
+            safe_lng = os.path.basename(lng)
+            safe_cat = os.path.basename(cat)
+            path = os.path.normpath(os.path.join(base_root, safe_lng, f"{safe_cat}.json"))
+            # Ensure the path is within base_root
+            if not os.path.commonpath([base_root, path]) == base_root:
+                raise Exception("Invalid path")
+            return path
 
         # קודם ננסה בשפה המבוקשת, ואם לא קיים – ניפול לעברית
         file_path = get_path(category, lang)
@@ -5027,7 +5034,7 @@ def api_estimate():
 # הפעלת האפליקציה
 # ------------------------------ #
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
 
 
 

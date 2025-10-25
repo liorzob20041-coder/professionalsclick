@@ -2574,7 +2574,8 @@ def show_workers(lang, field, area):
     translation_file = os.path.join(TRANSLATIONS_FOLDER, lang, 'show_workers.json')
     safe_root = os.path.abspath(TRANSLATIONS_FOLDER)
     normalized_path = os.path.abspath(os.path.normpath(translation_file))
-    if not normalized_path.startswith(safe_root + os.sep):
+    # Ensure the file is inside TRANSLATIONS_FOLDER, preventing path traversal
+    if os.path.commonpath([normalized_path, safe_root]) != safe_root:
         abort(403)
     if os.path.exists(normalized_path):
         with open(normalized_path, 'r', encoding='utf-8') as f:

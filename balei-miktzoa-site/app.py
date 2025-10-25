@@ -2077,8 +2077,12 @@ def inject_csrf():
 
 def load_reviews_keys(lang):
     try:
-        path = os.path.join(TRANSLATIONS_FOLDER, lang, 'reviews_keys.json')
-        with open(path, 'r', encoding='utf-8') as f:
+        base_dir = os.path.realpath(TRANSLATIONS_FOLDER)
+        path = os.path.join(base_dir, lang, 'reviews_keys.json')
+        norm_path = os.path.realpath(path)
+        if not norm_path.startswith(base_dir + os.sep):
+            return {}
+        with open(norm_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except:
         return {}

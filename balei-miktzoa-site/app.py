@@ -4896,14 +4896,17 @@ def api_estimate():
         base_root = os.path.join(app.root_path, "data", "estimate_ai")
 
         def get_path(cat: str, lng: str):
-            # Remove dangerous slash/traversal patterns from components
-            safe_lng = os.path.basename(lng)
-            safe_cat = os.path.basename(cat)
-            path = os.path.normpath(os.path.join(base_root, safe_lng, f"{safe_cat}.json"))
-            # Ensure the path is within base_root
-            if not os.path.commonpath([base_root, path]) == base_root:
+            # * Sanitize each path component strictly
+            safe_lng = secure_filename(lng)
+            safe_cat = secure_filename(cat)
+            # * Compose full path and normalize
+            candidate_path = os.path.normpath(os.path.join(base_root, safe_lng, f"{safe_cat}.json"))
+            # * Double-check that the path is within base_root
+            abs_base_root = os.path.abspath(base_root)
+            abs_candidate_path = os.path.abspath(candidate_path)
+            if not abs_candidate_path.startswith(abs_base_root + os.sep):
                 raise Exception("Invalid path")
-            return path
+            return abs_candidate_path
 
         # קודם ננסה בשפה המבוקשת, ואם לא קיים – ניפול לעברית
         file_path = get_path(category, lang)

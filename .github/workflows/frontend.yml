@@ -1,0 +1,60 @@
+name: Frontend QA
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # HTML/Jinja lint
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install djlint
+        run: |
+          python -m pip install --upgrade pip
+          pip install djlint
+      - name: Lint templates
+        run: |
+          if [ -d "templates" ]; then djlint --profile=jinja templates --check --lint; else echo "no templates"; fi
+
+      # CSS + Lighthouse + a11y
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install frontend tools
+        run: |
+          npm i -D stylelint stylelint-config-standard postcss postcss-html @lhci/cli pa11y-ci
+          echo '{ "extends": "stylelint-config-standard", "overrides": [{ "files": ["**/*.html","templates/**/*.html"], "customSyntax": "postcss-html" }] }' > .stylelintrc.json
+      - name: Stylelint
+        run: |
+          npx stylelint "**/*.css" "**/*.html" "templates/**/*.html"
+
+      - name: Start Flask
+        env: { FLASK_DEBUG: "0" }
+        run: |
+          python balei-miktzoa-site/app.clean.py & echo $! > flask.pid
+          sleep 6
+
+      - name: Lighthouse
+        run: |
+          npx lhci autorun --collect.url=http://127.0.0.1:5000/ --collect.numberOfRuns=1 --upload.target=filesystem --upload.outputDir=./lhci-report
+
+      - name: Accessibility (Pa11y)
+        run: |
+          echo '{ "defaults": { "standard": "WCAG2AA", "timeout": 30000 }, "urls": ["http://127.0.0.1:5000/"] }' > .pa11yci.json
+          npx pa11y-ci
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-reports
+          path: lhci-report
+
+      - name: Stop Flask
+        if: always()
+        run: kill $(cat flask.pid) || true

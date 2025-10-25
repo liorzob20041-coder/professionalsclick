@@ -1488,9 +1488,9 @@ def _youtube_id(url: str):
     try:
         p = urlparse(url)
         host = (p.netloc or "").lower()
-        if "youtu.be" in host:
+        if host == "youtu.be":
             return p.path.lstrip("/") or None
-        if "youtube.com" in host:
+        if host == "youtube.com" or host.endswith(".youtube.com"):
             # /watch?v=ID
             if p.path == "/watch":
                 return parse_qs(p.query).get("v", [None])[0]

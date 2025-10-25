@@ -41,7 +41,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
           if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
-          pip install -U Flask requests Jinja2
+          pip install -U Flask requests Jinja2 python-dotenv
 
       # ===== Start Flask and wait =====
       - name: Start Flask
@@ -99,5 +99,6 @@ jobs:
         if: always()
         run: |
           kill $(cat flask.pid) || true
+
 
 

@@ -2507,6 +2507,10 @@ def request_professional(lang):
 @app.route('/<lang>/workers/<field>/', defaults={'area': None})
 @app.route('/<lang>/workers/<field>/<area>')
 def show_workers(lang, field, area):
+    # ✅ Validate lang before using in paths
+    ALLOWED_LANGS = {"he", "en", "ru"}
+    if lang not in ALLOWED_LANGS:
+        abort(400)
     session['last_workers_field'] = field
     session['last_workers_area'] = area
 

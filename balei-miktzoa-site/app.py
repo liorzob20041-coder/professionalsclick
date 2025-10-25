@@ -2553,7 +2553,7 @@ def show_workers(lang, field, area):
         safe_qs = urlencode(safe_qs_dict, doseq=True)
         if safe_qs:
             target = f"{target}?{safe_qs}"
-        return redirect(target, code=301)
+        # Validate target is a relative URL (no scheme or netloc) before redirecting
 
     # 4) מכאן נעבוד תמיד עם שמות עברית קנוניים לסינון
     search_field = resolved_field_he

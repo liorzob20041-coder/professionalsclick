@@ -1,12 +1,12 @@
 # === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy, shutil, uuid
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy, shutil, uuid, posixpath
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta, date, timezone, time as dt_time
 from zoneinfo import ZoneInfo
 from collections import defaultdict
 from typing import Any
-from urllib.parse import urlparse, parse_qs, urljoin, quote_plus
+from urllib.parse import urlparse, parse_qs, urljoin
 
 from collections import Counter
 
@@ -14,10 +14,11 @@ from flask import (
     Flask, render_template, request, redirect, url_for, flash, g, jsonify,
     session, send_from_directory, Response, current_app, abort
 )
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, safe_join
 from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.routing import BuildError
+from werkzeug.exceptions import NotFound
 
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -393,6 +394,40 @@ TRANSLATIONS_FOLDER = os.path.join(os.path.dirname(__file__), 'translations')
 # בסיס הפרויקט: התיקייה שבה נמצא קובץ זה
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = str(BASE_DIR / 'static')
+STATIC_DIR_ABS = os.path.abspath(STATIC_DIR)
+
+
+def _resolve_static_path(rel_path, *, allow_directory: bool = False) -> str | None:
+    """Resolve a path inside ``STATIC_DIR`` ensuring it stays within the directory."""
+
+    rel = "" if rel_path is None else str(rel_path)
+    rel = rel.strip()
+    if not rel:
+        return STATIC_DIR_ABS if allow_directory else None
+
+    rel = rel.replace("\\", "/").lstrip("/")
+    if not rel:
+        return STATIC_DIR_ABS if allow_directory else None
+
+    try:
+        candidate = safe_join(STATIC_DIR_ABS, rel)
+    except (NotFound, ValueError):
+        return None
+
+    if not candidate:
+        return None
+
+    candidate = os.path.abspath(candidate)
+    try:
+        if os.path.commonpath([STATIC_DIR_ABS, candidate]) != STATIC_DIR_ABS:
+            return None
+    except ValueError:
+        return None
+
+    if not allow_directory and os.path.isdir(candidate):
+        return None
+
+    return candidate
 
 # תיקיית הנתונים – בתוך הפרויקט (data)
 DATA_FOLDER = str(BASE_DIR / 'data')
@@ -1102,7 +1137,35 @@ def is_safe_url(target):
     """וולידציה שכתובת חזרה (next) מצביעה לאותו דומיין/פרוטוקול"""
     test = urlparse(urljoin(request.host_url, target))
     return test.scheme in ("http", "https") and test.netloc == urlparse(request.host_url).netloc
+def sanitize_local_redirect(target: str | None, *, fallback: str = "/") -> str:
+    """Return a relative URL within the current host or a safe fallback."""
 
+    fallback = fallback or "/"
+    if not target:
+        return fallback
+
+    try:
+        joined = urljoin(request.host_url, target)
+    except Exception:
+        return fallback
+
+    parsed = urlparse(joined)
+    host = urlparse(request.host_url)
+    if parsed.scheme not in ("http", "https") or parsed.netloc != host.netloc:
+        return fallback
+
+    path = parsed.path or "/"
+    if path.startswith("//"):
+        return fallback
+
+    path = posixpath.normpath(path)
+    if not path.startswith("/"):
+        path = f"/{path}"
+
+    # Reconstruct a relative URL (scheme/netloc removed)
+    query = f"?{parsed.query}" if parsed.query else ""
+    fragment = f"#{parsed.fragment}" if parsed.fragment else ""
+    return f"{path}{query}{fragment}" or fallback
 
 def to_kebab_slug(s):
     if not s:
@@ -1770,9 +1833,9 @@ def img_proxy(filename):
     fmt_req = (request.args.get("format") or "auto").lower()
 
     # קובץ מקור בתוך static
-    safe = filename.lstrip("/").replace("\\", "/")
-    src_path = os.path.join(app.static_folder, safe)
-    if not os.path.isfile(src_path):
+    safe = filename
+    src_path = _resolve_static_path(safe)
+    if not src_path or not os.path.isfile(src_path):
         resp = Response(b"Not Found", 404, {
             "Content-Type": "text/plain; charset=utf-8",
             "X-Bypass-Inline": "1",
@@ -1857,10 +1920,9 @@ def img_proxy(filename):
 @csrf.exempt
 @app.get("/api/diag-static")
 def api_diag_static():
-    rel = request.args.get("path") or ""
-    # Sanitize: resolve path and ensure it's within STATIC_DIR
-    full = os.path.normpath(os.path.join(STATIC_DIR, rel))
-    if not full.startswith(os.path.abspath(STATIC_DIR) + os.sep):
+    rel = request.args.get("path")
+    full = _resolve_static_path(rel, allow_directory=True)
+    if not full:
         return abort(400, description="Invalid path")
     exists = os.path.isfile(full)
     ext = os.path.splitext(rel)[1].lower()
@@ -1937,16 +1999,17 @@ def api_debug_report():
 @csrf.exempt
 @app.get("/api/diag-img-proxy")
 def api_diag_img_proxy():
-    filename = (request.args.get("file") or "").lstrip("/")
+    filename = request.args.get("file") or ""
+    safe_relative = filename.lstrip("/\\")
     w = request.args.get("w", type=int)
     h = request.args.get("h", type=int)
     fit = (request.args.get("fit") or "cover").lower()
     q = request.args.get("q", default=80, type=int)
     fmt_req = (request.args.get("format") or "auto").lower()
 
-    src_path = os.path.join(STATIC_DIR, filename)
+    src_path = _resolve_static_path(safe_relative)
 
-    exists = os.path.isfile(src_path)
+    exists = os.path.isfile(src_path) if src_path else False
 
     accept = (request.headers.get("Accept") or "").lower()
     if fmt_req == "auto":
@@ -1958,7 +2021,7 @@ def api_diag_img_proxy():
     ct = {"JPEG":"image/jpeg","WEBP":"image/webp","PNG":"image/png"}.get(fmt_out, "image/jpeg")
 
     payload = {
-        "input": {"file": filename, "w": w, "h": h, "fit": fit, "q": q, "format": fmt_req},
+        "input": {"file": safe_relative, "w": w, "h": h, "fit": fit, "q": q, "format": fmt_req},
         "source": {"fullpath": src_path, "exists": bool(exists)},
         "decision": {"fmt_out": fmt_out, "content_type": ct},
         "notes": [
@@ -2578,14 +2641,11 @@ def show_workers(lang, field, area):
         safe_qs = urlencode(safe_qs_dict, doseq=True)
         if safe_qs:
             target = f"{target}?{safe_qs}"
-        # Validate target is a relative URL (no scheme or netloc) before redirecting
-        clean_target = target.replace('\\', '')
-        parsed_target = urlparse(clean_target)
-        if not parsed_target.scheme and not parsed_target.netloc:
-            return redirect(clean_target, code=301)
-        else:
-            # Fallback: redirect to canonical URL only (without query string)
-            return redirect(url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug), code=301)
+        safe_target = sanitize_local_redirect(
+            target,
+            fallback=url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug)
+        )
+        return redirect(safe_target, code=301)
     # 4) מכאן נעבוד תמיד עם שמות עברית קנוניים לסינון
     search_field = resolved_field_he
     search_area  = resolved_area_he
@@ -3370,45 +3430,9 @@ def smart_alias(lang, term, area):
         if area:
             return not_found(404)
         target_lang = normalize_lang(lang)
-        target = url_for(reserved_endpoint, lang=target_lang)
-        if request.query_string:
-            qs = request.query_string.decode('utf-8', 'ignore')
-            # Only allow a safe set of query params; block common redirect hints
-            SAFE_QUERY_KEYS = {'foo', 'bar'}  # TODO: Fill with actual safe keys relevant to app domain. DO NOT REDIRECT on user values for keys not explicitly trusted.
-            parsed_qs = parse_qs(qs, keep_blank_values=True)
-            def is_safe_value(val: str) -> bool:
-                # Disallow values that look like URLs, contain control, whitespace, or are suspicious
-                # Adjust logic according to app semantics as required
-                if not isinstance(val, str):
-                    return False
-                _val = val.strip().lower()
-                if _val.startswith(('http://', 'https://', '//')):  # Looks like a URL
-                    return False
-                if re.search(r'[<>\"\'`]', _val):  # dangerous chars
-                    return False
-                if re.search(r'(?:/|\\)', _val):  # path traversal attempt
-                    return False
-                return True
-            filtered_qs = {
-                k: [v for v in values if is_safe_value(v)]
-                for k, values in parsed_qs.items() if k in SAFE_QUERY_KEYS
-            }
-            if filtered_qs:
-                safe_qs = "&".join(
-                    f"{quote_plus(str(key))}={quote_plus(str(val))}"
-                    for key, values in filtered_qs.items()
-                    for val in values
-                )
-                candidate_target = f"{target}?{safe_qs}"
-                # Final check: only allow local redirects
-                parsed_target = urlparse(candidate_target.replace('\\', ''))
-                if not parsed_target.netloc and not parsed_target.scheme:
-                    target = candidate_target
-        parsed_final = urlparse(target.replace('\\', ''))
-        if not parsed_final.netloc and not parsed_final.scheme:
-            return redirect(target, code=302)
-        # Fallback: unsafe, redirect to home page
-        return redirect('/', code=302)
+        base_target = url_for(reserved_endpoint, lang=target_lang)
+        safe_target = sanitize_local_redirect(base_target, fallback=url_for('home', lang=target_lang))
+        return redirect(safe_target, code=302)
     # מפרק למילים, מנרמל HE/EN/RU
     def _tokens(s: str):
         s = normalize_slug(s or "") or ""
@@ -3465,13 +3489,8 @@ def smart_alias(lang, term, area):
         canon_area_slug  = localize_city_slug(he_area, lang) if he_area else None
         target = url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug)
         if qs: target = f"{target}?{qs}"
-        # Prevent open redirect by validating target
-        safe_target = target.replace('\\', '')
-        parsed = urlparse(safe_target)
-        if not parsed.netloc and not parsed.scheme:
-            return redirect(safe_target, code=301)
-        # If potentially unsafe, redirect to homepage instead
-        return redirect('/', code=301)
+        safe_target = sanitize_local_redirect(target, fallback=url_for('home', lang=lang))
+        return redirect(safe_target, code=301)
 
     # לא זיהינו כלום → 404
     return not_found(404)
@@ -4370,7 +4389,9 @@ def internal_server_error(e):
 def handle_csrf_error(e):
     # הודעה ידידותית למשתמש + חזרה לעמוד הקודם
     flash('פג תוקף הטופס או חסר אימות אבטחה (CSRF). רענן/י את העמוד ונסה/י שוב.', 'error')
-    return redirect(request.referrer or url_for('home', lang=getattr(g, 'current_lang', 'he')))
+    fallback = url_for('home', lang=getattr(g, 'current_lang', 'he'))
+    safe_target = sanitize_local_redirect(request.referrer, fallback=fallback)
+    return redirect(safe_target)
 
 
 # ========= REPLACE robots_txt + sitemap_xml WITH THIS =========
@@ -4735,7 +4756,9 @@ def _is_ios_safari(ua: str) -> bool:
 
 def _read_static_text(rel_path: str) -> str:
     try:
-        fullpath = os.path.join(STATIC_DIR, rel_path)
+        fullpath = _resolve_static_path(rel_path)
+        if not fullpath:
+            return ""
 
         with open(fullpath, 'r', encoding='utf-8') as f:
             return f.read()
@@ -4828,10 +4851,8 @@ def add_noindex_header(resp):
 
 @app.route("/_debug/img/<path:name>")
 def _debug_img(name):
-    # Normalize the path and ensure it's under STATIC_DIR
-    base_path = os.path.abspath(STATIC_DIR)
-    requested_path = os.path.normpath(os.path.join(base_path, name))
-    if not requested_path.startswith(base_path):
+    requested_path = _resolve_static_path(name)
+    if not requested_path:
         return Response("FORBIDDEN: Invalid path", status=403, mimetype="text/plain; charset=utf-8")
 
     if not os.path.isfile(requested_path):
@@ -5140,9 +5161,3 @@ def api_estimate():
 # ------------------------------ #
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=False)
-
-
-
-
-
-

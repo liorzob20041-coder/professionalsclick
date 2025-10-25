@@ -4800,9 +4800,13 @@ def normalize_lang(lang: str) -> str:
 def load_estimate_i18n(lang: str):
     """טוען translations/<lang>/estimate.json; מחזיר {} אם אין."""
     lang = normalize_lang(lang)
-    path = os.path.join(app.root_path, "translations", lang, "estimate.json")
+    base_dir = os.path.join(app.root_path, "translations")
+    path = os.path.join(base_dir, lang, "estimate.json")
+    norm_path = os.path.realpath(path)
+    if not norm_path.startswith(os.path.realpath(base_dir) + os.sep):
+        return {}
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(norm_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}

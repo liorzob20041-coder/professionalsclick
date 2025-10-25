@@ -22,7 +22,7 @@ jobs:
         run: |
           if [ -d "templates" ]; then djlint --profile=jinja templates --check --lint; else echo "no templates"; fi
 
-      # CSS + Lighthouse + a11y
+      # Node tooling
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -35,18 +35,27 @@ jobs:
         run: |
           npx stylelint "**/*.css" "**/*.html" "templates/**/*.html" --formatter=string > stylelint-report.txt || true
 
+      # ===== App deps for Flask =====
+      - name: Install app dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
+          if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
+          pip show flask >/dev/null || pip install flask
+
+      # ===== Start Flask and wait =====
       - name: Start Flask
         env:
           FLASK_DEBUG: "0"
           HOST: "127.0.0.1"
           PORT: "5000"
         run: |
-          python balei-miktzoa-site/app.clean.py & echo $! > flask.pid
+          python balei-miktzoa-site/app.clean.py > server.log 2>&1 & echo $! > flask.pid
           for i in {1..20}; do
             curl -sSf http://127.0.0.1:5000/ >/dev/null && exit 0
             sleep 1
           done
-          echo "Server did not start" >&2
+          echo "Server did not start"; cat server.log || true
           exit 1
 
       - name: Lighthouse collect
@@ -75,12 +84,14 @@ jobs:
           path: |
             lhci-report
             stylelint-report.txt
+            server.log
           if-no-files-found: ignore
 
       - name: Stop Flask
         if: always()
         run: |
           kill $(cat flask.pid) || true
+
 
 
 

@@ -4734,13 +4734,17 @@ def add_noindex_header(resp):
 
 @app.route("/_debug/img/<path:name>")
 def _debug_img(name):
-    p = os.path.join(STATIC_DIR, name)
+    # Normalize the path and ensure it's under STATIC_DIR
+    base_path = os.path.abspath(STATIC_DIR)
+    requested_path = os.path.normpath(os.path.join(base_path, name))
+    if not requested_path.startswith(base_path):
+        return Response("FORBIDDEN: Invalid path", status=403, mimetype="text/plain; charset=utf-8")
 
-    if not os.path.isfile(p):
-        return Response(f"NOT FOUND: {p}", status=404, mimetype="text/plain; charset=utf-8")
-    with open(p, "rb") as f:
+    if not os.path.isfile(requested_path):
+        return Response(f"NOT FOUND: {requested_path}", status=404, mimetype="text/plain; charset=utf-8")
+    with open(requested_path, "rb") as f:
         data = f.read()
-    mt, _ = mimetypes.guess_type(p)
+    mt, _ = mimetypes.guess_type(requested_path)
     return Response(data, mimetype=mt or "application/octet-stream")
 
 

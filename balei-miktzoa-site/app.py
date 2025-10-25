@@ -2514,6 +2514,8 @@ def show_workers(lang, field, area):
     ALLOWED_LANGS = {"he", "en", "ru"}
     if lang not in ALLOWED_LANGS:
         abort(400)
+    # Use only allowlisted lang values for file paths
+    safe_lang = lang if lang in ALLOWED_LANGS else "he"
     session['last_workers_field'] = field
     session['last_workers_area'] = area
 
@@ -2582,7 +2584,7 @@ def show_workers(lang, field, area):
 
     # 🔹 טוענים קובץ תרגום פעם אחת (לא לכל עובד)
     translations = {}
-    translation_file = os.path.join(TRANSLATIONS_FOLDER, lang, 'show_workers.json')
+    translation_file = os.path.join(TRANSLATIONS_FOLDER, safe_lang, 'show_workers.json')
     safe_root = os.path.abspath(TRANSLATIONS_FOLDER)
     normalized_path = os.path.abspath(os.path.normpath(translation_file))
     # Ensure the file is inside TRANSLATIONS_FOLDER, preventing path traversal

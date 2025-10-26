@@ -1,1 +1,249 @@
-:root{--main-color:#f2994a;--accent-color:#c0392b;--bg-light:#f5f7fa;--card-pad-m:12px;--peek-m:12px;--title-m:1.2rem;--line-m:1.2}body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;background-color:var(--bg-light);color:#333}html[dir=rtl] body{direction:rtl;text-align:right}html[dir=ltr] body{direction:ltr;text-align:left}.hero-content h1{font-size:2em;margin-bottom:10px;line-height:1.2}.hero-content p{font-size:1.1em;margin-bottom:15px;line-height:1.3}a:focus,button:focus,input:focus,textarea:focus{outline:0}a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #d55b00;outline-offset:4px;border-radius:4px}.skip-link{position:absolute;top:-40px;left:0;background:#000;color:#fff;padding:8px 16px;z-index:9999;text-decoration:none;transition:top .3s;font-weight:700;border-radius:0 0 8px 8px}.skip-link:focus{top:0}.input-error{color:red;font-size:.9em;margin-top:4px;display:block;min-height:1em}.input-group{display:flex;flex-direction:column;margin-bottom:12px}.search-box input[list]{width:100%;box-sizing:border-box}.worker-rating{font-size:1em;color:#f39c12;margin-bottom:10px;font-weight:600}body,html{max-width:100%;overflow-x:hidden}img,video{max-width:100%;height:auto}.flash-container{position:fixed;top:12px;inset-inline:12px;z-index:9999;display:grid;gap:8px}.flash{padding:10px 14px;border-radius:8px;background:#f0f0f0;color:#222;box-shadow:0 2px 8px rgb(0 0 0/8%);font-size:15px}.flash.success{background:#e9f9ef;color:#126b2e;border:1px solid #bfe8c9}.flash.error{background:#fdeaea;color:#8c1d18;border:1px solid #f5bcbc}.honeypot,.sr-only-clip{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%)!important;border:0!important;white-space:nowrap!important;left:0!important;top:0!important}@media (prefers-reduced-motion:reduce){*,::after,::before{animation:none!important;transition:none!important}}.language-switcher{position:fixed;top:10px;z-index:10000;user-select:none;font-family:Arial,sans-serif}html[dir=rtl] .language-switcher{right:10px;left:auto}html[dir=ltr] .language-switcher{left:10px;right:auto}.language-switcher button,.language-switcher ul{background:#fff;border:1px solid #ccc;border-radius:4px}.language-switcher button{padding:6px 10px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;font-family:"Segoe UI Emoji","Noto Color Emoji","Apple Color Emoji",Arial,sans-serif}.language-switcher button:hover{background:#f0f0f0}.language-switcher ul{display:none;position:absolute;top:120%;margin:0;padding:0;list-style:none;min-width:110px;z-index:10001;box-shadow:0 2px 5px rgb(0 0 0/15%);inset-inline-start:0}.language-switcher button[aria-expanded=true]+ul,.language-switcher ul.show{display:block}.language-switcher:focus-within ul{display:block}.language-switcher ul[hidden]{display:none!important}.language-switcher ul li a{display:block;padding:8px 12px;text-decoration:none;color:#000;white-space:nowrap}.language-switcher ul li a:hover{background:#e0e0e0}.badge-lang{display:inline-block;padding:2px 8px;border:1px solid var(--muted, #ddd);border-radius:999px;font-size:.8rem;line-height:1.6;margin-inline-end:6px;background:var(--bg, #fff)}.meta-langs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.langs-block{margin-top:12px}.langs-block .label{font-weight:600;margin-bottom:6px}.filters-langs,.langs-block .langs{display:flex;flex-wrap:wrap;gap:6px}.filters-langs{gap:8px}.filters-langs label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.filters-langs input[type=checkbox]{margin:0}
+:root {
+  --main-color: #f2994a;
+  --accent-color: #c0392b;
+  --bg-light: #f5f7fa;
+  --card-pad-m: 12px;
+  --peek-m: 12px;
+  --title-m: 1.2rem;
+  --line-m: 1.2
+}
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: #333
+}
+html[dir=rtl] body {
+  direction: rtl;
+  text-align: right
+}
+html[dir=ltr] body {
+  direction: ltr;
+  text-align: left
+}
+.hero-content h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  line-height: 1.2
+}
+.hero-content p {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  line-height: 1.3
+}
+a:focus,
+button:focus,
+input:focus,
+textarea:focus {
+  outline: 0
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #d55b00;
+  outline-offset: 4px;
+  border-radius: 4px
+}
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  z-index: 9999;
+  text-decoration: none;
+  transition: top .3s;
+  font-weight: 700;
+  border-radius: 0 0 8px 8px
+}
+.skip-link:focus {
+  top: 0
+}
+.input-error {
+  color: red;
+  font-size: .9em;
+  margin-top: 4px;
+  display: block;
+  min-height: 1em
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px
+}
+.search-box input[list] {
+  width: 100%;
+  box-sizing: border-box
+}
+.worker-rating {
+  font-size: 1em;
+  color: #f39c12;
+  margin-bottom: 10px;
+  font-weight: 600
+}
+body,
+html {
+  max-width: 100%;
+  overflow-x: hidden
+}
+img,
+video {
+  max-width: 100%;
+  height: auto
+}
+.flash-container {
+  position: fixed;
+  top: 12px;
+  inset-inline: 12px;
+  z-index: 9999;
+  display: grid;
+  gap: 8px
+}
+.flash {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f0f0f0;
+  color: #222;
+  box-shadow: 0 2px 8px rgb(0 0 0/8%);
+  font-size: 15px
+}
+.flash.success {
+  background: #e9f9ef;
+  color: #126b2e;
+  border: 1px solid #bfe8c9
+}
+.flash.error {
+  background: #fdeaea;
+  color: #8c1d18;
+  border: 1px solid #f5bcbc
+}
+.honeypot,
+.sr-only-clip {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+  left: 0 !important;
+  top: 0 !important
+}
+@media (prefers-reduced-motion:reduce) {
+  *,
+  ::after,
+  ::before {
+    animation: none !important;
+    transition: none !important
+  }
+}
+.language-switcher {
+  position: fixed;
+  top: 10px;
+  z-index: 10000;
+  user-select: none;
+  font-family: Arial, sans-serif
+}
+html[dir=rtl] .language-switcher {
+  right: 10px;
+  left: auto
+}
+html[dir=ltr] .language-switcher {
+  left: 10px;
+  right: auto
+}
+.language-switcher button,
+.language-switcher ul {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px
+}
+.language-switcher button {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", Arial, sans-serif
+}
+.language-switcher button:hover {
+  background: #f0f0f0
+}
+.language-switcher ul {
+  display: none;
+  position: absolute;
+  top: 120%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 110px;
+  z-index: 10001;
+  box-shadow: 0 2px 5px rgb(0 0 0/15%);
+  inset-inline-start: 0
+}
+.language-switcher button[aria-expanded=true]+ul,
+.language-switcher ul.show {
+  display: block
+}
+.language-switcher:focus-within ul {
+  display: block
+}
+.language-switcher ul[hidden] {
+  display: none !important
+}
+.language-switcher ul li a {
+  display: block;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #000;
+  white-space: nowrap
+}
+.language-switcher ul li a:hover {
+  background: #e0e0e0
+}
+.badge-lang {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--muted, #ddd);
+  border-radius: 999px;
+  font-size: .8rem;
+  line-height: 1.6;
+  margin-inline-end: 6px;
+  background: var(--bg, #fff)
+}
+.meta-langs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center
+}
+.langs-block {
+  margin-top: 12px
+}
+.langs-block .label {
+  font-weight: 600;
+  margin-bottom: 6px
+}
+.filters-langs,
+.langs-block .langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px
+}
+.filters-langs {
+  gap: 8px
+}
+.filters-langs label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer
+}
+.filters-langs input[type=checkbox] {
+  margin: 0
+}

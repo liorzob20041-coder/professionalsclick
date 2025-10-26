@@ -375,11 +375,11 @@
         tabindex="-1" aria-hidden="true"></iframe>
 
 <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
-  <img src="{{ flag_israel_small }}"
+  <img src="{{ flag_israel_small }}" width="28" height="20"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ hero_preload_960 }}"
+  <img src="{{ hero_preload_960 }}" width="960" height="540"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-</div>
+</div
 
   <!-- קישור דילוג לתוכן -->
   <a href="#main-content" class="skip-link">דלג לתוכן המרכזי</a>
@@ -500,7 +500,8 @@
         <img class="tb-logo-strip"
           src="{{ logo_strip_fallback }}"
           alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
-          decoding="async" fetchpriority="high">
+          width="320" height="64"
+          loading="eager" decoding="async" fetchpriority="high">
       </picture>
       <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
     </a>
@@ -528,152 +529,114 @@
 
 {% block extra_scripts %}
   <script>
-  (function () {
-    function convertToSlug(text) {
-      var s = (text || '').trim().toLowerCase();
-      if (typeof s.normalize === 'function') {
-        s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-      }
-      s = s.replace(/[^0-9a-z\u0590-\u05FF\u0400-\u04FF\s_-]/g, '')
-           .replace(/[\s_]+/g, '-')
-           .replace(/-+/g, '-')
-           .replace(/^-|-$/g, '');
-      return s;
+/* keep helpers available immediately */
+function convertToSlug(text) {
+  var s = (text || '').trim().toLowerCase();
+  if (typeof s.normalize === 'function') {
+    s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+  }
+  s = s.replace(/[^0-9a-z\u0590-\u05FF\u0400-\u04FF\s_-]/g, '')
+       .replace(/[\s_]+/g, '-')
+       .replace(/-+/g, '-')
+       .replace(/^-|-$/g, '');
+  return s;
+}
+window.redirectToCleanURL = function (e) {
+  if (e && e.preventDefault) e.preventDefault();
+  var form = (e && e.target && e.target.closest) ? e.target.closest('form') : document.querySelector('[data-search-form]');
+  if (!form) return false;
+  var areaInput  = form.querySelector('[data-search-area]')  || form.querySelector('#area')  || form.querySelector('#area_m');
+  var fieldInput = form.querySelector('[data-search-field]') || form.querySelector('#field') || form.querySelector('#field_m');
+  var areaError  = form.querySelector('[data-search-area-error]')  || (areaInput  && areaInput.parentElement ? areaInput.parentElement.querySelector('.input-error')  : null);
+  var fieldError = form.querySelector('[data-search-field-error]') || (fieldInput && fieldInput.parentElement ? fieldInput.parentElement.querySelector('.input-error') : null);
+  if (areaError)  areaError.textContent  = '';
+  if (fieldError) fieldError.textContent = '';
+  var areaValue  = areaInput  && areaInput.value  ? areaInput.value.trim()  : '';
+  var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
+  var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+  var msgs = { he:{area:"{{ _('homepage.choose_area') }}",field:"{{ _('homepage.choose_field') }}"},
+               en:{area:"{{ _('homepage.choose_area') }}",field:"{{ _('homepage.choose_field') }}"},
+               ru:{area:"{{ _('homepage.choose_area') }}",field:"{{ _('homepage.choose_field') }}"} };
+  var dict = msgs[lang] || msgs.he;
+  var hasError = false;
+  if (!areaValue)  { if (areaError)  areaError.textContent  = dict.area;  hasError = true; }
+  if (!fieldValue) { if (fieldError) fieldError.textContent = dict.field; hasError = true; }
+  if (hasError) return false;
+  var areaSlug  = convertToSlug(areaValue);
+  var fieldSlug = convertToSlug(fieldValue);
+  if (!areaSlug || !fieldSlug) return false;
+  window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
+  return false;
+};
+/* heavy modal wiring deferred */
+(function () {
+  function initGlobalSearchModal() {
+    var modal = document.getElementById('globalSearch');
+    var openBtn = document.querySelector('.search-btn');
+    if (!modal || !openBtn) return;
+    var backdrop = modal.querySelector('[data-search-dismiss]');
+    var closeBtn = modal.querySelector('[data-search-close]');
+    var panel = modal.querySelector('.search-modal__panel');
+    var focusSelector = 'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+    var lastFocus = null;
+    var prevOverflow = '';
+    var shouldFocusAfterOpen = true;
+    function clearErrors(){ modal.querySelectorAll('.input-error').forEach(function (el) { el.textContent=''; }); }
+    function focusFirst(){
+      if (!shouldFocusAfterOpen) return;
+      var firstInput = modal.querySelector('[data-search-field]') || modal.querySelector('input');
+      if (firstInput && firstInput.focus) firstInput.focus({ preventScroll:true });
     }
-    window.redirectToCleanURL = function (e) {
-      if (e && e.preventDefault) e.preventDefault();
-      var form = (e && e.target && e.target.closest) ? e.target.closest('form') : document.querySelector('[data-search-form]');
-      if (!form) return false;
-      var areaInput  = form.querySelector('[data-search-area]')  || form.querySelector('#area')  || form.querySelector('#area_m');
-      var fieldInput = form.querySelector('[data-search-field]') || form.querySelector('#field') || form.querySelector('#field_m');
-      var areaError  = form.querySelector('[data-search-area-error]')  || (areaInput  && areaInput.parentElement ? areaInput.parentElement.querySelector('.input-error')  : null);
-      var fieldError = form.querySelector('[data-search-field-error]') || (fieldInput && fieldInput.parentElement ? fieldInput.parentElement.querySelector('.input-error') : null);
-      if (areaError)  areaError.textContent  = '';
-      if (fieldError) fieldError.textContent = '';
-      var areaValue  = areaInput  && areaInput.value  ? areaInput.value.trim()  : '';
-      var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
-      var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
-      var msgs = {
-        he: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
-        en: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
-        ru: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" }
-      };
-      var dict = msgs[lang] || msgs.he;
-      var hasError = false;
-      if (!areaValue)  { if (areaError)  areaError.textContent  = dict.area;  hasError = true; }
-      if (!fieldValue) { if (fieldError) fieldError.textContent = dict.field; hasError = true; }
-      if (hasError) return false;
-      var areaSlug  = convertToSlug(areaValue);
-      var fieldSlug = convertToSlug(fieldValue);
-      if (!areaSlug || !fieldSlug) return false;
-      window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
-      return false;
-    };
-    function initGlobalSearchModal() {
-      var modal = document.getElementById('globalSearch');
-      var openBtn = document.querySelector('.search-btn');
-      if (!modal || !openBtn) return;
-      var backdrop = modal.querySelector('[data-search-dismiss]');
-      var closeBtn = modal.querySelector('[data-search-close]');
-      var panel = modal.querySelector('.search-modal__panel');
-      var focusSelector = 'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
-      var lastFocus = null;
-      var prevOverflow = '';
-      var shouldFocusAfterOpen = true;
-      function clearErrors() {
-        modal.querySelectorAll('.input-error').forEach(function (el) { el.textContent = ''; });
-      }
-      function focusFirst() {
-        if (!shouldFocusAfterOpen) return;
-        var firstInput = modal.querySelector('[data-search-field]') || modal.querySelector('input');
-        if (firstInput && typeof firstInput.focus === 'function') {
-          firstInput.focus({ preventScroll: true });
-        }
-      }
-      function openModal(e) {
-        if (e) e.preventDefault();
-        if (modal.classList.contains('is-open')) return;
-        lastFocus = document.activeElement;
-        prevOverflow = document.body.style.overflow || '';
-        modal.hidden = false;
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        openBtn.setAttribute('aria-expanded', 'true');
-        document.body.classList.add('search-modal-open');
-        document.body.style.overflow = 'hidden';
-        shouldFocusAfterOpen = !(e && (e.type === 'click' || e.type === 'pointerdown' || e.type === 'touchstart'));
-        setTimeout(focusFirst, 20);
-      }
-      function closeModal() {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-        modal.hidden = true;
-        openBtn.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('search-modal-open');
-        document.body.style.overflow = prevOverflow;
-        clearErrors();
-        if (lastFocus && typeof lastFocus.focus === 'function') {
-          try { lastFocus.focus(); } catch (_) {}
-        }
-      }
-      function trapFocus(e) {
-        if (e.key !== 'Tab') return;
-        var focusables = Array.prototype.slice.call(panel.querySelectorAll(focusSelector))
-          .filter(function (el) { return !el.disabled && el.offsetParent !== null; });
-        if (!focusables.length) return;
-        var first = focusables[0];
-        var last = focusables[focusables.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-      openBtn.addEventListener('click', openModal);
-      openBtn.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openModal(e);
-        }
-      });
-      if (backdrop) {
-        backdrop.addEventListener('click', closeModal);
-      }
-      if (closeBtn) {
-        closeBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-          closeModal();
-        });
-      }
-      modal.addEventListener('click', function (e) {
-        if (e.target === modal) {
-          closeModal();
-        }
-      });
-      modal.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          closeModal();
-          return;
-        }
-        trapFocus(e);
-      });
-      document.addEventListener('keydown', function (e) {
-        if (e.key === '/' && (e.metaKey || e.ctrlKey)) {
-          e.preventDefault();
-          openModal(e);
-        }
-      });
+    function openModal(e){
+      if (e) e.preventDefault();
+      if (modal.classList.contains('is-open')) return;
+      lastFocus = document.activeElement;
+      prevOverflow = document.body.style.overflow || '';
+      modal.hidden = false;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('search-modal-open');
+      document.body.style.overflow = 'hidden';
+      shouldFocusAfterOpen = !(e && (e.type === 'click' || e.type === 'pointerdown' || e.type === 'touchstart'));
+      setTimeout(focusFirst, 20);
     }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initGlobalSearchModal);
-    } else {
-      initGlobalSearchModal();
+    function closeModal(){
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      modal.hidden = true;
+      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('search-modal-open');
+      document.body.style.overflow = prevOverflow;
+      clearErrors();
+      if (lastFocus && lastFocus.focus) { try{ lastFocus.focus(); }catch(_){ } }
     }
-  })();
-  </script>
+    function trapFocus(e){
+      if (e.key !== 'Tab') return;
+      var focusables = Array.prototype.slice.call(panel.querySelectorAll(focusSelector))
+        .filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    openBtn.addEventListener('click', openModal);
+    openBtn.addEventListener('keydown', function (e) { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); openModal(e); } });
+    if (backdrop)  backdrop.addEventListener('click', closeModal);
+    if (closeBtn)  closeBtn.addEventListener('click', function(e){ e.preventDefault(); closeModal(); });
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    modal.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; } trapFocus(e); });
+    document.addEventListener('keydown', function (e) { if (e.key === '/' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); openModal(e); } });
+  }
+  function boot(){
+    if ('requestIdleCallback' in window) { requestIdleCallback(initGlobalSearchModal, { timeout: 1200 }); }
+    else { setTimeout(initGlobalSearchModal, 200); }
+  }
+  if (document.readyState === 'complete') boot();
+  else window.addEventListener('load', boot);
+})();
+</script>
   <script>
   function toggleLanguageList() {
     const list = document.getElementById('language-list');
@@ -724,298 +687,243 @@
 
   <!-- ===== JS לתפריט המובייל (⋮) ===== -->
   <script>
-  let __acSuppressNextClick = false;
-  function __acEatNextClick(ev){
-    if (!__acSuppressNextClick) return;
-    __acSuppressNextClick = false;
-    ev.preventDefault();
-    ev.stopPropagation();
-    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-  }
-  document.addEventListener('click',     __acEatNextClick, true);
-  document.addEventListener('pointerup', __acEatNextClick, true);
-  document.addEventListener('touchend',  __acEatNextClick, { capture:true, passive:false });
-
-  (function () {
-    function debounce(fn, ms) {
-      let t;
-      return function (...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms || 150); };
-    }
-    function ensureNoopDatalist() {
-      if (!document.getElementById('nooptions')) {
-        const dl = document.createElement('datalist');
-        dl.id = 'nooptions';
-        document.body.appendChild(dl);
-      }
-    }
-    function ensureList(input) {
-      let box = input._acBox;
-      if (!box) {
-        box = document.createElement('div');
-        box.className = 'ac-list';
-        Object.assign(box.style, {
-          position: 'fixed',
-          left: '0px',
-          top: '0px',
-          background: '#fff',
-          border: '1px solid rgba(0,0,0,0.12)',
-          borderRadius: '10px',
-          boxShadow: '0 8px 22px rgba(0,0,0,0.1)',
-          zIndex: 2147483647,
-          display: 'none',
-          maxHeight: '260px',
-          overflow: 'auto',
-          padding: '6px',
-          pointerEvents: 'auto',
-          userSelect: 'none'
-        });
-        document.body.appendChild(box);
-        input._acBox = box;
-      }
-      return box;
-    }
-    function positionList(input, list) {
-      const r = input.getBoundingClientRect();
-      const gap = 6;
-      const spaceBelow = window.innerHeight - r.bottom - gap;
-      const spaceAbove = r.top - gap;
-      const openUp = (spaceBelow < 140 && spaceAbove > spaceBelow);
-      const maxH = Math.min(260, Math.max(140, openUp ? spaceAbove : spaceBelow));
-      list.style.maxHeight = maxH + 'px';
-      list.style.width = r.width + 'px';
-      list.style.left = r.left + 'px';
-      const wantedH = Math.min(list.scrollHeight || maxH, maxH);
-      list.style.top = openUp ? (r.top - gap - wantedH) + 'px'
-                              : (r.bottom + gap) + 'px';
-    }
-    function attachAutocomplete(input, type) {
-      if (!input || input._acAttached) return;
-      input._acAttached = true;
-      const originalList = input.getAttribute('list') || '';
-      input.dataset.origList = originalList;
-      function disableNativeDatalist() {
-        if (input.getAttribute('list') !== 'nooptions') input.setAttribute('list', 'nooptions');
-      }
-      input.setAttribute('autocomplete', 'off');
-      const list = ensureList(input);
-      list.addEventListener('mousedown',  e => { e.preventDefault(); e.stopPropagation(); }, true);
-      list.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); }, { capture:true, passive:false });
-      let items = [];
-      let idx = -1;
-      let skipNextFetch = false;
-      function clearList() {
-        list.innerHTML = '';
-        list.style.display = 'none';
-        items = [];
-        idx = -1;
-        document.body.classList.remove('ac-open');
-      }
-      function render(results) {
-        list.innerHTML = '';
-        list.style.display = 'none';
-        idx = -1;
-        items = Array.isArray(results) ? results.slice(0, 8) : [];
-        if (!items.length) {
-          document.body.classList.remove('ac-open');
-          return;
-        }
-        items.forEach((it, i) => {
-          const row = document.createElement('div');
-          row.className = 'ac-item';
-          row.dataset.idx = String(i);
-          Object.assign(row.style, { padding: '10px 12px', borderRadius: '8px', cursor: 'pointer' });
-          row.textContent = it.label || it.value || '';
-          list.appendChild(row);
-        });
-        list.style.display = 'block';
-        positionList(input, list);
-        document.body.classList.add('ac-open');
-      }
-      function highlight() {
-        [...list.children].forEach((el, i) => {
-          el.style.background = (i === idx) ? 'rgba(242,153,74,0.12)' : 'transparent';
-          el.style.fontWeight  = (i === idx) ? '700' : '400';
-        });
-      }
-      function select(i) {
-        if (i < 0 || i >= items.length) return;
-        const val = items[i].label || items[i].value || '';
-        input.value = val;
-        input.setAttribute('value', val);
-        input.focus({ preventScroll: true });
-        try { const end = val.length; input.setSelectionRange(end, end); } catch(_) {}
-        input.dispatchEvent(new Event('input',  { bubbles:true }));
-        input.dispatchEvent(new Event('change', { bubbles:true }));
-        if (window.__acSuppressNextClick !== undefined) window.__acSuppressNextClick = true;
-        skipNextFetch = true;
-        requestAnimationFrame(() => clearList());
-        setTimeout(() => { skipNextFetch = false; }, 220);
-      }
-      function fetchSuggestions(q = '') {
-        const url = new URL('/api/suggest', window.location.origin);
-        url.searchParams.set('q', q);
-        url.searchParams.set('type', type);
-        const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
-        url.searchParams.set('lang', lang);
-        fetch(url.toString(), { credentials: 'same-origin' })
-          .then(r => r.json())
-          .then(data => { items = (data && data.results) ? data.results : []; render(items); })
-          .catch(() => {});
-      }
-      const doFetch = debounce(() => {
-        disableNativeDatalist();
-        if (skipNextFetch) { skipNextFetch = false; return; }
-        const q = (input.value || '').trim();
-        fetchSuggestions(q);
-      }, 140);
-      input.addEventListener('input', doFetch);
-      input.addEventListener('focus', () => {
-        disableNativeDatalist();
-        if (skipNextFetch) return;
-        fetchSuggestions('');
-      });
-      input.addEventListener('keydown', (e) => {
-        const total = list.children.length;
-        if (!total) return;
-        if (e.key === 'ArrowDown') { idx = (idx + 1) % total; highlight(); e.preventDefault(); }
-        else if (e.key === 'ArrowUp') { idx = (idx - 1 + total) % total; highlight(); e.preventDefault(); }
-        else if (e.key === 'Enter')   { if (idx >= 0) { e.preventDefault(); select(idx); } }
-        else if (e.key === 'Escape')  { clearList(); }
-      });
-      document.addEventListener('click', (e) => {
-        if (e.target !== input && !list.contains(e.target)) clearList();
-      });
-      const delegatedPick = (ev) => {
-        const el = ev.target.closest && ev.target.closest('.ac-item');
-        if (!el || !list.contains(el)) return;
-        ev.preventDefault();
-        ev.stopPropagation();
-        if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-        const i = parseInt(el.dataset.idx, 10);
-        select(isNaN(i) ? -1 : i);
-      };
-      list.addEventListener('pointerdown', delegatedPick, true);
-      list.addEventListener('click',       delegatedPick, true);
-      list.addEventListener('touchstart',  delegatedPick, { capture:true, passive:false });
-      function syncPos() { if (list.style.display !== 'none') positionList(input, list); }
-      window.addEventListener('scroll', syncPos, true);
-      window.addEventListener('resize', syncPos);
-    }
-    function init() {
-      ensureNoopDatalist();
-      document.querySelectorAll('[data-search-area]').forEach(el => attachAutocomplete(el, 'area'));
-      document.querySelectorAll('[data-search-field]').forEach(el => attachAutocomplete(el, 'field'));
-    }
-    function scheduleInit() {
-      var run = init;
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(run, { timeout: 1200 });
-      } else {
-        setTimeout(run, 160);
-      }
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', scheduleInit);
-    } else {
-      scheduleInit();
-    }
-  })();
-  </script>
-
-<script>
 (function () {
-  const btn         = document.getElementById('kebabBtn');     // ההמבורגר
-  const drawer      = document.getElementById('mobileMenu');   // התפריט
-  const closeBtn    = document.getElementById('closeDrawer');  // X שבתוך המגירה (אם יש)
-  const backdrop    = document.getElementById('backdrop');
-  const closeTopBtn = document.getElementById('menuCloseTop'); // X העליון החדש
-
-  if (!btn || !drawer || !backdrop) return;
-
-  // מצב התחלתי: ההמבורגר נראה, ה-X העליון מוסתר
-  if (closeTopBtn) closeTopBtn.style.display = 'none';
-
-  let lastFocus = null;
-
-  function firstFocusable() {
-    const sel = 'a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
-    return Array.from(drawer.querySelectorAll(sel)).find(el => !el.disabled && el.offsetParent !== null);
-  }
-
-  function openDrawer() {
-    lastFocus = document.activeElement;
-    drawer.classList.add('open');
-    drawer.removeAttribute('aria-hidden');
-    btn.setAttribute('aria-expanded', 'true');
-    backdrop.hidden = false;
-    document.body.style.overflow = 'hidden';
-    document.body.classList.add('menu-open');
-
-    // הצג רק X עליון, הסתר המבורגר
-    btn.style.display = 'none';
-    if (closeTopBtn) closeTopBtn.style.display = 'inline-flex';
-
-    const f = firstFocusable(); if (f) f.focus({ preventScroll:true });
-  }
-
-  function closeDrawer() {
-    drawer.classList.remove('open');
-    drawer.setAttribute('aria-hidden', 'true');
-    btn.setAttribute('aria-expanded', 'false');
-    backdrop.hidden = true;
-    document.body.style.overflow = '';
-    document.body.classList.remove('menu-open');
-
-    // החזר המבורגר, הסתר X עליון
-    btn.style.display = '';
-    if (closeTopBtn) closeTopBtn.style.display = 'none';
-
-    if (lastFocus) { try { lastFocus.focus(); } catch(_){} }
-  }
-
-  btn.addEventListener('click', function (e) {
-    e.preventDefault();
-    openDrawer();
-  });
-
-  btn.addEventListener('pointerdown', function (e) {
-    if (window.__acSuppressNextClick) {
-      e.preventDefault(); e.stopPropagation();
-      window.__acSuppressNextClick = false;
-      openDrawer();
+  function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t=setTimeout(()=>fn.apply(this, arguments), ms||150); }; }
+  function ensureNoopDatalist() {
+    if (!document.getElementById('nooptions')) {
+      const dl = document.createElement('datalist');
+      dl.id = 'nooptions';
+      document.body.appendChild(dl);
     }
-  }, true);
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      closeDrawer();
+  }
+  function ensureList(input) {
+    let box = input._acBox;
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'ac-list';
+      Object.assign(box.style, {
+        position: 'fixed',
+        left: '0px',
+        top: '0px',
+        background: '#fff',
+        border: '1px solid rgba(0,0,0,0.12)',
+        borderRadius: '10px',
+        boxShadow: '0 8px 22px rgba(0,0,0,0.1)',
+        zIndex: 2147483647,
+        display: 'none',
+        maxHeight: '260px',
+        overflow: 'auto',
+        padding: '6px',
+        pointerEvents: 'auto',
+        userSelect: 'none'
+      });
+      document.body.appendChild(box);
+      input._acBox = box;
+    }
+    return box;
+  }
+  function positionList(input, list) {
+    const r = input.getBoundingClientRect();
+    const gap = 6;
+    const spaceBelow = window.innerHeight - r.bottom - gap;
+    const spaceAbove = r.top - gap;
+    const openUp = (spaceBelow < 140 && spaceAbove > spaceBelow);
+    const maxH = Math.min(260, Math.max(140, openUp ? spaceAbove : spaceBelow));
+    list.style.maxHeight = maxH + 'px';
+    list.style.width = r.width + 'px';
+    list.style.left = r.left + 'px';
+    const wantedH = Math.min(list.scrollHeight || maxH, maxH);
+    list.style.top = openUp ? (r.top - gap - wantedH) + 'px'
+                            : (r.bottom + gap) + 'px';
+  }
+  function attachAutocomplete(input, type) {
+    if (!input || input._acAttached) return;
+    input._acAttached = true;
+    const originalList = input.getAttribute('list') || '';
+    input.dataset.origList = originalList;
+    function disableNativeDatalist() {
+      if (input.getAttribute('list') !== 'nooptions') input.setAttribute('list', 'nooptions');
+    }
+    input.setAttribute('autocomplete', 'off');
+    const list = ensureList(input);
+    list.addEventListener('mousedown',  e => { e.preventDefault(); e.stopPropagation(); }, true);
+    list.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); }, { capture:true, passive:false });
+    let items = [];
+    let idx = -1;
+    let skipNextFetch = false;
+    function clearList() {
+      list.innerHTML = '';
+      list.style.display = 'none';
+      items = [];
+      idx = -1;
+      document.body.classList.remove('ac-open');
+    }
+    function render(results) {
+      list.innerHTML = '';
+      list.style.display = 'none';
+      idx = -1;
+      items = Array.isArray(results) ? results.slice(0, 8) : [];
+      if (!items.length) {
+        document.body.classList.remove('ac-open');
+        return;
+      }
+      items.forEach((it, i) => {
+        const row = document.createElement('div');
+        row.className = 'ac-item';
+        row.dataset.idx = String(i);
+        Object.assign(row.style, { padding: '10px 12px', borderRadius: '8px', cursor: 'pointer' });
+        row.textContent = it.label || it.value || '';
+        list.appendChild(row);
+      });
+      list.style.display = 'block';
+      positionList(input, list);
+      document.body.classList.add('ac-open');
+    }
+    function highlight() {
+      [...list.children].forEach((el, i) => {
+        el.style.background = (i === idx) ? 'rgba(242,153,74,0.12)' : 'transparent';
+        el.style.fontWeight  = (i === idx) ? '700' : '400';
+      });
+    }
+    function select(i) {
+      if (i < 0 || i >= items.length) return;
+      const val = items[i].label || items[i].value || '';
+      input.value = val;
+      input.setAttribute('value', val);
+      input.focus({ preventScroll: true });
+      try { const end = val.length; input.setSelectionRange(end, end); } catch(_) {}
+      input.dispatchEvent(new Event('input',  { bubbles:true }));
+      input.dispatchEvent(new Event('change', { bubbles:true }));
+      if (window.__acSuppressNextClick !== undefined) window.__acSuppressNextClick = true;
+      skipNextFetch = true;
+      requestAnimationFrame(() => clearList());
+      setTimeout(() => { skipNextFetch = false; }, 220);
+    }
+    function fetchSuggestions(q = '') {
+      const url = new URL('/api/suggest', window.location.origin);
+      url.searchParams.set('q', q);
+      url.searchParams.set('type', type);
+      const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+      url.searchParams.set('lang', lang);
+      fetch(url.toString(), { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(data => { items = (data && data.results) ? data.results : []; render(items); })
+        .catch(() => {});
+    }
+    const doFetch = debounce(() => {
+      disableNativeDatalist();
+      if (skipNextFetch) { skipNextFetch = false; return; }
+      const q = (input.value || '').trim();
+      fetchSuggestions(q);
+    }, 140);
+    input.addEventListener('input', doFetch);
+    input.addEventListener('focus', () => {
+      disableNativeDatalist();
+      if (skipNextFetch) return;
+      fetchSuggestions('');
+    });
+    input.addEventListener('keydown', (e) => {
+      const total = list.children.length;
+      if (!total) return;
+      if (e.key === 'ArrowDown') { idx = (idx + 1) % total; highlight(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { idx = (idx - 1 + total) % total; highlight(); e.preventDefault(); }
+      else if (e.key === 'Enter')   { if (idx >= 0) { e.preventDefault(); select(idx); } }
+      else if (e.key === 'Escape')  { clearList(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (e.target !== input && !list.contains(e.target)) clearList();
+    });
+    const delegatedPick = (ev) => {
+      const el = ev.target.closest && ev.target.closest('.ac-item');
+      if (!el || !list.contains(el)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      const i = parseInt(el.dataset.idx, 10);
+      select(isNaN(i) ? -1 : i);
+    };
+    list.addEventListener('pointerdown', delegatedPick, true);
+    list.addEventListener('click',       delegatedPick, true);
+    list.addEventListener('touchstart',  delegatedPick, { capture:true, passive:false });
+    function syncPos() { if (list.style.display !== 'none') positionList(input, list); }
+    window.addEventListener('scroll', syncPos, true);
+    window.addEventListener('resize', syncPos);
+  }
+  function initAuto(){
+    ensureNoopDatalist();
+    document.querySelectorAll('[data-search-area]').forEach(el => attachAutocomplete(el, 'area'));
+    document.querySelectorAll('[data-search-field]').forEach(el => attachAutocomplete(el, 'field'));
+  }
+  function boot(){
+    if ('requestIdleCallback' in window) requestIdleCallback(initAuto, {timeout:1500});
+    else setTimeout(initAuto, 350);
+  }
+  document.addEventListener('focusin', function once(e){
+    if (e.target && (e.target.matches('[data-search-area]') || e.target.matches('[data-search-field]'))){
+      document.removeEventListener('focusin', once);
+      boot();
+    }
+  });
+  window.addEventListener('load', function(){ setTimeout(boot, 1200); });
+})();
+</script>
+<script>
+let __acSuppressNextClick = false;
+function __acEatNextClick(ev){
+  if (!__acSuppressNextClick) return;
+  __acSuppressNextClick = false;
+  ev.preventDefault(); ev.stopPropagation(); if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+}
+document.addEventListener('click', __acEatNextClick, true);
+document.addEventListener('pointerup', __acEatNextClick, true);
+document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:false });
+(function(){
+  function wire(){
+    const btn = document.getElementById('kebabBtn');
+    const drawer = document.getElementById('mobileMenu');
+    const closeBtn = document.getElementById('closeDrawer');
+    const backdrop = document.getElementById('backdrop');
+    const closeTopBtn = document.getElementById('menuCloseTop');
+    if (!btn || !drawer || !backdrop) return;
+    if (closeTopBtn) closeTopBtn.style.display = 'none';
+    let lastFocus = null;
+    function firstFocusable(){
+      const sel='a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+      return Array.from(drawer.querySelectorAll(sel)).find(el=>!el.disabled && el.offsetParent!==null);
+    }
+    function openDrawer(){
+      lastFocus=document.activeElement;
+      drawer.classList.add('open'); drawer.removeAttribute('aria-hidden');
+      btn.setAttribute('aria-expanded','true');
+      backdrop.hidden=false; document.body.style.overflow='hidden'; document.body.classList.add('menu-open');
+      btn.style.display='none'; if (closeTopBtn) closeTopBtn.style.display='inline-flex';
+      const f=firstFocusable(); if (f) f.focus({preventScroll:true});
+    }
+    function closeDrawer(){
+      drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true');
+      btn.setAttribute('aria-expanded','false');
+      backdrop.hidden=true; document.body.style.overflow=''; document.body.classList.remove('menu-open');
+      btn.style.display=''; if (closeTopBtn) closeTopBtn.style.display='none';
+      if (lastFocus && lastFocus.focus) { try{ lastFocus.focus(); }catch(_){} }
+    }
+    btn.addEventListener('click', e=>{ e.preventDefault(); openDrawer(); });
+    btn.addEventListener('pointerdown', e=>{ if (window.__acSuppressNextClick){ e.preventDefault(); e.stopPropagation(); window.__acSuppressNextClick=false; openDrawer(); } }, true);
+    if (closeBtn) closeBtn.addEventListener('click', e=>{ e.preventDefault(); closeDrawer(); });
+    if (closeTopBtn) closeTopBtn.addEventListener('click', e=>{ e.preventDefault(); closeDrawer(); });
+    backdrop.addEventListener('click', closeDrawer);
+    drawer.addEventListener('click', e=>{ if (e.target.closest('a')) closeDrawer(); });
+    drawer.addEventListener('keydown', function(e){
+      if (e.key==='Escape'){ e.preventDefault(); closeDrawer(); return; }
+      if (e.key!=='Tab') return;
+      const focusables = Array.from(drawer.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])')).filter(el=>!el.disabled && el.offsetParent!==null);
+      if (!focusables.length) return;
+      const first=focusables[0], last=focusables[focusables.length-1];
+      if (e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
   }
-
-  if (closeTopBtn) {
-    closeTopBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      closeDrawer();
-    });
-  }
-
-  backdrop.addEventListener('click', closeDrawer);
-
-  drawer.addEventListener('click', function (e) {
-    if (e.target.closest('a')) closeDrawer();
-  });
-
-  drawer.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { e.preventDefault(); closeDrawer(); return; }
-    if (e.key !== 'Tab') return;
-    const focusables = Array.from(drawer.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])'))
-      .filter(el => !el.disabled && el.offsetParent !== null);
-    if (!focusables.length) return;
-    const first = focusables[0], last = focusables[focusables.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  });
+  function boot(){ if ('requestIdleCallback' in window) requestIdleCallback(wire,{timeout:1200}); else window.addEventListener('load', ()=>setTimeout(wire,300)); }
+  boot();
 })();
 </script>
 

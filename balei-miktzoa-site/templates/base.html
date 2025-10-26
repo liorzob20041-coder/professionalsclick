@@ -97,6 +97,21 @@
 
   {# --- קישורי CSS/נכסים --- #}
   {% set STYLE_URL = static_rel('css/style.css') %}
+  <link rel="preload"
+        href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
+        as="font"
+        type="font/woff2"
+        crossorigin>
+  <link rel="preload"
+        href="{{ static_rel('vendor/fa/webfonts/fa-regular-400.woff2') }}"
+        as="font"
+        type="font/woff2"
+        crossorigin>
+  <link rel="preload"
+        href="{{ static_rel('vendor/fa/webfonts/fa-brands-400.woff2') }}"
+        as="font"
+        type="font/woff2"
+        crossorigin>
   <link rel="preload" as="style" href="{{ STYLE_URL }}">
   <link rel="stylesheet" href="{{ STYLE_URL }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>

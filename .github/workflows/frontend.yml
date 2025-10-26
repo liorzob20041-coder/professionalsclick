@@ -55,10 +55,11 @@ jobs:
           FLASK_DEBUG: "0"
           HOST: "127.0.0.1"
           PORT: "5000"
+          INVITE_KEY: "ci-test-key"
+          SECRET_KEY: "ci-secret-key"
         run: |
           set -euxo pipefail
           export PYTHONUNBUFFERED=1
-          # מונע 'unbound variable' כש-PYTHONPATH לא קיים
           export PYTHONPATH="$(pwd):${PYTHONPATH-}"
 
           # locate entry point
@@ -119,9 +120,3 @@ jobs:
         if: always()
         run: |
           if [ -f flask.pid ]; then kill "$(cat flask.pid)" || true; fi
-
-
-
-
-
-

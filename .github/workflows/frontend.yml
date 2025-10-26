@@ -1,6 +1,4 @@
 name: Frontend QA
-permissions:
-  contents: read
 on:
   pull_request:
   push:
@@ -43,7 +41,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
           if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
-          pip install -U Flask requests Jinja2 python-dotenv
+          pip install -U Flask requests Jinja2 python-dotenv Flask-WTF WTForms
 
       # ===== Start Flask and wait =====
       - name: Start Flask
@@ -52,6 +50,9 @@ jobs:
           HOST: "127.0.0.1"
           PORT: "5000"
         run: |
+          set -e
+          export PYTHONPATH="$(pwd):$PYTHONPATH"
+
           # locate entry point
           if [ -f "app.py" ]; then ENTRY="app.py";
           elif [ -f "balei-miktzoa-site/app.py" ]; then ENTRY="balei-miktzoa-site/app.py";
@@ -61,8 +62,9 @@ jobs:
           echo "Using entry: $ENTRY"
           python "$ENTRY" > server.log 2>&1 & echo $! > flask.pid
 
-          for i in {1..30}; do
-            curl -sSf http://127.0.0.1:5000/ >/dev/null && exit 0
+          # המתנה עד שהשרת עולה
+          for i in {1..45}; do
+            if curl -sSf http://127.0.0.1:5000/ >/dev/null; then exit 0; fi
             sleep 1
           done
           echo "Server did not start"; tail -n +1 server.log || true

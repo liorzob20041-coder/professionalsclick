@@ -14,6 +14,7 @@ from flask import (
     Flask, render_template, request, redirect, url_for, flash, g, jsonify,
     session, send_from_directory, Response, current_app, abort
 )
+from flask_compress import Compress
 from werkzeug.utils import secure_filename, safe_join
 from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -1741,6 +1742,21 @@ app.config.from_mapping(
     ENV=ENVIRONMENT,
     DEBUG=DEBUG_FLAG,
 )
+app.config.setdefault(
+    "COMPRESS_MIMETYPES",
+    [
+        "text/html",
+        "text/css",
+        "text/xml",
+        "application/json",
+        "application/javascript",
+        "application/xhtml+xml",
+        "application/xml",
+        "application/manifest+json",
+    ],
+)
+app.config.setdefault("COMPRESS_LEVEL", 6)
+app.config.setdefault("COMPRESS_MIN_SIZE", 512)
 if app.config["ENV"] == "production" and not app.config.get("INVITE_KEY"):
     raise RuntimeError("INVITE_KEY must be set in production")
 if app.config["ENV"] != "production" and not app.config.get("INVITE_KEY"):
@@ -1762,6 +1778,7 @@ mimetypes.add_type('image/jpeg', '.jpeg')
 mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('image/gif', '.gif')
 mimetypes.add_type('image/webp', '.webp')
+Compress(app)
 
 csrf = CSRFProtect(app)
 app.config['WTF_CSRF_TIME_LIMIT'] = 60 * 60 * 2  # אופציונלי: תוקף טוקן שעתיים

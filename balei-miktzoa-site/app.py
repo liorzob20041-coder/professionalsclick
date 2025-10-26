@@ -2263,14 +2263,17 @@ def inject_slug_helpers():
 # ------------------------------
 # Routes – עמודים
 # ------------------------------
+def _render_home(lang: str):
+    g.current_lang = lang
+    return render_template('home.html')
+
 @app.route('/')
-def redirect_to_default_lang():
-    return redirect(url_for('home', lang='he'))
+def home_default():
+    return _render_home('he')
 
 @app.route('/<lang>/')
 def home(lang):
-    g.current_lang = lang
-    return render_template('home.html')
+    return _render_home(lang)
 
 @app.route('/<lang>/why-us')
 def why_us(lang):

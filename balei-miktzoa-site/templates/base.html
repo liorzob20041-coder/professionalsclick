@@ -322,6 +322,8 @@
 {% set flag_israel_small = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='auto') %}
 {% set flag_usa_small = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
 {% set flag_russia_small = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
+{% set logo_strip_webp = static_rel('branding/logo-strip-he@2x.webp') %}
+{% set logo_strip_fallback = static_rel('branding/logo-strip-he@2x.jpeg') %}
 <link rel="preload" as="image"
       href="{{ flag_israel_small }}">
 <link rel="preload" as="image"
@@ -457,11 +459,13 @@
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
     <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}">
-      <img class="tb-logo-strip"
-        src="{{ static_rel('branding/logo-strip-he@2x.jpeg') }}"
-        alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
-        decoding="async" fetchpriority="high">
-
+      <picture>
+        <source srcset="{{ logo_strip_webp }}" type="image/webp">
+        <img class="tb-logo-strip"
+          src="{{ logo_strip_fallback }}"
+          alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
+          decoding="async" fetchpriority="high">
+      </picture>
       <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
     </a>
   </div>

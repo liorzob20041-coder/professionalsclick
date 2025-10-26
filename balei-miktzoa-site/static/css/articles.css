@@ -114,6 +114,7 @@ html[dir="ltr"] .a-card:hover .a-more i{ transform: scaleX(-1) translateX(-4px);
   padding: clamp(52px,7vw,96px) 0 clamp(70px,8vw,110px);
   background: var(--bg-articles-top);
 }
+.articles-archive .container{ max-width:min(1180px,94vw); margin:0 auto; }
 .filters-rail{
   display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
   margin: 0 auto clamp(18px,3.2vw,28px);
@@ -169,3 +170,30 @@ html[dir="ltr"] .a-card:hover .a-more i{ transform: scaleX(-1) translateX(-4px);
 .empty-state{ text-align:center; color:var(--muted); margin: clamp(18px,3vw,26px) 0; }
 /* Accessibility focus */
 .filter-input:focus, .filter-select:focus, .chip:focus{ outline:2px solid var(--brand); outline-offset:2px; }
+.categories-wrap{ display:grid; gap: clamp(28px,4vw,44px); margin-top: clamp(30px,5vw,48px); }
+.category-block{ display:grid; gap: clamp(18px,3vw,26px); }
+.category-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+.category-title{ margin:0; font-size: clamp(24px,2.6vw,32px); color:var(--brand-ink); }
+.category-intro{ margin:4px 0 0; color:var(--muted); font-size:1rem; }
+.category-row{ display:grid; gap: clamp(18px,3vw,24px); }
+@media (min-width: 960px){
+  .category-row{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+@media (max-width: 959px){
+  .category-row{ grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+}
+.category-cta{ display:flex; justify-content:flex-end; }
+.category-link{
+  display:inline-flex; align-items:center; gap:10px;
+  font-weight:800; color:var(--brand);
+  text-decoration:none; border-bottom:2px solid transparent;
+  padding-bottom:4px;
+}
+.category-link:hover, .category-link:focus-visible{ border-color:var(--brand); }
+.a-card--placeholder{ text-align:center; box-shadow:none; border-style:dashed; border-color:rgba(138,21,56,.28); }
+.a-card--placeholder .a-body{ align-items:center; }
+.search-results{ margin-top: clamp(24px,4vw,40px); }
+.search-results[hidden]{ display:none !important; }
+.search-results .category-row{ margin-top: clamp(14px,3vw,24px); }
+.search-results .results-head{ margin-bottom:0; }
+.search-results .a-card{ box-shadow:0 14px 34px rgba(15,23,42,.12); }

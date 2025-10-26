@@ -1998,9 +1998,13 @@ def api_debug_report():
         # רשימת קבצים לבדיקה
         files = [
             "photo1.jpg",
+            "photo1.webp",
             "photo2.jpg",
+            "photo2.webp",
             "logo.jpeg",
+            "branding/logo-strip-he@2x.webp",
             "flags/israel-flag-png-large.png",
+            "flags/israel-flag-large.webp",
             "flags/united-states-of-america-flag-png-large.png",
             "flags/russia-flag-png-large.png"
         ]
@@ -4906,8 +4910,24 @@ def test_static():
 @app.route("/warmup")
 def warmup():
     v = request.args.get("v", "0")
-    flag = url_for("static", filename="flags/israel-flag-png-large.png", v=v)
-    hero = url_for("static", filename="photo1.jpg", v=v)
+    flag = url_for(
+        "img_proxy",
+        filename="flags/israel-flag-png-large.png",
+        w=96,
+        q=85,
+        fit="contain",
+        format="webp",
+        v=v,
+    )
+    hero = url_for(
+        "img_proxy",
+        filename="photo1.jpg",
+        w=1200,
+        q=82,
+        fit="cover",
+        format="webp",
+        v=v,
+    )
     html = f"""<!doctype html><meta charset="utf-8">
 <title>warm</title>
 <style>body{{margin:0;padding:0}}</style>
@@ -4915,7 +4935,7 @@ def warmup():
 <img src="{hero}" alt="" loading="eager" decoding="async">
 <script>
   // נסיון חוזר אחרי 3 ו-10 שניות (ngrok לפעמים מציק)
-  const u1 = "{flag}", u2 = "{hero}";
+    const u1 = "{flag}", u2 = "{hero}";
   function kick(u) {{
     const i = new Image(); i.decoding="async"; i.loading="eager";
     i.src = u + (u.includes('?')?'&':'?') + '_w=' + Date.now();

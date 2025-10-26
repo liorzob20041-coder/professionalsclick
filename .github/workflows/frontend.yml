@@ -14,10 +14,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install djlint
         run: |
           python -m pip install --upgrade pip
           pip install djlint
+
       - name: Lint templates
         run: |
           if [ -d "templates" ]; then djlint --profile=jinja templates --check --lint; else echo "no templates"; fi
@@ -26,6 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
       - name: Install frontend tools
         run: |
           npm i -D stylelint stylelint-config-standard postcss postcss-html @lhci/cli pa11y-ci
@@ -41,7 +44,15 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
           if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
-          pip install -U Flask requests Jinja2 python-dotenv Flask-WTF WTForms
+          # בסיס + המודול שהיה חסר
+          pip install -U Flask requests Jinja2 python-dotenv Flask-WTF WTForms deep-translator
+          # אימות ייבוא כדי ליפול מוקדם אם חסר
+          python - <<'PY'
+import sys
+print("python", sys.version)
+import deep_translator
+print("deep-translator OK:", deep_translator.__version__)
+PY
 
       # ===== Start Flask and wait =====
       - name: Start Flask
@@ -50,7 +61,8 @@ jobs:
           HOST: "127.0.0.1"
           PORT: "5000"
         run: |
-          set -e
+          set -euxo pipefail
+          export PYTHONUNBUFFERED=1
           export PYTHONPATH="$(pwd):$PYTHONPATH"
 
           # locate entry point
@@ -62,12 +74,20 @@ jobs:
           echo "Using entry: $ENTRY"
           python "$ENTRY" > server.log 2>&1 & echo $! > flask.pid
 
-          # המתנה עד שהשרת עולה
-          for i in {1..45}; do
-            if curl -sSf http://127.0.0.1:5000/ >/dev/null; then exit 0; fi
+          # המתנה עד שהשרת עולה + בדיקה שהפרוסס חי
+          for i in {1..120}; do
+            if curl -sSf http://127.0.0.1:5000/ >/dev/null; then
+              echo "Flask is up"
+              exit 0
+            fi
+            if ! kill -0 "$(cat flask.pid)" 2>/dev/null; then
+              echo "Flask process died early"
+              break
+            fi
             sleep 1
           done
-          echo "Server did not start"; tail -n +1 server.log || true
+          echo "Server did not start"
+          tail -n +1 server.log || true
           exit 1
 
       - name: Lighthouse collect
@@ -102,7 +122,8 @@ jobs:
       - name: Stop Flask
         if: always()
         run: |
-          kill $(cat flask.pid) || true
+          if [ -f flask.pid ]; then kill "$(cat flask.pid)" || true; fi
+
 
 
 

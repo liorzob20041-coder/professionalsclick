@@ -96,7 +96,11 @@
   {% endblock %}
 
   {# --- קישורי CSS/נכסים --- #}
-  <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
+  <!-- non-blocking load for the critical stylesheet -->
+  <link rel="preload"
+        href="{{ static_rel('css/style.css') }}"
+        as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
   <link rel="stylesheet"
         href="{{ static_rel('css/navbar.css') }}"
         media="print" onload="this.media='all'">

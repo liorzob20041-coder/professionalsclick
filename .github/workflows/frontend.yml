@@ -91,8 +91,8 @@ jobs:
         continue-on-error: true
         run: |
           npx lhci collect \
-            --url=http://127.0.0.1:5000/ \
-            --numberOfRuns=1 \
+            --url=http://127.0.0.1:5000/he/ \
+            --numberOfRuns=3 \
             --settings.chromeFlags="--no-sandbox" || true
 
       - name: Lighthouse upload

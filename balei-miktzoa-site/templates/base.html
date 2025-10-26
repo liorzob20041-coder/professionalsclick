@@ -97,24 +97,36 @@
 
   {# --- קישורי CSS/נכסים --- #}
   <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
-  <link rel="stylesheet" href="{{ static_rel('css/navbar.css') }}">
-  <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/all.min.css') }}">
-  <link rel="stylesheet" href="{{ static_rel('css/base.bundle.css') }}">
-  <link rel="stylesheet" href="{{ static_rel('css/ui-foundation.css') }}">
+  <link rel="stylesheet"
+        href="{{ static_rel('css/navbar.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('vendor/fa/css/all.min.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('css/base.bundle.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('css/ui-foundation.css') }}"
+        media="print" onload="this.media='all'">
 
 
   {# --- Fallback ל-iOS/Safari: @import אינליין (נטען גם כש-link נתקע) --- #}
   <style id="ios-css-import-fallback">
     @import "{{ static_rel('css/style.css') }}";
     @import "{{ static_rel('css/navbar.css') }}";
+    @import "{{ static_rel('vendor/fa/css/all.min.css') }}";
+    @import "{{ static_rel('css/base.bundle.css') }}";
+    @import "{{ static_rel('css/ui-foundation.css') }}";
   </style>
-
   {# --- למקרה ש-JS כבוי --- #}
   <noscript>
     <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
     <link rel="stylesheet" href="{{ static_rel('css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('css/base.bundle.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('css/ui-foundation.css') }}">
   </noscript>
-
 
 
 
@@ -311,13 +323,13 @@
     body.ac-open a { pointer-events: none !important; }
   </style>
 
-{% set hero_preload_800 = url_for('img_proxy', filename='photo1.jpg', w=800, q=82, fit='cover', format='auto') %}
-{% set hero_preload_1200 = url_for('img_proxy', filename='photo1.jpg', w=1200, q=82, fit='cover', format='auto') %}
-{% set hero_preload_1600 = url_for('img_proxy', filename='photo1.jpg', w=1600, q=82, fit='cover', format='auto') %}
+{% set hero_preload_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=82, fit='cover', format='auto') %}
+{% set hero_preload_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=82, fit='cover', format='auto') %}
+{% set hero_preload_1280 = url_for('img_proxy', filename='photo1.jpg', w=1280, q=82, fit='cover', format='auto') %}
 {% set hero_preload_srcset = [
-  hero_preload_800 ~ ' 800w',
-  hero_preload_1200 ~ ' 1200w',
-  hero_preload_1600 ~ ' 1600w'
+  hero_preload_640 ~ ' 640w',
+  hero_preload_960 ~ ' 960w',
+  hero_preload_1280 ~ ' 1280w'
 ] %}
 {% set flag_israel_small = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='auto') %}
 {% set flag_usa_small = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
@@ -327,7 +339,7 @@
 <link rel="preload" as="image"
       href="{{ flag_israel_small }}">
 <link rel="preload" as="image"
-      href="{{ hero_preload_1200 }}"
+      href="{{ hero_preload_960 }}"
       imagesrcset="{{ hero_preload_srcset|join(', ') }}"
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 
@@ -341,7 +353,7 @@
 <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
   <img src="{{ flag_israel_small }}"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ hero_preload_1200 }}"
+  <img src="{{ hero_preload_960 }}"
        loading="eager" decoding="async" fetchpriority="high" alt="">
 </div>
 

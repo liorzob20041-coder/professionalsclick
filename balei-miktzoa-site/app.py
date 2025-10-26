@@ -5011,10 +5011,15 @@ def url_for_lang(endpoint=None, lang=None, **kwargs):
         "workers": "show_workers",   # שם ישן/בטמפלייט → ה־endpoint האמיתי
         # תוכל להוסיף כאן אליאסים נוספים בעתיד אם צריך
     }
-
+    make_external = kwargs.pop("_external", False)
+    forced_scheme = kwargs.pop("_scheme", None)
     if endpoint:
         endpoint = ENDPOINT_ALIASES.get(endpoint, endpoint)
         kwargs["lang"] = new_lang
+        if make_external:
+            kwargs["_external"] = True
+        if forced_scheme:
+            kwargs["_scheme"] = forced_scheme
         try:
             return url_for(endpoint, **kwargs)
         except BuildError:
@@ -5026,7 +5031,12 @@ def url_for_lang(endpoint=None, lang=None, **kwargs):
     # אין endpoint => מחליפים שפה באותו הנתיב (כולל שמירת ה־query string)
     new_path = _swap_lang_in_path(request.path, new_lang)
     qs = request.query_string.decode("utf-8", "ignore")
-    return new_path + (("?" + qs) if qs else "")
+    path_with_qs = new_path + (("?" + qs) if qs else "")
+    if make_external and request:
+        scheme = forced_scheme or request.scheme
+        host = request.host
+        return f"{scheme}://{host}{path_with_qs}"
+    return path_with_qs
 
 
 # ראוט עם שפה + תמיכה גם בלי הסלאש (strict_slashes=False)

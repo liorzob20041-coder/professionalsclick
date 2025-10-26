@@ -44,15 +44,8 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
           if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
-          # בסיס + המודול שהיה חסר
           pip install -U Flask requests Jinja2 python-dotenv Flask-WTF WTForms deep-translator
-          # אימות ייבוא כדי ליפול מוקדם אם חסר
-          python - <<'PY'
-import sys
-print("python", sys.version)
-import deep_translator
-print("deep-translator OK:", deep_translator.__version__)
-PY
+          python -c "import sys; import deep_translator as dt; print('python', sys.version); print('deep-translator OK:', getattr(dt,'__version__','unknown'))"
 
       # ===== Start Flask and wait =====
       - name: Start Flask
@@ -74,7 +67,7 @@ PY
           echo "Using entry: $ENTRY"
           python "$ENTRY" > server.log 2>&1 & echo $! > flask.pid
 
-          # המתנה עד שהשרת עולה + בדיקה שהפרוסס חי
+          # wait for server + ensure process alive
           for i in {1..120}; do
             if curl -sSf http://127.0.0.1:5000/ >/dev/null; then
               echo "Flask is up"
@@ -123,6 +116,7 @@ PY
         if: always()
         run: |
           if [ -f flask.pid ]; then kill "$(cat flask.pid)" || true; fi
+
 
 
 

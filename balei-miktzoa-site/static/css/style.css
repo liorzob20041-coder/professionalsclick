@@ -586,5 +586,15 @@ html[dir="ltr"] .language-switcher {
 .filters-langs input[type="checkbox"] {
   margin: 0;
 }
-
+/* Prevent icon width change from shifting layout */
+.search-btn{
+  width:44px; height:44px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.search-btn .fa-solid, .search-btn i[class*="fa-"]{
+  display:inline-block; width:1em; height:1em; line-height:1;
+}
+/* Lock header height (cheap extra safety) */
+.topbar-rail{ min-height:64px; }
+.tb-logo-strip{ display:block; height:auto; }
 

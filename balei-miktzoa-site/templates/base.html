@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
   <meta http-equiv="Content-Security-Policy"
       content="default-src 'self';
                img-src 'self' https: data: blob:;
@@ -13,6 +12,9 @@
                font-src 'self' data:;
                media-src 'self' https:;
                frame-src 'self' https;">
+  <link rel="preload"
+        href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
+        as="font" type="font/woff2" crossorigin>
 
 
   {# --- דיפולטים כלליים: יוצגו רק אם הדף לא מזריק head_seo משלו --- #}
@@ -100,6 +102,14 @@
   {% set NAVBAR_URL = static_rel('css/navbar.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.min.css') ~ '?v=' ~ ASSET_VER %}
+  <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/fonts-override.css') }}">
+  <link rel="stylesheet"
+        href="{{ static_rel('css/navbar.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('vendor/fa/css/all.min.css') }}"
+        media="print" onload="this.media='all'">
   <link rel="preload"
         href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
         as="font"

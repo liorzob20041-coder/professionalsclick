@@ -311,10 +311,23 @@
     body.ac-open a { pointer-events: none !important; }
   </style>
 
+{% set hero_preload_800 = url_for('img_proxy', filename='photo1.jpg', w=800, q=82, fit='cover', format='auto') %}
+{% set hero_preload_1200 = url_for('img_proxy', filename='photo1.jpg', w=1200, q=82, fit='cover', format='auto') %}
+{% set hero_preload_1600 = url_for('img_proxy', filename='photo1.jpg', w=1600, q=82, fit='cover', format='auto') %}
+{% set hero_preload_srcset = [
+  hero_preload_800 ~ ' 800w',
+  hero_preload_1200 ~ ' 1200w',
+  hero_preload_1600 ~ ' 1600w'
+] %}
+{% set flag_israel_small = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='auto') %}
+{% set flag_usa_small = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
+{% set flag_russia_small = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
 <link rel="preload" as="image"
-      href="{{ url_for('static', filename='flags/israel-flag-png-large.png', v=ASSET_VER) }}">
+      href="{{ flag_israel_small }}">
 <link rel="preload" as="image"
-      href="{{ url_for('static', filename='photo1.jpg', v=ASSET_VER) }}">
+      href="{{ hero_preload_1200 }}"
+      imagesrcset="{{ hero_preload_srcset|join(', ') }}"
+      imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 
 </head>
 <body>
@@ -324,9 +337,9 @@
         tabindex="-1" aria-hidden="true"></iframe>
 
 <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
-  <img src="{{ url_for('static', filename='flags/israel-flag-png-large.png', v=ASSET_VER) }}"
+  <img src="{{ flag_israel_small }}"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ url_for('static', filename='photo1.jpg', v=ASSET_VER) }}"
+  <img src="{{ hero_preload_1200 }}"
        loading="eager" decoding="async" fetchpriority="high" alt="">
 </div>
 
@@ -419,19 +432,19 @@
   <ul id="language-list" role="menu">
     <li>
       <a href="{{ url_for_lang(lang='he') }}" role="menuitem">
-        <img src="{{ static_rel('flags/israel-flag-png-large.png') }}" width="28" height="20" alt="Israel">
+        <img src="{{ flag_israel_small }}" width="28" height="20" alt="Israel">
         עברית
       </a>
     </li>
     <li>
       <a href="{{ url_for_lang(lang='en') }}" role="menuitem">
-        <img src="{{ static_rel('flags/united-states-of-america-flag-png-large.png') }}" width="20" height="14" alt="USA" style="margin-right:6px;">
+        <img src="{{ flag_usa_small }}" width="20" height="14" alt="USA" style="margin-right:6px;">
         English
       </a>
     </li>
     <li>
       <a href="{{ url_for_lang(lang='ru') }}" role="menuitem">
-        <img src="{{ static_rel('flags/russia-flag-png-large.png') }}" width="20" height="14" alt="Russia" style="margin-right:6px;">
+        <img src="{{ flag_russia_small }}" width="20" height="14" alt="Russia" style="margin-right:6px;">
         Русский
       </a>
     </li>
@@ -853,8 +866,19 @@
       document.querySelectorAll('[data-search-area]').forEach(el => attachAutocomplete(el, 'area'));
       document.querySelectorAll('[data-search-field]').forEach(el => attachAutocomplete(el, 'field'));
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-    else init();
+    function scheduleInit() {
+      var run = init;
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(run, { timeout: 1200 });
+      } else {
+        setTimeout(run, 160);
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', scheduleInit);
+    } else {
+      scheduleInit();
+    }
   })();
   </script>
 
@@ -1081,8 +1105,8 @@
 <script>
 (function () {
   const urls = [
-    "{{ url_for('static', filename='flags/israel-flag-png-large.png', v=ASSET_VER) }}",
-    "{{ url_for('static', filename='photo1.jpg', v=ASSET_VER) }}"
+    "{{ flag_israel_small }}",
+    "{{ hero_preload_1200 }}"
   ];
   function ping(u) {
     fetch(u, { cache: "reload", credentials: "same-origin" })

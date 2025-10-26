@@ -306,8 +306,7 @@ html[dir="ltr"] .check-item {
   width: var(--hero-card-w);
   padding: 14px 16px;
   border-radius: 16px;
-  background: rgb(0 0 0 / 42%);
-  backdrop-filter: blur(6px) saturate(108%);
+  background: rgba(15, 23, 42, 0.78);
   border: 1px solid rgb(255 255 255 / 12%);
   box-shadow: var(--shadow-lg);
   display: grid;

@@ -105,9 +105,17 @@ body.scrolled::before {
   transform: none !important;
 }
 
+.tb-logo-picture {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
 .tb-logo-line img.tb-logo-strip {
-  height: calc(var(--hdr-h) - 18px) !important;
-  width: auto !important;
+  display: block;
+  width: clamp(200px, 24vw, 320px) !important;
+  max-width: 100% !important;
+  height: clamp(46px, calc(var(--hdr-h) - 18px), 64px) !important;
+  aspect-ratio: 5 / 1;
   object-fit: contain;
   border-radius: 12px;
 }

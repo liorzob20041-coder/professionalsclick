@@ -96,7 +96,10 @@
   {% endblock %}
 
   {# --- קישורי CSS/נכסים --- #}
-  {% set STYLE_URL = static_rel('css/style.css') %}
+  {% set STYLE_URL = static_rel('css/style.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set NAVBAR_URL = static_rel('css/navbar.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.min.css') ~ '?v=' ~ ASSET_VER %}
   <link rel="preload"
         href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
         as="font"
@@ -116,34 +119,34 @@
   <link rel="stylesheet" href="{{ STYLE_URL }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
   <link rel="stylesheet"
-        href="{{ static_rel('css/navbar.css') }}"
+        href="{{ NAVBAR_URL }}"
         media="print" onload="this.media='all'">
   <link rel="stylesheet"
         href="{{ static_rel('css/icons.css') }}"
         media="print" onload="this.media='all'">
   <link rel="stylesheet"
-        href="{{ static_rel('css/base.bundle.css') }}"
+        href="{{ BASE_BUNDLE_URL }}"
         media="print" onload="this.media='all'">
   <link rel="stylesheet"
-        href="{{ static_rel('css/ui-foundation.css') }}"
+        href="{{ UI_FOUNDATION_URL }}"
         media="print" onload="this.media='all'">
 
 
   {# --- Fallback ל-iOS/Safari: @import אינליין (נטען גם כש-link נתקע) --- #}
   <style id="ios-css-import-fallback">
-    @import "{{ static_rel('css/style.css') }}";
-    @import "{{ static_rel('css/navbar.css') }}";
+    @import "{{ STYLE_URL }}";
+    @import "{{ NAVBAR_URL }}";
     @import "{{ static_rel('css/icons.css') }}";
-    @import "{{ static_rel('css/base.bundle.css') }}";
-    @import "{{ static_rel('css/ui-foundation.css') }}";
+    @import "{{ BASE_BUNDLE_URL }}";
+    @import "{{ UI_FOUNDATION_URL }}";
   </style>
   {# --- למקרה ש-JS כבוי --- #}
   <noscript>
-    <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ STYLE_URL }}">
+    <link rel="stylesheet" href="{{ NAVBAR_URL }}">
     <link rel="stylesheet" href="{{ static_rel('css/icons.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('css/base.bundle.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('css/ui-foundation.css') }}">
+    <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
+    <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
   </noscript>
 
 
@@ -367,19 +370,68 @@
 
 {% set hero_preload_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=82, fit='cover', format='auto') %}
 {% set hero_preload_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=82, fit='cover', format='auto') %}
+{% set hero_preload_1200 = url_for('img_proxy', filename='photo1.jpg', w=1200, q=82, fit='cover', format='auto') %}
 {% set hero_preload_1280 = url_for('img_proxy', filename='photo1.jpg', w=1280, q=82, fit='cover', format='auto') %}
 {% set hero_preload_srcset = [
   hero_preload_640 ~ ' 640w',
   hero_preload_960 ~ ' 960w',
   hero_preload_1280 ~ ' 1280w'
 ] %}
-{% set flag_israel_small = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='auto') %}
-{% set flag_usa_small = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
-{% set flag_russia_small = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=48, q=85, fit='contain', format='auto') %}
-{% set logo_strip_webp = static_rel('branding/logo-strip-he@2x.webp') %}
-{% set logo_strip_fallback = static_rel('branding/logo-strip-he@2x.jpeg') %}
+{% set flag_israel_png_1x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=32, q=85, fit='contain', format='png') %}
+{% set flag_israel_png_2x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='png') %}
+{% set flag_israel_webp_1x = url_for('img_proxy', filename='flags/israel-flag-large.webp', w=32, q=85, fit='contain', format='webp') %}
+{% set flag_israel_webp_2x = url_for('img_proxy', filename='flags/israel-flag-large.webp', w=64, q=85, fit='contain', format='webp') %}
+{% set flag_israel_srcset_webp = [
+  flag_israel_webp_1x ~ ' 32w',
+  flag_israel_webp_2x ~ ' 64w'
+] %}
+{% set flag_israel_srcset_png = [
+  flag_israel_png_1x ~ ' 32w',
+  flag_israel_png_2x ~ ' 64w'
+] %}
+{% set flag_usa_png_1x = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=24, q=85, fit='contain', format='png') %}
+{% set flag_usa_png_2x = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=48, q=85, fit='contain', format='png') %}
+{% set flag_usa_webp_1x = url_for('img_proxy', filename='flags/united-states-of-america-flag-large.webp', w=24, q=85, fit='contain', format='webp') %}
+{% set flag_usa_webp_2x = url_for('img_proxy', filename='flags/united-states-of-america-flag-large.webp', w=48, q=85, fit='contain', format='webp') %}
+{% set flag_usa_srcset_webp = [
+  flag_usa_webp_1x ~ ' 24w',
+  flag_usa_webp_2x ~ ' 48w'
+] %}
+{% set flag_usa_srcset_png = [
+  flag_usa_png_1x ~ ' 24w',
+  flag_usa_png_2x ~ ' 48w'
+] %}
+{% set flag_russia_png_1x = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=24, q=85, fit='contain', format='png') %}
+{% set flag_russia_png_2x = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=48, q=85, fit='contain', format='png') %}
+{% set flag_russia_webp_1x = url_for('img_proxy', filename='flags/russia-flag-large.webp', w=24, q=85, fit='contain', format='webp') %}
+{% set flag_russia_webp_2x = url_for('img_proxy', filename='flags/russia-flag-large.webp', w=48, q=85, fit='contain', format='webp') %}
+{% set flag_russia_srcset_webp = [
+  flag_russia_webp_1x ~ ' 24w',
+  flag_russia_webp_2x ~ ' 48w'
+] %}
+{% set flag_russia_srcset_png = [
+  flag_russia_png_1x ~ ' 24w',
+  flag_russia_png_2x ~ ' 48w'
+] %}
+{% set logo_strip_webp_240 = url_for('img_proxy', filename='branding/logo-strip-he@2x.webp', w=240, q=82, fit='contain', format='webp') %}
+{% set logo_strip_webp_320 = url_for('img_proxy', filename='branding/logo-strip-he@2x.webp', w=320, q=82, fit='contain', format='webp') %}
+{% set logo_strip_jpeg_240 = url_for('img_proxy', filename='branding/logo-strip-he@2x.jpeg', w=240, q=86, fit='contain', format='jpeg') %}
+{% set logo_strip_jpeg_320 = url_for('img_proxy', filename='branding/logo-strip-he@2x.jpeg', w=320, q=86, fit='contain', format='jpeg') %}
+{% set logo_strip_srcset_webp = [
+  logo_strip_webp_240 ~ ' 240w',
+  logo_strip_webp_320 ~ ' 320w'
+] %}
+{% set logo_strip_srcset_jpeg = [
+  logo_strip_jpeg_240 ~ ' 240w',
+  logo_strip_jpeg_320 ~ ' 320w'
+] %}
+{% set flag_israel_small = flag_israel_png_2x %}
+{% set flag_usa_small = flag_usa_png_2x %}
+{% set flag_russia_small = flag_russia_png_2x %}
 <link rel="preload" as="image"
-      href="{{ flag_israel_small }}">
+      href="{{ flag_israel_png_2x }}"
+      imagesrcset="{{ flag_israel_srcset_png|join(', ') }}"
+      imagesizes="28px">
 <link rel="preload" as="image"
       href="{{ hero_preload_960 }}"
       imagesrcset="{{ hero_preload_srcset|join(', ') }}"
@@ -393,11 +445,15 @@
         tabindex="-1" aria-hidden="true"></iframe>
 
 <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
-  <img src="{{ flag_israel_small }}" width="28" height="20"
+  <img src="{{ flag_israel_png_2x }}" width="28" height="20"
+       srcset="{{ flag_israel_srcset_png|join(', ') }}"
+       sizes="28px"
        loading="eager" decoding="async" fetchpriority="high" alt="">
   <img src="{{ hero_preload_960 }}" width="960" height="540"
+       srcset="{{ hero_preload_srcset|join(', ') }}"
+       sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-</div
+</div>
 
   <!-- קישור דילוג לתוכן -->
   <a href="#main-content" class="skip-link">דלג לתוכן המרכזי</a>
@@ -488,19 +544,34 @@
   <ul id="language-list" role="menu">
     <li>
       <a href="{{ url_for_lang(lang='he') }}" role="menuitem">
-        <img src="{{ flag_israel_small }}" width="28" height="20" alt="Israel">
+        <picture class="flag flag--he">
+          <source srcset="{{ flag_israel_srcset_webp|join(', ') }}" sizes="28px" type="image/webp">
+          <img class="flag flag--he" src="{{ flag_israel_png_1x }}" width="28" height="20"
+               srcset="{{ flag_israel_srcset_png|join(', ') }}"
+               sizes="28px" alt="Israel" decoding="async" loading="lazy">
+        </picture>
         עברית
       </a>
     </li>
     <li>
       <a href="{{ url_for_lang(lang='en') }}" role="menuitem">
-        <img src="{{ flag_usa_small }}" width="20" height="14" alt="USA" style="margin-right:6px;">
+        <picture class="flag flag--us">
+          <source srcset="{{ flag_usa_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
+          <img class="flag flag--us" src="{{ flag_usa_png_1x }}" width="20" height="14"
+               srcset="{{ flag_usa_srcset_png|join(', ') }}"
+               sizes="20px" alt="USA" decoding="async" loading="lazy">
+        </picture>
         English
       </a>
     </li>
     <li>
       <a href="{{ url_for_lang(lang='ru') }}" role="menuitem">
-        <img src="{{ flag_russia_small }}" width="20" height="14" alt="Russia" style="margin-right:6px;">
+        <picture class="flag flag--ru">
+          <source srcset="{{ flag_russia_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
+          <img class="flag flag--ru" src="{{ flag_russia_png_1x }}" width="20" height="14"
+               srcset="{{ flag_russia_srcset_png|join(', ') }}"
+               sizes="20px" alt="Russia" decoding="async" loading="lazy">
+        </picture>
         Русский
       </a>
     </li>
@@ -513,10 +584,14 @@
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
     <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}">
-      <picture>
-        <source srcset="{{ logo_strip_webp }}" type="image/webp">
+      <picture class="tb-logo-picture">
+        <source srcset="{{ logo_strip_srcset_webp|join(', ') }}"
+                sizes="(min-width: 992px) 320px, 240px"
+                type="image/webp">
         <img class="tb-logo-strip"
-          src="{{ logo_strip_fallback }}"
+          src="{{ logo_strip_jpeg_240 }}"
+          srcset="{{ logo_strip_srcset_jpeg|join(', ') }}"
+          sizes="(min-width: 992px) 320px, 240px"
           alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
           width="320" height="64"
           loading="eager" decoding="async" fetchpriority="high">
@@ -864,7 +939,7 @@ window.redirectToCleanURL = function (e) {
     list.addEventListener('click',       delegatedPick, true);
     list.addEventListener('touchstart',  delegatedPick, { capture:true, passive:false });
     function syncPos() { if (list.style.display !== 'none') positionList(input, list); }
-    window.addEventListener('scroll', syncPos, true);
+    window.addEventListener('scroll', syncPos, { capture: true, passive: true });
     window.addEventListener('resize', syncPos);
   }
   function initAuto(){

@@ -8,12 +8,15 @@
     "format": "prettier \\static/**/*.css\\ --write",
     "format:check": "prettier \\static/**/*.css\\ --check",
     "lint": "stylelint \\static/**/*.css\"",
-    "lint:fix": "stylelint \\static/**/*.css\\ --fix"
+    "lint:fix": "stylelint \\static/**/*.css\\ --fix",
+    "build:css": "csso static/css/style.css -o static/css/style.min.css && csso static/css/navbar.css -o static/css/navbar.min.css && csso static/css/base.bundle.css -o static/css/base.bundle.min.css && csso static/css/ui-foundation.css -o static/css/ui-foundation.min.css"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "csso": "^5.0.5",
+    "csso-cli": "^4.0.2",
     "prettier": "^3.3.3",
     "stylelint": "^16.24.0",
     "stylelint-config-standard": "^39.0.0",

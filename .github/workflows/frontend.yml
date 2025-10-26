@@ -56,7 +56,8 @@ jobs:
         run: |
           set -euxo pipefail
           export PYTHONUNBUFFERED=1
-          export PYTHONPATH="$(pwd):$PYTHONPATH"
+          # מונע 'unbound variable' כש-PYTHONPATH לא קיים
+          export PYTHONPATH="$(pwd):${PYTHONPATH-}"
 
           # locate entry point
           if [ -f "app.py" ]; then ENTRY="app.py";
@@ -116,6 +117,7 @@ jobs:
         if: always()
         run: |
           if [ -f flask.pid ]; then kill "$(cat flask.pid)" || true; fi
+
 
 
 

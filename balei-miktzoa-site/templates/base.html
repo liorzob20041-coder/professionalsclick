@@ -108,7 +108,16 @@
         href="{{ static_rel('css/navbar.css') }}"
         media="print" onload="this.media='all'">
   <link rel="stylesheet"
-        href="{{ static_rel('vendor/fa/css/all.min.css') }}"
+        href="{{ static_rel('vendor/fa/css/fontawesome.min.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('vendor/fa/css/solid.min.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('vendor/fa/css/regular.min.css') }}"
+        media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="{{ static_rel('vendor/fa/css/brands.min.css') }}"
         media="print" onload="this.media='all'">
   <link rel="preload"
         href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
@@ -149,6 +158,10 @@
     @import "{{ static_rel('css/icons.css') }}";
     @import "{{ BASE_BUNDLE_URL }}";
     @import "{{ UI_FOUNDATION_URL }}";
+    @import "{{ static_rel('vendor/fa/css/fontawesome.min.css') }}";
+    @import "{{ static_rel('vendor/fa/css/solid.min.css') }}";
+    @import "{{ static_rel('vendor/fa/css/regular.min.css') }}";
+    @import "{{ static_rel('vendor/fa/css/brands.min.css') }}";
   </style>
   {# --- למקרה ש-JS כבוי --- #}
   <noscript>
@@ -157,6 +170,10 @@
     <link rel="stylesheet" href="{{ static_rel('css/icons.css') }}">
     <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
     <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
+    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/solid.min.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/regular.min.css') }}">
+    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/brands.min.css') }}">
   </noscript>
 
 

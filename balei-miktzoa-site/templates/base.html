@@ -12,9 +12,7 @@
                font-src 'self' data:;
                media-src 'self' https:;
                frame-src 'self' https;">
-  <link rel="preload"
-        href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
-        as="font" type="font/woff2" crossorigin>
+
 
 
   {# --- דיפולטים כלליים: יוצגו רק אם הדף לא מזריק head_seo משלו --- #}
@@ -115,11 +113,6 @@
   <link rel="preload" href="{{ FA_LITE_URL }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ FA_LITE_URL }}"></noscript>
-  <link rel="preload"
-        href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
-        as="font"
-        type="font/woff2"
-        crossorigin>
   <link rel="preload"
         href="{{ static_rel('vendor/fa/webfonts/fa-regular-400.woff2') }}"
         as="font"
@@ -384,15 +377,17 @@
   <style id="ac-open-guard">
     body.ac-open a { pointer-events: none !important; }
   </style>
-
-{% set hero_preload_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=82, fit='cover', format='auto') %}
-{% set hero_preload_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=82, fit='cover', format='auto') %}
-{% set hero_preload_1200 = url_for('img_proxy', filename='photo1.jpg', w=1200, q=82, fit='cover', format='auto') %}
-{% set hero_preload_1280 = url_for('img_proxy', filename='photo1.jpg', w=1280, q=82, fit='cover', format='auto') %}
+<!-- ודא שרק .slide.active מוצגת בתחילת הטעינה ומייצב רוחב אייקונים -->
+<style>
+.slide{display:none}
+.slide.active{display:block}
+.fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
+</style>
+{% set hero_preload_1x = url_for('img_proxy', filename='photo1.jpg', w=616, q=82, fit='cover', format='auto') %}
+{% set hero_preload_2x = url_for('img_proxy', filename='photo1.jpg', w=1232, q=82, fit='cover', format='auto') %}
 {% set hero_preload_srcset = [
-  hero_preload_640 ~ ' 640w',
-  hero_preload_960 ~ ' 960w',
-  hero_preload_1280 ~ ' 1280w'
+  hero_preload_1x ~ ' 1x',
+  hero_preload_2x ~ ' 2x'
 ] %}
 {% set flag_israel_png_1x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=32, q=85, fit='contain', format='png') %}
 {% set flag_israel_png_2x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='png') %}
@@ -445,14 +440,15 @@
 {% set flag_israel_small = flag_israel_png_2x %}
 {% set flag_usa_small = flag_usa_png_2x %}
 {% set flag_russia_small = flag_russia_png_2x %}
+<!-- LCP image preload: תאם בדיוק לגדלי ה-srcset (616/1232) -->
 <link rel="preload" as="image"
-      href="{{ flag_israel_png_2x }}"
-      imagesrcset="{{ flag_israel_srcset_png|join(', ') }}"
-      imagesizes="28px">
-<link rel="preload" as="image"
-      href="{{ hero_preload_960 }}"
-      imagesrcset="{{ hero_preload_srcset|join(', ') }}"
+      href="{{ url_for('img_proxy', filename='photo1.jpg', w=616,  q=82, fit='cover', format='auto') }}"
+      imagesrcset="{{ url_for('img_proxy', filename='photo1.jpg', w=616,  q=82, fit='cover', format='auto') }} 616w, {{ url_for('img_proxy', filename='photo1.jpg', w=1232, q=82, fit='cover', format='auto') }} 1232w"
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
+<link rel="preload" as="image" href="{{ flag_israel_small }}">
+<!-- הקטנת CLS: פרילוד לפונט האייקונים -->
+<link rel="preload" as="font" type="font/woff2" crossorigin
+      href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}">
 
 </head>
 <body>
@@ -466,7 +462,7 @@
        srcset="{{ flag_israel_srcset_png|join(', ') }}"
        sizes="28px"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ hero_preload_960 }}" width="960" height="540"
+  <img src="{{ hero_preload_1x }}" width="616" height="411"
        srcset="{{ hero_preload_srcset|join(', ') }}"
        sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
        loading="eager" decoding="async" fetchpriority="high" alt="">
@@ -1056,7 +1052,7 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
 (function () {
   const urls = [
     "{{ flag_israel_small }}",
-    "{{ hero_preload_1200 }}"
+    "{{ hero_preload_2x }}"
   ];
   function ping(u) {
     fetch(u, { cache: "reload", credentials: "same-origin" })

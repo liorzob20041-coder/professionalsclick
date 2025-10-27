@@ -102,12 +102,13 @@
   {% set NAVBAR_URL = static_rel('css/navbar.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
   <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
   <link rel="stylesheet" href="{{ static_rel('css/fonts-override.css') }}">
   <link rel="stylesheet"
         href="{{ static_rel('css/navbar.css') }}"
         media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ static_rel('css/fa-lite.css') }}">
+  <link rel="stylesheet" href="{{ FA_LITE_URL }}">
 
   <link rel="preload"
         href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
@@ -148,10 +149,7 @@
     @import "{{ static_rel('css/icons.css') }}";
     @import "{{ BASE_BUNDLE_URL }}";
     @import "{{ UI_FOUNDATION_URL }}";
-    @import "{{ static_rel('vendor/fa/css/fontawesome.min.css') }}";
-    @import "{{ static_rel('vendor/fa/css/solid.min.css') }}";
-    @import "{{ static_rel('vendor/fa/css/regular.min.css') }}";
-    @import "{{ static_rel('vendor/fa/css/brands.min.css') }}";
+    @import "{{ FA_LITE_URL }}";
   </style>
   {# --- למקרה ש-JS כבוי --- #}
   <noscript>
@@ -160,10 +158,7 @@
     <link rel="stylesheet" href="{{ static_rel('css/icons.css') }}">
     <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
     <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
-    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/fontawesome.min.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/solid.min.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/regular.min.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('vendor/fa/css/brands.min.css') }}">
+    <link rel="stylesheet" href="{{ FA_LITE_URL }}">
   </noscript>
 
 

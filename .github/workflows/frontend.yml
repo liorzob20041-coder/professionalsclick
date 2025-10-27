@@ -1,6 +1,7 @@
 name: Frontend QA
 permissions:
   contents: read
+
 on:
   pull_request:
   push:
@@ -9,10 +10,11 @@ on:
 jobs:
   qa:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      # HTML/Jinja lint
+      # ---------- Python for Jinja/Flask ----------
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -24,9 +26,13 @@ jobs:
 
       - name: Lint templates
         run: |
-          if [ -d "templates" ]; then djlint --profile=jinja templates --check --lint; else echo "no templates"; fi
+          if [ -d "templates" ]; then
+            djlint --profile=jinja templates --check --lint
+          else
+            echo "no templates"
+          fi
 
-      # Node tooling
+      # ---------- Node tooling ----------
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -34,26 +40,35 @@ jobs:
       - name: Install frontend tools
         run: |
           npm i -D stylelint stylelint-config-standard postcss postcss-html @lhci/cli pa11y-ci
-      - name: Minify CSS
+
+      - name: Minify CSS (if project has build script)
         run: |
-          cd balei-miktzoa-site
-          npm ci
-          npm run build:css
+          if [ -f "balei-miktzoa-site/package.json" ]; then
+            cd balei-miktzoa-site
+            npm ci
+            if npm run | grep -q "build:css"; then
+              npm run build:css
+            else
+              echo "No build:css script, skipping"
+            fi
+          else
+            echo "No package.json, skipping CSS build"
+          fi
+
       - name: Stylelint
         continue-on-error: true
         run: |
           npx stylelint "**/*.css" "**/*.html" "templates/**/*.html" --formatter=string > stylelint-report.txt || true
 
-      # ===== App deps for Flask =====
+      # ---------- Flask app deps ----------
       - name: Install app dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
           if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
           pip install -U Flask requests Jinja2 python-dotenv Flask-WTF WTForms deep-translator
-          python -c "import sys; import deep_translator as dt; print('python', sys.version); print('deep-translator OK:', getattr(dt,'__version__','unknown'))"
 
-      # ===== Start Flask and wait =====
+      # ---------- Start Flask ----------
       - name: Start Flask
         env:
           FLASK_DEBUG: "0"
@@ -66,7 +81,6 @@ jobs:
           export PYTHONUNBUFFERED=1
           export PYTHONPATH="$(pwd):${PYTHONPATH-}"
 
-          # locate entry point
           if [ -f "app.py" ]; then ENTRY="app.py";
           elif [ -f "balei-miktzoa-site/app.py" ]; then ENTRY="balei-miktzoa-site/app.py";
           elif [ -f "balei-miktzoa-site/app.clean.py" ]; then ENTRY="balei-miktzoa-site/app.clean.py";
@@ -79,37 +93,42 @@ jobs:
           for i in {1..120}; do
             if curl -sSf http://127.0.0.1:5000/ >/dev/null; then
               echo "Flask is up"
-              exit 0
+              break
             fi
             if ! kill -0 "$(cat flask.pid)" 2>/dev/null; then
               echo "Flask process died early"
-              break
+              echo "--- server.log ---"; tail -n +1 server.log || true
+              exit 1
             fi
             sleep 1
           done
-          echo "Server did not start"
-          tail -n +1 server.log || true
-          exit 1
 
-      - name: Lighthouse collect
+      # ---------- Warmup & stable Lighthouse (median of 5) ----------
+      - name: Warmup cache
+        run: |
+          curl -sS http://127.0.0.1:5000/he/ >/dev/null || true
+
+      - name: Lighthouse (stable median)
         continue-on-error: true
         run: |
-          npx lhci collect \
-            --url=http://127.0.0.1:5000/he/ \
-            --numberOfRuns=3 \
-            --settings.chromeFlags="--no-sandbox" || true
+          npx lhci autorun \
+            --collect.url=http://127.0.0.1:5000/he/ \
+            --collect.numberOfRuns=5 \
+            --collect.settings.throttlingMethod=simulate \
+            --collect.settings.formFactor=mobile \
+            --collect.settings.screenEmulation.mobile=true \
+            --collect.settings.chromeFlags="--no-sandbox" \
+            --upload.target=filesystem \
+            --upload.outputDir=./lhci-report || true
 
-      - name: Lighthouse upload
-        continue-on-error: true
-        run: |
-          npx lhci upload --target=filesystem --outputDir=./lhci-report || true
-
+      # ---------- Accessibility ----------
       - name: Accessibility (Pa11y)
         continue-on-error: true
         run: |
-          echo '{ "defaults": { "standard": "WCAG2AA", "timeout": 30000 }, "urls": ["http://127.0.0.1:5000/"] }' > .pa11yci.json
-          npx pa11y-ci || true
+          echo '{ "defaults": { "standard": "WCAG2AA", "timeout": 30000 }, "urls": ["http://127.0.0.1:5000/he/"] }' > .pa11yci.json
+          npx pa11y-ci | tee pa11y-report.txt || true
 
+      # ---------- Artifacts ----------
       - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
@@ -117,8 +136,16 @@ jobs:
           path: |
             lhci-report
             stylelint-report.txt
+            pa11y-report.txt
             server.log
           if-no-files-found: ignore
+
+      # ---------- Stop Flask ----------
+      - name: Stop Flask
+        if: always()
+        run: |
+          if [ -f flask.pid ]; then kill "$(cat flask.pid)" || true; fi
+
 
       - name: Stop Flask
         if: always()

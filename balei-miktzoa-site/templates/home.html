@@ -2,17 +2,15 @@
 
 {% block extra_head %}
   {{ super() }}
-  {% set hero_main_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=82, fit='cover', format='auto') %}
-  {% set hero_main_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=82, fit='cover', format='auto') %}
-  {% set hero_main_1280 = url_for('img_proxy', filename='photo1.jpg', w=1280, q=82, fit='cover', format='auto') %}
+  {% set hero_main_1x = url_for('img_proxy', filename='photo1.jpg', w=616, q=82, fit='cover', format='auto', v=ASSET_VER) %}
+  {% set hero_main_2x = url_for('img_proxy', filename='photo1.jpg', w=1232, q=82, fit='cover', format='auto', v=ASSET_VER) %}
   {% set hero_main_srcset = [
-    hero_main_640 ~ ' 640w',
-    hero_main_960 ~ ' 960w',
-    hero_main_1280 ~ ' 1280w'
+    hero_main_1x ~ ' 1x',
+    hero_main_2x ~ ' 2x'
   ] %}
   <link rel="preload"
         as="image"
-        href="{{ hero_main_960 }}"
+        href="{{ hero_main_1x }}"
         imagesrcset="{{ hero_main_srcset|join(', ') }}"
         imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
         fetchpriority="high">
@@ -150,43 +148,39 @@
   <!-- RIGHT: visual + search panel -->
     <div class="hero-visual">
       <div class="hero-slides"
-           style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=160, q=55, fit='cover', format='auto') }}');">
-        {% set hero_a_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=82, fit='cover', format='auto') %}
-        {% set hero_a_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=82, fit='cover', format='auto') %}
-        {% set hero_a_1280 = url_for('img_proxy', filename='photo1.jpg', w=1280, q=82, fit='cover', format='auto') %}
-        {% set hero_a_ratio = 1068 / 1600 %}
-        {% set hero_a_fallback_w = 960 %}
-        {% set hero_a_fallback_h = (hero_a_fallback_w * hero_a_ratio)|round(0, 'ceil')|int %}
+           style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=160, q=55, fit='cover', format='auto', v=ASSET_VER) }}');">
+        {% set hero_a_1x = url_for('img_proxy', filename='photo1.jpg', w=616, q=82, fit='cover', format='auto', v=ASSET_VER) %}
+        {% set hero_a_2x = url_for('img_proxy', filename='photo1.jpg', w=1232, q=82, fit='cover', format='auto', v=ASSET_VER) %}
+        {% set hero_a_ratio = 641 / 960 %}
+        {% set hero_a_fallback_w = 616 %}
+        {% set hero_a_fallback_h = (hero_a_fallback_w * hero_a_ratio)|round(0, 'common')|int %}
         {% set hero_a_srcset = [
-          hero_a_640 ~ ' 640w',
-          hero_a_960 ~ ' 960w',
-          hero_a_1280 ~ ' 1280w'
+          hero_a_1x ~ ' 1x',
+          hero_a_2x ~ ' 2x'
         ] %}
         <img id="slideA" class="slide active"
-             src="{{ hero_a_960 }}"
+             src="{{ hero_a_1x }}"
              srcset="{{ hero_a_srcset|join(', ') }}"
              sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
              alt="{{ _('homepage.hero_img_main_alt') }}"
              width="{{ hero_a_fallback_w }}" height="{{ hero_a_fallback_h }}"
              loading="eager" fetchpriority="high" decoding="async" />
-        {% set hero_b_640 = url_for('img_proxy', filename='photo2.jpg', w=640, q=82, fit='cover', format='auto') %}
-        {% set hero_b_960 = url_for('img_proxy', filename='photo2.jpg', w=960, q=82, fit='cover', format='auto') %}
-        {% set hero_b_1280 = url_for('img_proxy', filename='photo2.jpg', w=1280, q=82, fit='cover', format='auto') %}
-        {% set hero_b_ratio = 980 / 1470 %}
-        {% set hero_b_fallback_w = 960 %}
-        {% set hero_b_fallback_h = (hero_b_fallback_w * hero_b_ratio)|round(0, 'ceil')|int %}
+        {% set hero_b_1x = url_for('img_proxy', filename='photo2.jpg', w=616, q=82, fit='cover', format='auto', v=ASSET_VER) %}
+        {% set hero_b_2x = url_for('img_proxy', filename='photo2.jpg', w=1232, q=82, fit='cover', format='auto', v=ASSET_VER) %}
+        {% set hero_b_ratio = 640 / 960 %}
+        {% set hero_b_fallback_w = 616 %}
+        {% set hero_b_fallback_h = (hero_b_fallback_w * hero_b_ratio)|round(0, 'common')|int %}
         {% set hero_b_srcset = [
-          hero_b_640 ~ ' 640w',
-          hero_b_960 ~ ' 960w',
-          hero_b_1280 ~ ' 1280w'
+          hero_b_1x ~ ' 1x',
+          hero_b_2x ~ ' 2x'
         ] %}
         <img id="slideB" class="slide"
-             src="{{ hero_b_960 }}"
+             src="{{ hero_b_1x }}"
              srcset="{{ hero_b_srcset|join(', ') }}"
              sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
              alt="{{ _('homepage.hero_img_alt_b') }}"
              width="{{ hero_b_fallback_w }}" height="{{ hero_b_fallback_h }}"
-             loading="eager" decoding="async" fetchpriority="high" />
+             loading="lazy" decoding="async" />
 
 
       <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
@@ -292,7 +286,7 @@
             {% set candidate_widths = [360, 480, 640, 768, 960, 1200] %}
             {% set source_w = a.img_width or 720 %}
             {% set ratio = ((a.img_height or 405)|float) / ((a.img_width or source_w)|float) %}
-            {% set max_delivery_w = source_w if source_w <= 1200 else 1200 %}
+            {% set max_delivery_w = source_w if source_w <= 960 else 960 %}
             {% set widths = [] %}
             {% for w in candidate_widths %}
               {% if w <= max_delivery_w %}
@@ -311,12 +305,12 @@
             {% set srcset_list = [] %}
             {% for w in widths %}
               {% set srcset_list = srcset_list + [
-                url_for('img_proxy', filename=a.img_file, w=w, q=78, fit='cover', format='auto') ~ ' ' ~ w ~ 'w'
+                url_for('img_proxy', filename=a.img_file, w=w, q=78, fit='cover', format='auto', v=ASSET_VER) ~ ' ' ~ w ~ 'w'
               ] %}
             {% endfor %}
-            {% set fallback_w = widths|last %}
-            {% set fallback_h = (fallback_w * ratio)|round(0, 'ceil')|int %}
-            {% set fallback_src = url_for('img_proxy', filename=a.img_file, w=fallback_w, q=78, fit='cover', format='auto') %}
+            {% set fallback_w = 640 if 640 in widths else widths|last %}
+            {% set fallback_h = (fallback_w * ratio)|round(0, 'common')|int %}
+            {% set fallback_src = url_for('img_proxy', filename=a.img_file, w=fallback_w, q=78, fit='cover', format='auto', v=ASSET_VER) %}
             <img src="{{ fallback_src }}"
                  srcset="{{ srcset_list|join(', ') }}"
                  sizes="(min-width: 1100px) 30vw, (min-width: 768px) 45vw, 88vw"

@@ -24,7 +24,12 @@
   {% set og_locale = 'he_IL' if g.current_lang == 'he' else ('en_US' if g.current_lang == 'en' else 'ru_RU') %}
 
   <title>{% block title %}{{ default_title }}{% endblock %}</title>
-
+  <style>
+    /* Critical stub to prevent jumps; no visual change */
+    .topbar-rail{min-height:56px}
+    body{min-height:100vh}
+    @supports (font: 1rem system-ui){html{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}}
+  </style>
   {# --- מקום ייעודי למטא/OG/JSON-LD של הדף --- #}
   {% block head_seo %}{% endblock %}
 
@@ -96,68 +101,43 @@
   {% endblock %}
 
   {# --- קישורי CSS/נכסים --- #}
-  {% set STYLE_URL = static_rel('css/style.min.css') ~ '?v=' ~ ASSET_VER %}
-  {% set NAVBAR_URL = static_rel('css/navbar.min.css') ~ '?v=' ~ ASSET_VER %}
-  {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.min.css') ~ '?v=' ~ ASSET_VER %}
-  {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set STYLE_URL = static_rel('css/style.css') ~ '?v=' ~ ASSET_VER %}
+  {% set NAVBAR_URL = static_rel('css/navbar.css') ~ '?v=' ~ ASSET_VER %}
+  {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.css') ~ '?v=' ~ ASSET_VER %}
+  {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.css') ~ '?v=' ~ ASSET_VER %}
+  {% set ICONS_URL = static_rel('css/icons.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
-  <link rel="preload" href="{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}"></noscript>
-  <link rel="preload" href="{{ static_rel('css/fonts-override.css') }}?v={{ ASSET_VER }}" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="{{ static_rel('css/fonts-override.css') }}?v={{ ASSET_VER }}"></noscript>
-  <link rel="stylesheet"
-        href="{{ static_rel('css/navbar.css') }}"
-        media="print" onload="this.media='all'">
-  <link rel="preload" href="{{ FA_LITE_URL }}" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="{{ FA_LITE_URL }}"></noscript>
-  <link rel="preload"
-        href="{{ static_rel('vendor/fa/webfonts/fa-regular-400.woff2') }}"
-        as="font"
-        type="font/woff2"
-        crossorigin>
-  <link rel="preload"
-        href="{{ static_rel('vendor/fa/webfonts/fa-brands-400.woff2') }}"
-        as="font"
-        type="font/woff2"
-        crossorigin>
+  {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.css') ~ '?v=' ~ ASSET_VER %}
+  {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') ~ '?v=' ~ ASSET_VER %}
   <link rel="preload" as="style" href="{{ STYLE_URL }}">
   <link rel="stylesheet" href="{{ STYLE_URL }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
-  <link rel="stylesheet"
-        href="{{ NAVBAR_URL }}"
-        media="print" onload="this.media='all'">
-  <link rel="stylesheet"
-        href="{{ static_rel('css/icons.css') }}"
-        media="print" onload="this.media='all'">
-  <link rel="stylesheet"
-        href="{{ BASE_BUNDLE_URL }}"
-        media="print" onload="this.media='all'">
-  <link rel="stylesheet"
-        href="{{ UI_FOUNDATION_URL }}"
-        media="print" onload="this.media='all'">
-
-
-  {# --- Fallback ל-iOS/Safari: @import אינליין (נטען גם כש-link נתקע) --- #}
+  <link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}">
+  <link rel="stylesheet" href="{{ FA_LITE_URL }}">
+  <link rel="stylesheet" href="{{ FA_FULL_URL }}" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="{{ FA_FULL_URL }}"></noscript>
+  <link rel="stylesheet" href="{{ NAVBAR_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ ICONS_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}" media="print" onload="this.media='all'">
+  <link rel="preload" as="font" type="font/woff2" href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}" crossorigin>
   <style id="ios-css-import-fallback" type="text/plain">
     @import "{{ STYLE_URL }}";
     @import "{{ NAVBAR_URL }}";
-    @import "{{ static_rel('css/icons.css') }}";
+    @import "{{ ICONS_URL }}";
     @import "{{ BASE_BUNDLE_URL }}";
     @import "{{ UI_FOUNDATION_URL }}";
     @import "{{ FA_LITE_URL }}";
   </style>
-  {# --- למקרה ש-JS כבוי --- #}
   <noscript>
     <link rel="stylesheet" href="{{ STYLE_URL }}">
     <link rel="stylesheet" href="{{ NAVBAR_URL }}">
-    <link rel="stylesheet" href="{{ static_rel('css/icons.css') }}">
+    <link rel="stylesheet" href="{{ ICONS_URL }}">
     <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
     <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
     <link rel="stylesheet" href="{{ FA_LITE_URL }}">
-    </noscript>
+    <link rel="stylesheet" href="{{ FA_FULL_URL }}">
+  </noscript>
 
 
 
@@ -383,11 +363,13 @@
 .slide.active{display:block}
 .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
 </style>
-{% set hero_preload_1x = url_for('img_proxy', filename='photo1.jpg', w=616, q=82, fit='cover', format='auto') %}
-{% set hero_preload_2x = url_for('img_proxy', filename='photo1.jpg', w=1232, q=82, fit='cover', format='auto') %}
-{% set hero_preload_srcset = [
-  hero_preload_1x ~ ' 1x',
-  hero_preload_2x ~ ' 2x'
+{% set hero_lcp_src_480 = url_for('img_proxy', filename='photo1.jpg', w=480, q=80, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_768 = url_for('img_proxy', filename='photo1.jpg', w=768, q=80, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_1024 = url_for('img_proxy', filename='photo1.jpg', w=1024, q=80, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_srcset = [
+  hero_lcp_src_480 ~ ' 480w',
+  hero_lcp_src_768 ~ ' 768w',
+  hero_lcp_src_1024 ~ ' 1024w'
 ] %}
 {% set flag_israel_png_1x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=32, q=85, fit='contain', format='png') %}
 {% set flag_israel_png_2x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='png') %}
@@ -440,15 +422,18 @@
 {% set flag_israel_small = flag_israel_png_2x %}
 {% set flag_usa_small = flag_usa_png_2x %}
 {% set flag_russia_small = flag_russia_png_2x %}
-<!-- LCP image preload: תאם בדיוק לגדלי ה-srcset (616/1232) -->
+<!-- LCP image preload: תאם בדיוק לגדלי ה-srcset -->
 <link rel="preload" as="image"
-      href="{{ url_for('img_proxy', filename='photo1.jpg', w=616,  q=82, fit='cover', format='auto') }}"
-      imagesrcset="{{ url_for('img_proxy', filename='photo1.jpg', w=616,  q=82, fit='cover', format='auto') }} 616w, {{ url_for('img_proxy', filename='photo1.jpg', w=1232, q=82, fit='cover', format='auto') }} 1232w"
+      href="{{ hero_lcp_src_768 }}"
+      imagesrcset="
+        {{ hero_lcp_src_480 }} 480w,
+        {{ hero_lcp_src_768 }} 768w,
+        {{ hero_lcp_src_1024 }} 1024w"
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 <link rel="preload" as="image" href="{{ flag_israel_small }}">
 <!-- הקטנת CLS: פרילוד לפונט האייקונים -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}">
+      href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}">
 
 </head>
 <body>
@@ -462,8 +447,8 @@
        srcset="{{ flag_israel_srcset_png|join(', ') }}"
        sizes="28px"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ hero_preload_1x }}" width="616" height="411"
-       srcset="{{ hero_preload_srcset|join(', ') }}"
+  <img src="{{ hero_lcp_src_768 }}" width="1024" height="684"
+       srcset="{{ hero_lcp_srcset|join(', ') }}"
        sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
        loading="eager" decoding="async" fetchpriority="high" alt="">
 </div>
@@ -606,7 +591,7 @@
           srcset="{{ logo_strip_srcset_jpeg|join(', ') }}"
           sizes="(min-width: 992px) 320px, 240px"
           alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
-          width="320" height="64"
+          width="320" height="40"
           loading="eager" decoding="async" fetchpriority="high">
       </picture>
       <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
@@ -674,8 +659,13 @@ window.redirectToCleanURL = function (e) {
   window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
   return false;
 };
+function runWhenIdle(run){
+  if (typeof run !== 'function') return;
+  if ('requestIdleCallback' in window) { requestIdleCallback(run, { timeout: 200 }); }
+  else { setTimeout(run, 120); }
+}
 /* heavy modal wiring deferred */
-(function () {
+runWhenIdle(function () {
   function initGlobalSearchModal() {
     var modal = document.getElementById('globalSearch');
     var openBtn = document.querySelector('.search-btn');
@@ -741,7 +731,7 @@ window.redirectToCleanURL = function (e) {
   }
   if (document.readyState === 'complete') boot();
   else window.addEventListener('load', boot);
-})();
+});
 </script>
   <script>
   function toggleLanguageList() {
@@ -750,18 +740,22 @@ window.redirectToCleanURL = function (e) {
     const isShown = list.classList.toggle('show');
     btn.setAttribute('aria-expanded', isShown);
   }
-  document.addEventListener('click', function(event) {
-    const switcher = document.querySelector('.language-switcher');
-    const list = document.getElementById('language-list');
-    if (!switcher.contains(event.target)) {
-      list.classList.remove('show');
-      switcher.querySelector('button').setAttribute('aria-expanded', false);
-    }
+  runWhenIdle(function(){
+    document.addEventListener('click', function(event) {
+      const switcher = document.querySelector('.language-switcher');
+      const list = document.getElementById('language-list');
+      if (!switcher || !list) return;
+      if (!switcher.contains(event.target)) {
+        list.classList.remove('show');
+        const btn = switcher.querySelector('button');
+        if (btn) btn.setAttribute('aria-expanded', false);
+      }
+    });
   });
   </script>
 
   <script>
-  (function () {
+  runWhenIdle(function () {
     function sendEvent(eventName, workerId) {
       try {
         const payload = JSON.stringify({ event: String(eventName), worker_id: String(workerId) });
@@ -788,12 +782,12 @@ window.redirectToCleanURL = function (e) {
       if (type === 'call') window.trackEvent('click_call', wid);
       if (type === 'wa')   window.trackEvent('click_whatsapp', wid);
     }, { capture: true });
-  })();
+  });
   </script>
 
   <!-- ===== JS לתפריט המובייל (⋮) ===== -->
   <script>
-(function () {
+runWhenIdle(function () {
   function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t=setTimeout(()=>fn.apply(this, arguments), ms||150); }; }
   function ensureNoopDatalist() {
     if (!document.getElementById('nooptions')) {
@@ -971,7 +965,8 @@ window.redirectToCleanURL = function (e) {
     }
   });
   window.addEventListener('load', function(){ setTimeout(boot, 1200); });
-})();
+});
+
 </script>
 <script>
 let __acSuppressNextClick = false;
@@ -983,7 +978,8 @@ function __acEatNextClick(ev){
 document.addEventListener('click', __acEatNextClick, true);
 document.addEventListener('pointerup', __acEatNextClick, true);
 document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:false });
-(function(){
+runWhenIdle(function(){
+
   function wire(){
     const btn = document.getElementById('kebabBtn');
     const drawer = document.getElementById('mobileMenu');
@@ -1030,13 +1026,13 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
   }
   function boot(){ if ('requestIdleCallback' in window) requestIdleCallback(wire,{timeout:1200}); else window.addEventListener('load', ()=>setTimeout(wire,300)); }
   boot();
-})();
+});
 </script>
 
 
 
 <script id="asset-diag-hud-loader">
-(function(){
+runWhenIdle(function(){
   if (!(/[?&]debug=asset(&|$)/.test(location.search) || localStorage.getItem('show_asset_diag') === '1')) { return; }
   var p = location.pathname || "";
   if (p.startsWith("/admin") || p.startsWith("/api/") || p.startsWith("/static/")) return;
@@ -1044,15 +1040,15 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
   s.src = "{{ static_rel('js/asset-diag-hud.js') }}";
   s.defer = true;
   document.head.appendChild(s);
-})();
+});
 </script>
 
 
 <script>
-(function () {
+runWhenIdle(function () {
   const urls = [
     "{{ flag_israel_small }}",
-    "{{ hero_preload_2x }}"
+    "{{ hero_lcp_src_1024 }}"
   ];
   function ping(u) {
     fetch(u, { cache: "reload", credentials: "same-origin" })
@@ -1069,11 +1065,11 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
     setTimeout(() => urls.forEach(ping), 3000);
     setTimeout(() => urls.forEach(ping), 10000);
   });
-})();
+});
 </script>
 
   <script>
-    (function(){
+    runWhenIdle(function(){
       function autoHide(){
         var list = document.querySelectorAll('.flash-stack .flash');
         list.forEach(function(el){
@@ -1083,11 +1079,11 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
         });
       }
       window.addEventListener('load', autoHide);
-    })();
+    });
   </script>
 
 <script id="topbar-autohide-js-2025-09">
-(function(){
+runWhenIdle(function(){
   var mq = window.matchMedia("(max-width: 768px)");
   var enabled = mq.matches;
   var lastY = window.scrollY || 0;
@@ -1127,12 +1123,12 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
     lastY = window.scrollY || 0;
     onScroll();
   });
-})();
+});
 </script>
 
   <!-- ===== ADDED: מדידת רוחב כפתור השפה למרווחים שווים ===== -->
   <script>
-  (function(){
+  runWhenIdle(function(){
     function setLangChipWidth(){
       var chip = document.querySelector('.language-switcher > button.lang-chip');
       if(!chip) return;
@@ -1145,19 +1141,19 @@ document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:
       var chip = document.querySelector('.language-switcher > button.lang-chip');
       chip && new ResizeObserver(setLangChipWidth).observe(chip);
     }
-  })();
+  });
   </script>
 
   <!-- ===== ADDED: צל להדר רק בעת גלילה ===== -->
   <script>
-  (function(){
+  runWhenIdle(function(){
     function onScrollShadow(){
       var y = window.scrollY||0;
       document.body.classList.toggle('scrolled', y > 4);
     }
     window.addEventListener('scroll', onScrollShadow, {passive:true});
     window.addEventListener('load', onScrollShadow);
-  })();
+  });
   </script>
   {% endblock %}
 

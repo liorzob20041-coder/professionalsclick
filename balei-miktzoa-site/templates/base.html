@@ -103,13 +103,18 @@
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
-  <link rel="stylesheet" href="{{ static_rel('css/style.css') }}">
-  <link rel="stylesheet" href="{{ static_rel('css/fonts-override.css') }}">
+  <link rel="preload" href="{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}"></noscript>
+  <link rel="preload" href="{{ static_rel('css/fonts-override.css') }}?v={{ ASSET_VER }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ static_rel('css/fonts-override.css') }}?v={{ ASSET_VER }}"></noscript>
   <link rel="stylesheet"
         href="{{ static_rel('css/navbar.css') }}"
         media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ FA_LITE_URL }}">
-
+  <link rel="preload" href="{{ FA_LITE_URL }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ FA_LITE_URL }}"></noscript>
   <link rel="preload"
         href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}"
         as="font"
@@ -143,7 +148,7 @@
 
 
   {# --- Fallback ל-iOS/Safari: @import אינליין (נטען גם כש-link נתקע) --- #}
-  <style id="ios-css-import-fallback">
+  <style id="ios-css-import-fallback" type="text/plain">
     @import "{{ STYLE_URL }}";
     @import "{{ NAVBAR_URL }}";
     @import "{{ static_rel('css/icons.css') }}";
@@ -159,7 +164,7 @@
     <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
     <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
     <link rel="stylesheet" href="{{ FA_LITE_URL }}">
-  </noscript>
+    </noscript>
 
 
 
@@ -357,8 +362,8 @@
       document.head.appendChild(l);
     }
     window.addEventListener("load", function () {
-      var s1 = "{{ static_rel('css/style.css') }}";
-      var s2 = "{{ static_rel('css/navbar.css') }}";
+      var s1 = "{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}";
+      var s2 = "{{ static_rel('css/navbar.css') }}?v={{ ASSET_VER }}";
       setTimeout(function () {
         if (!sheetLoadedContains("css/style.css"))  reinject(s1);
         if (!sheetLoadedContains("css/navbar.css")) reinject(s2);

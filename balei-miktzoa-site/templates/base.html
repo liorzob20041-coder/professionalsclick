@@ -24,11 +24,20 @@
   {% set og_locale = 'he_IL' if g.current_lang == 'he' else ('en_US' if g.current_lang == 'en' else 'ru_RU') %}
 
   <title>{% block title %}{{ default_title }}{% endblock %}</title>
-  <style>
-    /* Critical stub to prevent jumps; no visual change */
+  <style id="critical-css">
+    html{box-sizing:border-box;min-height:100%}
+    *,*:before,*:after{box-sizing:inherit}
+    body{margin:0;min-height:100vh}
     .topbar-rail{min-height:56px}
-    body{min-height:100vh}
-    @supports (font: 1rem system-ui){html{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}}
+    .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
+    .hero-split{display:flex;flex-direction:column}
+    @media (min-width:768px){.hero-split{flex-direction:row}}
+    .hero-info,.hero-visual{flex:1 1 0}
+    .hero-visual{position:relative}
+    .hero-visual .hero-slides{position:relative}
+    .hero-visual img{display:block;width:100%;height:auto}
+    .language-switcher{position:relative;display:inline-flex}
+    .language-switcher ul{position:absolute;top:100%;margin:0;padding:0;list-style:none;min-width:100%}
   </style>
   {# --- מקום ייעודי למטא/OG/JSON-LD של הדף --- #}
   {% block head_seo %}{% endblock %}
@@ -109,17 +118,20 @@
   {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
   {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') ~ '?v=' ~ ASSET_VER %}
-  <link rel="preload" as="style" href="{{ STYLE_URL }}">
-  <link rel="stylesheet" href="{{ STYLE_URL }}" media="print" onload="this.media='all'">
+  <link rel="preload" as="style" href="{{ STYLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
-  <link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}">
-  <link rel="stylesheet" href="{{ FA_LITE_URL }}">
-  <link rel="stylesheet" href="{{ FA_FULL_URL }}" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="{{ FA_FULL_URL }}"></noscript>
-  <link rel="stylesheet" href="{{ NAVBAR_URL }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ ICONS_URL }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}" media="print" onload="this.media='all'">
+  <link rel="preload" as="style" href="{{ FONTS_OVERRIDE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}"></noscript>
+  <link rel="preload" as="style" href="{{ FA_LITE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ FA_LITE_URL }}"></noscript>
+  <link rel="preload" as="style" href="{{ NAVBAR_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ NAVBAR_URL }}"></noscript>
+  <link rel="preload" as="style" href="{{ ICONS_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ ICONS_URL }}"></noscript>
+  <link rel="preload" as="style" href="{{ BASE_BUNDLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}"></noscript>
+  <link rel="preload" as="style" href="{{ UI_FOUNDATION_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}"></noscript>
   <link rel="preload" as="font" type="font/woff2" href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}" crossorigin>
   <style id="ios-css-import-fallback" type="text/plain">
     @import "{{ STYLE_URL }}";
@@ -136,8 +148,31 @@
     <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
     <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
     <link rel="stylesheet" href="{{ FA_LITE_URL }}">
-    <link rel="stylesheet" href="{{ FA_FULL_URL }}">
   </noscript>
+  <script>
+  (function(){
+    function loadFullFA(){
+      var link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href='{{ FA_FULL_URL }}';
+      link.crossOrigin='anonymous';
+      document.head.appendChild(link);
+    }
+    function schedule(){
+      if('requestIdleCallback' in window){
+        requestIdleCallback(loadFullFA,{timeout:2000});
+      }else{
+        setTimeout(loadFullFA,0);
+      }
+    }
+    if(document.readyState==='complete'){
+      schedule();
+    }else{
+      window.addEventListener('load',schedule,{once:true});
+    }
+  })();
+  </script>
+  <noscript><link rel="stylesheet" href="{{ FA_FULL_URL }}"></noscript>
 
 
 
@@ -288,15 +323,15 @@
   </script>
   <script>
   (function () {
-    if (!(/[?&]debug=img(&|$)/.test(location.search) || localStorage.getItem('show_img_debug') === '1')) { return; }
-    var p = location.pathname || "";
-    if (p.startsWith("/admin") || p.startsWith("/api/") || p.startsWith("/static/")) return;
-    var src = document.getElementById("asset-debug-hud-source");
-    if (!src) return;
-    var code = src.textContent || src.innerText || "";
-    src.remove();
-    if (!code.trim()) return;
-    var run = function(){
+    var init = function () {
+      if (!(/[?&]debug=img(&|$)/.test(location.search) || localStorage.getItem('show_img_debug') === '1')) { return; }
+      var p = location.pathname || "";
+      if (p.startsWith("/admin") || p.startsWith("/api/") || p.startsWith("/static/")) return;
+      var src = document.getElementById("asset-debug-hud-source");
+      if (!src) return;
+      var code = src.textContent || src.innerText || "";
+      src.remove();
+      if (!code.trim()) return;
       try {
         new Function(code)();
       } catch (err) {
@@ -304,47 +339,53 @@
       }
     };
     if ("requestIdleCallback" in window) {
-      requestIdleCallback(run, { timeout: 120 });
+      requestIdleCallback(init, { timeout: 300 });
     } else {
-      setTimeout(run, 0);
+      setTimeout(init, 0);
     }
   })();
   </script>
-
   {# --- “מציל” ל-iOS --- #}
   <script>
   (function () {
-    var ua = navigator.userAgent || "";
-    var isiOS = /iP(hone|od|ad)/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
-    if (!isiOS) return;
-    function sheetLoadedContains(pathFrag) {
-      try {
-        return Array.from(document.styleSheets).some(function (s) {
-          return s.href && s.href.indexOf(pathFrag) !== -1 && s.cssRules && s.cssRules.length > 0;
-        });
-      } catch (e) {
-        return Array.from(document.styleSheets).some(function (s) {
-          return s.href && s.href.indexOf(pathFrag) !== -1;
-        });
+    var init = function () {
+      var ua = navigator.userAgent || "";
+      var isiOS = /iP(hone|od|ad)/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+      if (!isiOS) return;
+      function sheetLoadedContains(pathFrag) {
+        try {
+          return Array.from(document.styleSheets).some(function (s) {
+            return s.href && s.href.indexOf(pathFrag) !== -1 && s.cssRules && s.cssRules.length > 0;
+          });
+        } catch (e) {
+          return Array.from(document.styleSheets).some(function (s) {
+            return s.href && s.href.indexOf(pathFrag) !== -1;
+          });
+        }
       }
+      function reinject(href) {
+        var l = document.createElement("link");
+        l.rel = "stylesheet";
+        l.href = href + (href.indexOf("?") > -1 ? "&" : "?") + "ios_bust=" + Date.now();
+        document.head.appendChild(l);
+      }
+      window.addEventListener("load", function () {
+        var s1 = "{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}";
+        var s2 = "{{ static_rel('css/navbar.css') }}?v={{ ASSET_VER }}";
+        setTimeout(function () {
+          if (!sheetLoadedContains("css/style.css"))  reinject(s1);
+          if (!sheetLoadedContains("css/navbar.css")) reinject(s2);
+          setTimeout(function(){
+            try { var f = document.getElementById("ios-css-import-fallback"); if (f) f.remove(); } catch(_){ }
+          }, 800);
+        }, 300);
+      });
+    };
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(init, { timeout: 300 });
+    } else {
+      setTimeout(init, 0);
     }
-    function reinject(href) {
-      var l = document.createElement("link");
-      l.rel = "stylesheet";
-      l.href = href + (href.indexOf("?") > -1 ? "&" : "?") + "ios_bust=" + Date.now();
-      document.head.appendChild(l);
-    }
-    window.addEventListener("load", function () {
-      var s1 = "{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}";
-      var s2 = "{{ static_rel('css/navbar.css') }}?v={{ ASSET_VER }}";
-      setTimeout(function () {
-        if (!sheetLoadedContains("css/style.css"))  reinject(s1);
-        if (!sheetLoadedContains("css/navbar.css")) reinject(s2);
-        setTimeout(function(){
-          try { var f = document.getElementById("ios-css-import-fallback"); if (f) f.remove(); } catch(_){ }
-        }, 800);
-      }, 300);
-    });
   })();
   </script>
 
@@ -363,12 +404,16 @@
 .slide.active{display:block}
 .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
 </style>
-{% set hero_lcp_src_480 = url_for('img_proxy', filename='photo1.jpg', w=480, q=80, fit='cover', format='auto', v=ASSET_VER) %}
-{% set hero_lcp_src_768 = url_for('img_proxy', filename='photo1.jpg', w=768, q=80, fit='cover', format='auto', v=ASSET_VER) %}
-{% set hero_lcp_src_1024 = url_for('img_proxy', filename='photo1.jpg', w=1024, q=80, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_480 = url_for('img_proxy', filename='photo1.jpg', w=480, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_768 = url_for('img_proxy', filename='photo1.jpg', w=768, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_1024 = url_for('img_proxy', filename='photo1.jpg', w=1024, q=76, fit='cover', format='auto', v=ASSET_VER) %}
 {% set hero_lcp_srcset = [
   hero_lcp_src_480 ~ ' 480w',
+  hero_lcp_src_640 ~ ' 640w',
   hero_lcp_src_768 ~ ' 768w',
+  hero_lcp_src_960 ~ ' 960w',
   hero_lcp_src_1024 ~ ' 1024w'
 ] %}
 {% set flag_israel_png_1x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=32, q=85, fit='contain', format='png') %}
@@ -424,10 +469,12 @@
 {% set flag_russia_small = flag_russia_png_2x %}
 <!-- LCP image preload: תאם בדיוק לגדלי ה-srcset -->
 <link rel="preload" as="image"
-      href="{{ hero_lcp_src_768 }}"
+      href="{{ hero_lcp_src_960 }}"
       imagesrcset="
         {{ hero_lcp_src_480 }} 480w,
+        {{ hero_lcp_src_640 }} 640w,
         {{ hero_lcp_src_768 }} 768w,
+        {{ hero_lcp_src_960 }} 960w,
         {{ hero_lcp_src_1024 }} 1024w"
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 <link rel="preload" as="image" href="{{ flag_israel_small }}">
@@ -447,7 +494,7 @@
        srcset="{{ flag_israel_srcset_png|join(', ') }}"
        sizes="28px"
        loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ hero_lcp_src_768 }}" width="1024" height="684"
+  <img src="{{ hero_lcp_src_960 }}" width="1024" height="684"
        srcset="{{ hero_lcp_srcset|join(', ') }}"
        sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
        loading="eager" decoding="async" fetchpriority="high" alt="">

@@ -1,4 +1,10 @@
-/* Base */
+@font-face {
+  font-family: "Font Awesome 6 Free";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../vendor/fa/webfonts/fa-solid-900.woff2") format("woff2");
+}
 .fa, .fa-solid {
   font-family: "Font Awesome 6 Free";
   font-style: normal;
@@ -9,11 +15,9 @@
   line-height: 1;
 }
 .fa-solid:before { font-family: "Font Awesome 6 Free"; font-weight: 900; }
-/* Icons in use on the site */
-.fa-magnifying-glass:before { content: "\f002"; }        /* search */
-.fa-screwdriver-wrench:before { content: "\f7d9"; }      /* tools */
-.fa-location-dot:before { content: "\f3c5"; }            /* location */
-.fa-xmark:before { content: "\f00d"; }                   /* close */
-.fa-globe:before { content: "\f0ac"; }                   /* globe */
-/* Safety: reserve icon box to avoid CLS */
+.fa-magnifying-glass:before { content: "\f002"; }
+.fa-screwdriver-wrench:before { content: "\f7d9"; }
+.fa-location-dot:before { content: "\f3c5"; }
+.fa-xmark:before { content: "\f00d"; }
+.fa-globe:before { content: "\f0ac"; }
 i[class*="fa-"] { width: 1em; height: 1em; line-height: 1; }

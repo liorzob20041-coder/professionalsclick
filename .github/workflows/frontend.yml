@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ---------- Python for Jinja/Flask ----------
+      # Python for Jinja/Flask
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -32,7 +32,7 @@ jobs:
             echo "no templates"
           fi
 
-      # ---------- Node tooling ----------
+      # Node tooling
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -60,7 +60,7 @@ jobs:
         run: |
           npx stylelint "**/*.css" "**/*.html" "templates/**/*.html" --formatter=string > stylelint-report.txt || true
 
-      # ---------- Flask app deps ----------
+      # Flask app deps
       - name: Install app dependencies
         run: |
           python -m pip install --upgrade pip
@@ -68,7 +68,7 @@ jobs:
           if [ -f "balei-miktzoa-site/requirements.txt" ]; then pip install -r balei-miktzoa-site/requirements.txt; fi
           pip install -U Flask requests Jinja2 python-dotenv Flask-WTF WTForms deep-translator
 
-      # ---------- Start Flask ----------
+      # Start Flask
       - name: Start Flask
         env:
           FLASK_DEBUG: "0"
@@ -89,7 +89,6 @@ jobs:
           echo "Using entry: $ENTRY"
           python "$ENTRY" > server.log 2>&1 & echo $! > flask.pid
 
-          # wait for server + ensure process alive
           for i in {1..120}; do
             if curl -sSf http://127.0.0.1:5000/ >/dev/null; then
               echo "Flask is up"
@@ -103,32 +102,48 @@ jobs:
             sleep 1
           done
 
-      # ---------- Warmup & stable Lighthouse (median of 5) ----------
-      - name: Warmup cache
+      # Warmup for stable metrics
+      - name: Prewarm dynamic images
         run: |
+          urls=(
+            "http://127.0.0.1:5000/img/photo1.jpg?w=480&q=76&fit=cover&format=auto"
+            "http://127.0.0.1:5000/img/photo1.jpg?w=640&q=76&fit=cover&format=auto"
+            "http://127.0.0.1:5000/img/photo1.jpg?w=960&q=76&fit=cover&format=auto"
+            "http://127.0.0.1:5000/img/photo2.jpg?w=480&q=76&fit=cover&format=auto"
+            "http://127.0.0.1:5000/img/photo2.jpg?w=640&q=76&fit=cover&format=auto"
+            "http://127.0.0.1:5000/img/photo2.jpg?w=960&q=76&fit=cover&format=auto"
+          )
+          for u in "${urls[@]}"; do curl -sSf "$u" >/dev/null || true; done
           curl -sS http://127.0.0.1:5000/he/ >/dev/null || true
+          curl -sS http://127.0.0.1:5000/static/css/style.css >/dev/null || true
 
-      - name: Lighthouse (stable median)
-        continue-on-error: true
+      # Lighthouse: collect + assert + upload
+      - name: Lighthouse collect (5 runs, mobile)
         run: |
-          npx lhci autorun \
-            --collect.url=http://127.0.0.1:5000/he/ \
-            --collect.numberOfRuns=5 \
-            --collect.settings.throttlingMethod=simulate \
-            --collect.settings.formFactor=mobile \
-            --collect.settings.screenEmulation.mobile=true \
-            --collect.settings.chromeFlags="--no-sandbox" \
-            --upload.target=filesystem \
-            --upload.outputDir=./lhci-report || true
+          npx lhci collect \
+            --url=http://127.0.0.1:5000/he/ \
+            --numberOfRuns=5 \
+            --settings.throttlingMethod=simulate \
+            --settings.formFactor=mobile \
+            --settings.screenEmulation.mobile=true \
+            --settings.chromeFlags="--no-sandbox"
 
-      # ---------- Accessibility ----------
+      - name: Lighthouse assert (perf >= 0.80)
+        run: |
+          npx lhci assert --assertions.category-performance="error@>=0.80"
+
+      - name: Lighthouse upload
+        run: |
+          npx lhci upload --target=filesystem --outputDir=./lhci-report
+
+      # Accessibility
       - name: Accessibility (Pa11y)
         continue-on-error: true
         run: |
           echo '{ "defaults": { "standard": "WCAG2AA", "timeout": 30000 }, "urls": ["http://127.0.0.1:5000/he/"] }' > .pa11yci.json
           npx pa11y-ci | tee pa11y-report.txt || true
 
-      # ---------- Artifacts ----------
+      # Artifacts
       - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
@@ -140,13 +155,7 @@ jobs:
             server.log
           if-no-files-found: ignore
 
-      # ---------- Stop Flask ----------
-      - name: Stop Flask
-        if: always()
-        run: |
-          if [ -f flask.pid ]; then kill "$(cat flask.pid)" || true; fi
-
-
+      # Stop Flask
       - name: Stop Flask
         if: always()
         run: |

@@ -136,6 +136,7 @@
   <link rel="preload" as="style" href="{{ UI_FOUNDATION_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}"></noscript>
   <link rel="preload" as="font" type="font/woff2" href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}" crossorigin>
+  <!-- שומר פרילוד יחיד לפונט FA כדי להימנע מכפילויות -->
   <style id="ios-css-import-fallback" type="text/plain">
     @import "{{ STYLE_URL }}";
     @import "{{ NAVBAR_URL }}";
@@ -154,25 +155,62 @@
   </noscript>
   <script>
   (function(){
+    var loaded=false;
+    function needFullFA(){
+      return !!(window.NEED_FA_FULL || document.documentElement.hasAttribute('data-need-fa-full'));
+    }
+    function markLoaded(){
+      document.documentElement.setAttribute('data-fa-full-loaded','1');
+      document.documentElement.removeAttribute('data-fa-full-loading');
+    }
     function loadFullFA(){
+      if (loaded || !needFullFA()) return;
+      loaded=true;
+      document.documentElement.setAttribute('data-fa-full-loading','1');
       var link=document.createElement('link');
       link.rel='stylesheet';
       link.href='{{ FA_FULL_URL }}';
       link.crossOrigin='anonymous';
+      link.addEventListener('load', markLoaded, { once:true });
+      link.addEventListener('error', markLoaded, { once:true });
       document.head.appendChild(link);
     }
     function schedule(){
+      if (loaded || !needFullFA()) return;
       if('requestIdleCallback' in window){
         requestIdleCallback(loadFullFA,{timeout:2000});
       }else{
         setTimeout(loadFullFA,0);
       }
     }
+    function requestNow(){
+      window.NEED_FA_FULL = true;
+      if (document.readyState === 'complete'){
+        loadFullFA();
+      }else{
+        schedule();
+      }
+    }
+    window.requestFAFull = requestNow;
+    document.addEventListener('fa-full-needed', requestNow);
+    if ('MutationObserver' in window){
+      var mo = new MutationObserver(function(records){
+        for (var i=0; i<records.length; i++){
+          var record = records[i];
+          if (record.type === 'attributes' && record.attributeName === 'data-need-fa-full'){
+            if (needFullFA()) schedule();
+            break;
+          }
+        }
+      });
+      mo.observe(document.documentElement, { attributes:true });
+    }
     if(document.readyState==='complete'){
       schedule();
     }else{
       window.addEventListener('load',schedule,{once:true});
     }
+    if (needFullFA()) schedule();
   })();
   </script>
   <noscript><link rel="stylesheet" href="{{ FA_FULL_URL }}"></noscript>
@@ -481,27 +519,9 @@
         {{ hero_lcp_src_1024 }} 1024w"
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 <link rel="preload" as="image" href="{{ flag_israel_small }}">
-<!-- הקטנת CLS: פרילוד לפונט האייקונים -->
-<link rel="preload" as="font" type="font/woff2" crossorigin
-      href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}">
-
 </head>
 <body>
-
-<iframe src="{{ url_for('warmup', v=ASSET_VER) }}"
-        style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;"
-        tabindex="-1" aria-hidden="true"></iframe>
-
-<div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
-  <img src="{{ flag_israel_png_2x }}" width="28" height="20"
-       srcset="{{ flag_israel_srcset_png|join(', ') }}"
-       sizes="28px"
-       loading="eager" decoding="async" fetchpriority="high" alt="">
-  <img src="{{ hero_lcp_src_960 }}" width="1024" height="684"
-       srcset="{{ hero_lcp_srcset|join(', ') }}"
-       sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
-       loading="eager" decoding="async" fetchpriority="high" alt="">
-</div>
+<!-- warmup iframe יוזרק דינמית לאחר טעינת הדף -->
 
   <!-- קישור דילוג לתוכן -->
   <a href="#main-content" class="skip-link">דלג לתוכן המרכזי</a>
@@ -642,7 +662,7 @@
           sizes="(min-width: 992px) 320px, 240px"
           alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
           width="320" height="40"
-          loading="eager" decoding="async" fetchpriority="high">
+          loading="eager" decoding="async" fetchpriority="low">
       </picture>
       <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
     </a>
@@ -1092,8 +1112,20 @@ runWhenIdle(function(){
   document.head.appendChild(s);
 });
 </script>
-
-
+<script>
+runWhenIdle(function(){
+  window.addEventListener('load', function(){
+    try{
+      var f=document.createElement('iframe');
+      f.src="{{ url_for('warmup', v=ASSET_VER) }}";
+      f.style.cssText="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;";
+      f.tabIndex=-1;
+      f.setAttribute('aria-hidden','true');
+      document.body.appendChild(f);
+    }catch(_){ }
+  }, { once: true });
+});
+</script>
 <script>
 runWhenIdle(function () {
   const urls = [

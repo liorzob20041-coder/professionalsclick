@@ -118,11 +118,14 @@
   {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
   {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') ~ '?v=' ~ ASSET_VER %}
-  <link rel="preload" as="style" href="{{ STYLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- Non-blocking: main stylesheet preloaded, applied via media=print -->
+  <link rel="preload" as="style" href="{{ STYLE_URL }}">
+  <link rel="stylesheet" href="{{ STYLE_URL }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
-  <link rel="preload" as="style" href="{{ FONTS_OVERRIDE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- Non-blocking: small overrides and FA-lite -->
+  <link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}"></noscript>
-  <link rel="preload" as="style" href="{{ FA_LITE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="{{ FA_LITE_URL }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ FA_LITE_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ NAVBAR_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ NAVBAR_URL }}"></noscript>

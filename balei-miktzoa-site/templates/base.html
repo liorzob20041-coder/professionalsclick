@@ -28,33 +28,10 @@
   <style id="critical-css">
     html{box-sizing:border-box;min-height:100%}
     *,*:before,*:after{box-sizing:inherit}
-    :root{
-      --lang-chip-w:64px;
-      --tb-logo-w:320px;
-      --tb-logo-h:40px;
-      --hdr-h:64px;
-      --hdr-bg:rgb(255 255 255 / 95%);
-      --hdr-shadow:0 8px 22px rgb(0 0 0 / 6%);
-      --hdr-edge:16px
-    }
-    @media (min-width:640px){
-      :root{--hdr-h:72px;--hdr-edge:24px}
-    }
-    body{margin:0;min-height:100vh;padding-top:var(--hdr-h)}
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0 0 auto;
-      height:var(--hdr-h);
-      background:var(--hdr-bg);
-      border-bottom:1px solid rgb(0 0 0 / 6%);
-      box-shadow:none;
-      pointer-events:none;
-      z-index:9000
-    }
-    body.scrolled::before{box-shadow:var(--hdr-shadow)}
-    .topbar-rail{position:fixed;top:0;left:0;right:0;height:var(--hdr-h);display:flex;align-items:center;justify-content:center;z-index:12050;pointer-events:none}
-    .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between;height:100%;padding-inline:var(--hdr-edge);pointer-events:auto}
+    body{margin:0;min-height:100vh}
+    :root{--lang-chip-w:64px;--tb-logo-w:320px;--tb-logo-h:40px}
+    .topbar-rail{min-height:56px}
+    .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
     .tb-logo-picture,.tb-logo-picture img,.tb-logo-strip{display:block}
     .tb-logo-strip{width:320px;max-width:100%;height:auto;aspect-ratio:8/1;inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
     .search-btn{inline-size:40px;min-inline-size:40px}

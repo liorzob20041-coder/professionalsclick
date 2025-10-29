@@ -1,0 +1,62 @@
+[
+  {
+    "url": "http://127.0.0.1:5000/he/",
+    "isRepresentativeRun": false,
+    "htmlPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_15_43.report.html",
+    "jsonPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_15_43.report.json",
+    "summary": {
+      "performance": 0.94,
+      "accessibility": 0.99,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://127.0.0.1:5000/he/",
+    "isRepresentativeRun": false,
+    "htmlPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_15_56.report.html",
+    "jsonPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_15_56.report.json",
+    "summary": {
+      "performance": 0.71,
+      "accessibility": 0.99,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://127.0.0.1:5000/he/",
+    "isRepresentativeRun": false,
+    "htmlPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_16_09.report.html",
+    "jsonPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_16_09.report.json",
+    "summary": {
+      "performance": 0.76,
+      "accessibility": 0.99,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://127.0.0.1:5000/he/",
+    "isRepresentativeRun": false,
+    "htmlPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_16_35.report.html",
+    "jsonPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_16_35.report.json",
+    "summary": {
+      "performance": 0.74,
+      "accessibility": 0.99,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://127.0.0.1:5000/he/",
+    "isRepresentativeRun": true,
+    "htmlPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_16_22.report.html",
+    "jsonPath": "/home/runner/work/professionalsclick/professionalsclick/lhci-report/127_0_0_1-he_-2025_10_29_14_16_22.report.json",
+    "summary": {
+      "performance": 0.77,
+      "accessibility": 0.99,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  }
+]

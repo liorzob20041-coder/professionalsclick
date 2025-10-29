@@ -4768,7 +4768,7 @@ def api_suggest():
 
 
 # ===== iOS inline-CSS fallback (only for Safari on iPhone/iPad) =====
-IOS_INLINE_CSS_FILES = ['css/style.css', 'css/navbar.css']  # תוסיף/תגרע לפי מה שיש לך
+IOS_INLINE_CSS_FILES = ['css/style.min.css', 'css/navbar.css']  # תוסיף/תגרע לפי מה שיש לך
 
 def _is_ios_safari(ua: str) -> bool:
     if not ua:

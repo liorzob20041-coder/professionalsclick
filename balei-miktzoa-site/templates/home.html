@@ -134,11 +134,11 @@
   </div>
 
   <!-- RIGHT: visual + search panel -->
-    <div class="hero-visual">
-      <div class="hero-slides"
-      <div class="hero-slides"
-           style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=160, q=55, fit='cover', format='auto', v=ASSET_VER) }}');">
-        <picture class="hero-lcp">
+  <div class="hero-visual">
+    <div class="hero-slides"
+         style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=160, q=55, fit='cover', format='auto', v=ASSET_VER) }}');">
+      <div class="slide active">
+        <picture class="hero-media">
           <source type="image/avif"
                   srcset="{{ url_for('img_proxy', filename='photo1.jpg', w=480, q=76, fit='cover', format='avif', v=ASSET_VER) }} 480w,
                           {{ url_for('img_proxy', filename='photo1.jpg', w=640, q=76, fit='cover', format='avif', v=ASSET_VER) }} 640w,
@@ -151,34 +151,38 @@
                           {{ url_for('img_proxy', filename='photo1.jpg', w=768, q=76, fit='cover', format='webp', v=ASSET_VER) }} 768w,
                           {{ url_for('img_proxy', filename='photo1.jpg', w=960, q=76, fit='cover', format='webp', v=ASSET_VER) }} 960w,
                           {{ url_for('img_proxy', filename='photo1.jpg', w=1024, q=76, fit='cover', format='webp', v=ASSET_VER) }} 1024w">
-          <img class="slide active"
+          <img class="hero-image"
                src="{{ hero_lcp_src_960 }}"
-               srcset="{{ hero_lcp_src_480 }} 480w, {{ hero_lcp_src_640 }} 640w, {{ hero_lcp_src_768 }} 768w, {{ hero_lcp_src_960 }} 960w, {{ hero_lcp_src_1024 }} 1024w"
+               srcset="{{ hero_lcp_srcset|join(', ') }}"
                sizes="(min-width:1200px) 616px, (min-width:768px) 50vw, 100vw"
-               width="1024" height="684" loading="eager" decoding="async" fetchpriority="high" alt="">
+               width="1024" height="684"
+               loading="eager" decoding="sync" fetchpriority="high"
+               alt="{{ _('homepage.hero_img_main_alt') }}">
         </picture>
-        {% set hero_b_src_480 = url_for('img_proxy', filename='photo2.jpg', w=480, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-        {% set hero_b_src_640 = url_for('img_proxy', filename='photo2.jpg', w=640, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-        {% set hero_b_src_768 = url_for('img_proxy', filename='photo2.jpg', w=768, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-        {% set hero_b_src_960 = url_for('img_proxy', filename='photo2.jpg', w=960, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-        {% set hero_b_src_1024 = url_for('img_proxy', filename='photo2.jpg', w=1024, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-        {% set hero_b_srcset = [
-          hero_b_src_480 ~ ' 480w',
-          hero_b_src_640 ~ ' 640w',
-          hero_b_src_768 ~ ' 768w',
-          hero_b_src_960 ~ ' 960w',
-          hero_b_src_1024 ~ ' 1024w'
-        ] %}
-        <img id="slideB" class="slide"
+      </div>
+      {% set hero_b_src_480 = url_for('img_proxy', filename='photo2.jpg', w=480, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_640 = url_for('img_proxy', filename='photo2.jpg', w=640, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_768 = url_for('img_proxy', filename='photo2.jpg', w=768, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_960 = url_for('img_proxy', filename='photo2.jpg', w=960, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_1024 = url_for('img_proxy', filename='photo2.jpg', w=1024, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_srcset = [
+        hero_b_src_480 ~ ' 480w',
+        hero_b_src_640 ~ ' 640w',
+        hero_b_src_768 ~ ' 768w',
+        hero_b_src_960 ~ ' 960w',
+        hero_b_src_1024 ~ ' 1024w'
+      ] %}
+      <div class="slide">
+        <img class="hero-image"
              src="{{ hero_b_src_960 }}"
              srcset="{{ hero_b_srcset|join(', ') }}"
              sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
              width="1024" height="684"
-             decoding="async" loading="lazy"
+             loading="lazy" decoding="async"
              alt="{{ _('homepage.hero_img_alt_b') }}">
-
-
-      <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
+      </div>
+    </div>
+    <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
         <!-- נשאר כמו שהוא -->
         <h2 class="hero-title">{{ _('homepage.hero_title_overlay') }}</h2>
         <form class="hero-search" role="search" onsubmit="return redirectToCleanURL(event)" novalidate data-search-form="hero">
@@ -478,14 +482,22 @@
       if (!slides || slides.length <= 1) return;
       var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReduced) return;
-      slides.forEach(function (img) { if (img && !img.complete) { var pre = new Image(); pre.src = img.src; } });
+      slides.forEach(function (slide) {
+        var img = slide && slide.querySelector('img');
+        if (img && !img.complete) {
+          var pre = new Image();
+          pre.src = img.currentSrc || img.src;
+        }
+      });
       var i = 0, DURATION = 6000, FADE_MS = 900;
       setInterval(function () {
         var current = slides[i];
         i = (i + 1) % slides.length;
         var next = slides[i];
         if (next) next.classList.add('active');
-        setTimeout(function () { if (current) current.classList.remove('active'); }, FADE_MS + 50);
+        setTimeout(function () {
+          if (current) current.classList.remove('active');
+        }, FADE_MS + 50);
       }, DURATION);
     });
   </script>

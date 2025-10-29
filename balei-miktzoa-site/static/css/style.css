@@ -162,6 +162,18 @@ video {
   max-width: 100%;
   height: auto;
 }
+img[loading="lazy"] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* ׳₪׳׳׳©׳™׳ ׳’׳׳•׳‘׳׳™׳™׳ */
 .flash-container {

@@ -41,7 +41,7 @@
     .hero-split{display:flex;flex-direction:column}
     @media (min-width:768px){.hero-split{flex-direction:row}}
     .hero-info,.hero-visual{flex:1 1 0}
-    .hero-visual{position:relative}
+    .hero-visual{position:relative;aspect-ratio:16/9;min-height:clamp(220px,38vw,420px)}
     .hero-visual .hero-slides{position:relative}
     .hero-visual img{display:block;width:100%;height:auto}
     .language-switcher{position:relative;display:inline-flex}
@@ -118,7 +118,7 @@
   {% endblock %}
 
   {# --- קישורי CSS/נכסים --- #}
-  {% set STYLE_URL = static_rel('css/style.css') ~ '?v=' ~ ASSET_VER %}
+  {% set STYLE_URL = static_rel('css/style.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set NAVBAR_URL = static_rel('css/navbar.css') ~ '?v=' ~ ASSET_VER %}
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.css') ~ '?v=' ~ ASSET_VER %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.css') ~ '?v=' ~ ASSET_VER %}
@@ -416,10 +416,10 @@
         document.head.appendChild(l);
       }
       window.addEventListener("load", function () {
-        var s1 = "{{ static_rel('css/style.css') }}?v={{ ASSET_VER }}";
+        var s1 = "{{ static_rel('css/style.min.css') }}?v={{ ASSET_VER }}";
         var s2 = "{{ static_rel('css/navbar.css') }}?v={{ ASSET_VER }}";
         setTimeout(function () {
-          if (!sheetLoadedContains("css/style.css"))  reinject(s1);
+          if (!sheetLoadedContains("css/style.min.css"))  reinject(s1);
           if (!sheetLoadedContains("css/navbar.css")) reinject(s2);
           setTimeout(function(){
             try { var f = document.getElementById("ios-css-import-fallback"); if (f) f.remove(); } catch(_){ }

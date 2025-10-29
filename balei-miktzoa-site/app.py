@@ -417,7 +417,40 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = str(BASE_DIR / 'static')
 STATIC_DIR_ABS = os.path.abspath(STATIC_DIR)
 
+try:
+    _img_cache_env = os.environ.get("IMG_CACHE_DIR")
+    IMG_CACHE_DIR = Path(_img_cache_env) if _img_cache_env else BASE_DIR / "data" / "img-cache"
+    IMG_CACHE_DIR = IMG_CACHE_DIR.resolve()
+    IMG_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    IMG_CACHE_ENABLED = True
+except Exception as cache_exc:  # pragma: no cover - defensive fallback
+    logging.getLogger(__name__).warning("Image cache disabled: %s", cache_exc)
+    IMG_CACHE_DIR = None
+    IMG_CACHE_ENABLED = False
 
+IMG_CACHE_LOCKS: dict[str, Lock] = {}
+IMG_CACHE_LOCKS_GUARD = Lock()
+
+
+def _get_img_cache_lock(cache_key: str) -> Lock:
+    with IMG_CACHE_LOCKS_GUARD:
+        lock = IMG_CACHE_LOCKS.get(cache_key)
+        if lock is None:
+            lock = Lock()
+            IMG_CACHE_LOCKS[cache_key] = lock
+        return lock
+
+
+def _make_img_response(data: bytes, content_type: str, *, cache_status: str) -> Response:
+    resp = Response(data, mimetype=content_type)
+    resp.headers["Content-Type"] = content_type
+    resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Bypass-Inline"] = "1"
+    resp.headers["Vary"] = "Accept"
+    resp.headers["X-Which-Route"] = "/img"
+    resp.headers["X-Img-Cache"] = cache_status
+    return resp
 def _resolve_static_path(rel_path, *, allow_directory: bool = False) -> str | None:
     """Resolve a path inside ``STATIC_DIR`` ensuring it stays within the directory."""
 
@@ -1855,8 +1888,8 @@ def _force_img_content_type(resp):
 @app.route("/img/<path:filename>")
 def img_proxy(filename):
     # פרמטרים
-    w = request.args.get("w", type=int)
-    h = request.args.get("h", type=int)
+    target_w = request.args.get("w", type=int)
+    target_h = request.args.get("h", type=int)
     fit = (request.args.get("fit") or "cover").lower()
     q = max(1, min(request.args.get("q", default=80, type=int), 95))
     fmt_req = (request.args.get("format") or "auto").lower()
@@ -1879,58 +1912,140 @@ def img_proxy(filename):
     else:
         fmt_out = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "WEBP"}.get(fmt_req, "JPEG")
     ct = {"JPEG": "image/jpeg", "WEBP": "image/webp", "PNG": "image/png"}[fmt_out]
+    ext = {"JPEG": ".jpg", "WEBP": ".webp", "PNG": ".png"}[fmt_out]
 
-    # עיבוד ושינוי גודל
-    try:
-        with Image.open(src_path) as im:
-            if fmt_out == "JPEG":
-                if im.mode in ("RGBA", "LA"):
-                    bg = Image.new("RGB", im.size, (255, 255, 255))
-                    bg.paste(im, mask=im.split()[-1])
-                    im = bg
+    cache_key: str | None = None
+    cache_path: Path | None = None
+    cache_lock: Lock | None = None
+
+
+    if IMG_CACHE_ENABLED:
+        try:
+            src_stat = os.stat(src_path)
+            cache_basis = "|".join([
+                src_path,
+                str(src_stat.st_mtime_ns),
+                str(src_stat.st_size),
+                str(target_w or ""),
+                str(target_h or ""),
+                fit,
+                str(q),
+                fmt_out,
+            ])
+            cache_digest = hashlib.blake2s(cache_basis.encode("utf-8"), digest_size=16).hexdigest()
+            cache_key = cache_digest
+            cache_root = IMG_CACHE_DIR
+            if cache_root is None:
+                raise RuntimeError("Image cache directory unavailable")
+            cache_path = cache_root / f"{cache_digest}{ext}"
+            cache_lock = _get_img_cache_lock(cache_digest)
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            logging.getLogger(__name__).warning("img cache prepare failed for %s: %s", filename, exc)
+            cache_key = None
+            cache_path = None
+            cache_lock = None
+
+    def try_cache_response() -> Response | None:
+        if cache_path and cache_path.exists():
+            try:
+                data = cache_path.read_bytes()
+            except OSError:
+                return None
+            resp_cached = _make_img_response(data, ct, cache_status="hit")
+            if cache_key:
+                resp_cached.headers["X-Img-Cache-Key"] = cache_key
+            return resp_cached
+        return None
+
+    cached_resp = try_cache_response()
+    if cached_resp is not None:
+        return cached_resp
+
+    def render_bytes() -> tuple[bytes | None, Response | None]:
+        try:
+            with Image.open(src_path) as im:
+                if fmt_out == "JPEG":
+                    if im.mode in ("RGBA", "LA"):
+                        bg = Image.new("RGB", im.size, (255, 255, 255))
+                        bg.paste(im, mask=im.split()[-1])
+                        im = bg
+                    else:
+                        im = im.convert("RGB")
                 else:
-                    im = im.convert("RGB")
-            else:
-                if im.mode not in ("RGB", "RGBA"):
-                    im = im.convert("RGBA" if "A" in im.getbands() else "RGB")
+                    if im.mode not in ("RGB", "RGBA"):
+                        im = im.convert("RGBA" if "A" in im.getbands() else "RGB")
 
-            if w or h:
-                if not w and h:
-                    w = int(h * (im.width / im.height))
-                if not h and w:
-                    h = int(w / (im.width / im.height))
-                size = (w or im.width, h or im.height)
-                out = ImageOps.contain(im, size, Image.LANCZOS) if fit == "contain" \
-                      else ImageOps.fit(im, size, Image.LANCZOS, centering=(0.5, 0.5))
-            else:
-                out = im
+                proc_w = target_w
+                proc_h = target_h
+                if proc_w or proc_h:
+                    if not proc_w and proc_h:
+                        proc_w = int(proc_h * (im.width / im.height))
+                    if not proc_h and proc_w:
+                        proc_h = int(proc_w / (im.width / im.height))
+                    size = (proc_w or im.width, proc_h or im.height)
+                    out = ImageOps.contain(im, size, Image.LANCZOS) if fit == "contain" \
+                        else ImageOps.fit(im, size, Image.LANCZOS, centering=(0.5, 0.5))
+                else:
+                    out = im
 
-            buf = BytesIO()
-            save_kwargs = {}
-            if fmt_out == "JPEG":
-                save_kwargs.update(quality=q, optimize=True, progressive=False)
-            elif fmt_out == "WEBP":
-                save_kwargs.update(quality=q, method=6)
-            elif fmt_out == "PNG":
-                save_kwargs.update(optimize=True)
-            out.save(buf, fmt_out, **save_kwargs)
-            buf.seek(0)
-    except Exception:
-        resp = Response(b"Image processing error", 500, {
-            "Content-Type": "text/plain; charset=utf-8",
-            "X-Bypass-Inline": "1",
-        })
-        resp.headers["X-Which-Route"] = "/img"
-        return resp
+                buf = BytesIO()
+                save_kwargs = {}
+                if fmt_out == "JPEG":
+                    save_kwargs.update(quality=q, optimize=True, progressive=False)
+                elif fmt_out == "WEBP":
+                    save_kwargs.update(quality=q, method=6)
+                elif fmt_out == "PNG":
+                    save_kwargs.update(optimize=True)
+                out.save(buf, fmt_out, **save_kwargs)
+                buf.seek(0)
+                return buf.getvalue(), None
+        except Exception as err:
+            logging.getLogger(__name__).warning("Image processing error for %s: %s", filename, err)
+            resp_err = Response(b"Image processing error", 500, {
+                "Content-Type": "text/plain; charset=utf-8",
+                "X-Bypass-Inline": "1",
+            })
+            resp_err.headers["X-Which-Route"] = "/img"
+            resp_err.headers["X-Img-Cache"] = "error"
+            return None, resp_err
 
-    # תגובה: MIME נכון + דגלים + דיבאג
-    resp = Response(buf.getvalue(), mimetype=ct)
-    resp.headers["Content-Type"] = ct
-    resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
-    resp.headers["X-Content-Type-Options"] = "nosniff"
-    resp.headers["X-Bypass-Inline"] = "1"
-    resp.headers["Vary"] = "Accept"
-    resp.headers["X-Which-Route"] = "/img"
+    if cache_lock is not None and cache_path is not None:
+        with cache_lock:
+            cached_resp = try_cache_response()
+            if cached_resp is not None:
+                return cached_resp
+
+            data, error_resp = render_bytes()
+            if error_resp is not None:
+                return error_resp
+            assert data is not None
+
+            cache_status = "miss"
+            try:
+                tmp_name = cache_path.with_name(
+                    f"{cache_path.name}.tmp-{os.getpid()}-{threading.get_ident()}"
+                )
+                with open(tmp_name, "wb") as fh:
+                    fh.write(data)
+                os.replace(tmp_name, cache_path)
+            except OSError as write_exc:  # pragma: no cover - best effort persistence
+                logging.getLogger(__name__).warning("Failed to persist img cache %s: %s", cache_path, write_exc)
+                cache_status = "miss-error"
+
+            resp_out = _make_img_response(data, ct, cache_status=cache_status)
+            if cache_key:
+                resp_out.headers["X-Img-Cache-Key"] = cache_key
+            return resp_out
+
+    data, error_resp = render_bytes()
+    if error_resp is not None:
+        return error_resp
+    assert data is not None
+
+    cache_status = "disabled" if not IMG_CACHE_ENABLED else "skip"
+    resp = _make_img_response(data, ct, cache_status=cache_status)
+    if cache_key:
+        resp.headers["X-Img-Cache-Key"] = cache_key
     return resp
 
 

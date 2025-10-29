@@ -2,7 +2,7 @@
   /* Brand palette */
   --primary: #7a1f3d;
   --primary-700: #631935;
-  --bg: #ffffff;
+  --bg: #fff;
   --ink: #101828;
   --muted: #475467;
   --line: #e4e7ec;
@@ -210,7 +210,7 @@ textarea:focus {
   margin-right: 0;
 }
 
-* Featured article */
+/* Featured article */
 .featured-article {
   padding-block: var(--gap-6);
 }

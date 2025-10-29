@@ -14,7 +14,7 @@ body {
   margin: 0;
   background: var(--color-surface);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.5;
 }

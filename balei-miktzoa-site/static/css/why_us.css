@@ -44,6 +44,8 @@
   --space-after-head: clamp(36px, 3.8vw, 56px);
   --space-before-process-head: clamp(72px, 7.5vw, 120px);
   --space-after-block: clamp(32px, 5.8vw, 68px);
+  --vf-nudge-mobile: -3px;
+  --vf-nudge-desktop: -19px;
 }
 
 /* -------------------- Page Shell -------------------- */
@@ -738,11 +740,13 @@
   display: grid;
   gap: clamp(16px, 2.6vw, 28px);
   grid-template-columns: 1fr; /* מובייל */
+  transform: translateY(var(--vf-nudge-mobile));
+  margin-block-end: clamp(18px, 4vw, 36px);
 }
-
 @media (width >= 980px){
   .value-features{
     grid-template-columns: repeat(2, minmax(0, 1fr)); /* דסקטופ: 2 כרטיסים רחבים */
+    transform: translateY(var(--vf-nudge-desktop));
   }
 }
 
@@ -756,6 +760,7 @@
   transition: transform var(--speed-std) ease,
               border-color var(--speed-std) ease,
               box-shadow var(--speed-std) ease;
+  text-align: start;
 }
 .value-features > li:hover{
   transform: translateY(-3px);
@@ -803,41 +808,6 @@
   margin-block-start: clamp(20px, 4vw, 32px);
 }
 
-/* יישור נכון ב-RTL/LTR */
-.value-features > li{ text-align: start; }
-
-
-
-
-/* ==== WHY US — ניג’וס עדין כלפי מעלה רק לכרטיסי value-features ==== */
-
-/* כיוונון מהיר: שנה כאן אם תרצה יותר/פחות פיקסלים */
-:root{
-  --vf-nudge-mobile: -3px;  /* מובייל/טאבלט */
-  --vf-nudge-desktop: -19px; /* דסקטופ */
-}
-
-/* מזיז את בלוק הכרטיסים מעלה, הכותרת נשארת במקום */
-.value-features{
-  transform: translateY(var(--vf-nudge-mobile));
-}
-
-/* בדסקטופ קצת יותר ניג'וס */
-@media (width >= 980px){
-  .value-features{
-    transform: translateY(var(--vf-nudge-desktop));
-  }
-}
-
-/* שמירה על מרווח מתחת, כדי שלא יידבק למה שמגיע אחרי */
-.value-features{
-  margin-block-end: clamp(18px, 4vw, 36px);
-}
-
-
-
-
-
 
 /* ==== WHAT MATTERS (assure) — Desktop only tweaks ==== */
 @media (width >= 1040px){
@@ -846,8 +816,7 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(18px, 2.2vw, 28px);
-    margin-block-start: clamp(28px, 4vw, 40px);   /* רווח מהכותרת מעל */
-    margin-block-end: clamp(28px, 4vw, 48px);     /* רווח לכפתור שמתחת */
+    margin-block: clamp(28px, 4vw, 40px) clamp(28px, 4vw, 48px);   /* רווח מהכותרת מעל */     /* רווח לכפתור שמתחת */
   }
 
   /* הכרטיסים עצמם לגובה מלא, בלי לשנות מובייל */

@@ -29,11 +29,18 @@
 }
 
 /* ===== ׳³ג€™׳³ֲ¨׳³ג„¢׳³ג€ ׳³ג€׳³ֻ׳³ג€¢׳³ג‚×׳³ֲ¡ ===== */
-.add-review-form {
+:is(.add-review-form, form[action*="add-review"], form[action*="add_review"]) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px 16px;
   align-items: end;
+  max-width: 780px;
+  margin: 50px auto;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 6%);
 }
 
 /* ׳³ֲ©׳³ג€¢׳³ֲ¨׳³ג€ ׳³ֲ׳³ֲ׳³ֲ׳³ג€ */
@@ -42,7 +49,7 @@
 }
 
 /* ׳³ֳ—׳³ג€¢׳³ג€¢׳³ג„¢׳³ג€¢׳³ֳ— ׳³ג€¢׳³ֲ©׳³ג€׳³ג€¢׳³ֳ— */
-.add-review-form label {
+:is(.add-review-form, form[action*="add-review"], form[action*="add_review"]) label {
   display: block;
   font-weight: 700;
   color: #7a4f14;
@@ -51,12 +58,11 @@
 }
 
 /* ׳³ג€˜׳³ֲ¡׳³ג„¢׳³ֲ¡ ׳³ֲ׳³ֲ©׳³ג€׳³ג€¢׳³ֳ— ׳’ג‚¬ג€ ׳³ג€™׳³ֲ ׳³ג€˜׳²ֲ¾Fallback (׳³ֲ׳³ג‚×׳³ג„¢ action) */
-.add-review-form select,
-.add-review-form input[type="text"],
-.add-review-form input[type="number"],
-.add-review-form textarea,
-form[action*="add-review"] :is(select, input[type="text"], input[type="number"], textarea),
-form[action*="add_review"] :is(select, input[type="text"], input[type="number"], textarea) {
+:is(
+    .add-review-form,
+    form[action*="add-review"],
+    form[action*="add_review"]
+  ) :is(select, input[type="text"], input[type="number"], textarea) {
   padding: 12px;
   font-size: 1rem;
   border: 1.5px solid rgb(192 57 43 / 35%);
@@ -70,16 +76,15 @@ form[action*="add_review"] :is(select, input[type="text"], input[type="number"],
 }
 
 /* ׳³ֲ¨׳³ג€¢׳³ג€”׳³ג€˜ ׳³ֲ׳³ֲ׳³ֲ */
-.add-review-form :is(select, input, textarea) {
+:is(
+    .add-review-form,
+    form[action*="add-review"],
+    form[action*="add_review"]
+  ) :is(select, input, textarea) {
   width: 100%;
   box-sizing: border-box;
 }
 
-form[action*="add-review"] :is(label, select, input[type="text"], input[type="number"], textarea),
-form[action*="add_review"] :is(label, select, input[type="text"], input[type="number"], textarea) {
-  width: 100%;
-  box-sizing: border-box;
-}
 
 /* ׳³ֻ׳³ֲ§׳³ֲ¡׳³ֻ׳³ֲ׳³ֲ¨׳³ֲ׳³ג€ */
 .add-review-form textarea,
@@ -157,31 +162,22 @@ form[action*="add_review"] button[type="submit"]:active {
 /* =========================================
    Fallback ׳³ֲ׳³ֲ׳³ֲ ׳³ֲ׳³ֻ׳³ג€¢׳³ג‚×׳³ֲ¡ ׳³ֲ׳³ֲ ׳³ֲ׳³ג„¢׳³ֲ ׳³ֲ׳³ג€”׳³ֲ׳³ֲ§׳³ג€¢׳³ֳ— (׳³ֲ׳³ג‚×׳³ג„¢ action)
    ========================================= */
-form[action*="add-review"],
-form[action*="add_review"] {
-  max-width: 780px;
-  margin: 50px auto;
-  padding: 22px;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 6%);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px 16px;
-  align-items: end;
-}
-form[action*="add-review"] > h1,
-form[action*="add_review"] > h1 {
+:is(
+    .add-review-form,
+    form[action*="add-review"],
+    form[action*="add_review"]
+  ) > h1 {
   grid-column: 1 / -1;
   margin: 0 0 6px;
   text-align: center;
   color: #333;
   font-size: 2rem;
 }
-.add-review-form button[type="submit"],
-form[action*="add-review"] button[type="submit"],
-form[action*="add_review"] button[type="submit"] {
+:is(
+    .add-review-form,
+    form[action*="add-review"],
+    form[action*="add_review"]
+  ) button[type="submit"] {
   justify-self: start;
   min-width: 200px;
 }
@@ -192,20 +188,26 @@ form[action*="add_review"] button[type="submit"] {
   .add-review-page h1 {
     font-size: 1.75rem;
   }
-  .add-review-form,
-  form[action*="add-review"],
-  form[action*="add_review"] {
+  :is(
+      .add-review-form,
+      form[action*="add-review"],
+      form[action*="add_review"]
+    ) {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .add-review-form label,
-  form[action*="add-review"] label,
-  form[action*="add_review"] label {
+  :is(
+      .add-review-form,
+      form[action*="add-review"],
+      form[action*="add_review"]
+    ) label {
     margin-inline: 2px;
   }
-  .add-review-form button[type="submit"],
-  form[action*="add-review"] button[type="submit"],
-  form[action*="add_review"] button[type="submit"] {
+  :is(
+      .add-review-form,
+      form[action*="add-review"],
+      form[action*="add_review"]
+    ) button[type="submit"] {
     justify-self: stretch;
     width: 100%;
     min-width: 0;

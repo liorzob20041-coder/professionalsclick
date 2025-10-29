@@ -478,8 +478,7 @@ html[dir="ltr"] .language-switcher {
     transform: translateX(-18px);
   }
   html[dir="ltr"] .language-switcher ul {
-    inset-inline-start: auto;
-    inset-inline-end: 0;
+    inset-inline: auto 0;
     transform: none;
   }
 }

@@ -2,37 +2,40 @@
    Worker Profile – Figma parity
    Mobile-first, RTL ready
    ============================= */
-
 /* ---------- Design tokens (from Figma) ---------- */
 :root{
   --font-size:16px;
-
   /* Core surface/colors */
-  --background:#ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card:#ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover:#ffffff;
-  --popover-foreground: oklch(0.145 0 0);
-
+  --background:#fff;
+  --foreground: oklch(14.5% 0 0deg);
+  --card:#fff;
+  --card-foreground: oklch(14.5% 0 0deg);
+  --popover:#fff;
+  --popover-foreground: oklch(14.5% 0 0deg);
   --primary:#030213;
-  --primary-foreground:#ffffff;
-  --secondary: oklch(0.95 0.0058 264.53);
+  --primary-foreground:#fff;
+  --secondary: oklch(95% 0.0058 264.53deg);
   --secondary-foreground:#030213;
   --muted:#ececf0;
   --muted-foreground:#717182;
   --accent:#e9ebef;
   --accent-foreground:#030213;
-
   --destructive:#d4183d;
-  --destructive-foreground:#ffffff;
-
+  --destructive-foreground:#fff;
   --border: rgba(0,0,0,.1);
   --input: transparent;
   --input-background:#f3f3f5;
   --switch-background:#cbced4;
-  --ring: oklch(0.708 0 0);
-
+  --ring: oklch(70.8% 0 0deg);
+  /* Hero layout controls */
+  --hero-mobile-gap: 30px;
+  --hero-rating-nudge: 26px;
+  --hero-gap-mobile: 16px;
+  --hero-rating-offset-sm: 60px;
+  --hero-rating-offset-lg: 0px;
+  --hero-title-lines: 2;
+  --hero-sub-lines: 1;
+  --hero-line-height: 1.2;
   /* Brand – Bordeaux */
   --brand-50:#fdf2f4;
   --brand-100:#fce7ea;
@@ -45,12 +48,10 @@
   --brand-800:#5E1026;
   --brand-900:#4a0c1e;
   --brand-950:#2d0712;
-
   /* Radii / shadow */
   --radius:10px;
   --shadow-1: 0 6px 18px rgb(2 8 23 / 6%);
   --shadow-2: 0 12px 28px rgb(2 8 23 / 9%);
-
   /* Local aliases */
   --w-ink: var(--foreground);
   --w-muted: var(--muted-foreground);
@@ -63,45 +64,38 @@
   --w-radius-l: 18px;
   --w-ring: color-mix(in oklch, var(--brand-700) 65%, white);
 }
-
 html{ font-size:var(--font-size); }
 body{ background: var(--background); color: var(--foreground); }
-
 /* Manual dark support via <html class="dark"> (optional) */
 .dark{
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --background: oklch(14.5% 0 0deg);
+  --foreground: oklch(98.5% 0 0deg);
+  --card: oklch(20.5% 0 0deg);
+  --card-foreground: oklch(98.5% 0 0deg);
+  --popover: oklch(14.5% 0 0deg);
+  --popover-foreground: oklch(98.5% 0 0deg);
+  --primary: oklch(98.5% 0 0deg);
+  --primary-foreground: oklch(20.5% 0 0deg);
+  --secondary: oklch(26.9% 0 0deg);
+  --secondary-foreground: oklch(98.5% 0 0deg);
+  --muted: oklch(26.9% 0 0deg);
+  --muted-foreground: oklch(70.8% 0 0deg);
+  --accent: oklch(26.9% 0 0deg);
+  --accent-foreground: oklch(98.5% 0 0deg);
+  --border: oklch(26.9% 0 0deg);
+  --input: oklch(26.9% 0 0deg);
+  --ring: oklch(43.9% 0 0deg);
 }
-
 /* ---------- Page background (like Figma) ---------- */
 .page-bg-gradient{
-  background-image: linear-gradient(135deg, #f7f7fb 0%, #ffffff 30%, color-mix(in oklch, var(--brand-50) 40%, #fff) 100%);
+  background-image: linear-gradient(135deg, #f7f7fb 0%, #fff 30%, color-mix(in oklch, var(--brand-50) 40%, #fff) 100%);
 }
-
 /* ---------- Section root ---------- */
 .worker-profile-section{ color: var(--foreground); background: transparent; }
-
 /* =========================
    Breadcrumbs (fixed)
    ========================= */
 .worker-breadcrumbs{ display:block; margin:12px 0 16px; padding-inline:16px; font-size:.95rem; }
-
-
 .worker-breadcrumbs ol{
   display:flex; flex-wrap:wrap; align-items:center; gap:.25rem;
   list-style:none; padding:0; margin:0;
@@ -118,7 +112,6 @@ body{ background: var(--background); color: var(--foreground); }
 .worker-breadcrumbs:dir(rtl) li + li::before,
 [dir="rtl"] .worker-breadcrumbs li + li::before{ content:"‹" !important; }
 .worker-breadcrumbs [aria-current="page"]{ opacity:1; }
-
 /* =========================
    HERO
    ========================= */
@@ -133,17 +126,16 @@ body{ background: var(--background); color: var(--foreground); }
   border-radius:18px;
   box-shadow:0 2px 8px rgba(0,0,0,.07);
   padding: clamp(24px, 4vw, 40px);
-
   /* אזורי גריד (דסקטופ יעדכן אותם בהמשך) */
   grid-template-areas:
     "image"
     "left"
     "right";
 }
-
 .hero-image-block{
   grid-area: image;
   width: 100%;
+  min-height: 220px;
   border-radius: 18px;
   overflow: hidden;
   background:#f3f4f6;
@@ -157,17 +149,14 @@ body{ background: var(--background); color: var(--foreground); }
   max-height: 420px;
   object-fit: cover;
 }
-
 .worker-hero-left{
   grid-area: left;
   display:grid; grid-template-columns:auto 1fr; align-items:start; gap:16px;
 }
 .worker-hero-avatar{ inline-size:88px; block-size:88px; border-radius:16px; object-fit:cover; background:#f3f4f6; border:1px solid var(--border); display:block; }
 .worker-hero-meta{ min-width:0; }
-
 .worker-hero-title{ margin:0 0 8px; font-size:clamp(1.4rem,4.8vw,2.1rem); line-height:1.2; font-weight:800; }
 .worker-hero-sub{ color: var(--muted-foreground); font-size:1.08rem; margin:0 0 12px; overflow-wrap:anywhere; }
-
 /* Badges */
 .worker-hero-badges{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
 .worker-badge{
@@ -177,7 +166,6 @@ body{ background: var(--background); color: var(--foreground); }
 .worker-badge--verified{ background:#ecfdf5; border-color:#10b981; color:#065f46; }
 .worker-badge--years{ background:#eef2ff; border-color:#6366f1; color:#3730a3; }
 .worker-badge--lang{ background:#fff7ed; border-color:#f59e0b; color:#7c2d12; }
-
 /* CTA row */
 .worker-hero-cta-row{
   margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;
@@ -211,10 +199,8 @@ body{ background: var(--background); color: var(--foreground); }
   pointer-events:none;
   opacity:0.7;
 }
-
 /* Right side (video/gallery) */
 .worker-hero-right{ grid-area: right; display:grid; place-items:center; }
-
 /* =========================
    Media wrapper (video/image)
    ========================= */
@@ -229,13 +215,11 @@ body{ background: var(--background); color: var(--foreground); }
   background:
     radial-gradient(140% 120% at 0% 100%,
       color-mix(in oklch, var(--brand-50) 65%, #fff) 0%,
-      #ffffff 55%);
+      #fff 55%);
   border: 1px solid color-mix(in oklch, var(--border) 70%, #fff);
   box-shadow: 0 10px 30px rgba(2, 8, 23, .08);
   overflow: hidden; /* חשוב: לא גלילה פנימית */
 }
-
-
 /* =========================
    Sticky CTA (mobile)
    ========================= */
@@ -250,7 +234,6 @@ body{ background: var(--background); color: var(--foreground); }
 @media (min-width:700px){ .worker-sticky-cta{ display:none; } }
 .worker-sticky-cta-space{ block-size:64px; }
 @media (min-width:700px){ .worker-sticky-cta-space{ block-size:0; } }
-
 /* =========================
    Cards / Sections
    ========================= */
@@ -365,76 +348,29 @@ body{ background: var(--background); color: var(--foreground); }
 [dir="rtl"] .worker-service-card__text{
   text-align:right;
 }
-.worker-panel__group{ display:flex; flex-direction:column; gap:0.75rem; }
-.worker-panel__group + .worker-panel__group{ margin-top:0.5rem; }
-.worker-area-list,
-.worker-hours-list{
-  list-style:none;
-  margin:0;
-  padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.worker-area-item{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  background: rgba(255,255,255,0.8);
-  border:1px solid color-mix(in srgb, var(--brand-100) 60%, #fff 40%);
-  color: var(--foreground);
-  font-weight:600;
-}
-
+  .worker-panel__group{ display:flex; flex-direction:column; gap:0.75rem; }
+  .worker-panel__group + .worker-panel__group{ margin-top:0.5rem; }
+  .worker-area-list,
+  .worker-hours-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .worker-area-item{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background: rgba(255,255,255,0.8);
+    border:1px solid color-mix(in srgb, var(--brand-100) 60%, #fff 40%);
+    color: var(--foreground);
+    font-weight:600;
+  }
 .worker-panel__actions{ margin-top:auto; }
-
-/* Services & areas panels */
-
-.worker-info-panels{
-  margin:2rem auto;
-  max-inline-size:900px;
-  display:grid;
-  gap:1.5rem;
-}
-.worker-panel{
-  background: var(--card);
-  color: var(--card-foreground);
-  border:1px solid var(--border);
-  border-radius:16px;
-  box-shadow:0 2px 8px rgba(0,0,0,.07);
-  padding:1.75rem;
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
-}
-.worker-panel--services{
-  background: color-mix(in srgb, var(--brand-50) 55%, #fff 45%);
-  border-color: color-mix(in srgb, var(--brand-200) 60%, var(--border) 40%);
-}
-.worker-panel--areas{
-  background: color-mix(in srgb, #ecfdf5 60%, #fff 40%);
-  border-color: color-mix(in srgb, #a7f3d0 50%, var(--border) 50%);
-}
-.worker-panel__header{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:0.75rem;
-}
-.worker-panel__title{
-  margin:0;
-  font-size:clamp(1.1rem,3.6vw,1.35rem);
-  font-weight:800;
-  color: var(--w-ink);
-}
-.worker-panel__subtitle{
-  margin:0;
-  font-size:.92rem;
-  font-weight:700;
-  color: var(--muted-foreground);
-}
 .worker-services-chips{
   display:flex;
   flex-wrap:wrap;
@@ -451,28 +387,6 @@ body{ background: var(--background); color: var(--foreground); }
   color: var(--brand-700);
   font-weight:700;
   box-shadow:0 2px 6px rgba(234,58,102,0.08);
-}
-.worker-panel__group{ display:flex; flex-direction:column; gap:0.75rem; }
-.worker-panel__group + .worker-panel__group{ margin-top:0.5rem; }
-.worker-area-list,
-.worker-hours-list{
-  list-style:none;
-  margin:0;
-  padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.worker-area-item{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  background: rgba(255,255,255,0.8);
-  border:1px solid color-mix(in srgb, var(--brand-100) 60%, #fff 40%);
-  color: var(--foreground);
-  font-weight:600;
 }
 .worker-area-item i{ color: var(--brand-700); margin-inline-start:4px; }
 .worker-hours-card{
@@ -538,7 +452,6 @@ body{ background: var(--background); color: var(--foreground); }
   padding:10px 12px;
   border-radius:12px;
 }
-.worker-panel__actions{ margin-top:auto; }
 .worker-panel__cta{
   display:flex;
   align-items:center;
@@ -565,7 +478,7 @@ body{ background: var(--background); color: var(--foreground); }
 .worker-panel__cta.is-closed .worker-panel__cta-icon,
 .worker-panel__cta.is-closed .worker-panel__cta__icon{
   color: var(--muted-foreground);
-  background: color-mix(in srgb, var(--muted) 85%, #ffffff 15%);
+  background: color-mix(in srgb, var(--muted) 85%, #fff 15%);
   box-shadow:none;
 }
 .worker-panel__cta.is-closed .worker-panel__cta-text-secondary,
@@ -614,10 +527,9 @@ body{ background: var(--background); color: var(--foreground); }
 @media (min-width:960px){
   .worker-info-panels{ grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
-
 /* About */
 .worker-about-card{
-  background: linear-gradient(135deg, #fff7f8 0%, #ffffff 60%);
+  background: linear-gradient(135deg, #fff7f8 0%, #fff 60%);
   border:1px solid color-mix(in srgb, var(--brand-200) 55%, #fff 45%);
   border-radius:18px;
   box-shadow:0 6px 20px rgba(138,21,56,0.10);
@@ -646,9 +558,6 @@ body{ background: var(--background); color: var(--foreground); }
 /* =========================
    Reviews list
    ========================= */
-
-
-
 /* =========================
    Desktop layout
    ========================= */
@@ -668,7 +577,6 @@ body{ background: var(--background); color: var(--foreground); }
   .worker-about,
   #all-reviews{ padding-inline: calc(24px + 2px); }
 }
-
 /* =========================
    Generic focus ring (scope)
    ========================= */
@@ -678,7 +586,6 @@ body{ background: var(--background); color: var(--foreground); }
   outline-offset:3px;
   border-radius:10px;
 }
-
 /* =========================
    Prefers Dark (no .dark class)
    ========================= */
@@ -709,13 +616,11 @@ body{ background: var(--background); color: var(--foreground); }
   .worker-panel__cta__icon{ background:rgba(15,118,110,0.35); color:#ecfdf5; box-shadow:0 4px 14px rgba(0,0,0,0.35); }
   .worker-panel__cta__secondary{ color:color-mix(in srgb,#ecfdf5 78%,#0f172a 22%); }
 }
-
-
 /* ===== Back link (Figma-style) ===== */
 .worker-profile-section .back-link{
   --c: var(--brand-700, #8A1538);
   display:inline-flex; align-items:center; gap:.5rem;
-  padding:.25rem .25rem; margin:8px 16px 4px;
+  padding:.25rem; margin:8px 16px 4px;
   color:var(--c); text-decoration:none; font-weight:700; line-height:1;
   border-radius:8px;
   transition:opacity .15s ease, background .15s ease, transform .12s ease, box-shadow .15s ease;
@@ -734,7 +639,6 @@ body{ background: var(--background); color: var(--foreground); }
 }
 .back-link--mobile{ display:inline-flex; }
 @media (min-width: 960px){ .back-link--mobile{ display:none; } }
-
 /* =========================
    HERO rating card (one source of truth)
    ========================= */
@@ -749,12 +653,12 @@ body{ background: var(--background); color: var(--foreground); }
     linear-gradient(90deg, #fff7f7 0%, #fffdf0 100%),
     #fff;
   box-shadow: 0 6px 18px rgb(2 8 23 / 6%);
-  margin-top:.25rem;
+  margin-top: var(--hero-rating-offset-sm, .25rem);
   white-space: nowrap;
   max-inline-size: 520px;
 }
 .hero-rating-main{ display:flex; align-items:center; gap:.6rem; min-width:0; }
-.hero-rating-card .rating-number{ font-weight:900; font-size:1.75rem; line-height:1; color: oklch(0.24 0 0); }
+.hero-rating-card .rating-number{ font-weight:900; font-size:1.75rem; line-height:1; color: oklch(24% 0 0deg); }
 .hero-rating-card .rating-stars{
   display:inline-flex; align-items:center;
   font-size: 1.15rem; letter-spacing: .18rem; line-height:1;
@@ -764,7 +668,6 @@ body{ background: var(--background); color: var(--foreground); }
   color: var(--muted-foreground); font-weight:600; font-size:1.05rem;
   margin-inline-start:.15rem; white-space:nowrap;
 }
-
 /* ===== Stars component (CSS-only) =====
    Usage: <span class="rating-stars" style="--value: 4.8;"></span>
 */
@@ -784,79 +687,38 @@ body{ background: var(--background); color: var(--foreground); }
   position:absolute; inset:0; width:calc((var(--value)/5)*100%);
   overflow:hidden; white-space:nowrap; pointer-events:none;
 }
-
 /* ============ MOBILE FIRST – סדר נכון ללא שינוי HTML ============ */
 @media (max-width: 720px){
   .worker-hero-layout{
     display:flex; flex-direction:column; gap:12px; padding:16px; overflow:visible;
   }
-
-
   .hero-main-image{
     aspect-ratio: 4 / 3;    /* קצת יותר גבוה – נראה טוב במובייל */
     min-height: 260px;
     border-radius:18px;
   }
-
   .worker-hero-left{ grid-template-columns: 84px 1fr; align-items:center; gap:12px; }
   .worker-hero-title{ font-size: clamp(1.35rem, 6vw, 1.7rem); margin: 2px 0 4px; }
   .worker-hero-sub{ font-size: 1rem; margin: 0; }
-
-
   .hero-rating-card .rating-stars{ transform: translateY(-1px); }
-
-
-
   .worker-hero-right .media-card{ max-width:100%; aspect-ratio:16/9; min-height:180px; }
-
   /* לא להכפיל כפתורים למטה */
   .worker-sticky-cta, .worker-sticky-cta-space{ display:none !important; }
-
   /* פירורי לחם – גלילה בשורה אחת */
   .worker-breadcrumbs{ overflow:hidden; }
   .worker-breadcrumbs ol{ flex-wrap:nowrap; overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
   .worker-breadcrumbs ol::-webkit-scrollbar{ display:none; }
 }
-
-
-
-
-/* ==== HERO IMAGE FIX – keep image tall and visible ==== */
-
-/* ההורה לא יקרוס – מבטיחים מינימום גובה נעים */
-.hero-image-block{
-  min-height: 220px;            /* אפשר לעלות ל-240/260 אם תרצה תמונה גבוהה יותר */
-  width: 100%;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #f3f4f6;
-  border: 1px solid var(--border);
-}
-
-/* התמונה עצמה – מילוי מלא, חתך יפה */
-.hero-main-image{
-  display: block;
-  width: 100%;
-  height: auto;                  /* שלא יימתח בעיוות */
-  object-fit: cover;
-}
-
-
-
-
-
 /* ========= HERO IMAGE: always first & full width on mobile ========= */
 @media (max-width: 720px){
-
   /* כל ה-HERO בטור אחד */
   .worker-hero-layout{
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
   }
-
   /* התמונה: ראשונה, לכל הרוחב, לא נמחצת בעמודה צרה */
-  .hero-image-block{
+  .worker-hero-layout .hero-image-block{
     order: -3 !important;             /* למעלה-למעלה */
     width: 100% !important;
     align-self: stretch !important;
@@ -869,24 +731,19 @@ body{ background: var(--background); color: var(--foreground); }
   .worker-hero-left .hero-image-block{
     grid-column: 1 / -1 !important;
   }
-
-
-
   /* התמונה עצמה */
-  .hero-main-image{
+  .worker-hero-layout .hero-main-image{
     display: block;
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 4 / 3;              /* יותר גובה במסכים צרים */
     object-fit: cover;
   }
-
   /* הכותרות באות אחרי התמונה */
   .worker-hero-title{ order: -2; }
   .worker-hero-sub{ order: -1; }
-
   /* כרטיס ביקורות וכפתורים – מתחת לכותרות */
-  .hero-rating-card{
+  .worker-hero .hero-rating-card{
     order: 0;
     display: flex;
     align-items: center;
@@ -896,28 +753,26 @@ body{ background: var(--background); color: var(--foreground); }
     padding: .7rem .9rem;
     white-space: nowrap;
   }
-  .worker-hero-cta-row{
+  .worker-hero .worker-hero-cta-row{
     order: 1;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
-  .worker-btn{
+  .worker-hero .worker-btn{
     flex: 1 1 calc(50% - 8px);
     min-width: 140px;
     max-width: 100%;
   }
-  .worker-btn--quote{ flex-basis: 100%; }
-
+  .worker-hero .worker-btn--quote{ flex-basis: 100%; }
   /* הווידאו – אחרי הכפתורים */
-  .worker-hero-right{ order: 2 !important; }
+  .worker-hero .worker-hero-right{ order: 2 !important; }
   .media-card{
     width: 100% !important;
     max-width: 100% !important;
     aspect-ratio: 16 / 9;
     min-height: 200px;
   }
-
   /* למנוע חיתוכים/scroll מוזר */
   .worker-profile-section, .worker-hero, .worker-hero-layout,
   .worker-hero-left, .worker-hero-right, .worker-hero-meta{
@@ -925,13 +780,8 @@ body{ background: var(--background); color: var(--foreground); }
     overflow: visible;
   }
 }
-
-
-
-
 /* === MOBILE: image on the RIGHT, name/subtitle on the LEFT (same row) === */
 @media (max-width: 720px){
-
   /* מצמידים לשורה אחת בוודאות */
   .worker-hero-left{
     display: grid !important;
@@ -939,7 +789,6 @@ body{ background: var(--background); color: var(--foreground); }
     align-items: center !important;
     column-gap: 12px;
   }
-
   /* התמונה נשארת קבועה בגודל, נדחפת לימין */
   .worker-hero-avatar{
     inline-size: 112px !important;
@@ -948,15 +797,12 @@ body{ background: var(--background); color: var(--foreground); }
   }
   .worker-hero-avatar-wrap{
     justify-self: end;              /* לדחוף לימין ב־RTL */
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    margin-inline: 0;
   }
-
   /* מאפשר לטקסט להישבר בתוך הטור ולא “ליפול” מתחת לתמונה */
   .worker-hero-meta{
     min-width: 0 !important;
   }
-
   /* ביטול יישור מרכזי שהיה דוחף למטה; מותר לשבירת שורה */
   .worker-hero-title{
     display: block !important;
@@ -975,10 +821,7 @@ body{ background: var(--background); color: var(--foreground); }
     font-size: 1rem;
     color: var(--muted-foreground);
   }
-
 }
-
-
 /* === MOBILE: יישור עליון של התמונה עם הכותרת (ב"כוח") === */
 @media (max-width: 720px){
   .worker-hero-left{
@@ -991,77 +834,42 @@ body{ background: var(--background); color: var(--foreground); }
     transform: translateY(-12px);     /* נגיעה קלה למעלה ליישור ויזואלי עם הטקסט */
   }
 }
-
-
-/* משתנה שליטה יחיד לכל הרווחים במובייל */
-:root{
-  --hero-mobile-gap: 30px; /* שנה את הערך הזה – כל מה שמתחת לשם ירד בהתאם */
-  --hero-rating-nudge: 26px; /* כמה להזיז את כרטיס הביקורות ימינה/שמאלה במובייל */
-}
-
+/* משתנה שליטה יחיד לכל הרווחים במובייל
+   (ר' --hero-mobile-gap ו- --hero-rating-nudge בגלובל) */
 @media (max-width: 720px){
   /* שימוש במשתנה לכל הרכיבים */
-  .worker-hero-title{ margin-bottom: calc(var(--hero-mobile-gap) * .35) !important; }
-  .worker-hero-sub{   margin-bottom: calc(var(--hero-mobile-gap) * .55) !important; }
-
-  .hero-rating-card{  margin-top:  var(--hero-mobile-gap) !important; }
-  .worker-hero-cta-row{ margin-top: calc(var(--hero-mobile-gap) * 1.1) !important; }
-  .worker-hero-right{   margin-top: calc(var(--hero-mobile-gap) * 1.25) !important; }
+  .worker-hero .worker-hero-title{ margin-bottom: calc(var(--hero-mobile-gap) * .35) !important; }
+  .worker-hero .worker-hero-sub{   margin-bottom: calc(var(--hero-mobile-gap) * .55) !important; }
+  .worker-hero .hero-rating-card{  margin-top:  var(--hero-mobile-gap) !important; }
+  .worker-hero .worker-hero-cta-row{ margin-top: calc(var(--hero-mobile-gap) * 1.1) !important; }
+  .worker-hero .worker-hero-right{   margin-top: calc(var(--hero-mobile-gap) * 1.25) !important; }
 }
-
-
 /* למתוח + להזיז את כרטיס הביקורות במובייל עם נודג' נשלט */
 @media (max-width: 720px){
-  .hero-rating-card{
+  .worker-hero .hero-rating-card{
     max-inline-size: none !important;
     display:flex;
     align-items:center;
     white-space: nowrap;
-
     /* full-bleed לרוחב: מרחיב 96px כדי לכסות גם את עמודת האווטאר */
     inline-size: calc(100% + 96px);
-
     /* הזזה אופקית: שלילי מזיז ויזואלית ימינה ב־RTL
        הגדל את --hero-rating-nudge כדי להזיז עוד ימינה */
     margin-inline-start: calc(-96px - var(--hero-rating-nudge));
   }
 }
-
-
-/* ========= רווח קבוע אחרי התמונה (מובייל) ========= */
-:root{
-  /* שנה רק את זה כדי לשלוט על הרווחים למטה */
-  --hero-gap-mobile: 16px; /* נסה 12 / 16 / 20 לפי הטעם */
-}
-
-
-
-/* הורדה קבועה של כרטיס הדירוג – בלי קשר לאורך השם/שורה */
-:root{
-  --hero-rating-offset-sm: 60px;  /* מובייל */
-  --hero-rating-offset-lg: 0px;  /* דסקטופ/טאבלט */
-}
-
-/* ברירת מחדל (מובייל) – זה נשאר */
-.hero-rating-card{
-  margin-top: var(--hero-rating-offset-sm) !important;
-}
-
+/* ========= רווח קבוע אחרי התמונה (מובייל)
+   נשלט דרך --hero-gap-mobile שהוגדר בגלובל ========= */
+/* הורדה קבועה של כרטיס הדירוג – בלי קשר לאורך השם/שורה
+   (ראה --hero-rating-offset-sm / --hero-rating-offset-lg בגלובל) */
 /* מסכים רחבים – זה נשאר */
 @media (min-width: 960px){
-  .hero-rating-card{
+  .worker-hero .hero-rating-card{
     margin-top: var(--hero-rating-offset-lg) !important;
   }
 }
-
-
-/* ----- ייצוב גובה ה־HERO מעל כרטיס הדירוג ----- */
-:root{
-  --hero-title-lines: 2;       /* כותרת עד 2 שורות */
-  --hero-sub-lines: 1;         /* תת-כותרת שורה אחת */
-  --hero-line-height: 1.2;     /* חייב להתאים ל-line-height בכותרת */
-}
-
+/* ----- ייצוב גובה ה־HERO מעל כרטיס הדירוג -----
+   משתמש ב- --hero-title-lines / --hero-sub-lines / --hero-line-height הגלובליים */
 /* Clamp + min-height במובייל בלבד (לשמור על דסקטופ זהה) */
 @media (max-width: 720px){
   .worker-hero-title{
@@ -1069,56 +877,29 @@ body{ background: var(--background); color: var(--foreground); }
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
-
     /* תקני + וובקיט (משתיק את ה-linter) */
     line-clamp: var(--hero-title-lines);
     -webkit-line-clamp: var(--hero-title-lines);
-
     min-height: calc(1em * var(--hero-line-height) * var(--hero-title-lines));
   }
-
   .worker-hero-sub{
     line-height: 1.25;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
-
     /* תקני + וובקיט (משתיק את ה-linter) */
     line-clamp: var(--hero-sub-lines);
     -webkit-line-clamp: var(--hero-sub-lines);
-
     min-height: calc(1em * 1.25 * var(--hero-sub-lines));
   }
-
   /* תגיות: גובה קבוע לשורה הראשונה */
   .worker-hero-badges{ min-height: 32px; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* נגישות: הסתרה ויזואלית ללייב-ריג'ן */
 .is-hidden {
   display: none !important;
 }
-
-
-
-
-
 /* ===== Reviews: one-column, inset, auto-height, subtle card ===== */
-
 /* טור אחד מלא, עם אינסט קטן כדי לא "להידבק" למסגרת הלבנה */
 .worker-profile-section .reviews-list{
   display: grid !important;
@@ -1127,12 +908,10 @@ body{ background: var(--background); color: var(--foreground); }
   padding-inline: 12px !important;      /* מכניס פנימה בתוך המסגרת */
   box-sizing: border-box !important;
 }
-
 /* שמור שהתוכן לא "ישטף" מעבר למסגרת ההורה המעוגלת */
 .worker-profile-section .worker-reviews-summary{
   overflow: hidden;                      /* כך הפינות נשארות נקיות */
 }
-
 /* כרטיס ביקורת — עדין, בגובה התוכן בלבד */
 .worker-profile-section .review-item{
   /* מראה כרטיס עדין */
@@ -1141,7 +920,6 @@ body{ background: var(--background); color: var(--foreground); }
   border-radius: 16px;
   box-shadow: none;                       /* בלי צל דרמטי */
   padding: 14px 16px;
-
   /* חשוב: לא גובה מינימלי, לא גריד פנימי – רק לפי הטקסט */
   display: block !important;
   min-block-size: auto !important;
@@ -1149,7 +927,6 @@ body{ background: var(--background); color: var(--foreground); }
   max-width: 100%;
   box-sizing: border-box;
 }
-
 /* אין האפקט "קופץ" בהובר */
 .worker-profile-section .review-item:hover,
 .worker-profile-section .review-item:focus-visible{
@@ -1157,11 +934,9 @@ body{ background: var(--background); color: var(--foreground); }
   border-color: #f7d9e0;
   transform: none;
 }
-
 /* שורת כוכבים ואז שם – באותה שורה, צמוד לימין (RTL) */
 .worker-profile-section .review-item .rating-stars{
-  margin-inline-start: 0;
-  margin-inline-end: 8px;
+  margin-inline: 0 8px;
   font-size: 1.05rem;
   vertical-align: middle;
 }
@@ -1174,7 +949,6 @@ body{ background: var(--background); color: var(--foreground); }
   color: #1f2937;
   display: inline-block;
 }
-
 /* הטקסט – שורה מתחת, בלי רווחים מיותרים, עטיפה נעימה */
 .worker-profile-section .review-text{
   margin: 8px 0 0;
@@ -1183,7 +957,6 @@ body{ background: var(--background); color: var(--foreground); }
   overflow-wrap: anywhere;
   hyphens: auto;
 }
-
 /* “העבודה שבוצעה” – קטן ועדין, בלי משיכת תשומת לב */
 .worker-profile-section .review-job{
   margin-top: 10px;
@@ -1194,32 +967,19 @@ body{ background: var(--background); color: var(--foreground); }
   border-radius: 10px;
   padding: 8px 10px;
 }
-
 /* כפתור "עוד ביקורות" – מרווח קטן מלמעלה */
 #load-more-reviews-btn.worker-btn--all-reviews{
   margin: 6px 0 10px;
 }
-
-
-
-
-
-
-
-
-
-
 /* ===== Price list ===== */
 .worker-price-link {
   margin-top: 2rem;
 }
-
 .worker-price-link h2 {
   margin: 0 0 1rem;
   font-size: 1.6rem;
   font-weight: 800;
 }
-
 .price-list {
   list-style: none;
   padding: 0;
@@ -1228,7 +988,6 @@ body{ background: var(--background); color: var(--foreground); }
   gap: 12px;
   direction: rtl; /* חשוב ל-RTL */
 }
-
 .price-row {
   display: flex;
   align-items: center;
@@ -1240,7 +999,6 @@ body{ background: var(--background); color: var(--foreground); }
   border: 1px solid #f7dfe4;
   box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
 }
-
 .price-row__label {
   color: #213547;
   font-size: 1.05rem;
@@ -1251,21 +1009,18 @@ body{ background: var(--background); color: var(--foreground); }
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
 .price-row__amount {
   font-weight: 800;
   font-size: 1.15rem;
   color: #7b0b35; /* בורדו כמו בדוגמה */
   white-space: nowrap;
 }
-
 /* טקסט עזר תחת הרשימה */
 .price-helper {
   margin: 6px 4px 0;
   color: #6b7280;
   font-size: 0.9rem;
 }
-
 /* כפתור המחשבון */
 .worker-btn.worker-btn--estimator {
   margin-top: 10px;
@@ -1280,62 +1035,44 @@ body{ background: var(--background); color: var(--foreground); }
   text-decoration: none;
 }
 .worker-btn.worker-btn--estimator:hover { filter: brightness(1.05); }
-
 /* נגישות/לחיצה */
 .price-row:focus-within,
 .price-row:hover {
   border-color: #f0c4cd;
 }
-
 /* מובייל קטן: טקסט מעט קטן */
 @media (max-width: 480px) {
   .price-row { padding: 16px; }
   .price-row__label { font-size: 1rem; }
   .price-row__amount { font-size: 1.05rem; }
 }
-
-
-
-
-
-
 /* === CTA (mobile) — unified, 2 columns, RTL, full-bleed, keep current look === */
 @media (max-width: 720px){
   /* סדר הופעה במובייל (תמונה → כרטיס דירוג → כפתורים) */
-  .worker-hero-cta-row{
+  .worker-hero .worker-hero-cta-row{
     order: 1 !important;                 /* תואם לבלוק "רווח קבוע אחרי התמונה" */
-  }
-
-  /* פריסת ה-CTA: 2 עמודות שוות עם הרחבה לרוחב */
-  .worker-hero-cta-row{
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 12px !important;
     direction: rtl !important;
-    align-items: stretch !important;
-    justify-items: stretch !important;
-
+    place-items: stretch stretch !important;
     /* הרחבה לרוחב לכיסוי עמודת האווטאר (112px) + המרווח (12px) */
     width: calc(100% + 112px + 12px) !important;
     margin-inline-start: calc(-112px - 12px) !important;
-
     /* הגנה מכיווצים */
     box-sizing: border-box !important;
     padding-inline: 0 !important;
     margin-block-start: var(--hero-gap-mobile); /* שומר על הרווחים הקיימים */
   }
-
   /* הכפתורים: ממלאים תא, גדלים כמו אצלך */
-  .worker-hero-cta-row .worker-btn{
+  .worker-hero .worker-hero-cta-row .worker-btn{
     display: inline-flex;
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    justify-self: stretch !important;
-    align-self: stretch !important;
+    place-self: stretch stretch !important;
     box-sizing: border-box !important;
     margin: 0 !important;
-
     /* גדלים/טיפוגרפיה שהתאימו לך */
     padding: 12px 18px !important;
     font-size: 1.05rem !important;
@@ -1345,11 +1082,7 @@ body{ background: var(--background); color: var(--foreground); }
     /* אין “מלא רוחב” ל-הצעת מחיר – נשאר חצי כמו כולם */
   }
 }
-
-
-
 /* === VIDEO in .media-card — unified: show full frame + controls, no crop === */
-
 /* === VIDEO in .media-card — unified: show full frame + controls, no crop === */
 .media-card > video.worker-hero-video{
   display: block;
@@ -1360,8 +1093,6 @@ body{ background: var(--background); color: var(--foreground); }
   background: #000;
   border-radius: 14px;
 }
-
-
 /* תמונה ראשית בתוך המדיה — שומר קרופ יפה לתמונה (לא לוידאו) */
 .media-card > img.hero-main-image{
   display: block;
@@ -1370,7 +1101,6 @@ body{ background: var(--background); color: var(--foreground); }
   object-fit: cover;
   border-radius: 14px;
 }
-
 /* רכות קלה במובייל למסגרת הכרטיס */
 @media (max-width: 720px){
   .media-card{ border-radius: 8px; }

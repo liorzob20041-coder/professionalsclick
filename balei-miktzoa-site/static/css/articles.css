@@ -3,7 +3,7 @@
   --brand-ink:#0f172a;
   --muted:#475569;
   --panel:#fff;
-  --bg-articles-top: linear-gradient(180deg,#F7F2F4 0%,#ffffff 85%);
+  --bg-articles-top: linear-gradient(180deg,#F7F2F4 0%,#fff 85%);
 }
 
 .home-articles.mag{
@@ -120,7 +120,7 @@ html[dir="ltr"] .a-card:hover .a-more i{ transform: scaleX(-1) translateX(-4px);
   margin: 0 auto clamp(18px,3.2vw,28px);
 }
 .filter-chip{
-  appearance:none; border:none; cursor:pointer;
+  appearance:none; cursor:pointer;
   padding:8px 14px; border-radius:999px; font-weight:700;
   background:#fff; color:var(--brand-ink); border:1px solid rgba(15,23,42,.08);
 }

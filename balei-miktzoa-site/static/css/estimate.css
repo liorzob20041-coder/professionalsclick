@@ -7,13 +7,13 @@
   --primary-light-rgb: 168 70 104;
   --accent: #f9edf1;
   --accent-rgb: 249 237 241;
-  --bg: #ffffff;
+  --bg: #fff;
   --ink: #101828;
   --ink-rgb: 16 24 40;
   --muted: #475467;
   --muted-rgb: 71 84 103;
-  --surface: #ffffff;
-  --bubble-bot: #ffffff;
+  --surface: #fff;
+  --bubble-bot: #fff;
   --bubble-user: rgba(var(--primary-rgb) / 0.08);
   --bubble-meta: rgba(var(--primary-rgb) / 0.06);
   --bubble-error: rgba(196, 71, 62, 0.16);
@@ -34,7 +34,7 @@
 
 
 
-  font-family: 'Assistant', 'Rubik', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: Assistant, Rubik, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -158,7 +158,7 @@ main, section, article { direction: rtl; }
   margin-inline: auto;
 }
 .est-shell__card {
-  background: linear-gradient(180deg, #ffffff 0%, rgba(var(--accent-rgb) / 0.4) 100%);
+  background: linear-gradient(180deg, #fff 0%, rgba(var(--accent-rgb) / 0.4) 100%);
 
   border-radius: clamp(20px, 2.6vw, 28px);
   border: 1px solid var(--border-soft);
@@ -572,8 +572,8 @@ main, section, article { direction: rtl; }
 .est-chip--selected .est-chip__hint {
   color: rgba(255, 255, 255, 0.82);
 }
-.est-bubble--user .est-chip { pointer-events: none; }
 .est-bubble--user .est-chip {
+  pointer-events: none;
   background: transparent;
   border: 0;
   padding: 0;
@@ -903,7 +903,7 @@ main, section, article { direction: rtl; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 
 /* Media */

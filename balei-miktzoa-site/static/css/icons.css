@@ -31,15 +31,15 @@
   text-align: center;
 }
 .fa-solid, .fa {
-  font-family: 'Font Awesome 7 Free';
+  font-family: 'Font Awesome 7 Free', sans-serif;
   font-weight: 900;
 }
 .fa-regular {
-  font-family: 'Font Awesome 7 Free';
+  font-family: 'Font Awesome 7 Free', sans-serif;
   font-weight: 400;
 }
 .fa-brands {
-  font-family: 'Font Awesome 7 Brands';
+  font-family: 'Font Awesome 7 Brands', sans-serif;
   font-weight: 400;
 }
 .fa-solid::before, .fa-regular::before, .fa-brands::before, .fa::before {

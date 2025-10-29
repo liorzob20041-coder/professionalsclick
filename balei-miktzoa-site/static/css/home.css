@@ -782,10 +782,7 @@ html[dir="ltr"] .input-group:has(#field)::before {
   .hero-panel {
     position: relative !important;
     width: min(94vw, 420px);
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
+    inset: auto !important;
     transform: none !important;
     margin: 0 auto !important;
     padding: 12px;

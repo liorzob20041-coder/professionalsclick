@@ -126,6 +126,9 @@
   {% set FA_LITE_URL = static_rel('css/fa-lite.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set FA_SOLID_FONT_URL = static_rel('vendor/fa/webfonts/fa-solid-900.woff2') %}
+  {% set FA_REGULAR_FONT_URL = static_rel('vendor/fa/webfonts/fa-regular-400.woff2') %}
+  {% set FA_BRANDS_FONT_URL = static_rel('vendor/fa/webfonts/fa-brands-400.woff2') %}
   <link rel="preload" as="style" href="{{ STYLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ FONTS_OVERRIDE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
@@ -140,7 +143,9 @@
   <noscript><link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ UI_FOUNDATION_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}"></noscript>
-
+  <link rel="preload" as="font" type="font/woff2" href="{{ FA_SOLID_FONT_URL }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ FA_REGULAR_FONT_URL }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ FA_BRANDS_FONT_URL }}" crossorigin>
   <link rel="stylesheet" href="{{ STYLE_URL }}">
   <link rel="stylesheet" href="{{ NAVBAR_URL }}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ ICONS_URL }}" media="print" onload="this.media='all'">

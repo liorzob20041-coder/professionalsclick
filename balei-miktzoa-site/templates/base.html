@@ -118,14 +118,11 @@
   {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
   {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') ~ '?v=' ~ ASSET_VER %}
-  <!-- Non-blocking: main stylesheet preloaded, applied via media=print -->
-  <link rel="preload" as="style" href="{{ STYLE_URL }}">
-  <link rel="stylesheet" href="{{ STYLE_URL }}" media="print" onload="this.media='all'">
+  <link rel="preload" as="style" href="{{ STYLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
-  <!-- Non-blocking: small overrides and FA-lite -->
-  <link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}" media="print" onload="this.media='all'">
+  <link rel="preload" as="style" href="{{ FONTS_OVERRIDE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}"></noscript>
-  <link rel="stylesheet" href="{{ FA_LITE_URL }}" media="print" onload="this.media='all'">
+  <link rel="preload" as="style" href="{{ FA_LITE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ FA_LITE_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ NAVBAR_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ NAVBAR_URL }}"></noscript>
@@ -136,23 +133,24 @@
   <link rel="preload" as="style" href="{{ UI_FOUNDATION_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}"></noscript>
   <link rel="preload" as="font" type="font/woff2" href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}" crossorigin>
-  <!-- שומר פרילוד יחיד לפונט FA כדי להימנע מכפילויות -->
-  <style id="ios-css-import-fallback" type="text/plain">
-    @import "{{ STYLE_URL }}";
-    @import "{{ NAVBAR_URL }}";
-    @import "{{ ICONS_URL }}";
-    @import "{{ BASE_BUNDLE_URL }}";
-    @import "{{ UI_FOUNDATION_URL }}";
-    @import "{{ FA_LITE_URL }}";
-  </style>
+  <!-- קריטי: השארת style.css נטען מיד; היתר non-blocking -->
+  <link rel="stylesheet" href="{{ STYLE_URL }}">
+  <link rel="stylesheet" href="{{ NAVBAR_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ ICONS_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ FA_LITE_URL }}" media="print" onload="this.media='all'">
   <noscript>
-    <link rel="stylesheet" href="{{ STYLE_URL }}">
     <link rel="stylesheet" href="{{ NAVBAR_URL }}">
     <link rel="stylesheet" href="{{ ICONS_URL }}">
     <link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}">
     <link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}">
+    <link rel="stylesheet" href="{{ FONTS_OVERRIDE_URL }}">
     <link rel="stylesheet" href="{{ FA_LITE_URL }}">
   </noscript>
+  <!-- fallback iOS נשמר אך ללא @import חסום -->
+  <style id="ios-css-import-fallback" type="text/plain"></style>
   <script>
   (function(){
     var loaded=false;
@@ -518,7 +516,7 @@
         {{ hero_lcp_src_960 }} 960w,
         {{ hero_lcp_src_1024 }} 1024w"
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
-<link rel="preload" as="image" href="{{ flag_israel_small }}">
+<!-- אין צורך בפרילוד של הדגל הקטן -->
 </head>
 <body>
 <!-- warmup iframe יוזרק דינמית לאחר טעינת הדף -->
@@ -1112,6 +1110,7 @@ runWhenIdle(function(){
   document.head.appendChild(s);
 });
 </script>
+<!-- warmup נדחה לאחר onload כדי לא לגעת ב-FCP/LCP -->
 <script>
 runWhenIdle(function(){
   window.addEventListener('load', function(){
@@ -1123,7 +1122,7 @@ runWhenIdle(function(){
       f.setAttribute('aria-hidden','true');
       document.body.appendChild(f);
     }catch(_){ }
-  }, { once: true });
+  });
 });
 </script>
 <script>

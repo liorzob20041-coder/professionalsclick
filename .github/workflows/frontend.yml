@@ -39,7 +39,7 @@ jobs:
 
       - name: Install frontend tools
         run: |
-          npm i -D stylelint stylelint-config-standard postcss postcss-html @lhci/cli pa11y-ci
+          npm i -D stylelint stylelint-config-standard postcss postcss-html @lhci/cli@0.13.x pa11y-ci
 
       - name: Minify CSS (if project has build script)
         run: |
@@ -106,22 +106,27 @@ jobs:
       # Warmup for stable metrics
       - name: Warmup cache
         run: |
-      - name: Warm image cache (LCP + flags)
-        run: |
-          set -eux
-          base="http://127.0.0.1:5000"
-          for sz in 480 640 768 960 1024; do
-            curl -sS "$base/img/photo1.jpg?w=$sz&q=76&fit=cover&format=auto" >/dev/null || true
-          done
-          curl -sS "$base/img/flags/israel-flag-png-large.png?w=64&q=85&fit=contain&format=png"  >/dev/null || true
-          curl -sS "$base/img/flags/israel-flag-large.webp?w=64&q=85&fit=contain&format=webp"   >/dev/null || true
-          curl -sS "$base/img/flags/united-states-of-america-flag-png-large.png?w=48&q=85&fit=contain&format=png" >/dev/null || true
-          curl -sS "$base/img/flags/united-states-of-america-flag-large.webp?w=48&q=85&fit=contain&format=webp"  >/dev/null || true
-          curl -sS "$base/img/flags/russia-flag-png-large.png?w=48&q=85&fit=contain&format=png" >/dev/null || true
-          curl -sS "$base/img/flags/russia-flag-large.webp?w=48&q=85&fit=contain&format=webp"   >/dev/null || true
-
           curl -sS http://127.0.0.1:5000/he/ >/dev/null || true
-          curl -sS http://127.0.0.1:5000/static/css/style.min.css >/dev/null || true
+      - name: Warm image cache (scrape src/srcset)
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:5000"
+          html="$(curl -sS "$base/he/")"
+          printf "%s" "$html" \
+            | grep -oE '(src|srcset)="[^"]+"' \
+            | sed -E 's/^(src|srcset)="(.*)"$/\2/' \
+            | tr ' ' '\n' \
+            | sed 's/,/\n/g' \
+            | sed -E 's/[[:space:]]+[0-9]+w$//' \
+            | sed -E 's/[[:space:]]+([0-9.]+)x$//' \
+            | grep -Ei '\.(png|jpe?g|webp|svg)(\?|$)' \
+            | sed -E "s#^/#${base}/#" \
+            | sort -u > warm-urls.txt
+          echo "Warming:"
+          cat warm-urls.txt || true
+          while read -r u; do
+            [ -n "$u" ] && curl -sS "$u" >/dev/null || true
+          done < warm-urls.txt
 
       # Lighthouse: collect + assert + upload
       - name: Lighthouse (stable median)
@@ -134,7 +139,7 @@ jobs:
             --collect.settings.formFactor=mobile \
             --collect.settings.screenEmulation.mobile=true \
             --collect.settings.chromeFlags="--no-sandbox --disable-dev-shm-usage" \
-            --assert.assertions.category-performance="error@>=0.80" \
+            --assert.assertions.category-performance="error@>=0.90" \
             --upload.target=filesystem \
             --upload.outputDir=./lhci-report
           status=$?

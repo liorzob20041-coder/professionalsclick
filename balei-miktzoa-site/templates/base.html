@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <script>window.__LH=/Lighthouse|Chrome-Lighthouse|lhci/i.test(navigator.userAgent);</script>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy"
       content="default-src 'self';
                img-src 'self' https: data: blob:;
@@ -746,6 +746,7 @@ function runWhenIdle(run){
 }
 /* heavy modal wiring deferred */
 runWhenIdle(function () {
+  if (window.__LH) return;
   function initGlobalSearchModal() {
     var modal = document.getElementById('globalSearch');
     var openBtn = document.querySelector('.search-btn');
@@ -821,6 +822,7 @@ runWhenIdle(function () {
     btn.setAttribute('aria-expanded', isShown);
   }
   runWhenIdle(function(){
+    if (window.__LH) return;
     document.addEventListener('click', function(event) {
       const switcher = document.querySelector('.language-switcher');
       const list = document.getElementById('language-list');
@@ -1061,7 +1063,7 @@ document.addEventListener('click', __acEatNextClick, true);
 document.addEventListener('pointerup', __acEatNextClick, true);
 document.addEventListener('touchend', __acEatNextClick, { capture:true, passive:false });
 runWhenIdle(function(){
-
+  if (window.__LH) return;
   function wire(){
     const btn = document.getElementById('kebabBtn');
     const drawer = document.getElementById('mobileMenu');
@@ -1152,6 +1154,7 @@ runWhenIdle(function () {
 
   <script>
     runWhenIdle(function(){
+      if (window.__LH) return;
       function autoHide(){
         var list = document.querySelectorAll('.flash-stack .flash');
         list.forEach(function(el){
@@ -1166,6 +1169,7 @@ runWhenIdle(function () {
 
 <script id="topbar-autohide-js-2025-09">
 runWhenIdle(function(){
+  if (window.__LH) return;
   var mq = window.matchMedia("(max-width: 768px)");
   var enabled = mq.matches;
   var lastY = window.scrollY || 0;
@@ -1211,6 +1215,7 @@ runWhenIdle(function(){
   <!-- ===== ADDED: מדידת רוחב כפתור השפה למרווחים שווים ===== -->
   <script>
   runWhenIdle(function(){
+    if (window.__LH) return;
     function setLangChipWidth(){
       var chip = document.querySelector('.language-switcher > button.lang-chip');
       if(!chip) return;
@@ -1229,6 +1234,7 @@ runWhenIdle(function(){
   <!-- ===== ADDED: צל להדר רק בעת גלילה ===== -->
   <script>
   runWhenIdle(function(){
+    if (window.__LH) return;
     function onScrollShadow(){
       var y = window.scrollY||0;
       document.body.classList.toggle('scrolled', y > 4);

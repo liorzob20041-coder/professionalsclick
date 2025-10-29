@@ -295,43 +295,28 @@
       <article class="a-card reveal" role="listitem">
         <a class="a-thumb{% if not a.img_file %} is-placeholder{% endif %}" href="{{ a.href }}" aria-label="{{ a.title }}">
           {% if a.img_file %}
-            {% set source_w = a.img_width or 768 %}
-            {% set source_h = a.img_height or 432 %}
-            {% set ratio = (source_h|float) / (source_w|float) %}
-            {% set desired_widths = [320, 480, 640, 768, 960] %}
-            {% set widths = [] %}
-            {% for w in desired_widths %}
-              {% if w <= source_w %}
-                {% set widths = widths + [w] %}
-              {% endif %}
-            {% endfor %}
-            {% if not widths %}
-              {% set widths = [source_w] %}
-            {% endif %}
-            {% set widths = widths|sort %}
-            {% set srcset_webp = [] %}
-            {% set srcset_auto = [] %}
-            {% for w in widths %}
-              {% set srcset_webp = srcset_webp + [
-                url_for('img_proxy', filename=a.img_file, w=w, q=76, fit='cover', format='webp', v=ASSET_VER) ~ ' ' ~ w ~ 'w'
-              ] %}
-              {% set srcset_auto = srcset_auto + [
-                url_for('img_proxy', filename=a.img_file, w=w, q=76, fit='cover', format='auto', v=ASSET_VER) ~ ' ' ~ w ~ 'w'
-              ] %}
-            {% endfor %}
-            {% set fallback_w = widths|last %}
-            {% set fallback_h = (fallback_w * ratio)|round(0, 'common')|int %}
-            {% set fallback_src = url_for('img_proxy', filename=a.img_file, w=fallback_w, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+            {% set IMG = a.img_file %}
+            {% set ALT = a.img_alt %}
+            {% set width_attr = a.img_width or 640 %}
+            {% set height_attr = a.img_height or 466 %}
+            {% set fallback_w = 640 if width_attr <= 640 else 960 %}
             <picture>
               <source type="image/webp"
-                      srcset="{{ srcset_webp|join(', ') }}"
-                      sizes="(min-width: 1100px) 30vw, (min-width: 768px) 45vw, 88vw">
-              <img src="{{ fallback_src }}"
-                   srcset="{{ srcset_auto|join(', ') }}"
-                   sizes="(min-width: 1100px) 30vw, (min-width: 768px) 45vw, 88vw"
-                   width="{{ fallback_w }}" height="{{ fallback_h }}"
-                   alt="{{ a.img_alt }}"
-                   loading="lazy" decoding="async">
+                      srcset="{{ url_for('img_proxy', filename=IMG, w=360, q=78, fit='cover', format='webp', v=ASSET_VER) }} 360w,
+                              {{ url_for('img_proxy', filename=IMG, w=480, q=78, fit='cover', format='webp', v=ASSET_VER) }} 480w,
+                              {{ url_for('img_proxy', filename=IMG, w=640, q=78, fit='cover', format='webp', v=ASSET_VER) }} 640w,
+                              {{ url_for('img_proxy', filename=IMG, w=768, q=78, fit='cover', format='webp', v=ASSET_VER) }} 768w,
+                              {{ url_for('img_proxy', filename=IMG, w=960, q=78, fit='cover', format='webp', v=ASSET_VER) }} 960w">
+              <img src="{{ url_for('img_proxy', filename=IMG, w=fallback_w, q=78, fit='cover', format='jpeg', v=ASSET_VER) }}"
+                   srcset="{{ url_for('img_proxy', filename=IMG, w=360, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 360w,
+                           {{ url_for('img_proxy', filename=IMG, w=480, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 480w,
+                           {{ url_for('img_proxy', filename=IMG, w=640, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 640w,
+                           {{ url_for('img_proxy', filename=IMG, w=768, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 768w,
+                           {{ url_for('img_proxy', filename=IMG, w=960, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 960w"
+                   sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
+                   width="{{ width_attr }}" height="{{ height_attr }}"
+                   loading="lazy" decoding="async"
+                   alt="{{ ALT }}">
             </picture>
           {% else %}
             <span class="a-thumb__placeholder">{{ a.placeholder or a.title }}</span>

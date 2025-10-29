@@ -32,9 +32,10 @@
     .topbar-rail{height:56px}
     .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
     .tb-logo-picture,.tb-logo-picture img,.tb-logo-strip{display:block}
-    .tb-logo-strip{inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
+    .tb-logo-strip{width:320px;max-width:100%;height:auto;aspect-ratio:8/1;inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
     .search-btn{inline-size:40px;min-inline-size:40px}
-    .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center;line-height:1}
+    .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
+    .hero-info h1{min-height:3.2em}
     .hero-split{display:flex;flex-direction:column}
     @media (min-width:768px){.hero-split{flex-direction:row}}
     .hero-info,.hero-visual{flex:1 1 0}

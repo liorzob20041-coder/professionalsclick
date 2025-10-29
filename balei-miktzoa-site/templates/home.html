@@ -298,7 +298,7 @@
             {% set source_w = a.img_width or 768 %}
             {% set source_h = a.img_height or 432 %}
             {% set ratio = (source_h|float) / (source_w|float) %}
-            {% set desired_widths = [320, 480, 640] %}
+            {% set desired_widths = [320, 480, 640, 768, 960] %}
             {% set widths = [] %}
             {% for w in desired_widths %}
               {% if w <= source_w %}
@@ -309,21 +309,30 @@
               {% set widths = [source_w] %}
             {% endif %}
             {% set widths = widths|sort %}
-            {% set srcset_list = [] %}
+            {% set srcset_webp = [] %}
+            {% set srcset_auto = [] %}
             {% for w in widths %}
-              {% set srcset_list = srcset_list + [
+              {% set srcset_webp = srcset_webp + [
+                url_for('img_proxy', filename=a.img_file, w=w, q=76, fit='cover', format='webp', v=ASSET_VER) ~ ' ' ~ w ~ 'w'
+              ] %}
+              {% set srcset_auto = srcset_auto + [
                 url_for('img_proxy', filename=a.img_file, w=w, q=76, fit='cover', format='auto', v=ASSET_VER) ~ ' ' ~ w ~ 'w'
               ] %}
             {% endfor %}
             {% set fallback_w = widths|last %}
             {% set fallback_h = (fallback_w * ratio)|round(0, 'common')|int %}
             {% set fallback_src = url_for('img_proxy', filename=a.img_file, w=fallback_w, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-            <img src="{{ fallback_src }}"
-                 srcset="{{ srcset_list|join(', ') }}"
-                 sizes="(min-width: 1100px) 30vw, (min-width: 768px) 45vw, 88vw"
-                 width="{{ fallback_w }}" height="{{ fallback_h }}"
-                 alt="{{ a.img_alt }}"
-                 loading="lazy" decoding="async">
+            <picture>
+              <source type="image/webp"
+                      srcset="{{ srcset_webp|join(', ') }}"
+                      sizes="(min-width: 1100px) 30vw, (min-width: 768px) 45vw, 88vw">
+              <img src="{{ fallback_src }}"
+                   srcset="{{ srcset_auto|join(', ') }}"
+                   sizes="(min-width: 1100px) 30vw, (min-width: 768px) 45vw, 88vw"
+                   width="{{ fallback_w }}" height="{{ fallback_h }}"
+                   alt="{{ a.img_alt }}"
+                   loading="lazy" decoding="async">
+            </picture>
           {% else %}
             <span class="a-thumb__placeholder">{{ a.placeholder or a.title }}</span>
           {% endif %}

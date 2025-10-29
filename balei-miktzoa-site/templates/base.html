@@ -28,8 +28,13 @@
     html{box-sizing:border-box;min-height:100%}
     *,*:before,*:after{box-sizing:inherit}
     body{margin:0;min-height:100vh}
-    .topbar-rail{min-height:56px}
+    :root{--lang-chip-w:64px;--tb-logo-w:320px;--tb-logo-h:40px}
+    .topbar-rail{height:56px}
     .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
+    .tb-logo-picture,.tb-logo-picture img,.tb-logo-strip{display:block}
+    .tb-logo-strip{inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
+    .search-btn{inline-size:40px;min-inline-size:40px}
+    .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center;line-height:1}
     .hero-split{display:flex;flex-direction:column}
     @media (min-width:768px){.hero-split{flex-direction:row}}
     .hero-info,.hero-visual{flex:1 1 0}
@@ -115,8 +120,8 @@
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.css') ~ '?v=' ~ ASSET_VER %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.css') ~ '?v=' ~ ASSET_VER %}
   {% set ICONS_URL = static_rel('css/icons.css') ~ '?v=' ~ ASSET_VER %}
-  {% set FA_LITE_URL = static_rel('css/fa-lite.css') ~ '?v=' ~ ASSET_VER %}
-  {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.css') ~ '?v=' ~ ASSET_VER %}
+  {% set FA_LITE_URL = static_rel('css/fa-lite.min.css') ~ '?v=' ~ ASSET_VER %}
+  {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.min.css') ~ '?v=' ~ ASSET_VER %}
   {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') ~ '?v=' ~ ASSET_VER %}
   <link rel="preload" as="style" href="{{ STYLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>

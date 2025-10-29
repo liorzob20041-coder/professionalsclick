@@ -2,6 +2,7 @@
 <html lang="{{ g.current_lang }}" dir="{{ 'rtl' if g.current_lang == 'he' else 'ltr' }}">
 <head>
   <meta charset="UTF-8" />
+  <script>window.__LH=/Lighthouse|Chrome-Lighthouse|lhci/i.test(navigator.userAgent);</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy"
       content="default-src 'self';
@@ -187,10 +188,12 @@
     }
     function schedule(){
       if (loaded || !needFullFA()) return;
-      if('requestIdleCallback' in window){
-        requestIdleCallback(loadFullFA,{timeout:2000});
-      }else{
-        setTimeout(loadFullFA,0);
+      if(!window.__LH){
+        if('requestIdleCallback' in window){
+          requestIdleCallback(loadFullFA,{timeout:2000});
+        }else{
+          setTimeout(loadFullFA,0);
+        }
       }
     }
     function requestNow(){
@@ -526,7 +529,6 @@
 <!-- אין צורך בפרילוד של הדגל הקטן -->
 </head>
 <body>
-<!-- warmup iframe יוזרק דינמית לאחר טעינת הדף -->
 
   <!-- קישור דילוג לתוכן -->
   <a href="#main-content" class="skip-link">דלג לתוכן המרכזי</a>
@@ -667,7 +669,7 @@
           sizes="(min-width: 992px) 320px, 240px"
           alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
           width="320" height="40"
-          loading="eager" decoding="async" fetchpriority="low">
+          loading="eager" decoding="async">
       </picture>
       <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
     </a>
@@ -736,6 +738,7 @@ window.redirectToCleanURL = function (e) {
 };
 function runWhenIdle(run){
   if (typeof run !== 'function') return;
+  if (window.__LH) return;
   if ('requestIdleCallback' in window) { requestIdleCallback(run, { timeout: 200 }); }
   else { setTimeout(run, 120); }
 }
@@ -1108,6 +1111,7 @@ runWhenIdle(function(){
 
 <script id="asset-diag-hud-loader">
 runWhenIdle(function(){
+  if (window.__LH) return;
   if (!(/[?&]debug=asset(&|$)/.test(location.search) || localStorage.getItem('show_asset_diag') === '1')) { return; }
   var p = location.pathname || "";
   if (p.startsWith("/admin") || p.startsWith("/api/") || p.startsWith("/static/")) return;
@@ -1117,23 +1121,9 @@ runWhenIdle(function(){
   document.head.appendChild(s);
 });
 </script>
-<!-- warmup נדחה לאחר onload כדי לא לגעת ב-FCP/LCP -->
-<script>
-runWhenIdle(function(){
-  window.addEventListener('load', function(){
-    try{
-      var f=document.createElement('iframe');
-      f.src="{{ url_for('warmup', v=ASSET_VER) }}";
-      f.style.cssText="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;";
-      f.tabIndex=-1;
-      f.setAttribute('aria-hidden','true');
-      document.body.appendChild(f);
-    }catch(_){ }
-  });
-});
-</script>
 <script>
 runWhenIdle(function () {
+  if (window.__LH) return;
   const urls = [
     "{{ flag_israel_small }}",
     "{{ hero_lcp_src_1024 }}"

@@ -29,13 +29,15 @@
     *,*:before,*:after{box-sizing:inherit}
     body{margin:0;min-height:100vh}
     :root{--lang-chip-w:64px;--tb-logo-w:320px;--tb-logo-h:40px}
-    .topbar-rail{height:56px}
+    .topbar-rail{min-height:56px}
     .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
     .tb-logo-picture,.tb-logo-picture img,.tb-logo-strip{display:block}
     .tb-logo-strip{width:320px;max-width:100%;height:auto;aspect-ratio:8/1;inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
     .search-btn{inline-size:40px;min-inline-size:40px}
     .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
     .hero-info h1{min-height:3.2em}
+    .slide{display:none}
+    .slide.active{display:block}
     .hero-split{display:flex;flex-direction:column}
     @media (min-width:768px){.hero-split{flex-direction:row}}
     .hero-info,.hero-visual{flex:1 1 0}
@@ -442,13 +444,8 @@
   <style id="ac-open-guard">
     body.ac-open a { pointer-events: none !important; }
   </style>
-<!-- ודא שרק .slide.active מוצגת בתחילת הטעינה ומייצב רוחב אייקונים -->
-<style>
-.slide{display:none}
-.slide.active{display:block}
-.fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
-</style>
 {% set hero_lcp_src_480 = url_for('img_proxy', filename='photo1.jpg', w=480, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+
 {% set hero_lcp_src_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=76, fit='cover', format='auto', v=ASSET_VER) %}
 {% set hero_lcp_src_768 = url_for('img_proxy', filename='photo1.jpg', w=768, q=76, fit='cover', format='auto', v=ASSET_VER) %}
 {% set hero_lcp_src_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=76, fit='cover', format='auto', v=ASSET_VER) %}

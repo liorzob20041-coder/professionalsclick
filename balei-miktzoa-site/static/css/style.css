@@ -50,6 +50,16 @@ html[dir="ltr"] body {
 .slide.active {
   display: block;
 }
+.hero-lcp {
+  display: block;
+  max-width: 100%;
+}
+.hero-visual {
+  contain: layout paint;
+}
+.hero-visual img {
+  height: auto;
+}
 
 /* ׳₪׳•׳§׳•׳¡ ׳ ׳’׳™׳© */
 a:focus,
@@ -601,6 +611,6 @@ html[dir="ltr"] .language-switcher {
   display:inline-block; width:1em; height:1em; line-height:1;
 }
 /* Lock header height (cheap extra safety) */
-.topbar-rail{ min-height:64px; }
+.topbar-rail{ min-height:56px; }
 .tb-logo-strip{ display:block; height:auto; }
 

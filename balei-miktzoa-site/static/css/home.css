@@ -44,7 +44,7 @@
   --icon-space: 26px;
 
   /* מרווח ל־Sticky bottom actions אם יש */
-  --sba-h: 0px;
+  --sba-h: 0;
 
   /* צבע אייקונים/הדגשות */
   --accent-color: #8a1538;
@@ -306,7 +306,6 @@ html[dir="ltr"] .check-item {
   width: var(--hero-card-w);
   padding: 14px 16px;
   border-radius: 16px;
-  background: rgba(15, 23, 42, 0.78);
   border: 1px solid rgb(255 255 255 / 12%);
   box-shadow: var(--shadow-lg);
   display: grid;
@@ -1086,36 +1085,27 @@ html[dir="ltr"] .input-group:has(#field)::before {
   mask-image:
     linear-gradient(to left, transparent, #000 18px),
     linear-gradient(to right, transparent, #000 18px);
-  -webkit-mask-image:
-    linear-gradient(to left, transparent, #000 18px),
-    linear-gradient(to right, transparent, #000 18px);
   mask-composite: intersect;
-  -webkit-mask-composite: source-in;
+  mask-composite: source-in;
 }
 
 
 
 /* Fade לקצוות המסילה – גרסה תואמת LTR/RTL ולוובקיט */
 html[dir="ltr"] .niche-rail {
-  -webkit-mask-image:
-    linear-gradient(to left, transparent, black 18px),
-    linear-gradient(to right, transparent, black 18px);
   mask-image:
     linear-gradient(to left, transparent, black 18px),
     linear-gradient(to right, transparent, black 18px);
   mask-composite: intersect;
-  -webkit-mask-composite: source-in;
+  mask-composite: source-in;
 }
 
 html[dir="rtl"] .niche-rail {
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, black 18px),
-    linear-gradient(to left, transparent, black 18px);
   mask-image:
     linear-gradient(to right, transparent, black 18px),
     linear-gradient(to left, transparent, black 18px);
   mask-composite: intersect;
-  -webkit-mask-composite: source-in;
+  mask-composite: source-in;
 }
 
 

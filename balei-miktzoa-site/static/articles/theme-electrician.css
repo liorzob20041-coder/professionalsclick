@@ -1,16 +1,16 @@
 .article[data-theme="electrician"] {
-  --article-canvas-bg: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.08));
-  --article-surface-bg: rgba(255, 255, 255, 0.96);
-  --article-surface-shadow: 0 24px 60px rgba(30, 64, 175, 0.18);
+  --article-canvas-bg: linear-gradient(135deg, rgb(59 130 246 / 12%), rgb(37 99 235 / 8%));
+  --article-surface-bg: rgb(255 255 255 / 96%);
+  --article-surface-shadow: 0 24px 60px rgb(30 64 175 / 18%);
   --article-accent: #1d4ed8;
-  --article-section-bg: rgba(224, 231, 255, 0.7);
-  --article-section-border: rgba(99, 102, 241, 0.22);
-  --article-highlight-bg: rgba(199, 210, 254, 0.75);
-  --article-highlight-border: rgba(59, 130, 246, 0.24);
-  --article-callout-bg: rgba(59, 130, 246, 0.18);
-  --article-callout-border: rgba(37, 99, 235, 0.32);
-  --article-check-icon-bg: rgba(59, 130, 246, 0.16);
+  --article-section-bg: rgb(224 231 255 / 70%);
+  --article-section-border: rgb(99 102 241 / 22%);
+  --article-highlight-bg: rgb(199 210 254 / 75%);
+  --article-highlight-border: rgb(59 130 246 / 24%);
+  --article-callout-bg: rgb(59 130 246 / 18%);
+  --article-callout-border: rgb(37 99 235 / 32%);
+  --article-check-icon-bg: rgb(59 130 246 / 16%);
   --article-check-icon-color: #1d4ed8;
-  --article-number-bullet-bg: rgba(99, 102, 241, 0.18);
-  --article-hero-bg: radial-gradient(circle at top, rgba(29, 78, 216, 0.2), transparent 62%);
+  --article-number-bullet-bg: rgb(99 102 241 / 18%);
+  --article-hero-bg: radial-gradient(circle at top, rgb(29 78 216 / 20%), transparent 62%);
 }

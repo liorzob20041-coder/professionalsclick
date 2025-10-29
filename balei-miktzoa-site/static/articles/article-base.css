@@ -3,24 +3,24 @@
   --article-flow-space: clamp(32px, 4vw, 56px);
   --article-canvas-bg: #f8fafc;
   --article-surface-bg: #fff;
-  --article-surface-border: rgba(15, 23, 42, 0.08);
-  --article-surface-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+  --article-surface-border: rgb(15 23 42 / 8%);
+  --article-surface-shadow: 0 18px 42px rgb(15 23 42 / 12%);
   --article-surface-radius: clamp(20px, 3vw, 32px);
   --article-surface-padding: clamp(26px, 4vw, 48px);
   --article-accent: #2563eb;
-  --article-text: rgba(15, 23, 42, 0.92);
-  --article-subtle-text: rgba(71, 85, 105, 0.88);
-  --article-divider: rgba(148, 163, 184, 0.28);
-  --article-section-bg: rgba(248, 250, 252, 0.75);
-  --article-section-border: rgba(148, 163, 184, 0.24);
-  --article-highlight-bg: rgba(226, 232, 240, 0.75);
-  --article-highlight-border: rgba(100, 116, 139, 0.22);
-  --article-callout-bg: rgba(37, 99, 235, 0.12);
-  --article-callout-border: rgba(37, 99, 235, 0.3);
-  --article-check-icon-bg: rgba(37, 99, 235, 0.14);
+  --article-text: rgb(15 23 42 / 92%);
+  --article-subtle-text: rgb(71 85 105 / 88%);
+  --article-divider: rgb(148 163 184 / 28%);
+  --article-section-bg: rgb(248 250 252 / 75%);
+  --article-section-border: rgb(148 163 184 / 24%);
+  --article-highlight-bg: rgb(226 232 240 / 75%);
+  --article-highlight-border: rgb(100 116 139 / 22%);
+  --article-callout-bg: rgb(37 99 235 / 12%);
+  --article-callout-border: rgb(37 99 235 / 30%);
+  --article-check-icon-bg: rgb(37 99 235 / 14%);
   --article-check-icon-color: var(--article-accent);
-  --article-number-bullet-bg: rgba(37, 99, 235, 0.15);
-  --article-hero-bg: rgba(15, 23, 42, 0.06);
+  --article-number-bullet-bg: rgb(37 99 235 / 15%);
+  --article-hero-bg: rgb(15 23 42 / 6%);
 
   min-height: 100vh;
   display: flex;
@@ -249,7 +249,7 @@
   transform: translateY(-2px);
   box-shadow: 0 18px 32px color-mix(in srgb, var(--article-accent) 28%, transparent);
 }
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .article-layout {
     padding: 20px clamp(12px, 6vw, 20px);
   }

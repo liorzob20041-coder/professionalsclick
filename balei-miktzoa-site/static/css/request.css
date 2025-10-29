@@ -108,13 +108,13 @@ body {
 }
 .form-progress li.is-complete {
   background: var(--color-surface);
-  border-color: rgba(21, 128, 61, 0.3);
+  border-color: rgb(21 128 61 / 30%);
   color: var(--color-success);
 }
 .form-progress li.is-complete::before {
   content: "✓";
   font-weight: 800;
-  background: rgba(21, 128, 61, 0.95);
+  background: rgb(21 128 61 / 95%);
 }
 form {
   margin: 0;
@@ -138,7 +138,7 @@ form {
 }
 .card.is-highlight {
   border-color: var(--color-accent-400);
-  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 16px 32px rgb(37 99 235 / 18%);
 }
 .card h3 {
   margin: 0 0 12px;
@@ -190,7 +190,7 @@ form {
   grid-template-columns: 1fr;
   gap: clamp(12px, 2vw, 16px);
 }
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .row--2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -237,7 +237,7 @@ form {
 .btn-primary {
   background: var(--color-brand-500);
   color: var(--color-surface);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 12px 30px rgb(15 23 42 / 22%);
 }
 .btn-primary:hover {
   transform: translateY(-1px);
@@ -253,7 +253,7 @@ form {
 }
 .btn-secondary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 10px 24px rgb(15 23 42 / 14%);
 }
 .btn-secondary:focus-visible {
   outline: 2px solid var(--color-accent-500);
@@ -397,12 +397,12 @@ form {
 /* Step highlight on scroll */
 .card[data-step].is-current {
   border-color: var(--color-accent-500);
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 18px 40px rgb(37 99 235 / 20%);
 }
 .card[data-step].is-complete {
-  border-color: rgba(21, 128, 61, 0.35);
+  border-color: rgb(21 128 61 / 35%);
 }
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .form-progress {
     position: static;
   }
@@ -410,7 +410,7 @@ form {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
 }
-@media (max-width: 540px) {
+@media (width <= 540px) {
   .file-label + .file-label {
     margin-inline-start: 0;
     margin-top: 8px;

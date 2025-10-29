@@ -1,4 +1,7 @@
-**/vendor/**
+templates/**
+static/vendor/**
+CHECK THIS/**
+**/*.html
+**/*.jinja
+**/*.j2
 **/*.min.css
-static/css/base.bundle.css
-**/*.bundle.css

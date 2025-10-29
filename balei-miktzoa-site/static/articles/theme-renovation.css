@@ -1,16 +1,16 @@
 .article[data-theme="renovation"] {
-  --article-canvas-bg: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(244, 114, 182, 0.08));
-  --article-surface-bg: rgba(255, 255, 255, 0.94);
-  --article-surface-shadow: 0 24px 60px rgba(180, 83, 9, 0.16);
+  --article-canvas-bg: linear-gradient(135deg, rgb(251 191 36 / 12%), rgb(244 114 182 / 8%));
+  --article-surface-bg: rgb(255 255 255 / 94%);
+  --article-surface-shadow: 0 24px 60px rgb(180 83 9 / 16%);
   --article-accent: #ea580c;
-  --article-section-bg: rgba(253, 230, 138, 0.6);
-  --article-section-border: rgba(234, 88, 12, 0.22);
-  --article-highlight-bg: rgba(249, 168, 37, 0.6);
-  --article-highlight-border: rgba(194, 65, 12, 0.24);
-  --article-callout-bg: rgba(234, 88, 12, 0.18);
-  --article-callout-border: rgba(217, 119, 6, 0.32);
-  --article-check-icon-bg: rgba(251, 191, 36, 0.24);
+  --article-section-bg: rgb(253 230 138 / 60%);
+  --article-section-border: rgb(234 88 12 / 22%);
+  --article-highlight-bg: rgb(249 168 37 / 60%);
+  --article-highlight-border: rgb(194 65 12 / 24%);
+  --article-callout-bg: rgb(234 88 12 / 18%);
+  --article-callout-border: rgb(217 119 6 / 32%);
+  --article-check-icon-bg: rgb(251 191 36 / 24%);
   --article-check-icon-color: #b45309;
-  --article-number-bullet-bg: rgba(234, 88, 12, 0.22);
-  --article-hero-bg: radial-gradient(circle at top, rgba(250, 204, 21, 0.25), transparent 60%);
+  --article-number-bullet-bg: rgb(234 88 12 / 22%);
+  --article-hero-bg: radial-gradient(circle at top, rgb(250 204 21 / 25%), transparent 60%);
 }

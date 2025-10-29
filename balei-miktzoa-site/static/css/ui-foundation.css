@@ -10,7 +10,7 @@
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 18px;
-  --shadow-1: 0 6px 18px rgba(15, 23, 42, 0.08);
+  --shadow-1: 0 6px 18px rgb(15 23 42 / 8%);
   --gap-1: 0.5rem;
   --gap-2: 0.75rem;
   --gap-3: 1rem;
@@ -25,7 +25,7 @@ body {
   color: var(--ink);
   font-size: 16px;
   line-height: 1.6;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -51,7 +51,7 @@ p {
   padding-inline: clamp(1rem, 4vw, 2rem);
 }
 
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   .container { max-width: 1180px; }
 }
 
@@ -156,7 +156,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(122, 31, 61, 0.18);
+  box-shadow: 0 0 0 3px rgb(122 31 61 / 18%);
 }
 
 .form-row { display: grid; gap: var(--gap-3); }
@@ -179,7 +179,7 @@ textarea:focus {
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .grid-2,
   .grid-3 { grid-template-columns: 1fr; }
   .form-actions { justify-content: flex-start; }
@@ -259,7 +259,7 @@ textarea:focus {
   align-self: flex-start;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .featured-article__card {
     flex-direction: row;
     align-items: center;

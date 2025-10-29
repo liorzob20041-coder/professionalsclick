@@ -1,16 +1,16 @@
 .article[data-theme="plumbing"] {
-  --article-canvas-bg: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(14, 165, 233, 0.08));
-  --article-surface-bg: rgba(255, 255, 255, 0.98);
-  --article-surface-shadow: 0 24px 60px rgba(14, 116, 144, 0.16);
+  --article-canvas-bg: linear-gradient(135deg, rgb(56 189 248 / 12%), rgb(14 165 233 / 8%));
+  --article-surface-bg: rgb(255 255 255 / 98%);
+  --article-surface-shadow: 0 24px 60px rgb(14 116 144 / 16%);
   --article-accent: #0ea5e9;
-  --article-section-bg: rgba(191, 219, 254, 0.65);
-  --article-section-border: rgba(14, 165, 233, 0.22);
-  --article-highlight-bg: rgba(125, 211, 252, 0.6);
-  --article-highlight-border: rgba(56, 189, 248, 0.24);
-  --article-callout-bg: rgba(14, 165, 233, 0.18);
-  --article-callout-border: rgba(2, 132, 199, 0.3);
-  --article-check-icon-bg: rgba(56, 189, 248, 0.18);
+  --article-section-bg: rgb(191 219 254 / 65%);
+  --article-section-border: rgb(14 165 233 / 22%);
+  --article-highlight-bg: rgb(125 211 252 / 60%);
+  --article-highlight-border: rgb(56 189 248 / 24%);
+  --article-callout-bg: rgb(14 165 233 / 18%);
+  --article-callout-border: rgb(2 132 199 / 30%);
+  --article-check-icon-bg: rgb(56 189 248 / 18%);
   --article-check-icon-color: #0369a1;
-  --article-number-bullet-bg: rgba(14, 165, 233, 0.2);
-  --article-hero-bg: radial-gradient(circle at center, rgba(125, 211, 252, 0.35), transparent 55%);
+  --article-number-bullet-bg: rgb(14 165 233 / 20%);
+  --article-hero-bg: radial-gradient(circle at center, rgb(125 211 252 / 35%), transparent 55%);
 }

@@ -14,12 +14,12 @@
   --color-danger: #b42318;
   --color-warning: #b45309;
   --focus-ring-color: #2563eb;
-  --focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45);
+  --focus-ring-shadow: 0 0 0 3px rgb(37 99 235 / 45%);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
-  --shadow-soft: 0 12px 28px rgba(15, 23, 42, 0.12);
-  --shadow-subtle: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 12px 28px rgb(15 23 42 / 12%);
+  --shadow-subtle: 0 4px 16px rgb(15 23 42 / 8%);
   --transition-fast: 0.15s ease;
   --transition-slower: 0.3s ease;
 }

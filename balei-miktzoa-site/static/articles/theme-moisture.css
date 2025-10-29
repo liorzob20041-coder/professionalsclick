@@ -1,12 +1,12 @@
 .article[data-theme="moisture"] {
   --article-accent: #0f766e;
-  --article-section-bg: rgba(224, 242, 241, 0.45);
-  --article-section-border: rgba(45, 134, 127, 0.25);
-  --article-callout-bg: rgba(15, 118, 110, 0.15);
-  --article-callout-border: rgba(15, 118, 110, 0.32);
-  --article-highlight-bg: rgba(13, 148, 136, 0.12);
-  --article-highlight-border: rgba(13, 148, 136, 0.28);
-  --article-check-icon-bg: rgba(13, 148, 136, 0.18);
+  --article-section-bg: rgb(224 242 241 / 45%);
+  --article-section-border: rgb(45 134 127 / 25%);
+  --article-callout-bg: rgb(15 118 110 / 15%);
+  --article-callout-border: rgb(15 118 110 / 32%);
+  --article-highlight-bg: rgb(13 148 136 / 12%);
+  --article-highlight-border: rgb(13 148 136 / 28%);
+  --article-check-icon-bg: rgb(13 148 136 / 18%);
   --article-check-icon-color: #0f766e;
 }
 .article[data-theme="moisture"] .article-meta {
@@ -15,8 +15,8 @@
   color: var(--article-subtle-text);
 }
 .article[data-theme="moisture"] .article-jump {
-  background: rgba(15, 118, 110, 0.08);
-  border: 1px solid rgba(15, 118, 110, 0.18);
+  background: rgb(15 118 110 / 8%);
+  border: 1px solid rgb(15 118 110 / 18%);
   border-radius: clamp(16px, 2.4vw, 24px);
   padding: clamp(12px, 2.6vw, 18px) clamp(16px, 3vw, 28px);
 }
@@ -39,21 +39,21 @@
   color: var(--article-accent);
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.12);
+  box-shadow: 0 4px 12px rgb(15 118 110 / 12%);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .article[data-theme="moisture"] .article-jump a:hover,
 .article[data-theme="moisture"] .article-jump a:focus-visible {
   transform: translateY(-2px);
-  background: rgba(15, 118, 110, 0.14);
+  background: rgb(15 118 110 / 14%);
   color: #064e3b;
-  box-shadow: 0 12px 22px rgba(15, 118, 110, 0.2);
+  box-shadow: 0 12px 22px rgb(15 118 110 / 20%);
 }
 .article[data-theme="moisture"] .article-table-wrap {
   overflow-x: auto;
   border-radius: clamp(16px, 2.4vw, 24px);
-  border: 1px solid rgba(15, 118, 110, 0.2);
-  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgb(15 118 110 / 20%);
+  background: rgb(255 255 255 / 90%);
 }
 .article[data-theme="moisture"] .article-table-wrap table {
   width: 100%;
@@ -70,13 +70,13 @@
 .article[data-theme="moisture"] .article-table-wrap th,
 .article[data-theme="moisture"] .article-table-wrap td {
   padding: clamp(12px, 2vw, 18px);
-  border-bottom: 1px solid rgba(15, 118, 110, 0.16);
+  border-bottom: 1px solid rgb(15 118 110 / 16%);
   text-align: start;
   font-size: clamp(15px, 2vw, 17px);
   line-height: 1.6;
 }
 .article[data-theme="moisture"] .article-table-wrap thead th {
-  background: rgba(15, 118, 110, 0.1);
+  background: rgb(15 118 110 / 10%);
   font-weight: 800;
 }
 .article[data-theme="moisture"] .article-table-wrap tbody tr:last-child th,
@@ -87,7 +87,7 @@
   margin: clamp(12px, 2vw, 18px) 0 0;
   padding: clamp(12px, 2vw, 18px);
   border-radius: clamp(14px, 2vw, 20px);
-  background: rgba(15, 118, 110, 0.08);
+  background: rgb(15 118 110 / 8%);
   color: var(--article-subtle-text);
 }
 .article[data-theme="moisture"] .article-faq {
@@ -95,11 +95,11 @@
   gap: clamp(14px, 2.4vw, 20px);
 }
 .article[data-theme="moisture"] .article-faq > div {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgb(255 255 255 / 92%);
   border-radius: clamp(14px, 2vw, 20px);
-  border: 1px solid rgba(15, 118, 110, 0.15);
+  border: 1px solid rgb(15 118 110 / 15%);
   padding: clamp(14px, 2.2vw, 20px) clamp(16px, 2.6vw, 24px);
-  box-shadow: 0 12px 26px rgba(15, 118, 110, 0.12);
+  box-shadow: 0 12px 26px rgb(15 118 110 / 12%);
 }
 .article[data-theme="moisture"] .article-faq dt {
   margin: 0 0 8px;
@@ -112,8 +112,8 @@
   line-height: 1.7;
 }
 .article[data-theme="moisture"] .article-tip {
-  background: rgba(15, 118, 110, 0.12);
-  border: 1px dashed rgba(15, 118, 110, 0.4);
+  background: rgb(15 118 110 / 12%);
+  border: 1px dashed rgb(15 118 110 / 40%);
   border-radius: clamp(16px, 2.4vw, 24px);
   padding: clamp(18px, 2.8vw, 26px);
   color: var(--article-text);
@@ -127,7 +127,7 @@
   margin: 0;
   line-height: 1.7;
 }
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .article[data-theme="moisture"] .article-table-wrap {
     border-radius: 18px;
   }

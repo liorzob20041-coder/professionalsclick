@@ -181,7 +181,7 @@ form[action*="add_review"] button[type="submit"]:active {
   justify-self: start;
   min-width: 200px;
 }
-@media (max-width: 860px) {
+@media (width <= 860px) {
   .add-review-page {
     padding: 0 14px 36px;
   }

@@ -364,7 +364,7 @@ img[loading="lazy"] {
     min-width: 0 !important;
     box-sizing: border-box !important;
 
-    --rail-w: 0px !important;
+    --rail-w: 0 !important;
   }
 
   nav.topbar-rail {

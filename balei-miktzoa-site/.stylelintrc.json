@@ -1,24 +1,25 @@
 {
-  "extends": ["stylelint-config-standard"],
-  "plugins": ["stylelint-order"],
+  "extends": ["stylelint-config-standard", "stylelint-config-prettier"],
   "rules": {
-    "no-descending-specificity": null,
-    "selector-max-compound-selectors": null,
-    "selector-max-specificity": null,
-    "declaration-no-important": null,
+    "rule-empty-line-before": ["always-multi-line", { "except": ["first-nested"], "ignore": ["after-comment"] }],
+    "at-rule-empty-line-before": ["always", { "except": ["first-nested"], "ignore": ["after-comment"] }],
+    "comment-empty-line-before": ["always", { "except": ["first-nested"] }],
+    "declaration-empty-line-before": "never",
+    "custom-property-empty-line-before": "never",
+    "length-zero-no-unit": true,
+    "number-max-precision": 4,
+    "declaration-block-no-duplicate-properties": [true, { "ignore": ["consecutive-duplicates-with-different-values"] }],
 
     "declaration-block-single-line-max-declarations": null,
-    "media-feature-range-notation": null,
-    "color-function-notation": null,
-    "color-function-alias-notation": null,
-    "alpha-value-notation": null,
-    "property-no-vendor-prefix": null,
-    "value-keyword-case": null,
+    "declaration-property-value-no-unknown": [true, { "ignoreProperties": { "mask-composite": ["/.*/"] } }],
+    "no-duplicate-selectors": true,
+    "property-no-deprecated": true,
+    "font-family-no-missing-generic-family-keyword": true,
+    "custom-property-pattern": null,
 
     "selector-class-pattern": null,
     "selector-id-pattern": null,
 
-    "color-hex-length": "short",
-    "order/properties-alphabetical-order": null
+    "no-descending-specificity": null
   }
 }

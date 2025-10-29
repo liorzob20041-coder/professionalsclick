@@ -160,23 +160,26 @@
                alt="{{ _('homepage.hero_img_main_alt') }}">
         </picture>
       </div>
-      {% set hero_b_widths = [480, 640, 768, 960, 1024] %}
-      {% set hero_b_srcset_avif = [url_for('img_proxy', filename='photo2.jpg', w=w, q=76, fit='cover', format='avif', v=ASSET_VER) ~ ' ' ~ w ~ 'w' for w in hero_b_widths] %}
-      {% set hero_b_srcset_webp = [url_for('img_proxy', filename='photo2.jpg', w=w, q=76, fit='cover', format='webp', v=ASSET_VER) ~ ' ' ~ w ~ 'w' for w in hero_b_widths] %}
-      {% set hero_b_srcset_jpeg = [url_for('img_proxy', filename='photo2.jpg', w=w, q=76, fit='cover', format='jpeg', v=ASSET_VER) ~ ' ' ~ w ~ 'w' for w in hero_b_widths] %}
-      {% set hero_b_src_default = url_for('img_proxy', filename='photo2.jpg', w=960, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
+      {% set hero_b_src_480 = url_for('img_proxy', filename='photo2.jpg', w=480, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_640 = url_for('img_proxy', filename='photo2.jpg', w=640, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_768 = url_for('img_proxy', filename='photo2.jpg', w=768, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_960 = url_for('img_proxy', filename='photo2.jpg', w=960, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_src_1024 = url_for('img_proxy', filename='photo2.jpg', w=1024, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+      {% set hero_b_srcset = [
+        hero_b_src_480 ~ ' 480w',
+        hero_b_src_640 ~ ' 640w',
+        hero_b_src_768 ~ ' 768w',
+        hero_b_src_960 ~ ' 960w',
+        hero_b_src_1024 ~ ' 1024w'
+      ] %}
       <div class="slide">
-        <picture class="hero-media">
-          <source type="image/avif" srcset="{{ hero_b_srcset_avif|join(', ') }}">
-          <source type="image/webp" srcset="{{ hero_b_srcset_webp|join(', ') }}">
-          <img class="hero-image"
-               src="{{ hero_b_src_default }}"
-               srcset="{{ hero_b_srcset_jpeg|join(', ') }}"
-               sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
-               width="1024" height="684"
-               loading="lazy" decoding="async"
-               alt="{{ _('homepage.hero_img_alt_b') }}">
-        </picture>
+        <img class="hero-image"
+             src="{{ hero_b_src_960 }}"
+             srcset="{{ hero_b_srcset|join(', ') }}"
+             sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
+             width="1024" height="684"
+             loading="lazy" decoding="async"
+             alt="{{ _('homepage.hero_img_alt_b') }}">
       </div>
     </div>
     <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
@@ -283,16 +286,21 @@
             {% set ALT = a.img_alt %}
             {% set width_attr = a.img_width or 640 %}
             {% set height_attr = a.img_height or 466 %}
-            {% set candidate_widths = [w for w in [360, 480, 640, 768] if w <= width_attr] %}
-            {% if not candidate_widths %}{% set candidate_widths = [width_attr] %}{% endif %}
-            {% set fallback_w = candidate_widths[-1] %}
+            {% set fallback_w = 640 if width_attr <= 640 else 960 %}
             <picture>
-              {% set webp_srcset = [url_for('img_proxy', filename=IMG, w=w, q=78, fit='cover', format='webp', v=ASSET_VER) ~ ' ' ~ w ~ 'w' for w in candidate_widths] %}
               <source type="image/webp"
-                      srcset="{{ webp_srcset|join(', ') }}">
+                      srcset="{{ url_for('img_proxy', filename=IMG, w=360, q=78, fit='cover', format='webp', v=ASSET_VER) }} 360w,
+                              {{ url_for('img_proxy', filename=IMG, w=480, q=78, fit='cover', format='webp', v=ASSET_VER) }} 480w,
+                              {{ url_for('img_proxy', filename=IMG, w=640, q=78, fit='cover', format='webp', v=ASSET_VER) }} 640w,
+                              {{ url_for('img_proxy', filename=IMG, w=768, q=78, fit='cover', format='webp', v=ASSET_VER) }} 768w,
+                              {{ url_for('img_proxy', filename=IMG, w=960, q=78, fit='cover', format='webp', v=ASSET_VER) }} 960w">
               <img src="{{ url_for('img_proxy', filename=IMG, w=fallback_w, q=78, fit='cover', format='jpeg', v=ASSET_VER) }}"
-                   srcset="{{ [url_for('img_proxy', filename=IMG, w=w, q=78, fit='cover', format='jpeg', v=ASSET_VER) ~ ' ' ~ w ~ 'w' for w in candidate_widths]|join(', ') }}"
-                   sizes="(min-width:1280px) 24vw, (min-width:1024px) 30vw, (min-width:768px) 44vw, 88vw"
+                   srcset="{{ url_for('img_proxy', filename=IMG, w=360, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 360w,
+                           {{ url_for('img_proxy', filename=IMG, w=480, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 480w,
+                           {{ url_for('img_proxy', filename=IMG, w=640, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 640w,
+                           {{ url_for('img_proxy', filename=IMG, w=768, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 768w,
+                           {{ url_for('img_proxy', filename=IMG, w=960, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 960w"
+                   sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
                    width="{{ width_attr }}" height="{{ height_attr }}"
                    loading="lazy" decoding="async"
                    alt="{{ ALT }}">

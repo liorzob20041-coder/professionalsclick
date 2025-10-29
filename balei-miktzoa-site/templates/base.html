@@ -132,7 +132,7 @@
   <noscript><link rel="stylesheet" href="{{ BASE_BUNDLE_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ UI_FOUNDATION_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ UI_FOUNDATION_URL }}"></noscript>
-  <link rel="preload" as="font" type="font/woff2" href="{{ static_rel('vendor/fa/webfonts/fa-solid-900.woff2') }}?v={{ ASSET_VER }}" crossorigin>
+  <!-- פרילוד כפול לפונט FA הוסר כדי למנוע חסימת רינדור ושונות במדדים -->
   <!-- קריטי: השארת style.css נטען מיד; היתר non-blocking -->
   <link rel="stylesheet" href="{{ STYLE_URL }}">
   <link rel="stylesheet" href="{{ NAVBAR_URL }}" media="print" onload="this.media='all'">

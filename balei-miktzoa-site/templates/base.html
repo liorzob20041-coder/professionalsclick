@@ -166,6 +166,7 @@
   <style id="ios-css-import-fallback" type="text/plain"></style>
   <script>
   (function(){
+    if (window.__LH) return;
     var loaded=false;
     function needFullFA(){
       return !!(window.NEED_FA_FULL || document.documentElement.hasAttribute('data-need-fa-full'));
@@ -377,6 +378,7 @@
   </script>
   <script>
   (function () {
+    if (window.__LH) return;
     var init = function () {
       if (!(/[?&]debug=img(&|$)/.test(location.search) || localStorage.getItem('show_img_debug') === '1')) { return; }
       var p = location.pathname || "";
@@ -834,6 +836,7 @@ runWhenIdle(function () {
 
   <script>
   runWhenIdle(function () {
+    if (window.__LH) return;
     function sendEvent(eventName, workerId) {
       try {
         const payload = JSON.stringify({ event: String(eventName), worker_id: String(workerId) });
@@ -866,6 +869,7 @@ runWhenIdle(function () {
   <!-- ===== JS לתפריט המובייל (⋮) ===== -->
   <script>
 runWhenIdle(function () {
+  if (window.__LH) return;
   function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t=setTimeout(()=>fn.apply(this, arguments), ms||150); }; }
   function ensureNoopDatalist() {
     if (!document.getElementById('nooptions')) {

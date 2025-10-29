@@ -104,17 +104,22 @@ jobs:
           done
 
       # Warmup for stable metrics
-      - name: Prewarm dynamic images
+      - name: Warmup cache
         run: |
-          urls=(
-            "http://127.0.0.1:5000/img/photo1.jpg?w=480&q=76&fit=cover&format=auto"
-            "http://127.0.0.1:5000/img/photo1.jpg?w=640&q=76&fit=cover&format=auto"
-            "http://127.0.0.1:5000/img/photo1.jpg?w=960&q=76&fit=cover&format=auto"
-            "http://127.0.0.1:5000/img/photo2.jpg?w=480&q=76&fit=cover&format=auto"
-            "http://127.0.0.1:5000/img/photo2.jpg?w=640&q=76&fit=cover&format=auto"
-            "http://127.0.0.1:5000/img/photo2.jpg?w=960&q=76&fit=cover&format=auto"
-          )
-          for u in "${urls[@]}"; do curl -sSf "$u" >/dev/null || true; done
+      - name: Warm image cache (LCP + flags)
+        run: |
+          set -eux
+          base="http://127.0.0.1:5000"
+          for sz in 480 640 768 960 1024; do
+            curl -sS "$base/img/photo1.jpg?w=$sz&q=76&fit=cover&format=auto" >/dev/null || true
+          done
+          curl -sS "$base/img/flags/israel-flag-png-large.png?w=64&q=85&fit=contain&format=png"  >/dev/null || true
+          curl -sS "$base/img/flags/israel-flag-large.webp?w=64&q=85&fit=contain&format=webp"   >/dev/null || true
+          curl -sS "$base/img/flags/united-states-of-america-flag-png-large.png?w=48&q=85&fit=contain&format=png" >/dev/null || true
+          curl -sS "$base/img/flags/united-states-of-america-flag-large.webp?w=48&q=85&fit=contain&format=webp"  >/dev/null || true
+          curl -sS "$base/img/flags/russia-flag-png-large.png?w=48&q=85&fit=contain&format=png" >/dev/null || true
+          curl -sS "$base/img/flags/russia-flag-large.webp?w=48&q=85&fit=contain&format=webp"   >/dev/null || true
+
           curl -sS http://127.0.0.1:5000/he/ >/dev/null || true
           curl -sS http://127.0.0.1:5000/static/css/style.min.css >/dev/null || true
 
@@ -128,7 +133,7 @@ jobs:
             --collect.settings.throttlingMethod=simulate \
             --collect.settings.formFactor=mobile \
             --collect.settings.screenEmulation.mobile=true \
-            --collect.settings.chromeFlags="--no-sandbox" \
+            --collect.settings.chromeFlags="--no-sandbox --disable-dev-shm-usage" \
             --assert.assertions.category-performance="error@>=0.80" \
             --upload.target=filesystem \
             --upload.outputDir=./lhci-report

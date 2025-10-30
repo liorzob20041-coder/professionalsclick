@@ -503,10 +503,11 @@
   flag_russia_png_1x ~ ' 24w',
   flag_russia_png_2x ~ ' 48w'
 ] %}
-{% set logo_strip_webp_240 = url_for('img_proxy', filename='branding/logo-strip-he@2x.webp', w=240, q=82, fit='contain', format='webp') %}
-{% set logo_strip_webp_320 = url_for('img_proxy', filename='branding/logo-strip-he@2x.webp', w=320, q=82, fit='contain', format='webp') %}
-{% set logo_strip_jpeg_240 = url_for('img_proxy', filename='branding/logo-strip-he@2x.jpeg', w=240, q=86, fit='contain', format='jpeg') %}
-{% set logo_strip_jpeg_320 = url_for('img_proxy', filename='branding/logo-strip-he@2x.jpeg', w=320, q=86, fit='contain', format='jpeg') %}
+
+{% set logo_strip_webp_240 = static_rel('branding/logo-strip-he@2x.webp') %}
+{% set logo_strip_webp_320 = static_rel('branding/logo-strip-he@2x.webp') %}
+{% set logo_strip_jpeg_240 = static_rel('branding/logo-strip-he@2x.jpeg') %}
+{% set logo_strip_jpeg_320 = static_rel('branding/logo-strip-he@2x.jpeg') %}
 {% set logo_strip_srcset_webp = [
   logo_strip_webp_240 ~ ' 240w',
   logo_strip_webp_320 ~ ' 320w'
@@ -515,9 +516,11 @@
   logo_strip_jpeg_240 ~ ' 240w',
   logo_strip_jpeg_320 ~ ' 320w'
 ] %}
+
 {% set flag_israel_small = flag_israel_png_2x %}
 {% set flag_usa_small = flag_usa_png_2x %}
 {% set flag_russia_small = flag_russia_png_2x %}
+
 <!-- LCP image preload: תאם בדיוק לגדלי ה-srcset -->
 <link rel="preload" as="image"
       href="{{ hero_lcp_src_960 }}"
@@ -531,152 +534,102 @@
 <!-- אין צורך בפרילוד של הדגל הקטן -->
 </head>
 <body>
-
-  <!-- קישור דילוג לתוכן -->
-  <a href="#main-content" class="skip-link">דלג לתוכן המרכזי</a>
-
-  <!-- ====== כפתור ⋮ ותפריט צד (מובייל) ====== -->
-  <button class="kebab-btn" id="kebabBtn"
-          aria-controls="mobileMenu"
-          aria-expanded="false"
-          aria-label="{{ _('open_menu') if _ else 'Open menu' }}">
-  </button>
-
-<!-- כפתור סגירה שמופיע רק כשהתפריט פתוח -->
-<button class="menu-close-btn" id="menuCloseTop"
-        aria-label="{{ _('close_menu') if _ else 'Close menu' }}"></button>
-
-
-    <!-- כפתור חיפוש בשורת העליונה -->
-  <button class="search-btn"
-          type="button"
-          aria-haspopup="dialog"
-          aria-expanded="false"
-          aria-controls="globalSearch"
-          aria-label="{{ _('search') if _ else 'חיפוש' }}">
-    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-  </button>
-  <div class="search-modal" id="globalSearch" role="dialog" aria-modal="true" aria-labelledby="globalSearchTitle" aria-hidden="true" hidden>
-    <div class="search-modal__backdrop" data-search-dismiss></div>
-    <div class="search-modal__panel" role="document">
-      <button class="search-modal__close" type="button" data-search-close aria-label="{{ _('close') if _ else 'סגור' }}">
-        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-      </button>
-      <h2 class="search-modal__title" id="globalSearchTitle">{{ _('homepage.hero_title_overlay') }}</h2>
-      <form class="search-modal__form" role="search" onsubmit="return redirectToCleanURL(event)" novalidate data-search-form="modal">
-        <label class="sr-only" for="globalField">{{ _('homepage.choose_field') }}</label>
-        <div class="hs-field" data-search-field-wrapper>
-          <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
-          <input id="globalField" name="field" list="fields" data-search-field placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
-          <span class="input-error" data-search-field-error aria-live="polite"></span>
-        </div>
-        <label class="sr-only" for="globalArea">{{ _('homepage.choose_area') }}</label>
-        <div class="hs-field" data-search-area-wrapper>
-          <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
-          <input id="globalArea" name="area" list="areas" data-search-area placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
-          <span class="input-error" data-search-area-error aria-live="polite"></span>
-        </div>
-        <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
-      </form>
-    </div>
-  </div>
-  <datalist id="fields">
-    <option value="{{ _('field_renovations') }}" data-key="renovations">
-    <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
-    <option value="{{ _('field_electricians') }}" data-key="electricians">
-    <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
-  </datalist>
-  <datalist id="areas">
-    <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
-    <option value="{{ _('city_haifa') }}"      data-key="haifa">
-    <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
-    <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
-  </datalist>
-  <aside class="mobile-drawer" id="mobileMenu"
-         role="dialog" aria-modal="true"
-         aria-label="{{ _('main_menu') if _ else 'Main menu' }}"
-         aria-hidden="true" tabindex="-1">
-
-
-    <nav class="mobile-nav">
-      <ul>
-        <li><a href="{{ url_for_lang('home') }}">{{ _('nav_home') }}</a></li>
-        <li><a href="{{ url_for_lang('why_us') }}">{{ _('nav_why_us') }}</a></li>
-        <li><a href="{{ url_for_lang('works') }}">{{ _('nav_works') }}</a></li>
-        <li><a href="{{ url_for_lang('niches') }}">{{ _('nav_niches') }}</a></li>
-        <li><a href="{{ url_for_lang('contact') }}">{{ _('nav_contact') }}</a></li>
-      </ul>
-    </nav>
-  </aside>
-
-  <div class="backdrop" id="backdrop" hidden></div>
-
-<div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
-  <button class="lang-chip" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="בחר שפה">
-    <span class="lang-code">{{ (g.current_lang or 'he')|upper }}</span>
-    <i class="fa-solid fa-globe" aria-hidden="true"></i>
-  </button>
-
-
-  <ul id="language-list" role="menu">
-    <li>
-      <a href="{{ url_for_lang(lang='he') }}" role="menuitem">
-        <picture class="flag flag--he">
-          <source srcset="{{ flag_israel_srcset_webp|join(', ') }}" sizes="28px" type="image/webp">
-          <img class="flag flag--he" src="{{ flag_israel_png_1x }}" width="28" height="20"
-               srcset="{{ flag_israel_srcset_png|join(', ') }}"
-               sizes="28px" alt="Israel" decoding="async" loading="lazy">
-        </picture>
-        עברית
-      </a>
-    </li>
-    <li>
-      <a href="{{ url_for_lang(lang='en') }}" role="menuitem">
-        <picture class="flag flag--us">
-          <source srcset="{{ flag_usa_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
-          <img class="flag flag--us" src="{{ flag_usa_png_1x }}" width="20" height="14"
-               srcset="{{ flag_usa_srcset_png|join(', ') }}"
-               sizes="20px" alt="USA" decoding="async" loading="lazy">
-        </picture>
-        English
-      </a>
-    </li>
-    <li>
-      <a href="{{ url_for_lang(lang='ru') }}" role="menuitem">
-        <picture class="flag flag--ru">
-          <source srcset="{{ flag_russia_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
-          <img class="flag flag--ru" src="{{ flag_russia_png_1x }}" width="20" height="14"
-               srcset="{{ flag_russia_srcset_png|join(', ') }}"
-               sizes="20px" alt="Russia" decoding="async" loading="lazy">
-        </picture>
-        Русский
-      </a>
-    </li>
-  </ul>
-</div>
-
-
-
+...
 <!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
-    <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}">
+    {% set LOGO_WEBP = static_rel('branding/logo-strip-he@2x.webp') %}
+    {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
+    {% set LOGO_SVG  = static_rel('branding/logo-strip.svg') %}
+
+    <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ _('site_name') or site_name }}">
       <picture class="tb-logo-picture">
-        <source srcset="{{ logo_strip_srcset_webp|join(', ') }}"
-                sizes="(min-width: 992px) 320px, 240px"
-                type="image/webp">
-        <img class="tb-logo-strip"
-          src="{{ logo_strip_jpeg_240 }}"
-          srcset="{{ logo_strip_srcset_jpeg|join(', ') }}"
-          sizes="(min-width: 992px) 320px, 240px"
-          alt="{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}"
+        <source srcset="{{ LOGO_WEBP }}" type="image/webp" />
+        <source srcset="{{ LOGO_JPG }}"  type="image/jpeg" />
+        <img
+          class="tb-logo-strip"
+          src="{{ LOGO_JPG }}"
+          alt="{{ _('site_name') or site_name }}"
           width="320" height="40"
-          loading="eager" decoding="async">
+          loading="eager" decoding="async"
+          data-logo-jpg="{{ LOGO_JPG }}"
+          data-logo-svg="{{ LOGO_SVG }}"
+          style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
       </picture>
-      <span class="brand-text sr-only">{{ (_('site_name') if _ else 'בעלי מקצוע בקליק') }}</span>
+      <span class="brand-text sr-only">{{ _('site_name') or site_name }}</span>
     </a>
   </div>
 </nav>
+
+<script>
+(function(){
+  if (window.__LH) return;
+
+  function disableSource(source){
+    if (!source || source.dataset.disabled === '1') return;
+    source.dataset.disabled = '1';
+    source.removeAttribute('srcset');
+    source.media = '(max-width:0px)';
+  }
+
+  window.addEventListener('load', function(){
+    var img = document.querySelector('.tb-logo-strip');
+    if (!img) { console.warn('Logo <img> missing'); return; }
+
+    var LOGO_JPEG_URL = img.getAttribute('data-logo-jpg') || '';
+    var LOGO_SVG_URL  = img.getAttribute('data-logo-svg') || '';
+
+    var picture = img.closest('picture');
+    var webpSource = null;
+    if (picture) {
+      var sources = picture.querySelectorAll('source');
+      for (var i = 0; i < sources.length; i++){
+        var t = sources[i].getAttribute('type') || '';
+        if (/webp/i.test(t)) { webpSource = sources[i]; break; }
+      }
+    }
+
+    function swapToJpeg(reason){
+      if (img.dataset.logoState === 'jpeg') return;
+      if (reason) console.warn(reason);
+      disableSource(webpSource);
+      img.dataset.logoState = 'jpeg';
+      img.removeAttribute('srcset');
+      img.src = LOGO_JPEG_URL + (LOGO_JPEG_URL.indexOf('?') === -1 ? '?v=1' : '&v=1');
+    }
+
+    function swapToSvg(){
+      if (img.dataset.logoState === 'svg') return;
+      console.warn('Logo raster sources failed, switching to SVG fallback.');
+      img.dataset.logoState = 'svg';
+      img.removeAttribute('srcset');
+      img.src = LOGO_SVG_URL;
+    }
+
+    function verifySize(){
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        img.dataset.logoReady = '1';
+        return true;
+      }
+      if (img.dataset.logoState !== 'jpeg') { swapToJpeg('WebP decode failed → JPEG fallback.'); return false; }
+      if (img.dataset.logoState !== 'svg')  { swapToSvg(); return false; }
+      console.error('Logo failed to render. Check static paths/content-type.');
+      return false;
+    }
+
+    img.addEventListener('error', function(){
+      if (img.dataset.logoState === 'jpeg') swapToSvg();
+      else swapToJpeg();
+    });
+
+    if (!verifySize()){
+      setTimeout(verifySize, 150);
+      setTimeout(verifySize, 500);
+    }
+  });
+})();
+</script>
+
 
   <main id="main-content">
     {% block content %}{% endblock %}

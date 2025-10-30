@@ -32,8 +32,7 @@
     :root{--lang-chip-w:64px;--tb-logo-w:320px;--tb-logo-h:40px}
     .topbar-rail{min-height:56px}
     .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
-    .tb-logo-picture,.tb-logo-picture img,.tb-logo-strip{display:block}
-    .tb-logo-strip{width:320px;max-width:100%;height:auto;aspect-ratio:8/1;inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
+    .tb-logo-strip{display:block;width:320px;max-width:100%;height:auto;aspect-ratio:8/1;inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
     .search-btn{inline-size:40px;min-inline-size:40px}
     .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
     .hero-info h1{min-height:3.2em}
@@ -538,97 +537,19 @@
 <!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
-    {% set LOGO_WEBP = static_rel('branding/logo-strip-he@2x.webp') %}
     {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
-    {% set LOGO_SVG  = static_rel('branding/logo-strip.svg') %}
-
     <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ _('site_name') or site_name }}">
-      <picture class="tb-logo-picture">
-        <source srcset="{{ LOGO_WEBP }}" type="image/webp" />
-        <source srcset="{{ LOGO_JPG }}"  type="image/jpeg" />
-        <img
-          class="tb-logo-strip"
-          src="{{ LOGO_JPG }}"
-          alt="{{ _('site_name') or site_name }}"
-          width="320" height="40"
-          loading="eager" decoding="async"
-          data-logo-jpg="{{ LOGO_JPG }}"
-          data-logo-svg="{{ LOGO_SVG }}"
-          style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
-      </picture>
+      <img
+        class="tb-logo-strip"
+        src="{{ LOGO_JPG }}"
+        alt="{{ _('site_name') or site_name }}"
+        width="320" height="40"
+        loading="eager" decoding="async"
+        style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
       <span class="brand-text sr-only">{{ _('site_name') or site_name }}</span>
     </a>
   </div>
 </nav>
-
-<script>
-(function(){
-  if (window.__LH) return;
-
-  function disableSource(source){
-    if (!source || source.dataset.disabled === '1') return;
-    source.dataset.disabled = '1';
-    source.removeAttribute('srcset');
-    source.media = '(max-width:0px)';
-  }
-
-  window.addEventListener('load', function(){
-    var img = document.querySelector('.tb-logo-strip');
-    if (!img) { console.warn('Logo <img> missing'); return; }
-
-    var LOGO_JPEG_URL = img.getAttribute('data-logo-jpg') || '';
-    var LOGO_SVG_URL  = img.getAttribute('data-logo-svg') || '';
-
-    var picture = img.closest('picture');
-    var webpSource = null;
-    if (picture) {
-      var sources = picture.querySelectorAll('source');
-      for (var i = 0; i < sources.length; i++){
-        var t = sources[i].getAttribute('type') || '';
-        if (/webp/i.test(t)) { webpSource = sources[i]; break; }
-      }
-    }
-
-    function swapToJpeg(reason){
-      if (img.dataset.logoState === 'jpeg') return;
-      if (reason) console.warn(reason);
-      disableSource(webpSource);
-      img.dataset.logoState = 'jpeg';
-      img.removeAttribute('srcset');
-      img.src = LOGO_JPEG_URL + (LOGO_JPEG_URL.indexOf('?') === -1 ? '?v=1' : '&v=1');
-    }
-
-    function swapToSvg(){
-      if (img.dataset.logoState === 'svg') return;
-      console.warn('Logo raster sources failed, switching to SVG fallback.');
-      img.dataset.logoState = 'svg';
-      img.removeAttribute('srcset');
-      img.src = LOGO_SVG_URL;
-    }
-
-    function verifySize(){
-      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-        img.dataset.logoReady = '1';
-        return true;
-      }
-      if (img.dataset.logoState !== 'jpeg') { swapToJpeg('WebP decode failed → JPEG fallback.'); return false; }
-      if (img.dataset.logoState !== 'svg')  { swapToSvg(); return false; }
-      console.error('Logo failed to render. Check static paths/content-type.');
-      return false;
-    }
-
-    img.addEventListener('error', function(){
-      if (img.dataset.logoState === 'jpeg') swapToSvg();
-      else swapToJpeg();
-    });
-
-    if (!verifySize()){
-      setTimeout(verifySize, 150);
-      setTimeout(verifySize, 500);
-    }
-  });
-})();
-</script>
 
 
   <main id="main-content">
@@ -697,6 +618,42 @@ function runWhenIdle(run){
   if ('requestIdleCallback' in window) { requestIdleCallback(run, { timeout: 200 }); }
   else { setTimeout(run, 120); }
 }
+runWhenIdle(function(){
+  try {
+    var img = document.querySelector('.tb-logo-line img.tb-logo-strip');
+    if (!img) return;
+    var rect = img.getBoundingClientRect();
+    var needsFix = !img.currentSrc || rect.width < 4;
+    var pic = img.closest('.tb-logo-picture') || document.querySelector('.tb-logo-picture');
+    if (!needsFix && pic) {
+      needsFix = img.getBoundingClientRect().width < 4;
+    }
+    if (!needsFix) return;
+    var picture = img.closest('.tb-logo-picture') || img.closest('picture');
+    if (picture) {
+      picture.querySelectorAll('source').forEach(function(source){ source.remove(); });
+      var parent = picture.parentNode;
+      if (parent) {
+        parent.insertBefore(img, picture);
+      }
+      if (picture !== img) {
+        picture.remove();
+      }
+    } else {
+      document.querySelectorAll('.tb-logo-picture source').forEach(function(source){ source.remove(); });
+    }
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    var fallbackUrl = "{{ static_rel('branding/logo-strip-he@2x.jpeg') }}";
+    img.src = fallbackUrl;
+    requestAnimationFrame(function(){
+      if (img.decode) {
+        try { img.decode().catch(function(){}); }
+        catch(_){ }
+      }
+    });
+  } catch(_){ }
+});
 /* heavy modal wiring deferred */
 runWhenIdle(function () {
   if (window.__LH) return;

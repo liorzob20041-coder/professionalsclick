@@ -69,7 +69,7 @@ SUPPORTED_LANGS = ("he", "en", "ru")   # בשימוש ב-smart_alias וב-sitema
 SMART_ALIAS_RESERVED = {
     "estimate": "estimate",
 }
-ASSETS_V = os.environ.get("ASSETS_V", "1056")  # גרסת נכסים (cache-busting)
+ASSETS_V = os.environ.get("ASSETS_V", "1057")  # גרסת נכסים (cache-busting)
 
 
 # --- טווחי ימים ותצוגה ---

@@ -225,3 +225,20 @@ html[dir="ltr"] .language-switcher {
 
 
 
+/* Logo: force IMG, no CSS background/masks */
+.topbar-rail .tb-logo-line,
+.topbar-rail .tb-logo-line::before,
+.topbar-rail .tb-logo-line::after {
+  background-image: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  content: normal !important;
+}
+.topbar-rail .tb-logo-line img.tb-logo-strip {
+  display: block !important;
+  inline-size: min(100%, var(--tb-logo-w, 320px));
+  block-size: auto;
+  min-block-size: var(--tb-logo-h, 40px);
+  visibility: visible !important;
+  opacity: 1 !important;
+}

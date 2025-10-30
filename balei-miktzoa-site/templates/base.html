@@ -532,36 +532,8 @@
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 <!-- אין צורך בפרילוד של הדגל הקטן -->
 </head>
-@@ -510,53 +510,249 @@
-{% set logo_strip_srcset_webp = [
-  logo_strip_webp_240 ~ ' 240w',
-  logo_strip_webp_320 ~ ' 320w'
-] %}
-{% set logo_strip_srcset_jpeg = [
-  logo_strip_jpeg_240 ~ ' 240w',
-  logo_strip_jpeg_320 ~ ' 320w'
-] %}
-
-{% set flag_israel_small = flag_israel_png_2x %}
-{% set flag_usa_small = flag_usa_png_2x %}
-{% set flag_russia_small = flag_russia_png_2x %}
-
-<!-- LCP image preload: תאם בדיוק לגדלי ה-srcset -->
-<link rel="preload" as="image"
-      href="{{ hero_lcp_src_960 }}"
-      imagesrcset="
-        {{ hero_lcp_src_480 }} 480w,
-        {{ hero_lcp_src_640 }} 640w,
-        {{ hero_lcp_src_768 }} 768w,
-        {{ hero_lcp_src_960 }} 960w,
-        {{ hero_lcp_src_1024 }} 1024w"
-      imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
-<!-- אין צורך בפרילוד של הדגל הקטן -->
-</head>
 <body>
-...
-<!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
-<body>
+  <!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
   {% set __nav_lang = (g.current_lang or 'he') %}
   {% set __nav_defaults = {
     'he': {
@@ -627,8 +599,8 @@
   {% set __menu_close_short = (__close_label if __close_label and __close_label != 'close' else __menu_fallbacks['x'].get(__nav_lang, __menu_fallbacks['x']['en'])) %}
   {% set __menu_main_label = (_('main_menu') if _ else '') %}
   {% set __menu_main_txt = (__menu_main_label if __menu_main_label and __menu_main_label != 'main_menu' else __menu_fallbacks['main'].get(__nav_lang, __menu_fallbacks['main']['en'])) %}
-  {% set __lang_picker_label = (_('choose_language') if _ else '') %}
-  {% set __lang_picker_txt = (__lang_picker_label if __lang_picker_label and __lang_picker_label != 'choose_language' else __menu_fallbacks['lang'].get(__nav_lang, __menu_fallbacks['lang']['en'])) %}
+  {% set __lang_picker_bundle = t('homepage.language_menu.toggle', 'home') %}
+  {% set __lang_picker_txt = (__lang_picker_bundle if __lang_picker_bundle and __lang_picker_bundle != 'homepage.language_menu.toggle' else __menu_fallbacks['lang'].get(__nav_lang, __menu_fallbacks['lang']['en'])) %}
 
   <!-- קישור דילוג לתוכן -->
   <a href="#main-content" class="skip-link">
@@ -716,11 +688,26 @@
   </aside>
 
   <div class="backdrop" id="backdrop" hidden></div>
-
+  {% set __lang_label_he = t('homepage.language_menu.name.he', 'home') %}
+  {% set __lang_label_en = t('homepage.language_menu.name.en', 'home') %}
+  {% set __lang_label_ru = t('homepage.language_menu.name.ru', 'home') %}
+  {% set __lang_labels = {
+    'he': __lang_label_he if __lang_label_he and __lang_label_he != 'homepage.language_menu.name.he' else 'עברית',
+    'en': __lang_label_en if __lang_label_en and __lang_label_en != 'homepage.language_menu.name.en' else 'English',
+    'ru': __lang_label_ru if __lang_label_ru and __lang_label_ru != 'homepage.language_menu.name.ru' else 'Русский'
+  } %}
+  {% set __lang_alt_he = t('homepage.language_menu.flag_alt.he', 'home') %}
+  {% set __lang_alt_en = t('homepage.language_menu.flag_alt.en', 'home') %}
+  {% set __lang_alt_ru = t('homepage.language_menu.flag_alt.ru', 'home') %}
+  {% set __lang_alts = {
+    'he': __lang_alt_he if __lang_alt_he and __lang_alt_he != 'homepage.language_menu.flag_alt.he' else 'Israel flag',
+    'en': __lang_alt_en if __lang_alt_en and __lang_alt_en != 'homepage.language_menu.flag_alt.en' else 'United States flag',
+    'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
+  } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
     <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
       <span class="lang-code">{{ (g.current_lang or 'he')|upper }}</span>
-      <i class="fa-solid fa-globe" aria-hidden="true"></i>
     </button>
     <ul id="language-list" role="menu">
       <li>
@@ -729,9 +716,9 @@
             <source srcset="{{ flag_israel_srcset_webp|join(', ') }}" sizes="28px" type="image/webp">
             <img class="flag flag--he" src="{{ flag_israel_png_1x }}" width="28" height="20"
                  srcset="{{ flag_israel_srcset_png|join(', ') }}"
-                 sizes="28px" alt="Israel" decoding="async" loading="lazy">
-          </picture>
-          עברית
+                 sizes="28px" alt="{{ __lang_alts['he'] }}" decoding="async" loading="lazy">
+          </picture>␊
+          {{ __lang_labels['he'] }}
         </a>
       </li>
       <li>
@@ -740,9 +727,9 @@
             <source srcset="{{ flag_usa_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
             <img class="flag flag--us" src="{{ flag_usa_png_1x }}" width="20" height="14"
                  srcset="{{ flag_usa_srcset_png|join(', ') }}"
-                 sizes="20px" alt="USA" decoding="async" loading="lazy">
+                 sizes="20px" alt="{{ __lang_alts['en'] }}" decoding="async" loading="lazy">
           </picture>
-          English
+          {{ __lang_labels['en'] }}
         </a>
       </li>
       <li>
@@ -751,9 +738,9 @@
             <source srcset="{{ flag_russia_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
             <img class="flag flag--ru" src="{{ flag_russia_png_1x }}" width="20" height="14"
                  srcset="{{ flag_russia_srcset_png|join(', ') }}"
-                 sizes="20px" alt="Russia" decoding="async" loading="lazy">
+                 sizes="20px" alt="{{ __lang_alts['ru'] }}" decoding="async" loading="lazy">
           </picture>
-          Русский
+          {{ __lang_labels['ru'] }}
         </a>
       </li>
     </ul>

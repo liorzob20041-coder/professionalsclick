@@ -215,7 +215,7 @@ body.scrolled::before {
   font-weight: 600;
   color: inherit !important;
 }
-.language-switcher > button.lang-chip i.fa-globe {
+.language-switcher > button.lang-chip i {
   font-size: 18px;
   line-height: 1;
   color: inherit !important;

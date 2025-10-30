@@ -532,8 +532,233 @@
       imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
 <!-- אין צורך בפרילוד של הדגל הקטן -->
 </head>
+@@ -510,53 +510,249 @@
+{% set logo_strip_srcset_webp = [
+  logo_strip_webp_240 ~ ' 240w',
+  logo_strip_webp_320 ~ ' 320w'
+] %}
+{% set logo_strip_srcset_jpeg = [
+  logo_strip_jpeg_240 ~ ' 240w',
+  logo_strip_jpeg_320 ~ ' 320w'
+] %}
+
+{% set flag_israel_small = flag_israel_png_2x %}
+{% set flag_usa_small = flag_usa_png_2x %}
+{% set flag_russia_small = flag_russia_png_2x %}
+
+<!-- LCP image preload: תאם בדיוק לגדלי ה-srcset -->
+<link rel="preload" as="image"
+      href="{{ hero_lcp_src_960 }}"
+      imagesrcset="
+        {{ hero_lcp_src_480 }} 480w,
+        {{ hero_lcp_src_640 }} 640w,
+        {{ hero_lcp_src_768 }} 768w,
+        {{ hero_lcp_src_960 }} 960w,
+        {{ hero_lcp_src_1024 }} 1024w"
+      imagesizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw">
+<!-- אין צורך בפרילוד של הדגל הקטן -->
+</head>
 <body>
 ...
+<!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
+<body>
+  {% set __nav_lang = (g.current_lang or 'he') %}
+  {% set __nav_defaults = {
+    'he': {
+      'home': 'דף הבית',
+      'why': 'למה לבחור בנו',
+      'works': 'העבודות שלנו',
+      'niches': 'תחומי התמחות',
+      'contact': 'צור קשר'
+    },
+    'en': {
+      'home': 'Home',
+      'why': 'Why Us',
+      'works': 'Our Work',
+      'niches': 'Niches',
+      'contact': 'Contact'
+    },
+    'ru': {
+      'home': 'Главная',
+      'why': 'Почему мы',
+      'works': 'Наши работы',
+      'niches': 'Направления работ',
+      'contact': 'Контакты'
+    }
+  } %}
+  {% set __nav_labels = __nav_defaults.get(__nav_lang, __nav_defaults['he']) %}
+  {% set __nav_home = (_('navbar_home') if _ else '') %}
+  {% set __nav_why = (_('navbar_why_us') if _ else '') %}
+  {% set __nav_works = (_('navbar_works') if _ else '') %}
+  {% set __nav_niches = (_('navbar_niches') if _ else '') %}
+  {% set __nav_contact = (_('navbar_contact') if _ else '') %}
+  {% set __menu_open = (_('open_menu') if _ else '') %}
+  {% set __menu_close = (_('close_menu') if _ else '') %}
+  {% set __close_label = (_('close') if _ else '') %}
+  {% set __menu_fallbacks = {
+    'open': {
+      'he': 'פתח תפריט',
+      'en': 'Open menu',
+      'ru': 'Открыть меню'
+    },
+    'close': {
+      'he': 'סגור תפריט',
+      'en': 'Close menu',
+      'ru': 'Закрыть меню'
+    },
+    'x': {
+      'he': 'סגור',
+      'en': 'Close',
+      'ru': 'Закрыть'
+    },
+    'main': {
+      'he': 'תפריט ראשי',
+      'en': 'Main menu',
+      'ru': 'Основное меню'
+    },
+    'lang': {
+      'he': 'בחר שפה',
+      'en': 'Choose language',
+      'ru': 'Выберите язык'
+    }
+  } %}
+  {% set __menu_open_txt = (__menu_open if __menu_open and __menu_open != 'open_menu' else __menu_fallbacks['open'].get(__nav_lang, __menu_fallbacks['open']['en'])) %}
+  {% set __menu_close_txt = (__menu_close if __menu_close and __menu_close != 'close_menu' else __menu_fallbacks['close'].get(__nav_lang, __menu_fallbacks['close']['en'])) %}
+  {% set __menu_close_short = (__close_label if __close_label and __close_label != 'close' else __menu_fallbacks['x'].get(__nav_lang, __menu_fallbacks['x']['en'])) %}
+  {% set __menu_main_label = (_('main_menu') if _ else '') %}
+  {% set __menu_main_txt = (__menu_main_label if __menu_main_label and __menu_main_label != 'main_menu' else __menu_fallbacks['main'].get(__nav_lang, __menu_fallbacks['main']['en'])) %}
+  {% set __lang_picker_label = (_('choose_language') if _ else '') %}
+  {% set __lang_picker_txt = (__lang_picker_label if __lang_picker_label and __lang_picker_label != 'choose_language' else __menu_fallbacks['lang'].get(__nav_lang, __menu_fallbacks['lang']['en'])) %}
+
+  <!-- קישור דילוג לתוכן -->
+  <a href="#main-content" class="skip-link">
+    {% if _ %}
+      {% set __skip = _('skip_link') %}
+      {{ __skip if __skip and __skip != 'skip_link' else ('דלג לתוכן המרכזי' if __nav_lang == 'he' else ('Skip to main content' if __nav_lang == 'en' else 'Перейти к основному содержимому')) }}
+    {% else %}
+      {{ 'דלג לתוכן המרכזי' if __nav_lang == 'he' else ('Skip to main content' if __nav_lang == 'en' else 'Перейти к основному содержимому') }}
+    {% endif %}
+  </a>
+
+  <!-- ====== כפתור ⋮ ותפריט צד (מובייל) ====== -->
+  <button class="kebab-btn" id="kebabBtn"
+          aria-controls="mobileMenu"
+          aria-expanded="false"
+          aria-label="{{ __menu_open_txt }}">
+  </button>
+
+  <!-- כפתור סגירה שמופיע רק כשהתפריט פתוח -->
+  <button class="menu-close-btn" id="menuCloseTop"
+          type="button"
+          aria-label="{{ __menu_close_txt }}"></button>
+
+  <!-- כפתור חיפוש בשורת העליונה -->
+  <button class="search-btn"
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="globalSearch"
+          aria-label="{{ _('search') if _ else ('חיפוש' if __nav_lang == 'he' else ('Search' if __nav_lang == 'en' else 'Поиск')) }}">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+  </button>
+  <div class="search-modal" id="globalSearch" role="dialog" aria-modal="true" aria-labelledby="globalSearchTitle" aria-hidden="true" hidden>
+    <div class="search-modal__backdrop" data-search-dismiss></div>
+    <div class="search-modal__panel" role="document">
+      <button class="search-modal__close" type="button" data-search-close aria-label="{{ __menu_close_short }}">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+      <h2 class="search-modal__title" id="globalSearchTitle">{{ _('homepage.hero_title_overlay') }}</h2>
+      <form class="search-modal__form" role="search" onsubmit="return redirectToCleanURL(event)" novalidate data-search-form="modal">
+        <label class="sr-only" for="globalField">{{ _('homepage.choose_field') }}</label>
+        <div class="hs-field" data-search-field-wrapper>
+          <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+          <input id="globalField" name="field" list="fields" data-search-field placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
+          <span class="input-error" data-search-field-error aria-live="polite"></span>
+        </div>
+        <label class="sr-only" for="globalArea">{{ _('homepage.choose_area') }}</label>
+        <div class="hs-field" data-search-area-wrapper>
+          <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+          <input id="globalArea" name="area" list="areas" data-search-area placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
+          <span class="input-error" data-search-area-error aria-live="polite"></span>
+        </div>
+        <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
+      </form>
+    </div>
+  </div>
+
+  <datalist id="fields">
+    <option value="{{ _('field_renovations') }}" data-key="renovations">
+    <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
+    <option value="{{ _('field_electricians') }}" data-key="electricians">
+    <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
+  </datalist>
+  <datalist id="areas">
+    <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
+    <option value="{{ _('city_haifa') }}"      data-key="haifa">
+    <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
+    <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
+  </datalist>
+
+  <aside class="mobile-drawer" id="mobileMenu"
+         role="dialog" aria-modal="true"
+         aria-label="{{ __menu_main_txt }}"
+         aria-hidden="true" tabindex="-1">
+    <button class="close-drawer" id="closeDrawer" type="button" aria-label="{{ __menu_close_short }}">×</button>
+    <nav class="mobile-nav">
+      <ul>
+        <li><a href="{{ url_for_lang('home') }}">{{ __nav_home if __nav_home and __nav_home != 'navbar_home' else __nav_labels['home'] }}</a></li>
+        <li><a href="{{ url_for_lang('why_us') }}">{{ __nav_why if __nav_why and __nav_why != 'navbar_why_us' else __nav_labels['why'] }}</a></li>
+        <li><a href="{{ url_for_lang('works') }}">{{ __nav_works if __nav_works and __nav_works != 'navbar_works' else __nav_labels['works'] }}</a></li>
+        <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
+        <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
+    <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
+      <span class="lang-code">{{ (g.current_lang or 'he')|upper }}</span>
+      <i class="fa-solid fa-globe" aria-hidden="true"></i>
+    </button>
+    <ul id="language-list" role="menu">
+      <li>
+        <a href="{{ url_for_lang(lang='he') }}" role="menuitem">
+          <picture class="flag flag--he">
+            <source srcset="{{ flag_israel_srcset_webp|join(', ') }}" sizes="28px" type="image/webp">
+            <img class="flag flag--he" src="{{ flag_israel_png_1x }}" width="28" height="20"
+                 srcset="{{ flag_israel_srcset_png|join(', ') }}"
+                 sizes="28px" alt="Israel" decoding="async" loading="lazy">
+          </picture>
+          עברית
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for_lang(lang='en') }}" role="menuitem">
+          <picture class="flag flag--us">
+            <source srcset="{{ flag_usa_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
+            <img class="flag flag--us" src="{{ flag_usa_png_1x }}" width="20" height="14"
+                 srcset="{{ flag_usa_srcset_png|join(', ') }}"
+                 sizes="20px" alt="USA" decoding="async" loading="lazy">
+          </picture>
+          English
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for_lang(lang='ru') }}" role="menuitem">
+          <picture class="flag flag--ru">
+            <source srcset="{{ flag_russia_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
+            <img class="flag flag--ru" src="{{ flag_russia_png_1x }}" width="20" height="14"
+                 srcset="{{ flag_russia_srcset_png|join(', ') }}"
+                 sizes="20px" alt="Russia" decoding="async" loading="lazy">
+          </picture>
+          Русский
+        </a>
+      </li>
+    </ul>
+  </div>
+
 <!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">

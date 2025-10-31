@@ -20,21 +20,21 @@
   --hdr-gap: 8px;
   --btn-size: 40px;
   --chip-h: 40px;
-  --chip-pad-x: 12px;
-  --lang-chip-w: 72px;
-  --lang-chip-min: var(--lang-chip-w);
+  --chip-pad-x: 0px;
+  --lang-chip-w: var(--btn-size);
+  --lang-chip-min: var(--btn-size);
   --lang-shift-inline: 0px;
   --lang-shift-inline-auto: 0px;
-  --lang-nudge-x: 42px;
+  --lang-nudge-x: 0px;
   --lang-nudge-y: 0;
   --search-nudge-x: 0;
   --search-nudge-y: 0;
   --lang-menu-shift-desktop: 10px;
   --lang-menu-shift-mobile: 50px;
-  --lang-en-chip-current: 64px;
-  --lang-en-nudge-current: -40px;
-  --lang-ru-chip-current: 76px;
-  --lang-ru-nudge-current: -40px;
+  --lang-en-chip-current: var(--btn-size);
+  --lang-en-nudge-current: 0px;
+  --lang-ru-chip-current: var(--btn-size);
+  --lang-ru-nudge-current: 0px;
   /* Effects */
   --hdr-bg: rgb(255 255 255 / 95%);
   --hdr-shadow: 0 8px 22px rgb(0 0 0 / 6%);
@@ -47,8 +47,8 @@
     --hdr-gap: 8px;
     --btn-size: 44px;
     --chip-h: 44px;
-    --chip-pad-x: 16px;
-    --lang-chip-w: 84px;
+    --chip-pad-x: 0px;
+    --lang-chip-w: var(--btn-size);
   }
 }
 /* ================= Bar visuals (flat) ================= */
@@ -186,10 +186,10 @@ body.scrolled::before {
 /* ================= Language chip ================= */
 .language-switcher {
   position: fixed !important;
-  inline-size: var(--lang-chip-w, auto) !important;
-  block-size: var(--chip-h, auto) !important;
-  min-inline-size: var(--lang-chip-min, auto) !important;
-  min-block-size: var(--chip-h, auto) !important;
+  inline-size: var(--btn-size) !important;
+  block-size: var(--btn-size) !important;
+  min-inline-size: var(--btn-size) !important;
+  min-block-size: var(--btn-size) !important;
   border: 0 !important;
   background: transparent !important;
   translate: calc(
@@ -205,12 +205,12 @@ body.scrolled::before {
   z-index: 14000 !important;
 }
 .language-switcher > button.lang-chip {
-  min-width: var(--lang-chip-min, 64px);
-  width: var(--lang-chip-w, auto);
-  height: var(--chip-h) !important;
-  min-height: var(--chip-h) !important;
-  padding-inline: var(--chip-pad-x, 0px) !important;
-  border-radius: 9999px !important;
+  min-width: var(--btn-size) !important;
+  width: var(--btn-size) !important;
+  height: var(--btn-size) !important;
+  min-height: var(--btn-size) !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
   font:
     500 14px/1.2 -apple-system,
     BlinkMacSystemFont,
@@ -554,23 +554,20 @@ html[dir="ltr"] .search-modal__form .input-error {
     --search-nudge-x: 0;
     --search-nudge-y: 0;
     --lang-en-chip-current: var(--btn-size);
-    --lang-en-nudge-current: -18px;
+    --lang-en-nudge-current: 0px;
     --lang-ru-chip-current: var(--btn-size);
-    --lang-ru-nudge-current: -18px;
+    --lang-ru-nudge-current: 0px;
   }
 }
-/* === Remove frame (border/shadow/background) from kebab + language only === */
-.kebab-btn,
-.language-switcher > button.lang-chip {
+/* === Remove frame (border/shadow/background) from kebab only === */
+.kebab-btn {
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
 }
 /* ׳׳ ׳×׳•׳₪׳™׳¢ ׳˜׳‘׳¢׳× ׳₪׳•׳§׳•׳¡/׳”׳™׳™׳׳™׳™׳˜ */
 .kebab-btn:focus,
-.kebab-btn:focus-visible,
-.language-switcher > button.lang-chip:focus,
-.language-switcher > button.lang-chip:focus-visible {
+.kebab-btn:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
@@ -727,7 +724,7 @@ html[dir="ltr"] .search-modal__form .input-error {
 /* === Language-specific chip width (no style changes to .language-switcher) === */
 /* ׳¢׳¨׳›׳™׳ ׳”׳×׳—׳׳×׳™׳™׳; ׳›׳•׳•׳ ׳ ׳₪׳™׳§׳¡׳׳™׳ ׳׳ ׳¦׳¨׳™׳ ׳¢׳ ׳”׳׳¡׳ ׳©׳׳ */
 html[lang="he"] {
-  --lang-chip-w: 72px;
+  --lang-chip-w: var(--btn-size);
 } /* HE */
 /* ׳‘׳׳•׳‘׳™׳™׳, ׳›׳©׳׳×׳” ׳׳¦׳™׳’ ׳¨׳§ ׳׳™׳™׳§׳•׳ ג€“ ׳©׳™׳ ׳׳× ׳”׳¨׳•׳—׳‘ ׳©׳•׳•׳” ׳׳’׳•׳“׳ ׳”׳›׳₪׳×׳•׳¨ */
 @media (width <=420px) {
@@ -743,12 +740,10 @@ html[lang="he"] {
 /* === EN/RU ONLY: fix & fine-tune the language button position === */
 /* ׳¢׳¨׳›׳™ ׳ ׳™׳•׳“ ׳”׳×׳—׳׳×׳™׳™׳ (׳×׳›׳•׳•׳ ׳™׳“׳ ׳™׳× ׳׳ ׳¦׳¨׳™׳) */
 html[lang="en"] {
-  --lang-chip-w: var(--lang-en-chip-current);
   --lang-btn-nudge-x: var(--lang-en-nudge-current);
   --lang-btn-nudge-y: 0;
 }
 html[lang="ru"] {
-  --lang-chip-w: var(--lang-ru-chip-current);
   --lang-btn-nudge-x: var(--lang-ru-nudge-current);
   --lang-btn-nudge-y: 0;
 }

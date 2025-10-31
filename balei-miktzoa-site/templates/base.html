@@ -93,8 +93,10 @@
     top:var(--cluster-top) !important;
     z-index:2147483000 !important;
     display:inline-flex !important;
-    inline-size:var(--lang-chip-w);
-    block-size:var(--chip-h);
+    inline-size:var(--btn-size);
+    min-inline-size:var(--btn-size);
+    block-size:var(--btn-size);
+    min-block-size:var(--btn-size);
   }
   html[dir="rtl"] .language-switcher{
     left:calc(
@@ -115,13 +117,13 @@
     backdrop-filter:blur(6px);
     border:1px solid rgba(0,0,0,.12);
     box-shadow:0 2px 10px rgba(0,0,0,.1);
-    border-radius:10px;
+    border-radius:50%;
     padding:0;
-    min-height:var(--chip-h);
-    min-inline-size:var(--lang-chip-min);
-    inline-size:100%;
-    block-size:100%;
-    font-size:24px;
+    min-inline-size:var(--btn-size);
+    inline-size:var(--btn-size);
+    block-size:var(--btn-size);
+    min-block-size:var(--btn-size);
+    font-size:18px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -812,7 +814,7 @@
   } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
     <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
-      <span aria-hidden="true">🌐</span>
+      <i class="fa-solid fa-language" aria-hidden="true"></i>
     </button>
     <ul id="language-list" role="menu">
       <li>

@@ -1110,7 +1110,6 @@ mimetypes.add_type('image/jpeg', '.jpg')
 mimetypes.add_type('image/jpeg', '.jpeg')
 mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('image/gif', '.gif')
-mimetypes.add_type('image/webp', '.webp')
 
 csrf = CSRFProtect(app)
 app.config['WTF_CSRF_TIME_LIMIT'] = 60 * 60 * 2  # אופציונלי: תוקף טוקן שעתיים
@@ -1156,12 +1155,10 @@ def _force_img_content_type(resp):
         ct = (resp.headers.get("Content-Type") or "").lower()
         if not ct.startswith("image/"):
             fmt_req = (request.args.get("format") or "auto").lower()
-            accept = (request.headers.get("Accept") or "").lower()
 
             if fmt_req == "png":
                 new_ct = "image/png"
-            elif fmt_req == "webp" or ("image/webp" in accept and fmt_req in ("auto", "webp")):
-                new_ct = "image/webp"
+
             else:
                 new_ct = "image/jpeg"
 
@@ -1205,12 +1202,11 @@ def img_proxy(filename):
         return resp
 
     # קביעת פורמט יציאה
-    accept = (request.headers.get("Accept") or "").lower()
     if fmt_req == "auto":
-        fmt_out = "WEBP" if "image/webp" in accept else "JPEG"
+        fmt_out = "JPEG"
     else:
-        fmt_out = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "WEBP"}.get(fmt_req, "JPEG")
-    ct = {"JPEG": "image/jpeg", "WEBP": "image/webp", "PNG": "image/png"}[fmt_out]
+        fmt_out = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "JPEG"}.get(fmt_req, "JPEG")
+    ct = {"JPEG": "image/jpeg", "PNG": "image/png"}[fmt_out]
 
     # עיבוד ושינוי גודל
     try:
@@ -1241,8 +1237,7 @@ def img_proxy(filename):
             save_kwargs = {}
             if fmt_out == "JPEG":
                 save_kwargs.update(quality=q, optimize=True, progressive=False)
-            elif fmt_out == "WEBP":
-                save_kwargs.update(quality=q, method=6)
+
             elif fmt_out == "PNG":
                 save_kwargs.update(optimize=True)
             out.save(buf, fmt_out, **save_kwargs)
@@ -1369,14 +1364,13 @@ def api_diag_img_proxy():
 
     exists = os.path.isfile(src_path)
 
-    accept = (request.headers.get("Accept") or "").lower()
     if fmt_req == "auto":
-        fmt_out = "WEBP" if "image/webp" in accept else "JPEG"
+        fmt_out = "JPEG"
     else:
-        m = {"jpg":"JPEG","jpeg":"JPEG","png":"PNG","webp":"WEBP"}
+        m = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "JPEG"}
         fmt_out = m.get(fmt_req, "JPEG")
 
-    ct = {"JPEG":"image/jpeg","WEBP":"image/webp","PNG":"image/png"}.get(fmt_out, "image/jpeg")
+    ct = {"JPEG": "image/jpeg", "PNG": "image/png"}.get(fmt_out, "image/jpeg")
 
     payload = {
         "input": {"file": filename, "w": w, "h": h, "fit": fit, "q": q, "format": fmt_req},

@@ -128,6 +128,13 @@
     align-items:center;
     justify-content:center;
   }
+  .language-switcher > button.lang-chip i{
+    font-family:"Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif;
+    font-weight:900;
+    font-size:18px;
+    line-height:1;
+    color:currentColor !important;
+  }
   #language-list{position:absolute;top:100%;margin:0;padding:0;list-style:none;min-width:100%;display:none}
   #language-list.show{display:block}
 
@@ -136,6 +143,13 @@
     position:fixed !important;
     top:var(--cluster-top) !important;
     z-index:2147483000 !important;
+  }
+  .search-btn i{
+    font-family:"Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif;
+    font-weight:900;
+    font-size:18px;
+    line-height:1;
+    color:currentColor !important;
   }
   html[dir="rtl"] .search-btn{
     left:calc(
@@ -561,12 +575,12 @@
   <style id="ac-open-guard">
     body.ac-open a { pointer-events: none !important; }
   </style>
-{% set hero_lcp_src_480 = url_for('img_proxy', filename='photo1.jpg', w=480, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-
-{% set hero_lcp_src_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-{% set hero_lcp_src_768 = url_for('img_proxy', filename='photo1.jpg', w=768, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-{% set hero_lcp_src_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=76, fit='cover', format='auto', v=ASSET_VER) %}
-{% set hero_lcp_src_1024 = url_for('img_proxy', filename='photo1.jpg', w=1024, q=76, fit='cover', format='auto', v=ASSET_VER) %}
+{% set hero_lcp_src_480 = url_for('img_proxy', filename='photo1.jpg', w=480, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
+␊
+{% set hero_lcp_src_640 = url_for('img_proxy', filename='photo1.jpg', w=640, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
+{% set hero_lcp_src_768 = url_for('img_proxy', filename='photo1.jpg', w=768, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
+{% set hero_lcp_src_960 = url_for('img_proxy', filename='photo1.jpg', w=960, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
+{% set hero_lcp_src_1024 = url_for('img_proxy', filename='photo1.jpg', w=1024, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
 {% set hero_lcp_srcset = [
   hero_lcp_src_480 ~ ' 480w',
   hero_lcp_src_640 ~ ' 640w',
@@ -576,50 +590,25 @@
 ] %}
 {% set flag_israel_png_1x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=32, q=85, fit='contain', format='png') %}
 {% set flag_israel_png_2x = url_for('img_proxy', filename='flags/israel-flag-png-large.png', w=64, q=85, fit='contain', format='png') %}
-{% set flag_israel_webp_1x = url_for('img_proxy', filename='flags/israel-flag-large.webp', w=32, q=85, fit='contain', format='webp') %}
-{% set flag_israel_webp_2x = url_for('img_proxy', filename='flags/israel-flag-large.webp', w=64, q=85, fit='contain', format='webp') %}
-{% set flag_israel_srcset_webp = [
-  flag_israel_webp_1x ~ ' 32w',
-  flag_israel_webp_2x ~ ' 64w'
-] %}
-{% set flag_israel_srcset_png = [
+{% set flag_israel_srcset = [
   flag_israel_png_1x ~ ' 32w',
   flag_israel_png_2x ~ ' 64w'
 ] %}
 {% set flag_usa_png_1x = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=24, q=85, fit='contain', format='png') %}
 {% set flag_usa_png_2x = url_for('img_proxy', filename='flags/united-states-of-america-flag-png-large.png', w=48, q=85, fit='contain', format='png') %}
-{% set flag_usa_webp_1x = url_for('img_proxy', filename='flags/united-states-of-america-flag-large.webp', w=24, q=85, fit='contain', format='webp') %}
-{% set flag_usa_webp_2x = url_for('img_proxy', filename='flags/united-states-of-america-flag-large.webp', w=48, q=85, fit='contain', format='webp') %}
-{% set flag_usa_srcset_webp = [
-  flag_usa_webp_1x ~ ' 24w',
-  flag_usa_webp_2x ~ ' 48w'
-] %}
-{% set flag_usa_srcset_png = [
+{% set flag_usa_srcset = [
   flag_usa_png_1x ~ ' 24w',
   flag_usa_png_2x ~ ' 48w'
 ] %}
 {% set flag_russia_png_1x = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=24, q=85, fit='contain', format='png') %}
 {% set flag_russia_png_2x = url_for('img_proxy', filename='flags/russia-flag-png-large.png', w=48, q=85, fit='contain', format='png') %}
-{% set flag_russia_webp_1x = url_for('img_proxy', filename='flags/russia-flag-large.webp', w=24, q=85, fit='contain', format='webp') %}
-{% set flag_russia_webp_2x = url_for('img_proxy', filename='flags/russia-flag-large.webp', w=48, q=85, fit='contain', format='webp') %}
-{% set flag_russia_srcset_webp = [
-  flag_russia_webp_1x ~ ' 24w',
-  flag_russia_webp_2x ~ ' 48w'
-] %}
-{% set flag_russia_srcset_png = [
+{% set flag_russia_srcset = [
   flag_russia_png_1x ~ ' 24w',
   flag_russia_png_2x ~ ' 48w'
 ] %}
-
-{% set logo_strip_webp_240 = static_rel('branding/logo-strip-he@2x.webp') %}
-{% set logo_strip_webp_320 = static_rel('branding/logo-strip-he@2x.webp') %}
 {% set logo_strip_jpeg_240 = static_rel('branding/logo-strip-he@2x.jpeg') %}
 {% set logo_strip_jpeg_320 = static_rel('branding/logo-strip-he@2x.jpeg') %}
-{% set logo_strip_srcset_webp = [
-  logo_strip_webp_240 ~ ' 240w',
-  logo_strip_webp_320 ~ ' 320w'
-] %}
-{% set logo_strip_srcset_jpeg = [
+{% set logo_strip_srcset = [
   logo_strip_jpeg_240 ~ ' 240w',
   logo_strip_jpeg_320 ~ ' 320w'
 ] %}
@@ -813,14 +802,13 @@
     'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
   } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
-    <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}"><i class="fa-solid fa-language" aria-hidden="true"></i></button>
+    <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}"><i class="fa-solid fa-globe" aria-hidden="true"></i></button>
     <ul id="language-list" role="menu">
       <li>
         <a href="{{ url_for_lang(lang='he') }}" role="menuitem">
           <picture class="flag flag--he">
-            <source srcset="{{ flag_israel_srcset_webp|join(', ') }}" sizes="28px" type="image/webp">
             <img class="flag flag--he" src="{{ flag_israel_png_1x }}" width="28" height="20"
-                 srcset="{{ flag_israel_srcset_png|join(', ') }}"
+                 srcset="{{ flag_israel_srcset|join(', ') }}"
                  sizes="28px" alt="{{ __lang_alts['he'] }}" decoding="async" loading="lazy">
           </picture>
           {{ __lang_labels['he'] }}
@@ -829,9 +817,8 @@
       <li>
         <a href="{{ url_for_lang(lang='en') }}" role="menuitem">
           <picture class="flag flag--us">
-            <source srcset="{{ flag_usa_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
             <img class="flag flag--us" src="{{ flag_usa_png_1x }}" width="20" height="14"
-                 srcset="{{ flag_usa_srcset_png|join(', ') }}"
+                 srcset="{{ flag_usa_srcset|join(', ') }}"
                  sizes="20px" alt="{{ __lang_alts['en'] }}" decoding="async" loading="lazy">
           </picture>
           {{ __lang_labels['en'] }}
@@ -840,9 +827,8 @@
       <li>
         <a href="{{ url_for_lang(lang='ru') }}" role="menuitem">
           <picture class="flag flag--ru">
-            <source srcset="{{ flag_russia_srcset_webp|join(', ') }}" sizes="20px" type="image/webp">
             <img class="flag flag--ru" src="{{ flag_russia_png_1x }}" width="20" height="14"
-                 srcset="{{ flag_russia_srcset_png|join(', ') }}"
+                 srcset="{{ flag_russia_srcset|join(', ') }}"
                  sizes="20px" alt="{{ __lang_alts['ru'] }}" decoding="async" loading="lazy">
           </picture>
           {{ __lang_labels['ru'] }}

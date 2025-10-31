@@ -1810,7 +1810,6 @@ mimetypes.add_type('image/jpeg', '.jpg')
 mimetypes.add_type('image/jpeg', '.jpeg')
 mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('image/gif', '.gif')
-mimetypes.add_type('image/webp', '.webp')
 Compress(app)
 
 csrf = CSRFProtect(app)
@@ -1857,12 +1856,10 @@ def _force_img_content_type(resp):
         ct = (resp.headers.get("Content-Type") or "").lower()
         if not ct.startswith("image/"):
             fmt_req = (request.args.get("format") or "auto").lower()
-            accept = (request.headers.get("Accept") or "").lower()
 
             if fmt_req == "png":
                 new_ct = "image/png"
-            elif fmt_req == "webp" or ("image/webp" in accept and fmt_req in ("auto", "webp")):
-                new_ct = "image/webp"
+
             else:
                 new_ct = "image/jpeg"
 
@@ -1906,13 +1903,12 @@ def img_proxy(filename):
         return resp
 
     # קביעת פורמט יציאה
-    accept = (request.headers.get("Accept") or "").lower()
     if fmt_req == "auto":
-        fmt_out = "WEBP" if "image/webp" in accept else "JPEG"
+        fmt_out = "JPEG"
     else:
-        fmt_out = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "WEBP"}.get(fmt_req, "JPEG")
-    ct = {"JPEG": "image/jpeg", "WEBP": "image/webp", "PNG": "image/png"}[fmt_out]
-    ext = {"JPEG": ".jpg", "WEBP": ".webp", "PNG": ".png"}[fmt_out]
+        fmt_out = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "JPEG"}.get(fmt_req, "JPEG")
+    ct = {"JPEG": "image/jpeg", "PNG": "image/png"}[fmt_out]
+    ext = {"JPEG": ".jpg", "PNG": ".png"}[fmt_out]
 
     cache_key: str | None = None
     cache_path: Path | None = None
@@ -1992,8 +1988,6 @@ def img_proxy(filename):
                 save_kwargs = {}
                 if fmt_out == "JPEG":
                     save_kwargs.update(quality=q, optimize=True, progressive=False)
-                elif fmt_out == "WEBP":
-                    save_kwargs.update(quality=q, method=6)
                 elif fmt_out == "PNG":
                     save_kwargs.update(optimize=True)
                 out.save(buf, fmt_out, **save_kwargs)
@@ -2113,13 +2107,9 @@ def api_debug_report():
         # רשימת קבצים לבדיקה
         files = [
             "photo1.jpg",
-            "photo1.webp",
             "photo2.jpg",
-            "photo2.webp",
             "logo.jpeg",
-            "branding/logo-strip-he@2x.webp",
             "flags/israel-flag-png-large.png",
-            "flags/israel-flag-large.webp",
             "flags/united-states-of-america-flag-png-large.png",
             "flags/russia-flag-png-large.png"
         ]
@@ -2159,14 +2149,13 @@ def api_diag_img_proxy():
 
     exists = os.path.isfile(src_path) if src_path else False
 
-    accept = (request.headers.get("Accept") or "").lower()
     if fmt_req == "auto":
-        fmt_out = "WEBP" if "image/webp" in accept else "JPEG"
+        fmt_out = "JPEG"
     else:
-        m = {"jpg":"JPEG","jpeg":"JPEG","png":"PNG","webp":"WEBP"}
+        m = {"jpg": "JPEG", "jpeg": "JPEG", "png": "PNG", "webp": "JPEG"}
         fmt_out = m.get(fmt_req, "JPEG")
 
-    ct = {"JPEG":"image/jpeg","WEBP":"image/webp","PNG":"image/png"}.get(fmt_out, "image/jpeg")
+    ct = {"JPEG": "image/jpeg", "PNG": "image/png"}.get(fmt_out, "image/jpeg")
 
     payload = {
         "input": {"file": safe_relative, "w": w, "h": h, "fit": fit, "q": q, "format": fmt_req},
@@ -2388,7 +2377,7 @@ def _render_home(lang: str):
 
 @app.route('/')
 def home_default():
-    return _render_home('he')
+    return redirect(url_for('home', lang='he'))
 
 @app.route('/<lang>/')
 def home(lang):
@@ -2838,7 +2827,7 @@ def show_workers(lang, field, area):
 
     # עיבוד נתונים לתצוגה
     for w in workers:
-        # זמינות עכשיו␊
+        # זמינות עכשיו
         is_available = False
         for block in w.get('work_blocks', []):
             start = int(block.get('start_hour', 0))
@@ -5031,7 +5020,7 @@ def warmup():
         w=96,
         q=85,
         fit="contain",
-        format="webp",
+        format="png",
         v=v,
     )
     hero = url_for(
@@ -5040,7 +5029,7 @@ def warmup():
         w=1200,
         q=82,
         fit="cover",
-        format="webp",
+        format="jpeg",
         v=v,
     )
     html = f"""<!doctype html><meta charset="utf-8">

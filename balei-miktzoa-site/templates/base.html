@@ -128,13 +128,24 @@
     align-items:center;
     justify-content:center;
   }
-  .language-switcher > button.lang-chip i{
-    font-family:"Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif;
-    font-weight:900;
-    font-size:18px;
-    line-height:1;
-    color:currentColor !important;
-  }
+.language-switcher > button.lang-chip i{
+  font-family:"Font Awesome 6 Free","Font Awesome 5 Free",sans-serif;
+  font-weight:900;
+  font-size:18px;
+  line-height:1;
+  color:currentColor !important;
+}
+
+.language-switcher > button.lang-chip i.fa-globe::before{
+  content:"\f0ac";                 /* FA unicode */
+  font-family:"Font Awesome 6 Free";
+  font-weight:900;
+}
+
+/* הצג אמוג׳י רק אם משום-מה אין <i> באלמנט */
+.language-switcher > button.lang-chip .globe-fallback{ display:none; }
+.language-switcher > button.lang-chip:not(:has(i.fa-globe)) .globe-fallback{ display:inline; }
+
   #language-list{position:absolute;top:100%;margin:0;padding:0;list-style:none;min-width:100%;display:none}
   #language-list.show{display:block}
 
@@ -348,7 +359,9 @@
     if (needFullFA()) schedule();
   })();
   </script>
-  <noscript><link rel="stylesheet" href="{{ FA_FULL_URL }}"></noscript>
+<link rel="stylesheet" href="{{ FA_FULL_URL }}">
+<script>document.documentElement.setAttribute('data-need-fa-full','1');</script>
+
 
 
 
@@ -802,7 +815,11 @@
     'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
   } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
-    <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}"><i class="fa-solid fa-globe" aria-hidden="true"></i></button>
+<button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}">
+  <i class="fa-solid fa-globe" data-testid="lang-globe" aria-hidden="true"></i>
+</button>
+
+
     <ul id="language-list" role="menu">
       <li>
         <a href="{{ url_for_lang(lang='he') }}" role="menuitem">

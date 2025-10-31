@@ -134,12 +134,7 @@ body.scrolled::before {
   background: #fff !important;
   border: 1px solid rgb(0 0 0/8%) !important
 }
-.language-switcher>button.lang-chip .lang-code {
-  text-transform: uppercase;
-  letter-spacing: .02em;
-  font-weight: 600;
-  color: inherit !important
-}
+
 .language-switcher>button.lang-chip i {
   font-size: 18px;
   line-height: 1;
@@ -511,9 +506,6 @@ html[dir=ltr] .search-modal__form .input-error {
   background: 0 0 !important
 }
 @media screen and (max-width:420px) {
-  .language-switcher>button.lang-chip .lang-code {
-    display: none !important
-  }
   .language-switcher>button.lang-chip {
     min-width: var(--btn-size, 40px) !important;
     padding: 0 !important

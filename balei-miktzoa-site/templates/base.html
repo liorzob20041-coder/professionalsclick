@@ -791,7 +791,6 @@
   } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
     <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
-      <span class="lang-code">{{ (g.current_lang or 'he')|upper }}</span>
       <i class="fa-solid fa-globe" aria-hidden="true"></i>
     </button>
     <ul id="language-list" role="menu">

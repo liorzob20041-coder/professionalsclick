@@ -209,12 +209,6 @@ body.scrolled::before {
   background: #fff !important;
   border: 1px solid rgb(0 0 0 / 8%) !important;
 }
-.language-switcher > button.lang-chip .lang-code {
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  font-weight: 600;
-  color: inherit !important;
-}
 .language-switcher > button.lang-chip i {
   font-size: 18px;
   line-height: 1;
@@ -562,32 +556,14 @@ html[dir="ltr"] .search-modal__form .input-error {
 /* ׳׳׳§׳¨׳” ׳©׳”׳¢׳˜׳™׳₪׳” ׳¢׳¦׳׳” ׳™׳¦׳¨׳” ׳׳¡׳’׳¨׳× */
 /* ׳׳×׳—׳× ׳-420px: ׳׳¡׳×׳™׳¨ ׳׳× HE ׳•׳׳©׳׳™׳¨ ׳¨׳§ ׳׳™׳™׳§׳•׳ */
 @media (width <=420px) {
-  .language-switcher > button.lang-chip .lang-code {
-    display: none !important;
-  }
   .language-switcher > button.lang-chip {
     min-width: var(--btn-size, 40px) !important;
     padding: 0 !important;
   }
 }
-/* iPhone-specific: hide the language code so chip matches mobile layout */
+/* iPhone-specific: align chip with mobile layout */
 @supports (-webkit-touch-callout: none) {
   @media (width > 420px) and (width <= 480px) {
-    .language-switcher > button.lang-chip .lang-code {
-      display: none !important;
-    }
-    .language-switcher > button.lang-chip {
-      min-width: var(--btn-size, 40px) !important;
-      padding: 0 !important;
-    }
-  }
-}
-/* iPhone-specific: hide the language code so chip matches mobile layout */
-@supports (-webkit-touch-callout: none) {
-  @media (width > 420px) and (width <= 480px) {
-    .language-switcher > button.lang-chip .lang-code {
-      display: none !important;
-    }
     .language-switcher > button.lang-chip {
       min-width: var(--btn-size, 40px) !important;
       padding: 0 !important;
@@ -595,9 +571,6 @@ html[dir="ltr"] .search-modal__form .input-error {
   }
 }
 @media screen and (width <= 420px) {
-  .language-switcher > button.lang-chip .lang-code {
-    display: none !important;
-  }
   .language-switcher > button.lang-chip {
     min-width: var(--btn-size, 40px) !important;
     padding: 0 !important;
@@ -774,10 +747,6 @@ html[lang="ru"] .language-switcher {
 @media (width <=640px) {
   html[dir="ltr"] {
     --lang-menu-shift-mobile: 0;
-  }
-  html[lang="en"] .language-switcher > button.lang-chip .lang-code,
-  html[lang="ru"] .language-switcher > button.lang-chip .lang-code {
-    display: none !important;
   }
   html[lang="en"] .language-switcher,
   html[lang="ru"] .language-switcher {

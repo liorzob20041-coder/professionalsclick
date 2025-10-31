@@ -25,28 +25,113 @@
   {% set og_locale = 'he_IL' if g.current_lang == 'he' else ('en_US' if g.current_lang == 'en' else 'ru_RU') %}
 
   <title>{% block title %}{{ default_title }}{% endblock %}</title>
-  <style id="critical-css">
-    html{box-sizing:border-box;min-height:100%}
-    *,*:before,*:after{box-sizing:inherit}
-    body{margin:0;min-height:100vh}
-    :root{--lang-chip-w:64px;--tb-logo-w:320px;--tb-logo-h:40px}
-    .topbar-rail{min-height:56px}
-    .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
-    .tb-logo-strip{display:block;width:320px;max-width:100%;height:auto;aspect-ratio:8/1;inline-size:min(100%,var(--tb-logo-w,320px));block-size:auto;min-block-size:var(--tb-logo-h,40px)}
-    .search-btn{inline-size:40px;min-inline-size:40px}
-    .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
-    .hero-info h1{min-height:3.2em}
-    .slide{display:none}
-    .slide.active{display:block}
-    .hero-split{display:flex;flex-direction:column}
-    @media (min-width:768px){.hero-split{flex-direction:row}}
-    .hero-info,.hero-visual{flex:1 1 0}
-    .hero-visual{position:relative;aspect-ratio:16/9;min-height:clamp(220px,38vw,420px)}
-    .hero-visual .hero-slides{position:relative}
-    .hero-visual img{display:block;width:100%;height:auto}
-    .language-switcher{position:relative;display:inline-flex}
-    .language-switcher ul{position:absolute;top:100%;margin:0;padding:0;list-style:none;min-width:100%}
-  </style>
+<style id="critical-css">
+  html{box-sizing:border-box;min-height:100%}
+  *,*:before,*:after{box-sizing:inherit}
+  body{margin:0;min-height:100vh}
+
+  :root{
+    --lang-chip-w:64px;            /* נמדד ע"י JS אם זמין */
+    --lang-chip-min:92px;          /* מינימום קשיח לרוחב צ׳יפ שפה */
+    --tb-logo-w:320px;
+    --tb-logo-h:40px;
+  }
+
+  .topbar-rail{min-height:56px}
+  .topbar-rail .rail{display:flex;align-items:center;justify-content:space-between}
+  .tb-logo-strip{
+    display:block;width:320px;max-width:100%;height:auto;aspect-ratio:8/1;
+    inline-size:min(100%,var(--tb-logo-w,320px));
+    block-size:auto;min-block-size:var(--tb-logo-h,40px)
+  }
+  /* ביטוח נראות הלוגו גם מול חוקים חיצוניים */
+  .topbar-rail .tb-logo-line img.tb-logo-strip{display:block !important;visibility:visible !important;opacity:1 !important}
+
+  .search-btn{inline-size:40px;min-inline-size:40px}
+  .fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;text-align:center}
+
+  .hero-info h1{min-height:3.2em}
+  .slide{display:none}
+  .slide.active{display:block}
+  .hero-split{display:flex;flex-direction:column}
+  @media (min-width:768px){.hero-split{flex-direction:row}}
+  .hero-info,.hero-visual{flex:1 1 0}
+  .hero-visual{position:relative;aspect-ratio:16/9;min-height:clamp(220px,38vw,420px)}
+  .hero-visual .hero-slides{position:relative}
+  .hero-visual img{display:block;width:100%;height:auto}
+
+  /* === Cluster קבוע: תפריט ☰ → שפה → חיפוש 🔍 === */
+  :root{
+    --cluster-edge:12px;
+    --cluster-top: calc(env(safe-area-inset-top, 0px) + 10px);
+    --cluster-gap:16px;            /* ריווח קבוע בין הכפתורים */
+    --kebab-w:28px;                /* רוחב כפתור התפריט */
+    --search-w:40px;               /* רוחב כפתור החיפוש */
+    --lang-chip-safe: max(var(--lang-chip-min), var(--lang-chip-w, 0px)); /* ערך בטוח לרוחב הצ׳יפ */
+  }
+
+  /* אפס מרווחים חיצוניים – שליטה מלאה דרך המשתנים */
+  .kebab-btn,
+  .language-switcher,
+  .search-btn { margin:0 !important; }
+
+  /* ☰ */
+  .kebab-btn{top:var(--cluster-top) !important;z-index:2147483000 !important}
+  html[dir="rtl"] .kebab-btn{left:var(--cluster-edge) !important;right:auto !important}
+  html[dir="ltr"] .kebab-btn{right:var(--cluster-edge) !important;left:auto !important}
+
+  /* שפה באמצע */
+  .language-switcher{
+    position:fixed !important;
+    top:var(--cluster-top) !important;
+    z-index:2147483000 !important;
+    display:inline-flex !important;
+  }
+  html[dir="rtl"] .language-switcher{
+    left:calc(var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)) !important;right:auto !important
+  }
+  html[dir="ltr"] .language-switcher{
+    right:calc(var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)) !important;left:auto !important
+  }
+  .language-switcher > button.lang-chip{
+    background:rgba(255,255,255,.9);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(0,0,0,.12);
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+    border-radius:10px;
+    padding:4px 8px;
+    min-height:32px;
+    min-inline-size:var(--lang-chip-min);  /* מבטיח רוחב מינימלי */
+    font-size:13px;
+    display:flex;align-items:center;gap:6px;
+  }
+  #language-list{position:absolute;top:100%;margin:0;padding:0;list-style:none;min-width:100%;display:none}
+  #language-list.show{display:block}
+
+  /* 🔍 מימין לשפה */
+  .search-btn{
+    position:fixed !important;
+    top:var(--cluster-top) !important;
+    z-index:2147483000 !important;
+  }
+  html[dir="rtl"] .search-btn{
+    left:calc(
+      var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)
+      + var(--lang-chip-safe) + var(--cluster-gap)
+    ) !important;
+    right:auto !important;
+  }
+  html[dir="ltr"] .search-btn{
+    right:calc(
+      var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)
+      + var(--lang-chip-safe) + var(--cluster-gap)
+    ) !important;
+    left:auto !important;
+  }
+</style>
+
+
+
   {# --- מקום ייעודי למטא/OG/JSON-LD של הדף --- #}
   {% block head_seo %}{% endblock %}
 
@@ -717,7 +802,7 @@
             <img class="flag flag--he" src="{{ flag_israel_png_1x }}" width="28" height="20"
                  srcset="{{ flag_israel_srcset_png|join(', ') }}"
                  sizes="28px" alt="{{ __lang_alts['he'] }}" decoding="async" loading="lazy">
-          </picture>␊
+          </picture>
           {{ __lang_labels['he'] }}
         </a>
       </li>

@@ -5,7 +5,8 @@
   --main-color: #f2994a; /* ׳›׳×׳•׳ ׳¨׳׳©׳™ */
   --accent-color: #c0392b; /* ׳׳“׳•׳-׳—׳׳•׳“׳” */
   --bg-light: #f5f7fa;
-
+  --lang-shift-inline: 0px;
+  --lang-shift-inline-auto: 0px;
   /* vars ׳׳₪׳¨׳•׳₪׳™׳ ׳¢׳•׳‘׳“ */
   --card-pad-m: 12px;
   --peek-m: 12px;
@@ -424,16 +425,18 @@ img[loading="lazy"] {
   z-index: 10000;
   user-select: none;
   font-family: Arial, sans-serif;
+  inline-size: var(--lang-chip-w, auto);
+  block-size: var(--chip-h, auto);
 }
 
 /* ׳׳™׳§׳•׳ ׳׳₪׳™ ׳›׳™׳•׳•׳ ׳׳¡׳׳ */
 html[dir="rtl"] .language-switcher {
-  right: 10px;
+  right: calc(10px + var(--lang-shift-inline) + var(--lang-shift-inline-auto));
   left: auto;
 }
 
 html[dir="ltr"] .language-switcher {
-  left: 10px;
+  left: calc(10px + var(--lang-shift-inline) + var(--lang-shift-inline-auto));
   right: auto;
 }
 
@@ -461,9 +464,9 @@ html[dir="ltr"] .language-switcher {
     padding: 6px;
     justify-content: center;
   }
-  html[lang="en"] .language-switcher,
-  html[lang="ru"] .language-switcher {
-    transform: translateX(-18px);
+  html[lang="en"],
+  html[lang="ru"] {
+    --lang-shift-inline-auto: -18px;
   }
   html[dir="ltr"] .language-switcher ul {
     inset-inline: auto 0;

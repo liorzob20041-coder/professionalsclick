@@ -31,8 +31,15 @@
   body{margin:0;min-height:100vh}
 
   :root{
-    --lang-chip-w:64px;            /* נמדד ע"י JS אם זמין */
-    --lang-chip-min:92px;          /* מינימום קשיח לרוחב צ׳יפ שפה */
+    --lang-button-size:40px;       /* גודל כפתור השפה – תואם לחיפוש */
+    --lang-shift-inline:0px;       /* הזזה אופקית נוספת של כפתור השפה */
+    --lang-shift-inline-auto:0px;  /* התאמות מובנות של הקוד – ניתן להשאיר 0 */
+    --lang-chip-w:var(--lang-button-size); /* נמדד ע"י JS אם זמין */
+    --lang-chip-min:var(--lang-button-size); /* מינימום קשיח לרוחב כפתור השפה */
+    --btn-size:var(--lang-button-size);      /* מאחד את גודל הכפתורים בקלאסטר */
+    --chip-h:var(--lang-button-size);        /* גובה הצ׳יפ של השפה */
+    --chip-pad-x:0px;                        /* בלי רווח פנימי – רק אימוג׳י */
+    --lang-nudge-x:calc(var(--lang-shift-inline) + var(--lang-shift-inline-auto)); /* תאימות ל-CSS קיים */
     --tb-logo-w:320px;
     --tb-logo-h:40px;
   }
@@ -86,12 +93,22 @@
     top:var(--cluster-top) !important;
     z-index:2147483000 !important;
     display:inline-flex !important;
+    inline-size:var(--lang-chip-w);
+    block-size:var(--chip-h);
   }
   html[dir="rtl"] .language-switcher{
-    left:calc(var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)) !important;right:auto !important
+    left:calc(
+      var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)
+      + var(--lang-shift-inline) + var(--lang-shift-inline-auto)
+    ) !important;
+    right:auto !important
   }
   html[dir="ltr"] .language-switcher{
-    right:calc(var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)) !important;left:auto !important
+    right:calc(
+      var(--cluster-edge) + var(--kebab-w) + var(--cluster-gap)
+      + var(--lang-shift-inline) + var(--lang-shift-inline-auto)
+    ) !important;
+    left:auto !important
   }
   .language-switcher > button.lang-chip{
     background:rgba(255,255,255,.9);
@@ -99,11 +116,15 @@
     border:1px solid rgba(0,0,0,.12);
     box-shadow:0 2px 10px rgba(0,0,0,.1);
     border-radius:10px;
-    padding:4px 8px;
-    min-height:32px;
-    min-inline-size:var(--lang-chip-min);  /* מבטיח רוחב מינימלי */
-    font-size:13px;
-    display:flex;align-items:center;gap:6px;
+    padding:0;
+    min-height:var(--chip-h);
+    min-inline-size:var(--lang-chip-min);
+    inline-size:100%;
+    block-size:100%;
+    font-size:24px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
   }
   #language-list{position:absolute;top:100%;margin:0;padding:0;list-style:none;min-width:100%;display:none}
   #language-list.show{display:block}
@@ -791,7 +812,7 @@
   } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
     <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
-      <i class="fa-solid fa-globe" aria-hidden="true"></i>
+      <span aria-hidden="true">🌐</span>
     </button>
     <ul id="language-list" role="menu">
       <li>

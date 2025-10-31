@@ -22,6 +22,9 @@
   --chip-h: 40px;
   --chip-pad-x: 12px;
   --lang-chip-w: 72px;
+  --lang-chip-min: var(--lang-chip-w);
+  --lang-shift-inline: 0px;
+  --lang-shift-inline-auto: 0px;
   --lang-nudge-x: 42px;
   --lang-nudge-y: 0;
   --search-nudge-x: 0;
@@ -183,18 +186,30 @@ body.scrolled::before {
 /* ================= Language chip ================= */
 .language-switcher {
   position: fixed !important;
-  width: auto !important;
-  height: auto !important;
+  inline-size: var(--lang-chip-w, auto) !important;
+  block-size: var(--chip-h, auto) !important;
+  min-inline-size: var(--lang-chip-min, auto) !important;
+  min-block-size: var(--chip-h, auto) !important;
   border: 0 !important;
   background: transparent !important;
-  translate: var(--lang-nudge-x) var(--lang-nudge-y);
-  transform: translate(var(--lang-nudge-x), var(--lang-nudge-y));
+  translate: calc(
+      var(--lang-nudge-x) + var(--lang-shift-inline) + var(--lang-shift-inline-auto)
+    )
+    var(--lang-nudge-y);
+  transform: translate(
+    calc(
+      var(--lang-nudge-x) + var(--lang-shift-inline) + var(--lang-shift-inline-auto)
+    ),
+    var(--lang-nudge-y)
+  );
   z-index: 14000 !important;
 }
 .language-switcher > button.lang-chip {
-  min-width: 64px;
+  min-width: var(--lang-chip-min, 64px);
+  width: var(--lang-chip-w, auto);
   height: var(--chip-h) !important;
-  padding-inline: var(--chip-pad-x) !important;
+  min-height: var(--chip-h) !important;
+  padding-inline: var(--chip-pad-x, 0px) !important;
   border-radius: 9999px !important;
   font:
     500 14px/1.2 -apple-system,
@@ -242,7 +257,10 @@ html[dir="rtl"] .kebab-btn {
   top: calc((var(--hdr-h) - var(--btn-size)) / 2) !important;
 }
 html[dir="rtl"] .language-switcher {
-  left: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)) !important;
+  left: calc(
+    var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)
+    + var(--lang-shift-inline) + var(--lang-shift-inline-auto)
+  ) !important;
   top: calc((var(--hdr-h) - var(--chip-h)) / 2) !important;
 }
 html[dir="rtl"] .search-btn {
@@ -257,7 +275,10 @@ html[dir="ltr"] .kebab-btn {
   top: calc((var(--hdr-h) - var(--btn-size)) / 2) !important;
 }
 html[dir="ltr"] .language-switcher {
-  right: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)) !important;
+  right: calc(
+    var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)
+    + var(--lang-shift-inline) + var(--lang-shift-inline-auto)
+  ) !important;
   top: calc((var(--hdr-h) - var(--chip-h)) / 2) !important;
 }
 html[dir="ltr"] .search-btn {

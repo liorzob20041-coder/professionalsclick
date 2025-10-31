@@ -111,17 +111,24 @@ html[dir=ltr] .mobile-drawer .close-drawer {
 .backdrop[hidden] {
   display: none !important
 }
+:root {
+  --lang-shift-inline: 0px;
+  --lang-shift-inline-auto: 0px;
+}
+
 .language-switcher {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0) + 10px);
-  z-index: 2147483000
+  z-index: 2147483000;
+  inline-size: var(--lang-chip-w, auto);
+  block-size: var(--chip-h, auto)
 }
 html[dir=rtl] .language-switcher {
-  right: 12px;
+  right: calc(12px + var(--lang-shift-inline) + var(--lang-shift-inline-auto));
   left: auto
 }
 html[dir=ltr] .language-switcher {
-  left: 12px;
+  left: calc(12px + var(--lang-shift-inline) + var(--lang-shift-inline-auto));
   right: auto
 }
 .language-switcher button {

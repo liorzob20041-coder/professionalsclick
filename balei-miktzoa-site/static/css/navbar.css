@@ -1,6 +1,12 @@
 ﻿/* ====== NAVBAR (׳׳’׳™׳¨׳× ג‹® ׳‘׳׳‘׳“ ׳‘׳›׳ ׳”׳׳¡׳›׳™׳) ====== */
 
-/* ׳”׳—׳‘׳ ׳׳’׳׳¨׳™ ׳׳× ׳”׳ ׳™׳•׳•׳˜ ׳”׳™׳©׳ ׳׳ ׳‘׳׳§׳¨׳” ׳§׳™׳™׳ ׳‘-HTML */
+/* ניג'ים שניתנים לשליטה ידנית */
+:root{
+  --lang-nudge: 16px;      /* כמה להזיז את כפתור השפה שמאלה (RTL). גדל=יותר שמאלה */
+  --lang-chip-min: 92px;  /* רוחב מינ' של הצ'יפ לשפה, לצורך חישוב מיקום החיפוש */
+}
+
+/* ׳”׳—׳‘׳ ׳׳’׳׳¨׳™ ׳׳× ׳”׳ ׳™׳•׳•׳˜ ׳”׳™׳©׳ ׳׳ ׳‘׳׳§׳¨׳” ׳§׳™׳™׳ ׳‘-HTML */
 header.navbar {
   display: none !important;
 }
@@ -21,7 +27,7 @@ header.navbar {
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   z-index: 2147483000;
   font-size: 0;
-  line-height: 0; /* ׳׳¡׳×׳™׳¨ ׳˜׳§׳¡׳˜ ׳₪׳ ׳™׳׳™ ׳׳ ׳™׳© */
+  line-height: 0; /* ׳׳¡׳×׳™׳¨ ׳˜׳§׳¡׳˜ ׳₪׳ ׳™׳׳™ ׳׳ ׳™׳© */
 }
 
 html[dir="rtl"] .kebab-btn {
@@ -55,7 +61,7 @@ html[dir="ltr"] .kebab-btn {
   outline-offset: 2px;
 }
 
-/* --- ׳׳’׳™׳¨׳× ׳”׳ ׳™׳•׳•׳˜ --- */
+/* --- ׳׳’׳™׳¨׳× ׳”׳ ׳™׳•׳•׳˜ --- */
 .mobile-drawer {
   position: fixed;
   top: 0;
@@ -145,20 +151,24 @@ html[dir="ltr"] .mobile-drawer .close-drawer {
   display: none !important;
 }
 
-/* --- ׳׳—׳׳™׳£ ׳©׳₪׳•׳× ג€” ׳׳™׳§׳•׳ ׳§׳‘׳•׳¢ ׳‘׳₪׳™׳ ׳” ׳”׳ ׳’׳“׳™׳× ׳׳›׳₪׳×׳•׳¨ --- */
+/* --- ׳׳—׳׳™׳£ ׳©׳₪׳•׳× ג€” ׳׳™׳§׳•׳ ׳§׳‘׳•׳¢ ׳‘׳₪׳™׳ ׳” ׳”׳ ׳’׳“׳™׳× ׳׳›׳₪׳×׳•׳¨ --- */
+:root {
+  --lang-shift-inline: 0px;
+  --lang-shift-inline-auto: 0px;
+}
 .language-switcher {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   z-index: 2147483000;
+  inline-size: var(--lang-chip-w, auto);
+  block-size: var(--chip-h, auto);
 }
-
 html[dir="rtl"] .language-switcher {
-  right: 12px;
+  right: calc(12px + var(--lang-shift-inline) + var(--lang-shift-inline-auto));
   left: auto;
 }
-
 html[dir="ltr"] .language-switcher {
-  left: 12px;
+  left: calc(12px + var(--lang-shift-inline) + var(--lang-shift-inline-auto));
   right: auto;
 }
 
@@ -220,10 +230,23 @@ html[dir="ltr"] .language-switcher {
   aspect-ratio: 20 / 14;
 }
 
+/* כפתור חיפוש – להציב אחרי השפה עם ריווח קבוע */
+.search-btn {
+  position: fixed !important;
+  top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+  z-index: 2147483000 !important;
+}
 
+html[dir="rtl"] .search-btn{
+  /* 12 שוליים + 28 תפריט + 16 ריווח - ניג' + מינ' רוחב שפה + 16 ריווח */
+  left: calc(12px + 28px + 16px - var(--lang-nudge, 0px) + var(--lang-chip-min) + 16px) !important;
+  right: auto !important;
+}
 
-
-
+html[dir="ltr"] .search-btn{
+  right: 12px !important;
+  left: auto !important;
+}
 
 /* Logo: force IMG, no CSS background/masks */
 .topbar-rail .tb-logo-line,

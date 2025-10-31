@@ -118,13 +118,17 @@ body.scrolled::before {
   font: 700 18px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important
 }
 .language-switcher {
-  width: auto !important;
-  height: auto !important
+  inline-size: var(--lang-chip-w, auto) !important;
+  block-size: var(--chip-h, auto) !important;
+  min-inline-size: var(--lang-chip-min, auto) !important;
+  min-block-size: var(--chip-h, auto) !important
 }
 .language-switcher>button.lang-chip {
-  min-width: 64px;
+  min-width: var(--lang-chip-min, 64px);
+  width: var(--lang-chip-w, auto);
   height: var(--chip-h) !important;
-  padding-inline: var(--chip-pad-x) !important;
+  min-height: var(--chip-h) !important;
+  padding-inline: var(--chip-pad-x, 0px) !important;
   border-radius: 9999px !important;
   font: 500 14px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
   display: inline-flex !important;
@@ -176,6 +180,7 @@ html[dir=rtl] .search-btn {
   --btn-size: 40px;
   --chip-h: 40px;
   --lang-chip-w: 72px;
+  --lang-chip-min: var(--lang-chip-w);
   --hdr-bg: rgb(255 255 255 / 95%);
   --hdr-shadow: 0 8px 22px rgb(0 0 0 / 6%)
 }
@@ -226,7 +231,8 @@ html[dir=rtl] .kebab-btn {
   right: auto !important
 }
 html[dir=rtl] .language-switcher {
-  left: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)) !important;
+  left: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap) + var(--lang-shift-inline) + var(--lang-shift-inline-auto)) !important;
+
   right: auto !important;
   top: calc((var(--hdr-h) - var(--chip-h))/2) !important
 }
@@ -239,7 +245,8 @@ html[dir=ltr] .kebab-btn {
   left: auto !important
 }
 html[dir=ltr] .language-switcher {
-  right: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap)) !important;
+  right: calc(var(--hdr-edge) + var(--btn-size) + var(--hdr-gap) + var(--lang-shift-inline) + var(--lang-shift-inline-auto)) !important;
+
   left: auto !important;
   top: calc((var(--hdr-h) - var(--chip-h))/2) !important
 }
@@ -271,19 +278,21 @@ html[dir=ltr] .search-btn {
   border: 0 !important
 }
 :root {
+  --lang-shift-inline: 0px;
+  --lang-shift-inline-auto: 0px;
   --lang-nudge-x: 42px;
   --lang-nudge-y: 0px;
   --search-nudge-x: 0px;
   --search-nudge-y: 0px
 }
 .language-switcher {
-  translate: var(--lang-nudge-x) var(--lang-nudge-y)
+  translate: calc(var(--lang-nudge-x) + var(--lang-shift-inline) + var(--lang-shift-inline-auto)) var(--lang-nudge-y)
 }
 .search-btn {
   translate: var(--search-nudge-x) var(--search-nudge-y)
 }
 .language-switcher {
-  transform: translate(var(--lang-nudge-x), var(--lang-nudge-y))
+  transform: translate(calc(var(--lang-nudge-x) + var(--lang-shift-inline) + var(--lang-shift-inline-auto)), var(--lang-nudge-y))
 }
 .search-btn {
   transform: translate(var(--search-nudge-x), var(--search-nudge-y))

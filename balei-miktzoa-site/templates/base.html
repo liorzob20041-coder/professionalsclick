@@ -813,9 +813,7 @@
     'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
   } %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
-    <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
-      <i class="fa-solid fa-language" aria-hidden="true"></i>
-    </button>
+    <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}"><i class="fa-solid fa-language" aria-hidden="true"></i></button>
     <ul id="language-list" role="menu">
       <li>
         <a href="{{ url_for_lang(lang='he') }}" role="menuitem">

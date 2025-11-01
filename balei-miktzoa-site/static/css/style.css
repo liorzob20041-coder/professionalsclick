@@ -404,9 +404,10 @@ img[loading="lazy"] {
 }
 .hero-overlay {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  inset: auto 6% 10% 6%;
+  right: 6%;
+  left: auto;
+  transform: none;
+  inset: auto 6% 10% auto;
   max-width: 880px;
   z-index: 2;
   background: rgba(31, 39, 51, 0.88);

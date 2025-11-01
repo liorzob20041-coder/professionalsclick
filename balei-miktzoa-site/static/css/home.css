@@ -178,16 +178,25 @@ main > section h3::after {
   justify-content: space-between;
   gap: clamp(24px, 4vw, 48px);
   max-width: 1120px;
-  margin: clamp(32px, 6vw, 72px) auto;
+  width: min(1120px, 100%);
+  margin-block: clamp(32px, 6vw, 72px);
+  margin-inline: auto;
   padding: clamp(32px, 5vw, 64px) clamp(20px, 5vw, 56px);
   background: #fff;
   border-radius: 16px;
   box-shadow: var(--shadow-md);
 }
-
+@media (min-width: 1024px) {
+  html[dir="rtl"] .hero-split {
+    margin-inline-start: clamp(20px, 4vw, 56px);
+    margin-inline-end: clamp(72px, 12vw, 180px);
+  }
+}
 .hero-info {
   order: 2;
-  flex: 1 1 55%;
+  flex: 1 1 52%;
+  max-width: 560px;
+  width: min(560px, 100%);
   display: flex;
   flex-direction: column;
   gap: clamp(12px, 2vw, 20px);
@@ -253,7 +262,8 @@ html[dir="ltr"] .check-item {
 .hero-visual {
   order: 1;
   position: relative;
-  flex: 0 0 55%;
+  flex: 0 0 48%;
+  max-width: 520px;
   display: flex;
   align-items: center;
   justify-content: center;

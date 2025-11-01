@@ -176,23 +176,26 @@
              alt="{{ _('homepage.hero_img_alt_b') }}">
       </div>
     </div>
-    <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
+    <div class="hero-overlay">
+      <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
         <!-- נשאר כמו שהוא -->
         <h2 class="hero-title">{{ _('homepage.hero_title_overlay') }}</h2>
         <form class="hero-search" role="search" onsubmit="return redirectToCleanURL(event)" novalidate data-search-form="hero">
-          <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
-          <div class="hs-field" data-search-field-wrapper>
-            <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
-            <input id="field" name="field" list="fields" data-search-field placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
-            <span class="input-error" data-search-field-error aria-live="polite"></span>
+          <div class="hero-form">
+            <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
+            <div class="hs-field" data-search-field-wrapper>
+              <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+              <input id="field" name="field" list="fields" data-search-field placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
+              <span class="input-error" data-search-field-error aria-live="polite"></span>
+            </div>
+            <label class="sr-only" for="area">{{ _('homepage.choose_area') }}</label>
+            <div class="hs-field" data-search-area-wrapper>
+              <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+              <input id="area" name="area" list="areas" data-search-area placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
+              <span class="input-error" data-search-area-error aria-live="polite"></span>
+            </div>
+            <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
           </div>
-          <label class="sr-only" for="area">{{ _('homepage.choose_area') }}</label>
-          <div class="hs-field" data-search-area-wrapper>
-            <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
-            <input id="area" name="area" list="areas" data-search-area placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
-            <span class="input-error" data-search-area-error aria-live="polite"></span>
-          </div>
-          <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
         </form>
       </div>
     </div>

@@ -281,14 +281,8 @@ html[dir=ltr] .check-item {
   margin-top: 10px;
   position: relative
 }
-.hero-panel .hero-title+.hero-search::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: -8px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(0 0 0/16%), transparent)
-}
+.hero-panel .hero-title+.hero-search::before {display: none}
+
 .hero-cta .hero-search,
 .hero-panel .hero-search {
   display: grid !important;
@@ -348,12 +342,12 @@ html[dir=ltr] .hero-panel .hs-icon {
   width: 100%;
   height: var(--hero-input-h);
   font-size: 13px;
-  border-radius: 10px;
-  border: 1.8px solid rgb(138 21 56/38%);
-  background: rgb(255 255 255/96%);
+  border-radius: 12px;
+  border: 0;
+  background: rgb(255 255 255/92%);
   color: #1b1b1b;
-  box-shadow: inset 0 1px 0 rgb(0 0 0/4%), 0 2px 8px rgb(0 0 0/4%);
-  transition: border-color .15s, box-shadow .15s, transform .05s
+  box-shadow: 0 10px 24px rgb(15 23 42/20%);
+  transition: background-color .2s, box-shadow .2s, transform .05s
 }
 .hero-cta .hs-field input[list],
 .hero-panel .hs-field input[list] {
@@ -367,12 +361,12 @@ html[dir=ltr] .hero-panel .hs-icon {
 }
 .hero-cta .hs-field input:hover,
 .hero-panel .hs-field input:hover {
-  border-color: rgb(138 21 56/55%)
-}
+  background: rgb(255 255 255/98%);
+  box-shadow: 0 12px 28px rgb(15 23 42/24%)}
 .hero-cta .hs-field input:focus,
 .hero-panel .hs-field input:focus {
-  border-color: #b03a5b;
-  box-shadow: 0 0 0 3px rgb(138 21 56/14%), 0 2px 10px rgb(0 0 0/6%);
+  box-shadow: 0 0 0 0 rgb(0 0 0/0%), 0 16px 36px rgb(138 21 56/28%);
+  background: rgb(255 255 255/100%);
   transform: translateY(-1px)
 }
 .hero-cta .hs-field input::placeholder,

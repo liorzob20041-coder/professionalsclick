@@ -404,11 +404,10 @@ img[loading="lazy"] {
 }
 .hero-overlay {
   position: absolute;
-  right: 6%;
-  left: auto;
+  inset: auto 0 clamp(16px, 5vw, 48px) 0;
   transform: none;
-  inset: auto 6% 10% auto;
-  max-width: 880px;
+  width: 100%;
+  max-width: none;
   z-index: 2;
   padding: clamp(12px, 2.2vw, 18px);
 }
@@ -430,11 +429,12 @@ img[loading="lazy"] {
 .hero-form {
   --hf: 44px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
   grid-template-areas:
     "area field"
     "submit submit";
+  width: 100%;
 }
 .hero-form [data-search-area-wrapper] {
   grid-area: area;
@@ -455,8 +455,10 @@ img[loading="lazy"] {
   .hero-overlay {
     inset: auto 12px 12px 12px;
     left: auto;
+    right: auto;
     transform: none;
     max-width: none;
+    width: auto;
   }
   .hero-form {
     grid-template-columns: 1fr;

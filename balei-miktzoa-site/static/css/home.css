@@ -308,11 +308,6 @@ html[dir="ltr"] .check-item {
   z-index: 4;
   width: var(--hero-card-w);
   padding: 14px 16px;
-  border-radius: 16px;
-  background: rgb(0 0 0 / 42%);
-  backdrop-filter: blur(6px) saturate(108%);
-  border: 1px solid rgb(255 255 255 / 12%);
-  box-shadow: var(--shadow-lg);
   display: grid;
   gap: 10px;
   justify-items: stretch;
@@ -752,10 +747,7 @@ html[dir="ltr"] .input-group:has(#field)::before {
     transform: translate(-50%, 0);
     padding: 12px;
     gap: 10px;
-    background: rgb(0 0 0 / 36%);
-    backdrop-filter: blur(4px) saturate(108%);
   }
-
   .hero-panel .hero-title {
     font-size: 20px;
     line-height: 1.15;

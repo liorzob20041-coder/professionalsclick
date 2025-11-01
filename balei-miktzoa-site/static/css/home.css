@@ -44,7 +44,7 @@
   --icon-space: 26px;
 
   /* מרווח ל־Sticky bottom actions אם יש */
-  --sba-h: 0;
+  --sba-h: 0px;
 
   /* צבע אייקונים/הדגשות */
   --accent-color: #8a1538;
@@ -176,42 +176,31 @@ main > section h3::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(24px, 4vw, 48px);
-  max-width: 1120px;
-  width: min(1120px, 100%);
-  margin-block: clamp(32px, 6vw, 72px);
-  margin-inline: auto;
-  padding: clamp(32px, 5vw, 64px) clamp(20px, 5vw, 56px);
+  gap: 24px;
+  max-width: 1100px;
+  margin: 20px auto 0;
+  padding: 30px 20px;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: var(--shadow-md);
+  min-height: 380px;
 }
-@media (min-width: 1024px) {
-  html[dir="rtl"] .hero-split {
-    margin-inline-start: clamp(20px, 4vw, 56px);
-    margin-inline-end: clamp(72px, 12vw, 180px);
-  }
-}
+
 .hero-info {
   order: 2;
-  flex: 1 1 52%;
-  max-width: 560px;
-  width: min(560px, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(12px, 2vw, 20px);
+  flex: 1 1 55%;
 }
 
 .hero-info h1 {
-  margin: 0;
-  font-size: clamp(24px, 3vw, 36px);
+  margin: 0 0 10px;
+  font-size: clamp(22px, 3vw, 34px);
   color: #333;
 }
 
 /* Lead ׳³ֲ³ײ²ֲ§׳³ֲ³ײ²ֲ¦׳³ֲ³ײ²ֲ¨ */
 .hero-lead {
-  margin: 0;
-  font-size: clamp(15px, 1.6vw, 18px);
+  margin: 6px 0 12px;
+  font-size: clamp(14px, 1.5vw, 16px);
   color: #334155;
   line-height: 1.65;
 }
@@ -223,21 +212,26 @@ main > section h3::after {
 
 /* Checklist */
 .hero-checklist {
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 4px;
 }
 
 .check-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 0;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--brd);
   color: #334155;
   font-weight: 700;
+}
+
+.hero-checklist .check-item:last-child {
+  border-bottom: none;
 }
 
 .check-ico {
@@ -262,57 +256,38 @@ html[dir="ltr"] .check-item {
 .hero-visual {
   order: 1;
   position: relative;
-  flex: 0 0 48%;
-  max-width: 520px;
-  display: grid;
-  place-items: center;
+  flex: 0 0 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-/* מציב את הפאנל מעל התמונה וממרכז אותו */
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: clamp(12px, 2vw, 24px);
-  pointer-events: none;
-}
-.hero-overlay .hero-panel {
-  pointer-events: auto;
-}
+
 .hero-slides {
   position: relative;
   width: 100%;
-  display: grid;
-  min-height: clamp(320px, 52vw, 460px);
-  aspect-ratio: 3 / 2;
+  min-height: 440px;
   border-radius: 12px;
   overflow: hidden;
   background: #f3f3f3;
   background-image: var(--hero-url, none);
   background-size: cover;
-  background-repeat: no-repeat;
   background-position: center;
 }
+
 .hero-slides .slide {
-  grid-area: 1 / 1;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 900ms ease;
-  z-index: 1;
-  pointer-events: none;
-}
-.hero-slides .slide.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-.hero-slides .slide img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 900ms ease;
+  z-index: 1;
+}
+
+.hero-slides .slide.active {
+  opacity: 1;
 }
 
 .hero-slides::after {
@@ -326,14 +301,16 @@ html[dir="ltr"] .check-item {
 
 /* ׳³ֲ³ײ»ֲ׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ²ֲ¡ ׳³ֲ³׳’ג‚¬ֲ׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ²ֲ¨׳³ֲ³׳’ג‚¬ֲ¢ ׳³ג€™׳’ג€ֲ¬׳’ג‚¬ֲ ׳³ֲ³׳’ג‚¬ֳ·׳³ֲ³ײ²ֲ¨׳³ֲ³ײ»ֲ׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ²ֲ¡ ׳³ֲ³׳’ג‚¬ג€׳³ֲ³׳’ג‚¬ֳ·׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³׳’ג‚¬ֳ·׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ³ג€” */
 .hero-panel {
-  position: relative;
-  grid-area: 1 / 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 4;
-  width: min(var(--hero-card-w), 100%);
-  margin-inline: auto;
-  place-self: center;
+  width: var(--hero-card-w);
   padding: 14px 16px;
   border-radius: 16px;
+  background: rgb(0 0 0 / 42%);
+  backdrop-filter: blur(6px) saturate(108%);
   border: 1px solid rgb(255 255 255 / 12%);
   box-shadow: var(--shadow-lg);
   display: grid;
@@ -389,29 +366,13 @@ html[dir="ltr"] .check-item {
 .hero-panel .hs-icon,
 .hero-cta .hs-icon {
   position: absolute;
-  top: calc(var(--hero-input-h) / 2);
+  top: 50%;
   transform: translateY(-50%);
   font-size: 14px;
   opacity: 0.9;
   pointer-events: none;
   filter: drop-shadow(0 1px 0 rgb(0 0 0 / 6%));
   color: var(--hero-accent);
-}
-.hero-panel .hs-field .input-error,
-.hero-cta .hs-field .input-error {
-  font-size: 12px;
-  font-weight: 600;
-  color: #b91c1c;
-}
-html[dir="rtl"] .hero-panel .hs-field .input-error,
-html[dir="rtl"] .hero-cta .hs-field .input-error {
-  text-align: right;
-  padding-right: 4px;
-}
-html[dir="ltr"] .hero-panel .hs-field .input-error,
-html[dir="ltr"] .hero-cta .hs-field .input-error {
-  text-align: left;
-  padding-left: 4px;
 }
 
 html[dir="rtl"] .hero-panel .hs-icon,
@@ -442,16 +403,6 @@ html[dir="ltr"] .hero-cta .hs-icon {
     border-color 0.15s,
     box-shadow 0.15s,
     transform 0.05s;
-}
-.hero-panel .hs-field input[list],
-.hero-cta .hs-field input[list] {
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: none;
-}
-.hero-panel .hs-field input[list]::-webkit-calendar-picker-indicator,
-.hero-cta .hs-field input[list]::-webkit-calendar-picker-indicator {
-  display: none;
 }
 
 .hero-panel .hs-field input:hover,
@@ -704,7 +655,7 @@ html[dir="ltr"] .input-group:has(#field)::before {
   }
 
   .hero-slides {
-    min-height: clamp(340px, 70vw, 520px);
+    min-height: 360px;
   }
 
   .hero-split {
@@ -771,45 +722,42 @@ html[dir="ltr"] .input-group:has(#field)::before {
   .hero-visual {
     width: 100% !important;
     max-width: 100% !important;
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
     margin: 0 auto !important;
-    display: grid !important;
-    place-items: center !important;
   }
+
   .hero-slides {
     width: 100% !important;
     max-width: 100% !important;
-    min-height: clamp(340px, 75vw, 520px) !important;
-    aspect-ratio: 3 / 2 !important;
+    height: 40vh !important;
+    min-height: 320px !important;
     position: relative !important;
     overflow: hidden !important;
     border-radius: 0 !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
   }
+
   .hero-slides .slide {
-    grid-area: 1 / 1 !important;
-    display: grid !important;
-    place-items: center !important;
-  }
-  .hero-slides .slide img {
+    position: absolute !important;
+    inset: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important;
+    object-fit: cover !important;
+    object-position: center center !important;
   }
 }
+
 @media (width <=520px) {
   .hero-slides {
-    min-height: clamp(360px, 90vw, 560px) !important;
-    padding: 18px 16px 24px !important;
+    min-height: 320px !important;
   }
+
   .hero-panel {
-    position: relative !important;
     width: min(94vw, 420px);
-    inset: auto !important;
-    transform: none !important;
-    margin: 0 auto !important;
-    place-self: end center !important;
+    top: 18%;
+    left: 50%;
+    transform: translate(-50%, 0);
     padding: 12px;
     gap: 10px;
     background: rgb(0 0 0 / 36%);
@@ -1111,27 +1059,36 @@ html[dir="ltr"] .input-group:has(#field)::before {
   mask-image:
     linear-gradient(to left, transparent, #000 18px),
     linear-gradient(to right, transparent, #000 18px);
+  -webkit-mask-image:
+    linear-gradient(to left, transparent, #000 18px),
+    linear-gradient(to right, transparent, #000 18px);
   mask-composite: intersect;
-  mask-composite: source-in;
+  -webkit-mask-composite: source-in;
 }
 
 
 
 /* Fade לקצוות המסילה – גרסה תואמת LTR/RTL ולוובקיט */
 html[dir="ltr"] .niche-rail {
+  -webkit-mask-image:
+    linear-gradient(to left, transparent, black 18px),
+    linear-gradient(to right, transparent, black 18px);
   mask-image:
     linear-gradient(to left, transparent, black 18px),
     linear-gradient(to right, transparent, black 18px);
   mask-composite: intersect;
-  mask-composite: source-in;
+  -webkit-mask-composite: source-in;
 }
 
 html[dir="rtl"] .niche-rail {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, black 18px),
+    linear-gradient(to left, transparent, black 18px);
   mask-image:
     linear-gradient(to right, transparent, black 18px),
     linear-gradient(to left, transparent, black 18px);
   mask-composite: intersect;
-  mask-composite: source-in;
+  -webkit-mask-composite: source-in;
 }
 
 
@@ -1468,15 +1425,6 @@ html[dir="rtl"] .niche-rail {
 }
 
 .features h2 {
-  text-align: center;
-  margin: 0 0 16px;
-}
-
-.niche-rail-wrap {
-  padding: 30px 0;
-}
-
-.niche-rail-wrap h2 {
   text-align: center;
   margin: 0 0 16px;
 }
@@ -1843,10 +1791,9 @@ body.home-pattern .mobile-search {
 body.home-pattern main > section:not(.hero-split) {
   background: rgb(255 255 255 / 92%);
   backdrop-filter: blur(2px);
-  border-radius: 16px;
-  padding: clamp(24px, 4vw, 48px);
-  margin: clamp(24px, 5vw, 64px) auto;
-  max-width: 1120px;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px auto;
 }
 
 /* -------------------- Utilities -------------------- */

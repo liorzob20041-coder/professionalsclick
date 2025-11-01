@@ -267,6 +267,18 @@ html[dir="ltr"] .check-item {
   display: grid;
   place-items: center;
 }
+/* מציב את הפאנל מעל התמונה וממרכז אותו */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 2vw, 24px);
+  pointer-events: none;
+}
+.hero-overlay .hero-panel {
+  pointer-events: auto;
+}
 .hero-slides {
   position: relative;
   width: 100%;
@@ -277,7 +289,7 @@ html[dir="ltr"] .check-item {
   overflow: hidden;
   background: #f3f3f3;
   background-image: var(--hero-url, none);
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -299,7 +311,7 @@ html[dir="ltr"] .check-item {
 .hero-slides .slide img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 

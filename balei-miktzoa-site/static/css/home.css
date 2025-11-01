@@ -2027,3 +2027,18 @@ body.home-pattern main > section:not(.hero-split) {
 
 
 
+/* כמה ימינה להזיז (אחוז מרוחב התמונה) */
+:root{ --hero-form-shift-x: 14%; }  /* כוונן 10–20% לפי העין */
+
+/* מזיז רק את הקופסה של הטופס, בלי לשנות מידות */
+.hero-overlay .hero-panel{
+  transform: translateX(var(--hero-form-shift-x));
+  /* לא נוגעים ב-width / padding */
+}
+
+/* במסכים קטנים לא מזיזים ימינה */
+@media (max-width: 991px){
+  :root{ --hero-form-shift-x: 0%; }
+}
+
+

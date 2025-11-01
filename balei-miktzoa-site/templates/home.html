@@ -17,6 +17,7 @@
 {% block title %}{{ _('homepage.seo_title') }}{% endblock %}
 
 {% block head_seo %}
+
 <link rel="canonical" href="{{ url_for_lang('home', lang=g.current_lang, _external=True) }}">
 
 <link rel="alternate" hreflang="he" href="{{ url_for_lang('home', lang='he', _external=True) }}">
@@ -73,9 +74,12 @@
   ]
 }
 </script>
+
 {% endblock %}
 
 {% block content %}
+
+
 
 <!-- HERO — כותרת + טופס -->
 <section class="hero-split" aria-label="חיפוש בעלי מקצוע">

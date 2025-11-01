@@ -2193,25 +2193,47 @@ def serve_static(filename):
 
 
 # ---- Static URL helper (absolute + version) ----
+def _asset_version(path: str) -> str:
+    """Return a cache-busting version string for a static asset.
+
+    משתמשים בזמן העדכון וגודל הקובץ כדי לשנות אוטומטית את הפרמטר כאשר
+    מתבצע שינוי בקובץ. אם הקובץ לא נמצא, נשתמש בערך ברירת המחדל מהסביבה.
+    """
+
+    rel_path = str(path).lstrip("/")
+    try:
+        candidate = Path(STATIC_DIR) / rel_path
+        stat = candidate.stat()
+    except FileNotFoundError:
+        return ASSETS_V
+    # זמן עדכון שנייה + גודל → מספיק לשבור קאש גם אם ה-mtime זהה.
+    mtime = int(stat.st_mtime)
+    size = stat.st_size
+    return f"{mtime:x}{size:x}"
+
+
+def _append_asset_version(url: str, version: str) -> str:
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}v={version}"
 
 def static_url(path: str) -> str:
     path = str(path).lstrip("/")  # בלי // כפול
     url = url_for("static", filename=path)  # יחסי! בלי _external
-    sep = "&" if "?" in url else "?"
-    return f"{url}{sep}v={ASSETS_V}"
+    return _append_asset_version(url, _asset_version(path))
+
 
 def static_abs(path: str) -> str:
     path = str(path).lstrip("/")
     url = url_for("static", filename=path, _external=True, _scheme="https")
-    sep = "&" if "?" in url else "?"
-    return f"{url}{sep}v={ASSETS_V}"
+    return _append_asset_version(url, _asset_version(path))
+
 
 def static_rel(path: str) -> str:
     """Relative static URL with cache-busting version, no scheme/host -> avoids Mixed Content."""
     path = str(path).lstrip("/")
     url = url_for("static", filename=path)  # יחסי!
-    sep = "&" if "?" in url else "?"
-    return f"{url}{sep}v={ASSETS_V}"
+    return _append_asset_version(url, _asset_version(path))
+
 
 @app.context_processor
 def inject_static_url():
@@ -4872,7 +4894,7 @@ def api_suggest():
 
 
 # ===== iOS inline-CSS fallback (only for Safari on iPhone/iPad) =====
-IOS_INLINE_CSS_FILES = ['css/style.min.css', 'css/navbar.css']  # תוסיף/תגרע לפי מה שיש לך
+IOS_INLINE_CSS_FILES = ['css/style.css', 'css/navbar.css']  # תוסיף/תגרע לפי מה שיש לך
 
 def _is_ios_safari(ua: str) -> bool:
     if not ua:

@@ -251,13 +251,13 @@
   {% endblock %}
 
   {# --- קישורי CSS/נכסים --- #}
-  {% set STYLE_URL = static_rel('css/style.min.css') %}
+  {% set STYLE_URL = static_rel('css/style.css') %}
   {% set NAVBAR_URL = static_rel('css/navbar.css') %}
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.css') %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.css') %}
   {% set ICONS_URL = static_rel('css/icons.css') %}
-  {% set FA_LITE_URL = static_rel('css/fa-lite.min.css') %}
-  {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.min.css') %}
+  {% set FA_LITE_URL = static_rel('css/fa-lite.css') %}
+  {% set FONTS_OVERRIDE_URL = static_rel('css/fonts-override.css') %}
   {% set FA_FULL_URL = static_rel('vendor/fa/css/all.min.css') %}
   {% set FA_SOLID_FONT_URL = static_rel('vendor/fa/webfonts/fa-solid-900.woff2') %}
   {% set FA_REGULAR_FONT_URL = static_rel('vendor/fa/webfonts/fa-regular-400.woff2') %}
@@ -560,10 +560,10 @@
         document.head.appendChild(l);
       }
       window.addEventListener("load", function () {
-        var s1 = "{{ static_rel('css/style.min.css') }}";
+        var s1 = "{{ static_rel('css/style.css') }}";
         var s2 = "{{ static_rel('css/navbar.css') }}";
         setTimeout(function () {
-          if (!sheetLoadedContains("css/style.min.css"))  reinject(s1);
+          if (!sheetLoadedContains("css/style.css"))  reinject(s1);
           if (!sheetLoadedContains("css/navbar.css")) reinject(s2);
           setTimeout(function(){
             try { var f = document.getElementById("ios-css-import-fallback"); if (f) f.remove(); } catch(_){ }

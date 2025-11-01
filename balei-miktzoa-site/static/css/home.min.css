@@ -206,34 +206,43 @@ html[dir=ltr] .check-item {
   position: relative;
   flex: 0 0 48%;
   max-width: 520px;
-  display: flex;
-  align-items: center;
-  justify-content: center
+  display: grid;
+  place-items: center
 }
 .hero-slides {
   position: relative;
   width: 100%;
-  min-height: 440px;
+  display: grid;
+  min-height: clamp(320px, 52vw, 460px);
+  aspect-ratio: 3 / 2;
   border-radius: 12px;
   overflow: hidden;
   background: #f3f3f3;
   background-image: var(--hero-url, none);
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   background-position: center
 }
 .hero-slides .slide {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
   opacity: 0;
   transition: opacity 900ms ease;
-  z-index: 1
+  z-index: 1;
+  pointer-events: none
 }
 .hero-slides .slide.active {
-  opacity: 1
+  opacity: 1;
+  pointer-events: auto
+}
+.hero-slides .slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block
 }
 .hero-slides::after {
   content: "";
@@ -244,12 +253,12 @@ html[dir=ltr] .check-item {
   background: linear-gradient(to bottom, rgb(0 0 0/38%), rgb(0 0 0/18%) 30%, transparent 65%)
 }
 .hero-panel {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  grid-area: 1 / 1;
   z-index: 4;
-  width: var(--hero-card-w);
+  width: min(var(--hero-card-w), 100%);
+  margin-inline: auto;
+  place-self: center;
   padding: 14px 16px;
   border-radius: 16px;
   background: rgba(15, 23, 42, .78);

@@ -1811,6 +1811,34 @@ mimetypes.add_type('image/jpeg', '.jpeg')
 mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('image/gif', '.gif')
 Compress(app)
+# === DEV OVERRIDES (שחרור קאש + לוגים) ===
+import sys, logging
+
+# תמיד לרענן תבניות גם כשdebug=False
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
+# אם אתה רוצה "בלי קאש בכלל" בזמן פיתוח:
+app.jinja_env.cache = {}
+
+# לוגים של werkzeug (בקשות) לקונסול
+logging.getLogger('werkzeug').setLevel(logging.INFO)
+app.logger.setLevel(logging.INFO)
+
+# אם אין handler ל-root, הוסף
+_root = logging.getLogger()
+if not _root.handlers:
+    _h = logging.StreamHandler(sys.stdout)
+    _h.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s %(name)s: %(message)s'))
+    _root.addHandler(_h)
+    _root.setLevel(logging.INFO)
+
+# לוג קצר לפני כל בקשה
+@app.before_request
+def _log_req():
+    app.logger.info('%s %s', request.method, request.full_path or request.path)
+
+# דגל דיבאג לטעינת תבניות (אופציונלי)
+app.config['EXPLAIN_TEMPLATE_LOADING'] = False
 
 csrf = CSRFProtect(app)
 app.config['WTF_CSRF_TIME_LIMIT'] = 60 * 60 * 2  # אופציונלי: תוקף טוקן שעתיים

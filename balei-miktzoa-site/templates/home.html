@@ -220,6 +220,91 @@
   </div>
 </section>
 
+<!-- ARTICLES -->
+<section class="home-articles mag" id="articles" aria-label="{{ _('homepage.articles.title') }}">
+  <div class="container">
+    <header class="articles-head">
+      <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
+      <h2 class="articles-title">{{ _('homepage.articles.title') }}</h2>
+      <p class="articles-intro">{{ _('homepage.articles.subtitle') }}</p>
+    </header>
+    {% set articles = [
+      {
+        'tag': _('homepage.tags.moisture'),
+        'img_file': None,
+        'placeholder': _('homepage.articles.mold_damp.placeholder'),
+        'title': _('homepage.articles.mold_damp.title'),
+        'excerpt': _('homepage.articles.mold_damp.excerpt'),
+        'href': url_for_lang('article_mold_damp', lang=g.current_lang)
+      },
+      {
+        'tag': _('homepage.tags.electric'),
+        'img_file': 'articles/electrician-spotlight.jpg',
+        'img_alt': _('homepage.articles.electric.alt'),
+        'img_width': 2400,
+        'img_height': 1350,
+        'title': _('homepage.articles.electric.title'),
+        'excerpt': _('homepage.articles.electric.excerpt'),
+        'href': url_for_lang('article_electrician',     lang=g.current_lang)
+      },
+      {
+        'tag': _('homepage.tags.plumbing'),
+        'img_file': 'articles/plumber-spotlight.jpg',
+        'img_alt': _('homepage.articles.plumber.alt'),
+        'img_width': 640,
+        'img_height': 466,
+        'title': _('homepage.articles.plumber.title'),
+        'excerpt': _('homepage.articles.plumber.excerpt'),
+        'href': url_for_lang('article_plumbing_quote',  lang=g.current_lang)
+      }
+    ] %}
+    <div class="articles-masonry" role="list">
+      {% for a in articles %}
+      <article class="a-card reveal" role="listitem">
+        <a class="a-thumb{% if not a.img_file %} is-placeholder{% endif %}" href="{{ a.href }}" aria-label="{{ a.title }}">
+          {% if a.img_file %}
+            {% set IMG = a.img_file %}
+            {% set ALT = a.img_alt %}
+            {% set width_attr = a.img_width or 640 %}
+            {% set height_attr = a.img_height or 466 %}
+            {% set fallback_w = 640 if width_attr <= 640 else 960 %}
+            <picture>
+              <img src="{{ url_for('img_proxy', filename=IMG, w=fallback_w, q=78, fit='cover', format='jpeg', v=ASSET_VER) }}"
+                   srcset="{{ url_for('img_proxy', filename=IMG, w=360, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 360w,
+                           {{ url_for('img_proxy', filename=IMG, w=480, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 480w,
+                           {{ url_for('img_proxy', filename=IMG, w=640, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 640w,
+                           {{ url_for('img_proxy', filename=IMG, w=768, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 768w,
+                           {{ url_for('img_proxy', filename=IMG, w=960, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 960w"
+                   sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
+                   width="{{ width_attr }}" height="{{ height_attr }}"
+                   loading="lazy" decoding="async"
+                   alt="{{ ALT }}">
+            </picture>
+          {% else %}
+            <span class="a-thumb__placeholder">{{ a.placeholder or a.title }}</span>
+          {% endif %}
+          <span class="a-tag">{{ a.tag }}</span>
+        </a>
+        <div class="a-body">
+          <h3 class="a-title"><a href="{{ a.href }}">{{ a.title }}</a></h3>
+          <p class="a-excerpt">{{ a.excerpt }}</p>
+          <a class="a-more" href="{{ a.href }}">
+            <span>{{ _('homepage.articles.read_more') }}</span>
+            <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <div class="articles-actions">
+      <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="articles-more-btn">
+        <span>{{ _('homepage.articles.all_articles') }}</span>
+        <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ESTIMATE CTA -->
 <section class="estimate-cta" id="estimate" aria-label="{{ _('homepage.quick.estimate_title') }}">
   <div class="section-wrap">

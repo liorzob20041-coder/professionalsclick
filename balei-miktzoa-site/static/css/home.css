@@ -2252,3 +2252,19 @@ html[dir="ltr"] .hero-visual .hero-overlay .hero-panel .hs-field input{
 .input-group:has(#field)::before{
   top: calc(50% - var(--fa-lift-y)) !important;
 }
+
+
+
+
+
+
+
+
+/* === MOBILE-ONLY: ניעור ה-HERO בלי לשנות עיצוב === */
+@media (max-width: 780px){
+  :root{
+    /* + ימינה/למטה, - שמאלה/למעלה */
+    --hero-nudge-x: 180px;
+    --hero-nudge-y: 150px;
+  }
+}

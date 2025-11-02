@@ -308,6 +308,11 @@ html[dir="ltr"] .check-item {
   z-index: 4;
   width: var(--hero-card-w);
   padding: 14px 16px;
+  border-radius: 16px;
+  background: rgb(0 0 0 / 42%);
+  backdrop-filter: blur(6px) saturate(108%);
+  border: 1px solid rgb(255 255 255 / 12%);
+  box-shadow: var(--shadow-lg);
   display: grid;
   gap: 10px;
   justify-items: stretch;
@@ -329,7 +334,12 @@ html[dir="ltr"] .check-item {
 }
 
 .hero-panel .hero-title + .hero-search::before {
-  display: none;
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(0 0 0 / 16%), transparent);
 }
 
 /* ׳³ֲ³ײ»ֲ׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ²ֲ¡ ׳³ֲ³׳’ג‚¬ֲ׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ²ֲ¨׳³ֲ³׳’ג‚¬ֲ¢ ׳³ג€™׳’ג€ֲ¬׳’ג‚¬ֲ ׳³ֲ³׳’ג‚¬ֲ׳³ֲ³ײ²ֲ©׳³ֲ³׳’ג‚¬ֲ׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³ײ³ג€” ׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³׳’ג‚¬ֲ׳³ֲ³׳’ג‚¬ֳ·׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ³ג€”׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³ײ²ֲ¨ */
@@ -382,27 +392,30 @@ html[dir="ltr"] .hero-cta .hs-icon {
   width: 100%;
   height: var(--hero-input-h);
   font-size: 13px;
-  border-radius: 12px;
-  border: 0;
-  background: rgb(255 255 255 / 92%);
+  border-radius: 10px;
+  border: 1.8px solid rgb(138 21 56 / 38%);
+  background: rgb(255 255 255 / 96%);
   color: #1b1b1b;
-  box-shadow: 0 10px 24px rgb(15 23 42 / 20%);
+  box-shadow:
+    inset 0 1px 0 rgb(0 0 0 / 4%),
+    0 2px 8px rgb(0 0 0 / 4%);
   transition:
-    background-color 0.2s,
-    box-shadow 0.2s,
+    border-color 0.15s,
+    box-shadow 0.15s,
     transform 0.05s;
 }
+
 .hero-panel .hs-field input:hover,
 .hero-cta .hs-field input:hover {
-  background: rgb(255 255 255 / 98%);
-  box-shadow: 0 12px 28px rgb(15 23 42 / 24%);
+  border-color: rgb(138 21 56 / 55%);
 }
+
 .hero-panel .hs-field input:focus,
 .hero-cta .hs-field input:focus {
+  border-color: #b03a5b;
   box-shadow:
-    0 0 0 0 rgb(0 0 0 / 0%),
-    0 16px 36px rgb(138 21 56 / 28%);
-  background: rgb(255 255 255 / 100%);
+    0 0 0 3px rgb(138 21 56 / 14%),
+    0 2px 10px rgb(0 0 0 / 6%);
   transform: translateY(-1px);
 }
 
@@ -747,7 +760,10 @@ html[dir="ltr"] .input-group:has(#field)::before {
     transform: translate(-50%, 0);
     padding: 12px;
     gap: 10px;
+    background: rgb(0 0 0 / 36%);
+    backdrop-filter: blur(4px) saturate(108%);
   }
+
   .hero-panel .hero-title {
     font-size: 20px;
     line-height: 1.15;
@@ -2011,260 +2027,3 @@ body.home-pattern main > section:not(.hero-split) {
 
 
 
-/* כמה ימינה להזיז (אחוז מרוחב התמונה) */
-:root{ --hero-form-shift-x: -24px; }  /* כוונן בערך 20–25 פיקסלים שמאלה */
-
-/* מזיז רק את הקופסה של הטופס, בלי לשנות מידות */
-.hero-overlay .hero-panel{
-  transform: translateX(var(--hero-form-shift-x));
-  /* לא נוגעים ב-width / padding */
-}
-
-/* במסכים קטנים לא מזיזים ימינה */
-@media (max-width: 991px){
-  :root{ --hero-form-shift-x: 0%; }
-}
-
-
-
-
-
-
-
-
-
-/* === HERO: קונסולידציה — ניוד חופשי + "זכוכית" ללא חיתוך + רוחב לשדות === */
-:root{
-  --hero-form-max: 525px;      /* שליטת רוחב לשדות+כפתור */
-  --hero-nudge-x: 275px;        /* ימינה(+)/שמאלה(-) */
-  --hero-nudge-y: 60px;      /* למעלה(-)/למטה(+) */
-  --hero-glass-padding: 16px;  /* ריווח פנימי למסגרת */
-  --hero-glass-radius: 18px;   /* רדיוס למסגרת */
-}
-
-/* מיקום וניעור כל הפאנל (כותרת+שדות+כפתור) */
-.hero-visual .hero-overlay .hero-panel{
-  left: 50% !important;
-  top: 50% !important;
-  transform: translate(
-    calc(-50% + var(--hero-nudge-x)),
-    calc(-50% + var(--hero-nudge-y))
-  ) !important;
-
-  /* מסגרת/רקע "זכוכית" על האלמנט עצמו — לא נחתך */
-  padding: var(--hero-glass-padding) !important;
-  border-radius: var(--hero-glass-radius) !important;
-  background:
-    linear-gradient(180deg,
-      rgba(17,24,39,.58),
-      rgba(17,24,39,.42) 35%,
-      rgba(17,24,39,.30) 70%) !important;
-  backdrop-filter: blur(6px) saturate(120%) !important;
-  -webkit-backdrop-filter: blur(6px) saturate(120%) !important;
-  border: 1px solid rgba(255,255,255,.22) !important;
-  box-shadow: 0 10px 26px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18) !important;
-  z-index: 4 !important;
-}
-
-/* רוחב רק לקבוצת השדות+כפתור — הכותרת לא מושפעת */
-.hero-visual .hero-overlay .hero-panel .hero-form{
-  max-width: var(--hero-form-max) !important;
-  width: min(95vw, var(--hero-form-max)) !important;
-  margin-inline: auto !important;
-  gap: 16px !important;
-}
-
-/* שתי עמודות קבוע לשדות */
-.hero-visual .hero-overlay .hero-panel .hero-search{
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: var(--hero-gap) !important;
-}
-
-/* השדות נמתחים, הכפתור ברוחב מלא */
-.hero-visual .hero-overlay .hero-panel .hs-field{ flex: 1 1 0% !important; }
-.hero-visual .hero-overlay .hero-panel .hs-btn{ width: 100% !important; }
-
-/* ביטול כל ::before ישן שגרם לחיתוך */
-.hero-visual .hero-overlay .hero-panel::before{ content: none !important; }
-
-/* מובייל: בלי ניעור ורוחב מלא */
-@media (max-width: 991px){
-  :root{ --hero-nudge-x: 0px; --hero-nudge-y: 0px; }
-  .hero-visual{ --hero-form-max: 100vw; }
-}
-
-
-
-
-
-
-
-
-/* === HERO: מרווח בטוח לשדות + בלי חיתוך בימין (RTL/LTR) === */
-:root{
-  /* תשאיר את ה-nudge כמו שהגדרת. רק מרווחי מסגרת: */
-  --hero-glass-padding: 10px;    /* היה 16px – מוסיף אוויר למסגרת */
-  --hero-safety-pad: 0px;       /* מרווח פנימי לקבוצת השדות בלבד */
-}
-
-/* המסגרת לא חותכת צללים/פוקוס */
-.hero-visual .hero-overlay .hero-panel{
-  overflow: visible !important;
-  padding: var(--hero-glass-padding) !important;
-}
-
-/* מרווח פנימי עדין לקבוצת השדות כדי שהקצה הימני לא “יגע” במסגרת */
-.hero-visual .hero-overlay .hero-panel .hero-search{
-  padding-inline: var(--hero-safety-pad) !important;
-}
-
-/* RTL: עוד קצת מקום לצד הימני של האינפוט */
-html[dir="rtl"] .hero-visual .hero-overlay .hero-panel .hs-field input{
-  padding-inline-end: calc(18px + var(--hero-safety-pad)) !important; /* היה 18px */
-  padding-inline-start: 26px !important; /* לאייקון משמאל */
-  overflow: visible !important;
-}
-
-/* LTR סימטרי לעתיד */
-html[dir="ltr"] .hero-visual .hero-overlay .hero-panel .hs-field input{
-  padding-inline-start: calc(18px + var(--hero-safety-pad)) !important;
-  padding-inline-end: 26px !important;
-  overflow: visible !important;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* === HERO: שליטה חופשית ברווח ובגובהים === */
-:root{
-  --hero-row-gap: 14px;        /* רווח בין שדות לכפתור: 0 ומעלה */
-  --hero-overlap: 16px;       /* כמה להעלות את הכפתור מעל השדות: כל מספר חיובי = עולה למעלה */
-  --hero-input-h-free: 26px;  /* גובה האינפוטים */
-  --hero-input-py: 4px;       /* padding אנכי בתוך האינפוטים */
-  --hero-btn-extra: 16px;     /* גובה הכפתור ביחס לאינפוטים */
-}
-
-/* רווח אנכי בסיסי בין קבוצת השדות לכפתור (לא שלילי לפי התקן) */
-.hero-visual .hero-overlay .hero-panel .hero-form{
-  row-gap: var(--hero-row-gap) !important;
-}
-
-/* הקטנת גובה אינפוטים ללא חסמים */
-.hero-visual .hero-overlay .hero-panel .hs-field input{
-  height: var(--hero-input-h-free) !important;
-  min-height: 0 !important;
-  line-height: 1.2 !important;
-  padding-block: var(--hero-input-py) !important;
-}
-
-/* צמצום הרווח ע"י העלאת הכפתור למעלה + שליטת גובה */
-.hero-visual .hero-overlay .hero-panel .hs-btn{
-  height: calc(var(--hero-input-h-free) + var(--hero-btn-extra)) !important;
-  margin-top: calc(-1 * var(--hero-overlap)) !important; /* זה עוקף את מגבלת gap */
-  padding-block: 0 !important;
-  line-height: 1 !important;
-}
-
-/* אופציונלי: לבטל מגבלות נוספות אם קיימות */
-.hero-visual .hero-overlay .hero-panel .hs-field,
-.hero-visual .hero-overlay .hero-panel .hs-btn{
-  min-height: 0 !important;
-}
-
-/* במובייל אפשר לבטל חפיפה אם תרצה */
-@media (max-width: 991px){
-  :root{ --hero-overlap: 0px; }
-}
-
-
-
-
-
-
-
-
-/* === HERO: הגדלת/הקטנת גובה האינפוטים בפקד יחיד === */
-:root{
-  --hero-input-h: 34px;   /* שנה לכמה שתרצה: 26 / 30 / 36 / 42 ... */
-  --hero-input-py: 6px;   /* padding אנכי בתוך האינפוטים */
-  --hero-btn-extra: 16px; /* נשאר כמו אצלך */
-}
-
-/* קובע גובה לאינפוטים ול־select רגיל */
-.hero-visual .hero-overlay .hero-panel .hs-field input,
-.hero-visual .hero-overlay .hero-panel .hs-field select{
-  height: var(--hero-input-h) !important;
-  min-height: var(--hero-input-h) !important;
-  padding-top: var(--hero-input-py) !important;
-  padding-bottom: var(--hero-input-py) !important;
-  line-height: normal !important;
-  box-sizing: border-box !important;
-}
-
-/* אם יש ספריית select עם עטיפה פנימית (למשל select2/choices) – מיישר לגובה */
-.hero-visual .hero-overlay .hero-panel .hs-field .select2-selection--single,
-.hero-visual .hero-overlay .hero-panel .hs-field .choices__inner{
-  height: var(--hero-input-h) !important;
-  min-height: var(--hero-input-h) !important;
-  display: flex !important;
-  align-items: center !important;
-  box-sizing: border-box !important;
-}
-
-/* הכפתור שומר יחס קבוע מול האינפוטים */
-.hero-visual .hero-overlay .hero-panel .hs-btn{
-  height: calc(var(--hero-input-h) + var(--hero-btn-extra)) !important;
-}
-
-/* לא נוגע בהרמה של אייקוני FA שהגדרת קודם */
-
-
-
-
-
-
-
-
-/* === HERO: שליטה רק על גובה אייקוני FA (להדביק בסוף) === */
-:root{
-  --fa-lift-y: 8px; /* חיובי = מעלה, שלילי = מטה */
-}
-
-/* אייקון FA שנמצא כאלמנט .hs-icon בתוך ה-HERO */
-.hero-visual .hero-overlay .hero-panel .hs-icon{
-  top: 50% !important;
-  transform: translateY(calc(-50% - var(--fa-lift-y))) !important;
-}
-
-/* אם האייקון מוזרק דרך ::before על הקבוצות (area/field) – להרים גם אותו */
-.input-group:has(#area)::before,
-.input-group:has(#field)::before{
-  top: calc(50% - var(--fa-lift-y)) !important;
-}
-
-
-
-
-
-
-
-
-/* === MOBILE-ONLY: ניעור ה-HERO בלי לשנות עיצוב === */
-@media (max-width: 780px){
-  :root{
-    /* + ימינה/למטה, - שמאלה/למעלה */
-    --hero-nudge-x: 180px;
-    --hero-nudge-y: 150px;
-  }
-}

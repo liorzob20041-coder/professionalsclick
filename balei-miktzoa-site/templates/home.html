@@ -2,22 +2,13 @@
 
 {% block extra_head %}
   {{ super() }}
-  <link rel="stylesheet"
-        href="{{ static_rel('css/home.css') }}"
-        media="print" onload="this.media='all'">
-  <link rel="stylesheet"
-        href="{{ static_rel('css/articles.css') }}"
-        media="print" onload="this.media='all'">
-  <noscript>
-    <link rel="stylesheet" href="{{ static_rel('css/home.css') }}">
-    <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
-  </noscript>
+  <link rel="preload" as="image" href="{{ url_for('static', filename='photo1.jpg') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/home.css') }}">
 {% endblock %}
 
 {% block title %}{{ _('homepage.seo_title') }}{% endblock %}
 
 {% block head_seo %}
-
 <link rel="canonical" href="{{ url_for_lang('home', lang=g.current_lang, _external=True) }}">
 
 <link rel="alternate" hreflang="he" href="{{ url_for_lang('home', lang='he', _external=True) }}">
@@ -74,12 +65,9 @@
   ]
 }
 </script>
-
 {% endblock %}
 
 {% block content %}
-
-
 
 <!-- HERO — כותרת + טופס -->
 <section class="hero-split" aria-label="חיפוש בעלי מקצוע">
@@ -140,72 +128,64 @@
   <!-- RIGHT: visual + search panel -->
   <div class="hero-visual">
     <div class="hero-slides"
-         style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=160, q=55, fit='cover', format='jpeg', v=ASSET_VER) }}');">
-      <div class="slide active">
-        <picture class="hero-media">
-          <source type="image/avif"
-                  srcset="{{ url_for('img_proxy', filename='photo1.jpg', w=480, q=76, fit='cover', format='avif', v=ASSET_VER) }} 480w,
-                          {{ url_for('img_proxy', filename='photo1.jpg', w=640, q=76, fit='cover', format='avif', v=ASSET_VER) }} 640w,
-                          {{ url_for('img_proxy', filename='photo1.jpg', w=768, q=76, fit='cover', format='avif', v=ASSET_VER) }} 768w,
-                          {{ url_for('img_proxy', filename='photo1.jpg', w=960, q=76, fit='cover', format='avif', v=ASSET_VER) }} 960w,
-                          {{ url_for('img_proxy', filename='photo1.jpg', w=1024, q=76, fit='cover', format='avif', v=ASSET_VER) }} 1024w">
-          <img class="hero-image"
-               src="{{ hero_lcp_src_960 }}"
-               srcset="{{ hero_lcp_srcset|join(', ') }}"
-               sizes="(min-width:1200px) 616px, (min-width:768px) 50vw, 100vw"
-               width="1024" height="684"
-               loading="eager" decoding="sync" fetchpriority="high"
-               alt="{{ _('homepage.hero_img_main_alt') }}">
-        </picture>
-      </div>
-      {% set hero_b_src_480 = url_for('img_proxy', filename='photo2.jpg', w=480, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
-      {% set hero_b_src_640 = url_for('img_proxy', filename='photo2.jpg', w=640, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
-      {% set hero_b_src_768 = url_for('img_proxy', filename='photo2.jpg', w=768, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
-      {% set hero_b_src_960 = url_for('img_proxy', filename='photo2.jpg', w=960, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
-      {% set hero_b_src_1024 = url_for('img_proxy', filename='photo2.jpg', w=1024, q=76, fit='cover', format='jpeg', v=ASSET_VER) %}
-      {% set hero_b_srcset = [
-        hero_b_src_480 ~ ' 480w',
-        hero_b_src_640 ~ ' 640w',
-        hero_b_src_768 ~ ' 768w',
-        hero_b_src_960 ~ ' 960w',
-        hero_b_src_1024 ~ ' 1024w'
-      ] %}
-      <div class="slide">
-        <img class="hero-image"
-             src="{{ hero_b_src_960 }}"
-             srcset="{{ hero_b_srcset|join(', ') }}"
-             sizes="(min-width: 1200px) 616px, (min-width: 768px) 50vw, 100vw"
-             width="1024" height="684"
-             loading="lazy" decoding="async"
-             alt="{{ _('homepage.hero_img_alt_b') }}">
-      </div>
-    </div>
-    <div class="hero-overlay">
+         style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=1600, q=80, fit='cover', format='auto') }}');">
+      <img id="slideA" class="slide active"
+           src="{{ url_for('static', filename='photo1.jpg') }}"
+           alt="{{ _('homepage.hero_img_main_alt') }}"
+           loading="eager" fetchpriority="high" decoding="async" />
+      <img id="slideB" class="slide"
+           src="{{ url_for('static', filename='photo2.jpg') }}"
+           alt="{{ _('homepage.hero_img_alt_b') }}"
+           loading="lazy" decoding="async" />
+
       <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
         <!-- נשאר כמו שהוא -->
         <h2 class="hero-title">{{ _('homepage.hero_title_overlay') }}</h2>
-        <form class="hero-search" role="search" onsubmit="return redirectToCleanURL(event)" novalidate data-search-form="hero">
-          <div class="hero-form">
-            <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
-            <div class="hs-field" data-search-field-wrapper>
-              <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
-              <input id="field" name="field" list="fields" data-search-field placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
-              <span class="input-error" data-search-field-error aria-live="polite"></span>
-            </div>
-            <label class="sr-only" for="area">{{ _('homepage.choose_area') }}</label>
-            <div class="hs-field" data-search-area-wrapper>
-              <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
-              <input id="area" name="area" list="areas" data-search-area placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
-              <span class="input-error" data-search-area-error aria-live="polite"></span>
-            </div>
-            <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
+        <form class="hero-search" role="search" onsubmit="return redirectToCleanURL(event)" novalidate>
+          <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
+          <div class="hs-field">
+            <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+            <input id="field" name="field" list="fields" placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
           </div>
+
+          <label class="sr-only" for="area">{{ _('homepage.choose_area') }}</label>
+          <div class="hs-field">
+            <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+            <input id="area" name="area" list="areas" placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
+          </div>
+
+          <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
+
+          <datalist id="fields">
+            <option value="{{ _('field_renovations') }}" data-key="renovations">
+            <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
+            <option value="{{ _('field_electricians') }}" data-key="electricians">
+            <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
+          </datalist>
+          <datalist id="areas">
+            <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
+            <option value="{{ _('city_haifa') }}"      data-key="haifa">
+            <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
+            <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
+          </datalist>
         </form>
       </div>
     </div>
   </div>
 </section>
 
+<!-- WHY/FEATURES -->
+<section class="features" id="features" aria-label="למה לבחור בנו">
+  <div class="container">
+    <h2>{{ _('homepage.why_us_title') }}</h2>
+    <div class="feature-boxes">
+      <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i> {{ _('homepage.features.1') }}</div>
+      <div class="feature-item"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> {{ _('homepage.features.2') }}</div>
+      <div class="feature-item"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i> {{ _('homepage.features.3') }}</div>
+      <div class="feature-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> {{ _('homepage.features.4') }}</div>
+    </div>
+  </div>
+</section>
 
 <!-- POPULAR FIELDS -->
 <section class="niche-rail-wrap" id="niches" aria-label="{{ _('homepage.popular_fields_title') }}">
@@ -237,104 +217,6 @@
         <span class="np-label">{{ _('homepage.popular_fields.locksmiths') }}</span>
       </button>
     </nav>
-  </div>
-</section>
-
-<!-- ARTICLES -->
-<section class="home-articles mag" id="articles" aria-label="{{ _('homepage.articles.title') }}">
-  <div class="container">
-    <header class="articles-head">
-      <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
-      <h2 class="articles-title">{{ _('homepage.articles.title') }}</h2>
-      <p class="articles-intro">{{ _('homepage.articles.subtitle') }}</p>
-    </header>
-    {% set articles = [
-      {
-        'tag': _('homepage.tags.moisture'),
-        'img_file': None,
-        'placeholder': _('homepage.articles.mold_damp.placeholder'),
-        'title': _('homepage.articles.mold_damp.title'),
-        'excerpt': _('homepage.articles.mold_damp.excerpt'),
-        'href': url_for_lang('article_mold_damp', lang=g.current_lang)
-      },
-      {
-        'tag': _('homepage.tags.electric'),
-        'img_file': 'articles/electrician-spotlight.jpg',
-        'img_alt': _('homepage.articles.electric.alt'),
-        'img_width': 2400,
-        'img_height': 1350,
-        'title': _('homepage.articles.electric.title'),
-        'excerpt': _('homepage.articles.electric.excerpt'),
-        'href': url_for_lang('article_electrician',     lang=g.current_lang)
-      },
-      {
-        'tag': _('homepage.tags.plumbing'),
-        'img_file': 'articles/plumber-spotlight.jpg',
-        'img_alt': _('homepage.articles.plumber.alt'),
-        'img_width': 640,
-        'img_height': 466,
-        'title': _('homepage.articles.plumber.title'),
-        'excerpt': _('homepage.articles.plumber.excerpt'),
-        'href': url_for_lang('article_plumbing_quote',  lang=g.current_lang)
-      }
-    ] %}
-    <div class="articles-masonry" role="list">
-      {% for a in articles %}
-      <article class="a-card reveal" role="listitem">
-        <a class="a-thumb{% if not a.img_file %} is-placeholder{% endif %}" href="{{ a.href }}" aria-label="{{ a.title }}">
-          {% if a.img_file %}
-            {% set IMG = a.img_file %}
-            {% set ALT = a.img_alt %}
-            {% set width_attr = a.img_width or 640 %}
-            {% set height_attr = a.img_height or 466 %}
-            {% set fallback_w = 640 if width_attr <= 640 else 960 %}
-            <picture>
-              <img src="{{ url_for('img_proxy', filename=IMG, w=fallback_w, q=78, fit='cover', format='jpeg', v=ASSET_VER) }}"
-                   srcset="{{ url_for('img_proxy', filename=IMG, w=360, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 360w,
-                           {{ url_for('img_proxy', filename=IMG, w=480, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 480w,
-                           {{ url_for('img_proxy', filename=IMG, w=640, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 640w,
-                           {{ url_for('img_proxy', filename=IMG, w=768, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 768w,
-                           {{ url_for('img_proxy', filename=IMG, w=960, q=78, fit='cover', format='jpeg', v=ASSET_VER) }} 960w"
-                   sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
-                   width="{{ width_attr }}" height="{{ height_attr }}"
-                   loading="lazy" decoding="async"
-                   alt="{{ ALT }}">
-            </picture>
-          {% else %}
-            <span class="a-thumb__placeholder">{{ a.placeholder or a.title }}</span>
-          {% endif %}
-          <span class="a-tag">{{ a.tag }}</span>
-        </a>
-        <div class="a-body">
-          <h3 class="a-title"><a href="{{ a.href }}">{{ a.title }}</a></h3>
-          <p class="a-excerpt">{{ a.excerpt }}</p>
-          <a class="a-more" href="{{ a.href }}">
-            <span>{{ _('homepage.articles.read_more') }}</span>
-            <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
-          </a>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-    <div class="articles-actions">
-      <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="articles-more-btn">
-        <span>{{ _('homepage.articles.all_articles') }}</span>
-        <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- WHY/FEATURES -->
-<section class="features" id="features" aria-label="למה לבחור בנו">
-  <div class="container">
-    <h2>{{ _('homepage.why_us_title') }}</h2>
-    <div class="feature-boxes">
-      <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i> {{ _('homepage.features.1') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> {{ _('homepage.features.2') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i> {{ _('homepage.features.3') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> {{ _('homepage.features.4') }}</div>
-    </div>
   </div>
 </section>
 
@@ -459,10 +341,10 @@
    target="_blank"
    class="whatsapp-float"
    aria-label="{{ _('homepage.whatsapp_help') }}">
-  <img src="{{ static_rel('icons/whatsapp.svg') }}"
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"
        alt="{{ _('homepage.whatsapp_alt') }}"
        width="48" height="48"
-       loading="lazy" decoding="async">
+       loading="lazy">
 </a>
 
 {% endblock %}
@@ -477,44 +359,63 @@
       if (!slides || slides.length <= 1) return;
       var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReduced) return;
-      slides.forEach(function (slide) {
-        var img = slide && slide.querySelector('img');
-        if (img && !img.complete) {
-          var pre = new Image();
-          pre.src = img.currentSrc || img.src;
-        }
-      });
+      slides.forEach(function (img) { if (img && !img.complete) { var pre = new Image(); pre.src = img.src; } });
       var i = 0, DURATION = 6000, FADE_MS = 900;
       setInterval(function () {
         var current = slides[i];
         i = (i + 1) % slides.length;
         var next = slides[i];
         if (next) next.classList.add('active');
-        setTimeout(function () {
-          if (current) current.classList.remove('active');
-        }, FADE_MS + 50);
+        setTimeout(function () { if (current) current.classList.remove('active'); }, FADE_MS + 50);
       }, DURATION);
     });
   </script>
-  <!-- Articles reveal-on-scroll -->
-  <script>
-  document.addEventListener('DOMContentLoaded',function(){
-    const els = document.querySelectorAll('.reveal');
-    if(!('IntersectionObserver' in window) || !els.length){ els.forEach(e=>e.classList.add('is-visible')); return; }
-    const io = new IntersectionObserver((ents)=>{
-      ents.forEach(ent=>{ if(ent.isIntersecting){ ent.target.classList.add('is-visible'); io.unobserve(ent.target); }});
-    }, {root:null, rootMargin:'0px 0px -10% 0px', threshold:0.08});
-    els.forEach(el=>io.observe(el));
-  });
-  </script>
+
   <!-- Search routing -->
   <script>
+    (function () {
+      function convertToSlug(text) {
+        var s = (text || '').trim().toLowerCase();
+        if (typeof s.normalize === 'function') s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+        s = s.replace(/[^0-9a-z\u0590-\u05FF\u0400-\u04FF\\s_-]/g, '')
+             .replace(/[\\s_]+/g, '-')
+             .replace(/-+/g, '-')
+             .replace(/^-|-$/g, '');
+        return s;
+      }
+      window.redirectToCleanURL = function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        var form = (e && e.target && e.target.closest) ? e.target.closest('form') : document.querySelector('.hero-search');
+        var areaInput  = form ? (form.querySelector('#area')  || form.querySelector('#area_m'))  : null;
+        var fieldInput = form ? (form.querySelector('#field') || form.querySelector('#field_m')) : null;
+        var areaError  = areaInput  && areaInput.parentElement ? areaInput.parentElement.querySelector('.input-error')  : null;
+        var fieldError = fieldInput && fieldInput.parentElement ? fieldInput.parentElement.querySelector('.input-error') : null;
+        if (areaError)  areaError.textContent  = '';
+        if (fieldError) fieldError.textContent = '';
+        var areaValue  = areaInput  && areaInput.value  ? areaInput.value.trim()  : '';
+        var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
+        var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+        var msgs = {
+          he: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
+          en: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
+          ru: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" }
+        };
+        var hasError = false;
+        if (!areaValue)  { if (areaError)  areaError.textContent  = msgs[lang].area;  hasError = true; }
+        if (!fieldValue) { if (fieldError) fieldError.textContent = msgs[lang].field; hasError = true; }
+        if (hasError) return false;
+        var areaSlug  = convertToSlug(areaValue);
+        var fieldSlug = convertToSlug(fieldValue);
+        window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
+        return false;
+      };
+    })();
     function goToSearch(e, fieldLabel){
       if (e && e.preventDefault) e.preventDefault();
       var form  = document.querySelector('.hero-search');
       if (!form) { window.location.hash = '#niches'; return false; }
-      var fInp = form.querySelector('[data-search-field]') || form.querySelector('#field');
-      var aInp = form.querySelector('[data-search-area]')  || form.querySelector('#area');
+      var fInp = form.querySelector('#field');
+      var aInp = form.querySelector('#area');
       if (fieldLabel && fInp) fInp.value = fieldLabel;
       var hasField = fInp && fInp.value && fInp.value.trim();
       var hasArea  = aInp && aInp.value && aInp.value.trim();

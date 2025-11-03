@@ -1044,6 +1044,14 @@ html[dir="ltr"] .input-group:has(#field)::before {
 /* -------------------- Popular Fields (Consolidated) -------------------- */
 
 /* ׳³ֲ³ײ²ֲ¨׳³ֲ³׳’ג€ֲ¢׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ²ֲ ׳³ֲ³ײ²ֲ׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ²ֲ§׳³ֲ³׳’ג€ֲ¢ ׳³ֲ³ײ²ֲ§׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³ײ²ֲ׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ²ֲ§׳³ֲ³ײ»ֲ׳³ֲ³׳’ג€ֲ¢ */
+.niche-rail-wrap {
+  padding: 30px 0;
+}
+
+.niche-rail-wrap h2 {
+  text-align: center;
+  margin: 0 0 16px;
+}
 .niche-rail {
   display: flex;
   gap: var(--niche-d-gap);

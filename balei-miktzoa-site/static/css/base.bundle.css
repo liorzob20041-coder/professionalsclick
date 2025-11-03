@@ -549,7 +549,7 @@ html[dir="ltr"] .search-modal__form .input-error {
 }
 @media (width <= 640px) {
   :root {
-    --lang-nudge-x: 20px;
+    --lang-nudge-x: 0px;
     --lang-nudge-y: 0;
     --search-nudge-x: 0;
     --search-nudge-y: 0;

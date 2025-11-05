@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | בעלי מקצוע בקליק{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/articles.css') }}">
+{% endblock %}
+{% block content %}
+<section class="article">
+  <div class="container">
+    <header class="article-header">
+      <p class="article-breadcrumb">
+        מאמרים{% if meta.category %} / {{ meta.category }}{% endif %}
+      </p>
+      <h1 class="article-title">{{ title }}</h1>
+      <p class="article-meta">
+        {{ meta.date }} · כ־{{ meta.reading_minutes }} דקות קריאה
+      </p>
+      {% if meta.hero_image %}
+        <img class="article-hero" src="{{ meta.hero_image }}" alt="{{ title }}">
+      {% endif %}
+    </header>
+    <article class="article-body">
+      {{ body_html | safe }}
+    </article>
+  </div>
+</section>
+{% endblock %}

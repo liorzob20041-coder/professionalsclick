@@ -1,0 +1,21 @@
+{
+  "slug": "how-to-choose-electrician",
+  "date": "2025-01-01",
+  "category": "electricity",
+  "status": "published",
+  "hero_image": "/static/articles/electrician-spotlight.jpg",
+  "reading_minutes": 4,
+  "he": {
+    "title": "איך לבחור חשמלאי",
+    "description": "דברים חשובים לבדיקה לפני שמזמינים חשמלאי."
+  },
+  "en": {
+    "title": "",
+    "description": ""
+  },
+  "ru": {
+    "title": "",
+    "description": ""
+  },
+  "tags": ["חשמל", "בטיחות"]
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "mold-damp-guide",
+  "date": "2025-01-01",
+  "category": "moisture",
+  "status": "published",
+  "hero_image": "/static/articles/renovation-spotlight.jpg",
+  "reading_minutes": 5,
+  "he": {
+    "title": "מדריך עובש ולחות",
+    "description": "מדריך קצר איך לזהות ולטפל בעובש ולחות בבית."
+  },
+  "en": {
+    "title": "",
+    "description": ""
+  },
+  "ru": {
+    "title": "",
+    "description": ""
+  },
+  "tags": ["עובש", "לחות", "בריאות"]
+}

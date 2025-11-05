@@ -11,8 +11,8 @@ from urllib.parse import urlparse, parse_qs, urljoin
 from collections import Counter
 
 from flask import (
-    Flask, render_template, request, redirect, url_for, flash, g, jsonify,
-    session, send_from_directory, Response, current_app, abort
+    Flask, render_template, render_template_string, request, redirect, url_for,
+    flash, g, jsonify, session, send_from_directory, Response, current_app, abort
 )
 from flask_compress import Compress
 from werkzeug.utils import secure_filename, safe_join
@@ -47,7 +47,7 @@ from services.json_store import atomic_write_json
 from services.translation import translate as translate_text
 from services.video_utils import get_local_video_metadata, normalize_video_file
 
-
+from articles_content import load_article, load_articles_list
 
 
 load_dotenv()
@@ -2455,7 +2455,27 @@ def contact(lang):
 @app.route('/<lang>/articles')
 def articles_index(lang):
     g.current_lang = lang
-    return render_template('articles/index.html')
+    articles = load_articles_list(lang)
+    return render_template('articles/index.html', articles=articles)
+
+
+def _render_article_detail(lang: str, slug: str):
+    g.current_lang = lang
+    try:
+        meta, lang_data, body_template = load_article(slug, lang)
+    except FileNotFoundError:
+        abort(404)
+
+    body_html = render_template_string(body_template, meta=meta, lang_data=lang_data)
+
+    return render_template(
+        'articles/detail.html',
+        meta=meta,
+        title=lang_data.get('title'),
+        description=lang_data.get('description'),
+        body_html=body_html,
+        slug=meta.get('slug'),
+    )
 
 @app.route('/<lang>/articles/how-to-choose-electrician')
 def article_electrician(lang):
@@ -2479,6 +2499,10 @@ def article_mold_damp(lang):
     g.current_lang = lang
     today_iso = date.today().isoformat()
     return render_template('articles/mold-damp-guide.html', today_iso=today_iso)
+
+@app.route('/<lang>/articles/<slug>/')
+def article_detail(lang, slug):
+    return _render_article_detail(lang, slug)
 
 # -------- Legal pages (with lang) --------
 @app.route('/<lang>/privacy')

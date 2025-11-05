@@ -1,0 +1,21 @@
+{
+  "slug": "plumbing-quote-checklist",
+  "date": "2025-01-01",
+  "category": "plumbing",
+  "status": "published",
+  "hero_image": "/static/articles/plumber-spotlight.jpg",
+  "reading_minutes": 4,
+  "he": {
+    "title": "צ'קליסט להצעת מחיר לאינסטלטור",
+    "description": "מה צריך לוודא לפני שסוגרים הצעת מחיר עם אינסטלטור."
+  },
+  "en": {
+    "title": "",
+    "description": ""
+  },
+  "ru": {
+    "title": "",
+    "description": ""
+  },
+  "tags": ["אינסטלציה", "הצעת מחיר"]
+}

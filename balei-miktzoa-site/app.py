@@ -2457,10 +2457,15 @@ def articles_index(lang):
     g.current_lang = lang
     articles = load_articles_list(lang)
     categories = sorted({a.get("category") for a in articles if a.get("category")})
+    grouped_articles: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    for article in articles:
+        category = article.get("category") or "general"
+        grouped_articles[category].append(article)
     return render_template(
         'articles/index.html',
         articles=articles,
         categories=categories,
+        grouped_articles=dict(grouped_articles),
     )
 
 

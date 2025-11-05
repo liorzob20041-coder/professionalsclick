@@ -22,108 +22,95 @@
 {% endblock %}
 {% block extra_head %}
   {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
   <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
 {% endblock %}
 {% block content %}
 <section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}">
   <div class="container">
-    <header class="articles-head">
+    <header class="articles-hero">
       <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
       <h1 class="articles-title">{{ _('articles_index.heading') }}</h1>
       <p class="articles-intro">{{ _('articles_index.lead') }}</p>
+      <p class="articles-subtitle">{{ _('articles_index.note') }}</p>
+      <div class="articles-hero-quick">
+        <div class="hero-stat">
+          <strong>{{ articles|length }}</strong>
+          <span>{{ _('articles_index.count_label') }}</span>
+        </div>
+        {% if categories %}
+          <div class="hero-cats" aria-label="{{ _('articles_index.quick_cats') }}">
+            <span class="chip chip--static">{{ _('articles_index.quick_cats') }}</span>
+            {% for category in categories %}
+              {% set label_key = 'articles_index.category.' ~ category %}
+              {% set label = (_(label_key) if _ else category) %}
+              {% if _ and label == label_key %}
+                {% set label = category %}
+              {% endif %}
+              <a class="chip chip--ghost" href="#category-{{ category }}">{{ label }}</a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
     </header>
-    {% if categories %}
-      <div class="filters-rail" role="toolbar" aria-label="{{ _('articles_index.filters_toolbar') }}">
-        <button class="filter-chip" type="button" aria-pressed="true" data-filter="all">
-          {{ _('articles_index.category_all') }}
-        </button>
+    <article class="tip-bubble reveal">
+      <div class="tip-kicker">💡 {{ _('articles_index.tip_title') }}</div>
+      <p>{{ _('articles_index.tip_text') }}</p>
+    </article>
+    {% if articles %}
+      <div class="results-head">
+        <h2 class="results-title">{{ _('articles_index.all_heading') }}</h2>
+        <div class="results-count">{{ articles|length }} {{ _('articles_index.results_suffix') }}</div>
+      </div>
+      {% set general_articles = grouped_articles.get('general') %}
+      {% if general_articles %}
+        <div class="category-block" id="category-general">
+          <header class="category-head">
+            <div>
+              <h3 class="category-title">{{ _('articles_index.all_heading') }}</h3>
+              <p class="category-intro">{{ _('articles_index.section_intro') }}</p>
+            </div>
+          </header>
+          <div class="category-row">
+            {% for article in general_articles %}
+              {% include 'articles/partials/article-card.html' %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      <div class="categories-wrap">
         {% for category in categories %}
-          {% set label_key = 'articles_index.category.' ~ category %}
-          {% set label = (_(label_key) if _ else category) %}
-          {% if _ and label == label_key %}
-            {% set label = category %}
+          {% set category_articles = grouped_articles.get(category) %}
+          {% if category_articles %}
+            <section class="category-block" id="category-{{ category }}">
+              <header class="category-head">
+                <div>
+                  {% set label_key = 'articles_index.category.' ~ category %}
+                  {% set label = (_(label_key) if _ else category) %}
+                  {% if _ and label == label_key %}
+                    {% set label = category %}
+                  {% endif %}
+                  <h3 class="category-title">{{ label }}</h3>
+                  <p class="category-intro">{{ _('articles_index.section_intro') }}</p>
+                </div>
+              </header>
+              <div class="category-row">
+                {% for article in category_articles %}
+                  {% include 'articles/partials/article-card.html' %}
+                {% endfor %}
+              </div>
+            </section>
           {% endif %}
-          <button class="filter-chip" type="button" aria-pressed="false" data-filter="{{ category }}">
-            {{ label }}
-          </button>
         {% endfor %}
       </div>
+    {% else %}
+      <div class="empty-state">{{ _('articles_index.empty') }}</div>
     {% endif %}
-    <div class="archive-grid" id="archiveGrid">
-      <article class="tip-bubble">
-        <div class="tip-kicker">💡 {{ _('articles_index.tip_title') }}</div>
-        <p>{{ _('articles_index.tip_text') }}</p>
-      </article>
-      {% if articles %}
-        {% for article in articles %}
-          {% set detail_url = url_for_lang('article_detail', lang=g.current_lang, slug=article.slug) %}
-          {% set card_tag = article.category or '' %}
-          {% set tag_label = '' %}
-          {% if card_tag %}
-            {% set label_key = 'articles_index.category.' ~ card_tag %}
-            {% set potential = (_(label_key) if _ else card_tag) %}
-            {% if not _ or potential == label_key %}
-              {% if article.tags %}
-                {% set tag_label = article.tags[0] %}
-              {% else %}
-                {% set tag_label = card_tag %}
-              {% endif %}
-            {% else %}
-              {% set tag_label = potential %}
-            {% endif %}
-          {% endif %}
-          <article class="a-card reveal" data-tag="{{ card_tag }}">
-            <a class="a-thumb{% if not article.hero_image %} is-placeholder{% endif %}" href="{{ detail_url }}">
-              {% if article.hero_image %}
-                <img src="{{ article.hero_image }}" alt="{{ article.title }}" loading="lazy" decoding="async">
-              {% else %}
-                <span class="a-thumb__placeholder">{{ article.title }}</span>
-              {% endif %}
-              {% if tag_label %}
-                <span class="a-tag">{{ tag_label }}</span>
-              {% elif article.tags %}
-                <span class="a-tag">{{ article.tags[0] }}</span>
-              {% endif %}
-            </a>
-            <div class="a-body">
-              <h3 class="a-title"><a href="{{ detail_url }}">{{ article.title }}</a></h3>
-              {% if article.description %}
-                <p class="a-excerpt">{{ article.description }}</p>
-              {% endif %}
-              <a class="a-more" href="{{ detail_url }}">
-                <span>{{ _('homepage.articles.read_more') }}</span>
-                <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
-              </a>
-            </div>
-          </article>
-        {% endfor %}
-      {% else %}
-        <div class="empty-state">{{ _('articles_index.empty') }}</div>
-      {% endif %}
-    </div>
   </div>
 </section>
 {% endblock %}
 {% block extra_scripts %}
   {{ super() }}
-  <script>
-    (function() {
-      const chips = Array.from(document.querySelectorAll('.filter-chip'));
-      const cards = Array.from(document.querySelectorAll('#archiveGrid .a-card[data-tag]'));
-      if (!chips.length) return;
-      chips.forEach((chip) => {
-        chip.addEventListener('click', () => {
-          chips.forEach((c) => c.setAttribute('aria-pressed', 'false'));
-          chip.setAttribute('aria-pressed', 'true');
-          const filter = chip.dataset.filter;
-          cards.forEach((card) => {
-            const match = filter === 'all' || card.dataset.tag === filter;
-            card.style.display = match ? '' : 'none';
-          });
-        });
-      });
-    })();
-  </script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       const els = document.querySelectorAll('.reveal');

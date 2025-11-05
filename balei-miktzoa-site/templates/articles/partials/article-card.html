@@ -1,0 +1,51 @@
+{% set detail_url = url_for_lang('article_detail', lang=g.current_lang, slug=article.slug) %}
+{% set card_tag = article.category or '' %}
+{% set tag_label = '' %}
+{% if card_tag %}
+  {% set label_key = 'articles_index.category.' ~ card_tag %}
+  {% set potential = (_(label_key) if _ else card_tag) %}
+  {% if not _ or potential == label_key %}
+    {% if article.tags %}
+      {% set tag_label = article.tags[0] %}
+    {% else %}
+      {% set tag_label = card_tag %}
+    {% endif %}
+  {% else %}
+    {% set tag_label = potential %}
+  {% endif %}
+{% elif article.tags %}
+  {% set tag_label = article.tags[0] %}
+{% endif %}
+<article class="a-card reveal" data-tag="{{ card_tag }}">
+  <a class="a-thumb{% if not article.hero_image %} is-placeholder{% endif %}" href="{{ detail_url }}">
+    {% if article.hero_image %}
+      <img src="{{ article.hero_image }}" alt="{{ article.title }}" loading="lazy" decoding="async">
+    {% else %}
+      <span class="a-thumb__placeholder">{{ article.title }}</span>
+    {% endif %}
+    {% if tag_label %}
+      <span class="a-tag">{{ tag_label }}</span>
+    {% endif %}
+  </a>
+  <div class="a-body">
+    <h3 class="a-title"><a href="{{ detail_url }}">{{ article.title }}</a></h3>
+    {% if article.description %}
+      <p class="a-excerpt">{{ article.description }}</p>
+    {% endif %}
+    {% if article.date or article.reading_minutes %}
+      <p class="a-meta">
+        {% if article.date %}
+          {{ article.date }}
+        {% endif %}
+        {% if article.reading_minutes %}
+          {% if article.date %} · {% endif %}
+          {{ _('articles_index.reading_time_prefix') }}{{ article.reading_minutes }} {{ _('articles_index.reading_time_suffix') }}
+        {% endif %}
+      </p>
+    {% endif %}
+    <a class="a-more" href="{{ detail_url }}">
+      <span>{{ _('homepage.articles.read_more') }}</span>
+      <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+    </a>
+  </div>
+</article>

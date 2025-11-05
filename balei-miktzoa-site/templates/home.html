@@ -235,7 +235,7 @@
         'placeholder': _('homepage.articles.mold_damp.placeholder'),
         'title': _('homepage.articles.mold_damp.title'),
         'excerpt': _('homepage.articles.mold_damp.excerpt'),
-        'href': url_for_lang('article_mold_damp', lang=g.current_lang)
+        'href': url_for_lang('article_detail', lang=g.current_lang, slug='mold-damp-guide')
       },
       {
         'tag': _('homepage.tags.electric'),
@@ -245,7 +245,7 @@
         'img_height': 1350,
         'title': _('homepage.articles.electric.title'),
         'excerpt': _('homepage.articles.electric.excerpt'),
-        'href': url_for_lang('article_electrician',     lang=g.current_lang)
+        'href': url_for_lang('article_detail', lang=g.current_lang, slug='how-to-choose-electrician')
       },
       {
         'tag': _('homepage.tags.plumbing'),
@@ -255,7 +255,7 @@
         'img_height': 466,
         'title': _('homepage.articles.plumber.title'),
         'excerpt': _('homepage.articles.plumber.excerpt'),
-        'href': url_for_lang('article_plumbing_quote',  lang=g.current_lang)
+        'href': url_for_lang('article_detail', lang=g.current_lang, slug='plumbing-quote-checklist')
       }
     ] %}
     <div class="articles-masonry" role="list">

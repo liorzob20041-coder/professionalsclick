@@ -2456,7 +2456,12 @@ def contact(lang):
 def articles_index(lang):
     g.current_lang = lang
     articles = load_articles_list(lang)
-    return render_template('articles/index.html', articles=articles)
+    categories = sorted({a.get("category") for a in articles if a.get("category")})
+    return render_template(
+        'articles/index.html',
+        articles=articles,
+        categories=categories,
+    )
 
 
 def _render_article_detail(lang: str, slug: str):
@@ -2467,6 +2472,16 @@ def _render_article_detail(lang: str, slug: str):
         abort(404)
 
     body_html = render_template_string(body_template, meta=meta, lang_data=lang_data)
+    hero_image = meta.get("hero_image")
+    hero_image_absolute = None
+    if hero_image:
+        if hero_image.startswith("/static/"):
+            static_path = hero_image[len("/static/"):]
+            hero_image_absolute = url_for('static', filename=static_path, _external=True)
+        elif hero_image.startswith("http"):
+            hero_image_absolute = hero_image
+        else:
+            hero_image_absolute = urljoin(request.url_root, hero_image.lstrip("/"))
 
     return render_template(
         'articles/detail.html',
@@ -2475,30 +2490,10 @@ def _render_article_detail(lang: str, slug: str):
         description=lang_data.get('description'),
         body_html=body_html,
         slug=meta.get('slug'),
+        hero_image_absolute=hero_image_absolute,
+        lang=lang,
     )
 
-@app.route('/<lang>/articles/how-to-choose-electrician')
-def article_electrician(lang):
-    g.current_lang = lang
-    return render_template('articles/how-to-choose-electrician.html')
-
-
-@app.route('/<lang>/articles/plumbing-quote-checklist')
-def article_plumbing_quote(lang):
-    g.current_lang = lang
-    return render_template('articles/plumbing-quote-checklist.html')
-
-
-@app.route('/<lang>/articles/renovation-prep-checklist')
-def article_renovation_prep(lang):
-    g.current_lang = lang
-    return render_template('articles/renovation-prep-checklist.html')
-
-@app.route('/<lang>/articles/mold-damp-guide')
-def article_mold_damp(lang):
-    g.current_lang = lang
-    today_iso = date.today().isoformat()
-    return render_template('articles/mold-damp-guide.html', today_iso=today_iso)
 
 @app.route('/<lang>/articles/<slug>/')
 def article_detail(lang, slug):
@@ -4717,7 +4712,8 @@ def sitemap_xml():
         group = {}
         for L in SUPPORTED_LANGS:
             try:
-                group[L] = url_for(ep, lang=L, **params)
+                group[L] = url_for('article_detail', lang=L, slug=slug)
+
             except Exception:
                 # ייתכן שלחלק מהראוטים אין פרמטר lang
                 group = {}
@@ -4733,14 +4729,29 @@ def sitemap_xml():
             )
 
     # ---- מדריכי תוכן ומאמרים ----
-    article_endpoints = [
-        ("article_electrician", {}),
-        ("article_plumbing_quote", {}),
-        ("article_renovation_prep", {}),
-        ("article_mold_damp", {}),
-    ]
-    for ep, params in article_endpoints:
-        if ep not in app.view_functions:
+    # Articles index page
+    if 'articles_index' in app.view_functions:
+        group = {}
+        for L in SUPPORTED_LANGS:
+            try:
+                group[L] = url_for('articles_index', lang=L)
+            except BuildError:
+                group = {}
+                break
+        if group:
+            url_items.append(
+                url_entry_with_alternates(
+                    group,
+                    today,
+                    changefreq="weekly",
+                    priority="0.6"
+                )
+            )
+
+    # Dynamic article detail pages
+    article_slugs = [a.get("slug") for a in load_articles_list("he")]
+    for slug in article_slugs:
+        if not slug:
             continue
         group = {}
         for L in SUPPORTED_LANGS:

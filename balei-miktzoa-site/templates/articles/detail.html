@@ -1,26 +1,77 @@
-{% extends "base.html" %}
-{% block title %}{{ title }} | בעלי מקצוע בקליק{% endblock %}
-{% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/articles.css') }}">
+{% extends 'base.html' %}
+{% set canonical_url = url_for_lang('article_detail', lang=g.current_lang, slug=slug, _external=True) %}
+{% set theme_map = {
+  'electricity': 'articles/theme-electrician.css',
+  'plumbing': 'articles/theme-plumbing.css',
+  'renovation': 'articles/theme-renovation.css',
+  'moisture': 'articles/theme-moisture.css'
+} %}
+{% set theme_slug_map = {
+  'electricity': 'electrician',
+  'plumbing': 'plumbing',
+  'renovation': 'renovation',
+  'moisture': 'moisture'
+} %}
+{% set theme_css = theme_map.get(meta.category) %}
+{% block title %}
+  {{ (title ~ ' | בעלי מקצוע בקליק') if title else 'בעלי מקצוע בקליק' }}
+{% endblock %}
+{% block head_seo %}
+  {{ super() }}
+  <link rel="canonical" href="{{ canonical_url }}">
+  {% if description %}
+    <meta name="description" content="{{ description }}">
+    <meta property="og:description" content="{{ description }}">
+    <meta name="twitter:description" content="{{ description }}">
+  {% endif %}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {% if hero_image_absolute %}
+    <meta property="og:image" content="{{ hero_image_absolute }}">
+    <meta name="twitter:image" content="{{ hero_image_absolute }}">
+  {% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
+  {% if theme_css %}
+    <link rel="stylesheet" href="{{ static_rel(theme_css) }}">
+  {% endif %}
 {% endblock %}
 {% block content %}
-<section class="article">
-  <div class="container">
-    <header class="article-header">
-      <p class="article-breadcrumb">
-        מאמרים{% if meta.category %} / {{ meta.category }}{% endif %}
-      </p>
-      <h1 class="article-title">{{ title }}</h1>
-      <p class="article-meta">
-        {{ meta.date }} · כ־{{ meta.reading_minutes }} דקות קריאה
-      </p>
+  {% set article_theme = theme_slug_map.get(meta.category) %}
+  <div class="article-layout" data-layout="standard">
+    <article class="article"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
+      <header class="article__header article-surface">
+        <div class="article__meta">
+          <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="chip chip--ghost">
+            {{ _('homepage.articles.kicker') }}
+          </a>
+          {% if meta.date %}
+            <span>{{ meta.date }}</span>
+          {% endif %}
+          {% if meta.reading_minutes %}
+            <span>{{ _('articles_index.reading_time_prefix') if _ else '' }}{{ meta.reading_minutes }} {{ _('articles_index.reading_time_suffix') if _ else '' }}</span>
+          {% endif %}
+        </div>
+        <h1>{{ title }}</h1>
+        {% if description %}
+          <p class="article__intro">{{ description }}</p>
+        {% endif %}
+      </header>
       {% if meta.hero_image %}
-        <img class="article-hero" src="{{ meta.hero_image }}" alt="{{ title }}">
+        <figure class="article__hero article-surface">
+          <div class="hero-media">
+            <img src="{{ meta.hero_image }}" alt="{{ title }}" loading="lazy" decoding="async">
+          </div>
+        </figure>
       {% endif %}
-    </header>
-    <article class="article-body">
-      {{ body_html | safe }}
+      <div class="article__body article-surface">
+        {{ body_html | safe }}
+      </div>
     </article>
   </div>
-</section>
 {% endblock %}

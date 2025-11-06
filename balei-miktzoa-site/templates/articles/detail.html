@@ -50,15 +50,11 @@
           <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="chip chip--ghost">
             {{ t('homepage.articles.kicker', 'home') }}
           </a>
-          {% if meta.date %}
-            <span>{{ meta.date }}</span>
-          {% endif %}
-          {% if meta.reading_minutes %}
-            {% set reading_time_template = t('articles_index.reading_time', 'articles_index') %}
-            <span>{{ reading_time_template|format(minutes=meta.reading_minutes) }}</span>
-          {% endif %}
         </div>
         <h1>{{ title }}</h1>
+        {% if meta.date %}
+          <p class="article__date">{{ meta.date }}</p>
+        {% endif %}
         {% if description %}
           <p class="article__intro">{{ description }}</p>
         {% endif %}

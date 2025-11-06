@@ -76,11 +76,6 @@
     {% if excerpt %}
       <p class="a-excerpt">{{ excerpt }}</p>
     {% endif %}
-    {% if article.date %}
-      <p class="a-meta">
-        {{ article.date }}
-      </p>
-    {% endif %}
     <a class="a-more" href="{{ detail_url }}">
       <span>{{ _('homepage.articles.read_more') }}</span>
       <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>

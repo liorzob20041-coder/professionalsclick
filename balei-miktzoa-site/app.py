@@ -2423,7 +2423,9 @@ def inject_slug_helpers():
 # ------------------------------
 def _render_home(lang: str):
     g.current_lang = lang
-    return render_template('home.html')
+    articles = load_articles_list(lang)
+    featured_articles = articles[:3] if articles else []
+    return render_template('home.html', featured_articles=featured_articles)
 
 @app.route('/')
 def home_default():
@@ -5231,7 +5233,8 @@ def url_for_lang(endpoint=None, lang=None, **kwargs):
         host = request.host
         return f"{scheme}://{host}{path_with_qs}"
     return path_with_qs
-
+# חשיפת העזר לטמפלטים
+app.jinja_env.globals.update(url_for_lang=url_for_lang)
 
 # ראוט עם שפה + תמיכה גם בלי הסלאש (strict_slashes=False)
 @app.route("/<lang>/estimate/", strict_slashes=False)

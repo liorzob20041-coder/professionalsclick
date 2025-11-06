@@ -1,7 +1,7 @@
 {% set detail_url = url_for_lang('article_detail', lang=g.current_lang, slug=article.slug) %}
 {% set card_tag = article.category or '' %}
-{% set tag_label = '' %}
-{% if card_tag %}
+{% set tag_label = article.tag_label if article.tag_label is defined else '' %}
+{% if not tag_label and card_tag %}
   {% set label_key = 'articles_index.category.' ~ card_tag %}
   {% set potential = (_(label_key) if _ else card_tag) %}
   {% if not _ or potential == label_key %}
@@ -13,15 +13,59 @@
   {% else %}
     {% set tag_label = potential %}
   {% endif %}
-{% elif article.tags %}
+{% elif not tag_label and article.tags %}
   {% set tag_label = article.tags[0] %}
 {% endif %}
-<article class="a-card reveal" data-tag="{{ card_tag }}">
-  <a class="a-thumb{% if not article.hero_image %} is-placeholder{% endif %}" href="{{ detail_url }}">
-    {% if article.hero_image %}
-      <img src="{{ article.hero_image }}" alt="{{ article.title }}" loading="lazy" decoding="async">
+{% set excerpt = article.excerpt if article.excerpt is defined and article.excerpt else None %}
+{% if not excerpt %}
+  {% set excerpt = article.description if article.description is defined else None %}
+{% endif %}
+{% set placeholder = article.placeholder if article.placeholder is defined and article.placeholder else article.title %}
+{% set hero_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
+{% set hero_width = article.hero_image_width if article.hero_image_width is defined and article.hero_image_width else (article.img_width if article.img_width is defined and article.img_width else 640) %}
+{% set hero_height = article.hero_image_height if article.hero_image_height is defined and article.hero_image_height else (article.img_height if article.img_height is defined and article.img_height else 466) %}
+{% set hero_path = article.hero_image if article.hero_image is defined and article.hero_image else None %}
+{% if not hero_path and article.hero_image_file is defined and article.hero_image_file %}
+  {% set hero_path = '/static/' ~ article.hero_image_file.lstrip('/') %}
+{% elif not hero_path and article.img_file is defined and article.img_file %}
+  {% set hero_path = '/static/' ~ article.img_file.lstrip('/') %}
+{% endif %}
+{% set use_proxy = False %}
+{% set proxy_filename = None %}
+{% if hero_path %}
+  {% if hero_path.startswith('http://') or hero_path.startswith('https://') %}
+    {% set use_proxy = False %}
+  {% else %}
+    {% set filename = hero_path %}
+    {% if filename.startswith('/static/') %}
+      {% set filename = filename[8:] %}
+    {% elif filename.startswith('static/') %}
+      {% set filename = filename[7:] %}
+    {% endif %}
+    {% set proxy_filename = filename %}
+    {% set use_proxy = proxy_filename is not none and proxy_filename != '' %}
+  {% endif %}
+{% endif %}
+<article class="a-card reveal" role="listitem" data-tag="{{ card_tag }}">
+  <a class="a-thumb{% if not hero_path %} is-placeholder{% endif %}" href="{{ detail_url }}" aria-label="{{ article.title }}">
+    {% if hero_path and use_proxy %}
+      {% set fallback_w = 640 if hero_width <= 640 else 960 %}
+      <picture>
+        <img src="{{ url_for('img_proxy', filename=proxy_filename, w=fallback_w, q=78, fit='cover', format='jpeg', v=BUILD) }}"
+             srcset="{{ url_for('img_proxy', filename=proxy_filename, w=360, q=78, fit='cover', format='jpeg', v=BUILD) }} 360w,
+                     {{ url_for('img_proxy', filename=proxy_filename, w=480, q=78, fit='cover', format='jpeg', v=BUILD) }} 480w,
+                     {{ url_for('img_proxy', filename=proxy_filename, w=640, q=78, fit='cover', format='jpeg', v=BUILD) }} 640w,
+                     {{ url_for('img_proxy', filename=proxy_filename, w=768, q=78, fit='cover', format='jpeg', v=BUILD) }} 768w,
+                     {{ url_for('img_proxy', filename=proxy_filename, w=960, q=78, fit='cover', format='jpeg', v=BUILD) }} 960w"
+             sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
+             width="{{ hero_width }}" height="{{ hero_height }}"
+             loading="lazy" decoding="async"
+             alt="{{ hero_alt }}">
+      </picture>
+    {% elif hero_path %}
+      <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async" width="{{ hero_width }}" height="{{ hero_height }}">
     {% else %}
-      <span class="a-thumb__placeholder">{{ article.title }}</span>
+      <span class="a-thumb__placeholder">{{ placeholder }}</span>
     {% endif %}
     {% if tag_label %}
       <span class="a-tag">{{ tag_label }}</span>
@@ -29,8 +73,8 @@
   </a>
   <div class="a-body">
     <h3 class="a-title"><a href="{{ detail_url }}">{{ article.title }}</a></h3>
-    {% if article.description %}
-      <p class="a-excerpt">{{ article.description }}</p>
+    {% if excerpt %}
+      <p class="a-excerpt">{{ excerpt }}</p>
     {% endif %}
     {% if article.date or article.reading_minutes %}
       <p class="a-meta">

@@ -71,7 +71,7 @@
               <p class="category-intro">{{ _('articles_index.section_intro') }}</p>
             </div>
           </header>
-          <div class="category-row">
+          <div class="category-row articles-masonry" role="list">
             {% for article in general_articles %}
               {% include 'articles/partials/article-card.html' %}
             {% endfor %}
@@ -94,7 +94,7 @@
                   <p class="category-intro">{{ _('articles_index.section_intro') }}</p>
                 </div>
               </header>
-              <div class="category-row">
+              <div class="category-row articles-masonry" role="list">
                 {% for article in category_articles %}
                   {% include 'articles/partials/article-card.html' %}
                 {% endfor %}

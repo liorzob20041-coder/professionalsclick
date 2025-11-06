@@ -26,86 +26,256 @@
   <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
 {% endblock %}
 {% block content %}
-<section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}">
+{% set chip_labels = {
+  'electricity': {'he': 'חשמל', 'en': 'Electricity', 'ru': 'Электрика'},
+  'plumbing': {'he': 'אינסטלציה', 'en': 'Plumbing', 'ru': 'Сантехника'},
+  'moisture': {'he': 'רטיבות / עובש', 'en': 'Moisture / Mold', 'ru': 'Влажность / Плесень'},
+  'renovation': {'he': 'שיפוצים', 'en': 'Renovations', 'ru': 'Ремонты'}
+} %}
+{% set hero_title_map = {
+  'he': 'כל המאמרים שלנו במקום אחד',
+  'en': 'All our articles in one place',
+  'ru': 'Все наши статьи в одном месте'
+} %}
+{% set hero_lead_map = {
+  'he': 'מרכז ידע עם טיפים ומדריכים קצרים שיעזרו לכם לפני שאתם מתקשרים לבעל מקצוע.',
+  'en': 'A knowledge hub with quick tips and guides to help you before you call a professional.',
+  'ru': 'Полезные советы и короткие руководства, которые помогут вам прежде чем звонить мастеру.'
+} %}
+{% set category_titles = {
+  'electricity': {'he': 'חשמל – מאמרים וטיפים', 'en': 'Electricity – Articles & Tips', 'ru': 'Электрика – статьи и советы'},
+  'plumbing': {'he': 'אינסטלציה – מאמרים וטיפים', 'en': 'Plumbing – Articles & Tips', 'ru': 'Сантехника – статьи и советы'},
+  'moisture': {'he': 'רטיבות ועובש – מאמרים וטיפים', 'en': 'Moisture & Mold – Articles & Tips', 'ru': 'Влажность и плесень – статьи и советы'},
+  'renovation': {'he': 'שיפוצים – מאמרים וטיפים', 'en': 'Renovations – Articles & Tips', 'ru': 'Ремонты – статьи и советы'}
+} %}
+{% set category_cta_text = {
+  'electricity': {
+    'he': 'צריכים חשמלאי מקצוען? מצאו את החשמלאי המושלם לפרויקט שלכם.',
+    'en': 'Need a licensed electrician? Find the perfect expert for your project.',
+    'ru': 'Нужен профессиональный электрик? Найдите мастера для вашего проекта.'
+  },
+  'plumbing': {
+    'he': 'צריכים אינסטלטור מומחה? קבלו הצעות מחיר מאינסטלטורים מנוסים באזורכם.',
+    'en': 'Need a plumbing specialist? Get quotes from experienced plumbers near you.',
+    'ru': 'Нужен опытный сантехник? Получите предложения от мастеров рядом с вами.'
+  },
+  'moisture': {
+    'he': 'צריכים מומחה לטיפול ברטיבות? פתרו את הבעיה עם איש מקצוע מוסמך.',
+    'en': 'Need a damp & mold expert? Solve it with a certified professional.',
+    'ru': 'Нужен специалист по влажности и плесени? Доверьте проблему сертифицированному мастеру.'
+  },
+  'renovation': {
+    'he': 'צריכים קבלן שיפוצים אמין? השוו הצעות מחיר מקבלנים מומלצים.',
+    'en': 'Planning a renovation? Compare offers from vetted contractors.',
+    'ru': 'Планируете ремонт? Сравните предложения проверенных подрядчиков.'
+  }
+} %}
+{% set search_placeholder_map = {
+  'he': 'חיפוש מאמרים למשל: קצר חשמלי, נזילה, עובש...',
+  'en': 'Search articles e.g. electrical short, leak, mold…',
+  'ru': 'Поиск статей, например: короткое замыкание, протечка, плесень…'
+} %}
+{% set search_label_map = {
+  'he': 'חיפוש מאמרים',
+  'en': 'Search articles',
+  'ru': 'Поиск статей'
+} %}
+{% set clear_filter_map = {
+  'he': 'נקה סינון',
+  'en': 'Clear filter',
+  'ru': 'Сбросить фильтр'
+} %}
+{% set tip_heading_map = {'he': 'טיפ היום:', 'en': 'Tip of the day:', 'ru': 'Совет дня:'} %}
+{% set tip_text_map = {
+  'he': 'לפני שמתקשרים לחשמלאי, בדקו אם הפקק קפץ בלוח החשמל.',
+  'en': 'Before you call an electrician, check whether a breaker tripped in your panel.',
+  'ru': 'Прежде чем звонить электрику, проверьте, не выбил ли автомат в щитке.'
+} %}
+{% set tip_heading = tip_heading_map.get(g.current_lang, tip_heading_map['he']) %}
+{% set tip_text = tip_text_map.get(g.current_lang, tip_text_map['he']) %}
+{% set find_pro_label_map = {
+  'he': 'מצאו בעל מקצוע',
+  'en': 'Find a pro',
+  'ru': 'Найдите мастера'
+} %}
+{% set start_now_map = {
+  'he': 'התחילו עכשיו',
+  'en': 'Get started',
+  'ru': 'Начать сейчас'
+} %}
+{% set how_it_works_map = {
+  'he': 'איך זה עובד?',
+  'en': 'How does it work?',
+  'ru': 'Как это работает?'
+} %}
+{% set cta_main_title_map = {
+  'he': 'אם אתם מעדיפים שבעל מקצוע יעשה את זה בשבילכם',
+  'en': 'Prefer a professional to handle it for you?',
+  'ru': 'Предпочитаете, чтобы этим занялся мастер?'
+} %}
+{% set cta_main_lead_map = {
+  'he': 'עברו לבחירת בעל מקצוע מתאים – קבלו הצעות מחיר ובחרו את המקצוען המושלם לפרויקט שלכם.',
+  'en': 'Jump to choosing the right professional—get quotes and pick the perfect expert for your project.',
+  'ru': 'Подберите подходящего мастера — получите предложения и выберите идеального специалиста для вашего проекта.'
+} %}
+{% set footer_title_map = {
+  'he': 'לא מצאתם את מה שחיפשתם?',
+  'en': "Didn't find what you were looking for?",
+  'ru': 'Не нашли то, что искали?'
+} %}
+{% set footer_subtitle_map = {
+  'he': 'דברו איתנו ונכוון אתכם למומחה הנכון לתקלה שלכם.',
+  'en': "Talk to us and we'll point you to the right specialist for your issue.",
+  'ru': 'Свяжитесь с нами — подскажем подходящего специалиста для вашей задачи.'
+} %}
+{% set footer_home_map = {
+  'he': 'חזרה לדף הבית',
+  'en': 'Back to homepage',
+  'ru': 'Вернуться на главную'
+} %}
+{% set selected_category = request.args.get('category', '') %}
+{% set hero_title = hero_title_map.get(g.current_lang, hero_title_map['he']) %}
+{% set hero_lead = hero_lead_map.get(g.current_lang, hero_lead_map['he']) %}
+{% set search_placeholder = search_placeholder_map.get(g.current_lang, search_placeholder_map['he']) %}
+{% set search_label = search_label_map.get(g.current_lang, search_label_map['he']) %}
+{% set clear_filter_label = clear_filter_map.get(g.current_lang, clear_filter_map['he']) %}
+{% set find_pro_label = find_pro_label_map.get(g.current_lang, find_pro_label_map['he']) %}
+{% set start_now_label = start_now_map.get(g.current_lang, start_now_map['he']) %}
+{% set how_it_works_label = how_it_works_map.get(g.current_lang, how_it_works_map['he']) %}
+{% set cta_main_title = cta_main_title_map.get(g.current_lang, cta_main_title_map['he']) %}
+{% set cta_main_lead = cta_main_lead_map.get(g.current_lang, cta_main_lead_map['he']) %}
+{% set footer_title = footer_title_map.get(g.current_lang, footer_title_map['he']) %}
+{% set footer_subtitle = footer_subtitle_map.get(g.current_lang, footer_subtitle_map['he']) %}
+{% set footer_home_label = footer_home_map.get(g.current_lang, footer_home_map['he']) %}
+<section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}" data-articles-root data-selected-category="{{ selected_category }}">
   <div class="container">
-    <header class="articles-hero">
-      <span class="articles-kicker">{{ t('homepage.articles.kicker', 'home') }}</span>
-      <h1 class="articles-title">{{ _('articles_index.heading') }}</h1>
-      <p class="articles-intro">{{ _('articles_index.lead') }}</p>
-      <p class="articles-subtitle">{{ _('articles_index.note') }}</p>
-      <div class="articles-hero-quick">
-        <div class="hero-stat">
-          <strong>{{ articles|length }}</strong>
-          <span>{{ _('articles_index.count_label') }}</span>
-        </div>
-        {% if categories %}
-          <div class="hero-cats" aria-label="{{ _('articles_index.quick_cats') }}">
-            <span class="chip chip--static">{{ _('articles_index.quick_cats') }}</span>
-            {% for category in categories %}
-              {% set label_key = 'articles_index.category.' ~ category %}
-              {% set label = (_(label_key) if _ else category) %}
-              {% if _ and label == label_key %}
-                {% set label = category %}
-              {% endif %}
-              <a class="chip chip--ghost" href="#category-{{ category }}">{{ label }}</a>
-            {% endfor %}
-          </div>
+    <header class="articles-hero" dir="rtl">
+      <span class="articles-hero__kicker">{{ t('homepage.articles.kicker', 'home') }}</span>
+      <h1 class="articles-hero__title">{{ hero_title }}</h1>
+      <p class="articles-hero__lead">{{ hero_lead }}</p>
+      <form class="articles-search" method="get" role="search" aria-label="{{ search_label }}" dir="rtl">
+        {% if selected_category %}
+          <input type="hidden" name="category" value="{{ selected_category }}">
         {% endif %}
+        <label class="sr-only" for="searchQuery">{{ search_label }}</label>
+        <div class="articles-search__field">
+          <span class="articles-search__icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input id="searchQuery" name="searchQuery" type="search" value="{{ request.args.get('searchQuery', '') }}" placeholder="{{ search_placeholder }}">
+        </div>
+      </form>
+      <div class="articles-tip" dir="rtl">
+        <span class="articles-tip__dot" aria-hidden="true"></span>
+        <p class="articles-tip__text"><strong>{{ tip_heading }}</strong> {{ tip_text }}</p>
       </div>
     </header>
-    <article class="tip-bubble reveal">
-      <div class="tip-kicker">💡 {{ _('articles_index.tip_title') }}</div>
-      <p>{{ _('articles_index.tip_text') }}</p>
-    </article>
-    {% if articles %}
-      <div class="results-head">
-        <h2 class="results-title">{{ _('articles_index.all_heading') }}</h2>
-        <div class="results-count">{{ articles|length }} {{ _('articles_index.results_suffix') }}</div>
+    <nav class="categories-bar" dir="rtl" aria-label="סינון מאמרים לפי תחום">
+      <div class="categories-bar__chips">
+        {% set chip_order = ['electricity', 'plumbing', 'moisture', 'renovation'] %}
+        {% for category in chip_order %}
+          {% set label = chip_labels.get(category, {}).get(g.current_lang, chip_labels.get(category, {}).get('he')) %}
+          {% set is_available = category in categories %}
+          <button type="button" class="category-chip{% if selected_category == category %} is-active{% endif %}" data-category="{{ category }}"{% if not is_available %} data-disabled="true"{% endif %} {% if not is_available %}disabled{% endif %}>{{ label }}</button>
+        {% endfor %}
       </div>
+      <a href="#" class="categories-reset" data-reset-filter{% if not selected_category %} hidden{% endif %}>{{ clear_filter_label }}</a>
+    </nav>
+    {% if articles %}
       {% set general_articles = grouped_articles.get('general') %}
       {% if general_articles %}
-        <div class="category-block" id="category-general">
-          <header class="category-head">
-            <div>
-              <h3 class="category-title">{{ _('articles_index.all_heading') }}</h3>
-              <p class="category-intro">{{ _('articles_index.section_intro') }}</p>
-            </div>
+        <section class="articles-section" data-article-section data-category="general" dir="rtl">
+          <header class="articles-section__head">
+            <h2 class="articles-section__title">{{ _('articles_index.all_heading') }}</h2>
+            <p class="articles-section__intro">{{ _('articles_index.section_intro') }}</p>
           </header>
-          <div class="category-row articles-masonry" role="list">
+          <div class="articles-grid" role="list">
             {% for article in general_articles %}
               {% include 'articles/partials/article-card.html' %}
             {% endfor %}
           </div>
-        </div>
+        </section>
       {% endif %}
-      <div class="categories-wrap">
-        {% for category in categories %}
-          {% set category_articles = grouped_articles.get(category) %}
-          {% if category_articles %}
-            <section class="category-block" id="category-{{ category }}">
-              <header class="category-head">
-                <div>
-                  {% set label_key = 'articles_index.category.' ~ category %}
-                  {% set label = (_(label_key) if _ else category) %}
-                  {% if _ and label == label_key %}
-                    {% set label = category %}
-                  {% endif %}
-                  <h3 class="category-title">{{ label }}</h3>
-                  <p class="category-intro">{{ _('articles_index.section_intro') }}</p>
-                </div>
-              </header>
-              <div class="category-row articles-masonry" role="list">
-                {% for article in category_articles %}
-                  {% include 'articles/partials/article-card.html' %}
-                {% endfor %}
+      {% set ordered_categories = ['electricity', 'plumbing', 'moisture', 'renovation'] %}
+      {% set extra_categories = categories | reject('in', ordered_categories) | list %}
+      {% for category in ordered_categories %}
+        {% set category_articles = grouped_articles.get(category) %}
+        {% if category_articles %}
+          {% set title = category_titles.get(category, {}).get(g.current_lang, category_titles.get(category, {}).get('he')) %}
+          {% set cta_copy = category_cta_text.get(category, {}).get(g.current_lang, category_cta_text.get(category, {}).get('he')) %}
+          <section class="articles-section" id="category-{{ category }}" data-article-section data-category="{{ category }}" dir="rtl">
+            <header class="articles-section__head">
+              <h2 class="articles-section__title">{{ title }}</h2>
+              <p class="articles-section__intro">{{ _('articles_index.section_intro') }}</p>
+            </header>
+            <div class="articles-grid" role="list">
+              {% for article in category_articles %}
+                {% include 'articles/partials/article-card.html' %}
+              {% endfor %}
+            </div>
+            <div class="articles-inline-cta" data-category-cta>
+              <div class="articles-inline-cta__content">
+                <p class="articles-inline-cta__text">{{ cta_copy }}</p>
+                <a class="articles-inline-cta__button" href="{{ url_for_lang('niches', lang=g.current_lang) }}">
+                  <span>{{ find_pro_label }}</span>
+                  <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                </a>
               </div>
-            </section>
+            </div>
+          </section>
+        {% endif %}
+      {% endfor %}
+      {% for category in extra_categories %}
+        {% set category_articles = grouped_articles.get(category) %}
+        {% if category_articles %}
+          {% set label_key = 'articles_index.category.' ~ category %}
+          {% set title_label = (_(label_key) if _ else category) %}
+          {% if _ and title_label == label_key %}
+            {% set title_label = category %}
           {% endif %}
-        {% endfor %}
-      </div>
+          <section class="articles-section" id="category-{{ category }}" data-article-section data-category="{{ category }}" dir="rtl">
+            <header class="articles-section__head">
+              <h2 class="articles-section__title">{{ title_label }}</h2>
+              <p class="articles-section__intro">{{ _('articles_index.section_intro') }}</p>
+            </header>
+            <div class="articles-grid" role="list">
+              {% for article in category_articles %}
+                {% include 'articles/partials/article-card.html' %}
+              {% endfor %}
+            </div>
+          </section>
+        {% endif %}
+      {% endfor %}
     {% else %}
       <div class="empty-state">{{ _('articles_index.empty') }}</div>
     {% endif %}
+    <section class="articles-cta" dir="rtl">
+      <div class="articles-cta__content">
+        <h2 class="articles-cta__title">{{ cta_main_title }}</h2>
+        <p class="articles-cta__lead">{{ cta_main_lead }}</p>
+        <div class="articles-cta__actions">
+          <a class="articles-cta__btn articles-cta__btn--primary" href="{{ url_for_lang('niches', lang=g.current_lang) }}">{{ start_now_label }}</a>
+          <a class="articles-cta__btn articles-cta__btn--ghost" href="{{ url_for_lang('why_us', lang=g.current_lang) }}">{{ how_it_works_label }}</a>
+        </div>
+      </div>
+    </section>
+    <footer class="articles-footer" dir="rtl">
+      <div class="articles-footer__content">
+        <div class="articles-footer__text">
+          <p class="articles-footer__title">{{ footer_title }}</p>
+          <p class="articles-footer__subtitle">{{ footer_subtitle }}</p>
+        </div>
+        <div class="articles-footer__actions">
+          <a class="articles-footer__btn articles-footer__btn--outline" href="{{ url_for_lang('niches', lang=g.current_lang) }}">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <span>{{ find_pro_label }}</span>
+          </a>
+          <a class="articles-footer__btn articles-footer__btn--solid" href="{{ url_for_lang('home', lang=g.current_lang) }}">
+            <i class="fa-solid fa-house" aria-hidden="true"></i>
+            <span>{{ footer_home_label }}</span>
+          </a>
+        </div>
+      </div>
+      <div class="articles-footer__legal">© בעלי מקצוע בקליק. כל הזכויות שמורות.</div>
+    </footer>
   </div>
 </section>
 {% endblock %}
@@ -113,20 +283,81 @@
   {{ super() }}
   <script>
     document.addEventListener('DOMContentLoaded', function(){
-      const els = document.querySelectorAll('.reveal');
-      if(!('IntersectionObserver' in window) || !els.length){
-        els.forEach(e => e.classList.add('is-visible'));
-        return;
+      const revealItems = document.querySelectorAll('.reveal');
+      if('IntersectionObserver' in window && revealItems.length){
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach((entry)=>{
+            if(entry.isIntersecting){
+              entry.target.classList.add('is-visible');
+              io.unobserve(entry.target);
+            }
+          });
+        }, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+        revealItems.forEach((el)=>io.observe(el));
+      } else {
+        revealItems.forEach((el)=>el.classList.add('is-visible'));
       }
-      const io = new IntersectionObserver((ents)=>{
-        ents.forEach(ent=>{
-          if(ent.isIntersecting){
-            ent.target.classList.add('is-visible');
-            io.unobserve(ent.target);
+      const chips = Array.from(document.querySelectorAll('.category-chip[data-category]'));
+      const resetLink = document.querySelector('[data-reset-filter]');
+      const sections = Array.from(document.querySelectorAll('[data-article-section]'));
+      const cards = Array.from(document.querySelectorAll('.article-card'));
+      const articlesRoot = document.querySelector('[data-articles-root]');
+      function setActiveChip(activeCategory){
+        chips.forEach((chip)=>{
+          const chipCat = chip.dataset.category;
+          if(activeCategory && chipCat === activeCategory){
+            chip.classList.add('is-active');
+          }else{
+            chip.classList.remove('is-active');
           }
         });
-      }, {root:null, rootMargin:'0px 0px -10% 0px', threshold:0.08});
-      els.forEach(el=>io.observe(el));
+        if(resetLink){
+          if(activeCategory){
+            resetLink.hidden = false;
+          }else{
+            resetLink.hidden = true;
+          }
+        }
+      }
+      function applyFilter(activeCategory){
+        const categoryKey = activeCategory || '';
+        sections.forEach((section)=>{
+          const sectionCat = section.dataset.category || '';
+          const isMatch = !categoryKey || sectionCat === categoryKey;
+          section.hidden = !isMatch;
+          section.classList.toggle('is-filtered-out', !isMatch && !!categoryKey);
+        });
+        cards.forEach((card)=>{
+          const cardCat = card.dataset.category || '';
+          const matches = !categoryKey || cardCat === categoryKey;
+          card.hidden = !matches;
+          card.classList.toggle('is-filtered-out', !matches);
+        });
+      }
+      chips.forEach((chip)=>{
+        chip.addEventListener('click', function(){
+          if(chip.disabled || chip.dataset.disabled === 'true') return;
+          const current = chip.dataset.category;
+          const isActive = chip.classList.contains('is-active');
+          const nextCategory = isActive ? '' : current;
+          setActiveChip(nextCategory);
+          applyFilter(nextCategory);
+        });
+      });
+      if(resetLink){
+        resetLink.addEventListener('click', function(ev){
+          ev.preventDefault();
+          setActiveChip('');
+          applyFilter('');
+        });
+      }
+      const initialCategory = articlesRoot ? (articlesRoot.dataset.selectedCategory || '') : '';
+      if(initialCategory){
+        setActiveChip(initialCategory);
+        applyFilter(initialCategory);
+      }else{
+        applyFilter('');
+      }
     });
   </script>
 {% endblock %}

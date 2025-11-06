@@ -1,21 +1,5 @@
 {% set detail_url = url_for_lang('article_detail', lang=g.current_lang, slug=article.slug) %}
-{% set card_tag = article.category or '' %}
-{% set tag_label = article.tag_label if article.tag_label is defined else '' %}
-{% if not tag_label and card_tag %}
-  {% set label_key = 'articles_index.category.' ~ card_tag %}
-  {% set potential = (_(label_key) if _ else card_tag) %}
-  {% if not _ or potential == label_key %}
-    {% if article.tags %}
-      {% set tag_label = article.tags[0] %}
-    {% else %}
-      {% set tag_label = card_tag %}
-    {% endif %}
-  {% else %}
-    {% set tag_label = potential %}
-  {% endif %}
-{% elif not tag_label and article.tags %}
-  {% set tag_label = article.tags[0] %}
-{% endif %}
+{% set card_tag = article.category or 'general' %}
 {% set excerpt = article.excerpt if article.excerpt is defined and article.excerpt else None %}
 {% if not excerpt %}
   {% set excerpt = article.description if article.description is defined else None %}
@@ -46,8 +30,43 @@
     {% set use_proxy = proxy_filename is not none and proxy_filename != '' %}
   {% endif %}
 {% endif %}
-<article class="a-card reveal" role="listitem" data-tag="{{ card_tag }}">
-  <a class="a-thumb{% if not hero_path %} is-placeholder{% endif %}" href="{{ detail_url }}" aria-label="{{ article.title }}">
+{% set label_key = 'articles_index.category.' ~ card_tag %}
+{% set category_label = (_(label_key) if _ else card_tag) %}
+{% if _ and category_label == label_key %}
+  {% set category_label = card_tag %}
+{% endif %}
+{% if category_label == card_tag and card_tag == 'general' %}
+  {% set category_label = 'כללי' if g.current_lang == 'he' else ('General' if g.current_lang == 'en' else 'Общее') %}
+{% endif %}
+{% set explicit_type = '' %}
+{% if article.content_type is defined and article.content_type %}
+  {% set explicit_type = article.content_type %}
+{% elif article.type is defined and article.type %}
+  {% set explicit_type = article.type %}
+{% endif %}
+{% set type_labels = {
+  'tips': {'he': '💡 טיפים', 'en': '💡 Tips', 'ru': '💡 Советы'},
+  'guide': {'he': '📖 מדריך', 'en': '📖 Guide', 'ru': '📖 Гид'},
+  'checklist': {'he': "✓ צ'קליסט", 'en': '✓ Checklist', 'ru': '✓ Чек-лист'}
+} %}
+{% set slug_lower = (article.slug | default('') | lower) %}
+{% set title_text = article.title | default('') %}
+{% set type_key = explicit_type | lower %}
+{% if not type_key %}
+  {% if 'checklist' in slug_lower %}
+    {% set type_key = 'checklist' %}
+  {% elif 'guide' in slug_lower or 'מדריך' in title_text %}
+    {% set type_key = 'guide' %}
+  {% else %}
+    {% set type_key = 'tips' %}
+  {% endif %}
+{% endif %}
+{% if type_key not in type_labels %}
+  {% set type_key = 'tips' %}
+{% endif %}
+{% set content_type_label = type_labels.get(type_key).get(g.current_lang, type_labels.get(type_key).get('he')) %}
+<article class="article-card reveal" role="listitem" data-category="{{ card_tag }}">
+  <a class="article-card__media{% if not hero_path %} is-placeholder{% endif %}" href="{{ detail_url }}" aria-label="{{ article.title }}">
     {% if hero_path and use_proxy %}
       {% set fallback_w = 640 if hero_width <= 640 else 960 %}
       <picture>
@@ -57,7 +76,7 @@
                      {{ url_for('img_proxy', filename=proxy_filename, w=640, q=78, fit='cover', format='jpeg', v=BUILD) }} 640w,
                      {{ url_for('img_proxy', filename=proxy_filename, w=768, q=78, fit='cover', format='jpeg', v=BUILD) }} 768w,
                      {{ url_for('img_proxy', filename=proxy_filename, w=960, q=78, fit='cover', format='jpeg', v=BUILD) }} 960w"
-             sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
+             sizes="(min-width:1100px) 22vw, (min-width:768px) 42vw, 92vw"
              width="{{ hero_width }}" height="{{ hero_height }}"
              loading="lazy" decoding="async"
              alt="{{ hero_alt }}">
@@ -65,18 +84,21 @@
     {% elif hero_path %}
       <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async" width="{{ hero_width }}" height="{{ hero_height }}">
     {% else %}
-      <span class="a-thumb__placeholder">{{ placeholder }}</span>
+      <span class="article-card__placeholder">{{ placeholder }}</span>
     {% endif %}
-    {% if tag_label %}
-      <span class="a-tag">{{ tag_label }}</span>
-    {% endif %}
+    <div class="article-card__labels">
+      <span class="article-card__type">{{ content_type_label }}</span>
+      {% if category_label %}
+        <span class="article-card__category" data-category-label="{{ card_tag }}">{{ category_label }}</span>
+      {% endif %}
+    </div>
   </a>
-  <div class="a-body">
-    <h3 class="a-title"><a href="{{ detail_url }}">{{ article.title }}</a></h3>
+  <div class="article-card__body">
+    <h3 class="article-card__title"><a href="{{ detail_url }}">{{ article.title }}</a></h3>
     {% if excerpt %}
-      <p class="a-excerpt">{{ excerpt }}</p>
+      <p class="article-card__excerpt">{{ excerpt }}</p>
     {% endif %}
-    <a class="a-more" href="{{ detail_url }}">
+    <a class="article-card__more" href="{{ detail_url }}">
       <span>{{ _('homepage.articles.read_more') }}</span>
       <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
     </a>

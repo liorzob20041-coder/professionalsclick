@@ -76,16 +76,9 @@
     {% if excerpt %}
       <p class="a-excerpt">{{ excerpt }}</p>
     {% endif %}
-    {% if article.date or article.reading_minutes %}
+    {% if article.date %}
       <p class="a-meta">
-        {% if article.date %}
-          {{ article.date }}
-        {% endif %}
-        {% if article.reading_minutes %}
-          {% if article.date %} · {% endif %}
-          {% set reading_time_template = t('articles_index.reading_time', 'articles_index') %}
-          {{ reading_time_template|format(minutes=article.reading_minutes) }}
-        {% endif %}
+        {{ article.date }}
       </p>
     {% endif %}
     <a class="a-more" href="{{ detail_url }}">

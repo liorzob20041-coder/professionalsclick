@@ -22,6 +22,7 @@
   "articles_index.note": "אנחנו מעדכנים את מרכז הידע באופן קבוע עם שאלות שחוזרות מהשטח, כדי שתמיד תגיעו מוכנים לשיחה עם בעל המקצוע.",
   "articles_index.tip_title": "טיפ יומי",
   "articles_index.tip_text": "בדקו שהצעת המחיר כוללת לוח זמנים, אחריות ותיעוד בכתב כדי להימנע מהפתעות.",
+  "articles_index.reading_time": "~{minutes} דקות קריאה",
   "articles_index.reading_time_prefix": "כ־",
   "articles_index.reading_time_suffix": "דקות קריאה",
   "articles_index.section_intro": "בחרו אחד מהמאמרים המומלצים בתחום.",

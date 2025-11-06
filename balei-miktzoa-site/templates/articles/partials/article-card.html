@@ -83,7 +83,8 @@
         {% endif %}
         {% if article.reading_minutes %}
           {% if article.date %} · {% endif %}
-          {{ _('articles_index.reading_time_prefix') }}{{ article.reading_minutes }} {{ _('articles_index.reading_time_suffix') }}
+          {% set reading_time_template = t('articles_index.reading_time', 'articles_index') %}
+          {{ reading_time_template|format(minutes=article.reading_minutes) }}
         {% endif %}
       </p>
     {% endif %}

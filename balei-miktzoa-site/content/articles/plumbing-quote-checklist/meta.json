@@ -10,12 +10,12 @@
     "description": "מה צריך לוודא לפני שסוגרים הצעת מחיר עם אינסטלטור."
   },
   "en": {
-    "title": "",
-    "description": ""
+    "title": "Plumbing quote checklist",
+    "description": "Review these line items so every plumber's estimate is transparent and easy to compare."
   },
   "ru": {
-    "title": "",
-    "description": ""
+    "title": "Чек-лист сметы сантехника",
+    "description": "Проверьте эти пункты, чтобы смета сантехника была понятной и её легко было сравнивать с другими."
   },
   "tags": ["אינסטלציה", "הצעת מחיר"]
 }

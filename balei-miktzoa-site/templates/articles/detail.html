@@ -48,13 +48,14 @@
       <header class="article__header article-surface">
         <div class="article__meta">
           <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="chip chip--ghost">
-            {{ _('homepage.articles.kicker') }}
+            {{ t('homepage.articles.kicker', 'home') }}
           </a>
           {% if meta.date %}
             <span>{{ meta.date }}</span>
           {% endif %}
           {% if meta.reading_minutes %}
-            <span>{{ _('articles_index.reading_time_prefix') if _ else '' }}{{ meta.reading_minutes }} {{ _('articles_index.reading_time_suffix') if _ else '' }}</span>
+            {% set reading_time_template = t('articles_index.reading_time', 'articles_index') %}
+            <span>{{ reading_time_template|format(minutes=meta.reading_minutes) }}</span>
           {% endif %}
         </div>
         <h1>{{ title }}</h1>

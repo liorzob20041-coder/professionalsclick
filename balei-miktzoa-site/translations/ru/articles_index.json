@@ -22,6 +22,7 @@
   "articles_index.note": "Мы регулярно обновляем центр знаний вопросами клиентов, чтобы вы заранее знали, чего ожидать от мастера.",
   "articles_index.tip_title": "Совет дня",
   "articles_index.tip_text": "Всегда фиксируйте сроки, гарантию и объём работ в письменной смете — так вы избежите недоразумений.",
+  "articles_index.reading_time": "~{minutes} мин чтения",
   "articles_index.reading_time_prefix": "≈",
   "articles_index.reading_time_suffix": "минут чтения",
   "articles_index.section_intro": "Выберите один из рекомендованных материалов в этой категории.",

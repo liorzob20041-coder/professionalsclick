@@ -13,6 +13,10 @@
     form.filters label { font-size:14px; color:#444; display:flex; flex-direction:column; gap:4px; }
     form.filters select, form.filters input { font-size:15px; padding:8px 10px; border:1px solid #d4d7dd; border-radius:8px; min-width:150px; }
     form.filters button { background:#0b6efd; color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:15px; cursor:pointer; }
+    form.search-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+    form.search-bar input[type="search"] { font-size:15px; padding:8px 10px; border:1px solid #d4d7dd; border-radius:8px; min-width:260px; }
+    form.search-bar button { background:#0b6efd; color:#fff; border:none; border-radius:8px; padding:9px 18px; font-size:15px; cursor:pointer; }
+    form.search-bar .clear-search { color:#0b6efd; text-decoration:none; font-size:14px; }
     .actions { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
     .btn-secondary { display:inline-block; background:#fff; border:1px solid #0b6efd; color:#0b6efd; padding:8px 14px; border-radius:8px; text-decoration:none; }
     table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 1px 3px rgba(15,25,40,0.06); border-radius:12px; overflow:hidden; }
@@ -24,8 +28,22 @@
 </head>
 <body>
   <h1>רשימת לידים</h1>
+  {% include "analysis/_nav.html" %}
   <p class="muted">כל הקליקים על "התקשר" או WhatsApp, עם אפשרות ייצוא.</p>
+  <form class="search-bar" method="get" action="{{ url_for('admin_analysis_leads') }}">
+    {% for key, value in search_params.items() %}
+      <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    <input type="search" name="q" placeholder="חיפוש לידים לפי שם / תחום / עיר" value="{{ q or '' }}">
+    <button type="submit">חיפוש</button>
+    {% if q %}
+      <a class="clear-search" href="{{ search_clear_url }}">נקה</a>
+    {% endif %}
+  </form>
   <form class="filters" method="get">
+    {% if q %}
+      <input type="hidden" name="q" value="{{ q }}">
+    {% endif %}
     <label>
       טווח זמן
       <select name="range">

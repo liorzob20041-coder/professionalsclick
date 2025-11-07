@@ -26,10 +26,14 @@
     .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
     .chip { padding:6px 12px; border-radius:999px; background:#eef3ff; font-size:13px; }
     .layout-two { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:18px; }
+    .cta-buttons { display:flex; flex-wrap:wrap; gap:12px; margin:8px 0 24px; }
+    .cta-button { display:inline-block; background:#0b6efd; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; box-shadow:0 1px 3px rgba(15,25,40,0.12); }
+    .cta-button:hover { background:#094db5; }
   </style>
 </head>
 <body>
   <h1>דשבורד CRM</h1>
+  {% include "analysis/_nav.html" %}
   <p class="muted">תצוגה מרוכזת של צפיות, לידים וחיפושים מהאתר.</p>
   <form class="filters" method="get">
     <label>
@@ -72,6 +76,10 @@
       <p><strong>{{ search_metrics.total }}</strong></p>
       <p class="muted">שליחת טופס "מצא בעל מקצוע".</p>
     </div>
+  </div>
+  <div class="cta-buttons">
+    <a class="cta-button" href="{{ url_for('admin_analysis_workers') }}">צפו בביצועי בעלי מקצוע</a>
+    <a class="cta-button" href="{{ url_for('admin_analysis_leads') }}">צפו ברשימת הלידים</a>
   </div>
   <div class="section">
     <h2>מגמות יומיות</h2>

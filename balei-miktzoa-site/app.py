@@ -4762,11 +4762,26 @@ def admin_analysis_workers():
     city_filter = (request.args.get('city') or '').strip() or None
     sort_key = (request.args.get('sort') or 'leads_total').strip()
     sort_dir = (request.args.get('dir') or 'desc').strip().lower()
+    q = (request.args.get('q') or '').strip()
 
     start_date, end_date, resolved_range = _resolve_date_range(range_param, start_param, end_param)
     events = list(iter_events_between(start_date, end_date))
     workers_lookup = _get_approved_lookup()
     rows = compute_worker_performance(events, workers_lookup, field=field_filter, city=city_filter)
+
+    # חיפוש טקסטואלי פשוט לפי שם/תחום/עיר
+    if q:
+        needle = q.lower()
+
+        def _matches(row: dict) -> bool:
+            candidates = [
+                str(row.get('name') or ''),
+                str(row.get('field') or ''),
+                str(row.get('base_city') or row.get('city') or ''),
+            ]
+            return any(needle in value.lower() for value in candidates if value)
+
+        rows = [row for row in rows if _matches(row)]
 
     valid_sort_keys = {
         'views': lambda r: r['views'],
@@ -4801,7 +4816,8 @@ def admin_analysis_workers():
         current_params['field'] = field_filter
     if city_filter:
         current_params['city'] = city_filter
-
+    if q:
+        current_params['q'] = q
     base_sort_params = dict(current_params)
     sort_links = {}
     for key in valid_sort_keys.keys():
@@ -4812,7 +4828,13 @@ def admin_analysis_workers():
         params['sort'] = key
         params['dir'] = next_dir
         sort_links[key] = url_for('admin_analysis_workers', **params)
-
+    search_params = {k: v for k, v in current_params.items() if k != 'q'}
+    clear_params = dict(search_params)
+    if sort_key:
+        clear_params['sort'] = sort_key
+    if sort_dir:
+        clear_params['dir'] = sort_dir
+    search_clear_url = url_for('admin_analysis_workers', **clear_params)
     return render_template(
         'analysis/workers.html',
         rows=rows,
@@ -4829,6 +4851,9 @@ def admin_analysis_workers():
         cities_options=cities_options,
         current_params=current_params,
         sort_links=sort_links,
+        q=q,
+        search_params=search_params,
+        search_clear_url=search_clear_url,
     )
 
 
@@ -4846,13 +4871,28 @@ def admin_analysis_leads():
     field_filter = (request.args.get('field') or '').strip() or None
     city_filter = (request.args.get('city') or '').strip() or None
     channel_filter = (request.args.get('channel') or '').strip() or None
+    q = (request.args.get('q') or '').strip()
 
     start_date, end_date, resolved_range = _resolve_date_range(range_param, start_param, end_param)
     events = list(iter_events_between(start_date, end_date))
     workers_lookup = _get_approved_lookup()
     leads = iter_leads(events, workers_lookup)
     filtered_leads = filter_leads(leads, start_date=start_date, end_date=end_date, field=field_filter, city=city_filter, channel=channel_filter)
+    # חיפוש טקסטואלי פשוט על שדות מזהים של ליד
+    if q:
+        needle = q.lower()
 
+        def _lead_matches(lead: dict) -> bool:
+            for key in ('name', 'field', 'base_city', 'worker_id', 'path', 'channel', 'phone'):
+                value = lead.get(key)
+                if not value:
+                    continue
+                text = str(value).lower()
+                if needle in text:
+                    return True
+            return False
+
+        filtered_leads = [lead for lead in filtered_leads if _lead_matches(lead)]
     if request.args.get('format') == 'csv':
         output = StringIO()
         writer = csv.writer(output)
@@ -4888,6 +4928,7 @@ def admin_analysis_leads():
         'field': field_filter,
         'city': city_filter,
         'channel': channel_filter,
+        'q': q,
         'format': 'csv',
     }
     csv_params = {k: v for k, v in csv_params.items() if v}
@@ -4907,6 +4948,12 @@ def admin_analysis_leads():
         current_params['city'] = city_filter
     if channel_filter:
         current_params['channel'] = channel_filter
+    if q:
+        current_params['q'] = q
+
+    search_params = {k: v for k, v in current_params.items() if k != 'q'}
+    clear_params = dict(search_params)
+    search_clear_url = url_for('admin_analysis_leads', **clear_params)
 
     return render_template(
         'analysis/leads.html',
@@ -4922,6 +4969,9 @@ def admin_analysis_leads():
         cities_options=cities_options,
         csv_params=csv_params,
         current_params=current_params,
+        q=q,
+        search_params=search_params,
+        search_clear_url=search_clear_url,
     )
 
 

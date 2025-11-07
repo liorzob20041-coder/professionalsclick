@@ -1,0 +1,65 @@
+{% set current_path = request.path.rstrip('/') %}
+{% if not current_path %}
+  {% set current_path = '/' %}
+{% endif %}
+{% set nav_items = [
+  ('דשבורד CRM', url_for('admin_analysis_dashboard'), ['/admin/analysis/dashboard', '/admin/analysis']),
+  ('ביצועי בעלי מקצוע', url_for('admin_analysis_workers'), ['/admin/analysis/workers']),
+  ('לידים', url_for('admin_analysis_leads'), ['/admin/analysis/leads']),
+  ('דוח חודשי', url_for('analysis_monthly'), ['/admin/analysis/monthly']),
+  ('דוח כל הזמנים', url_for('admin_analysis_all'), ['/admin/analysis/all', '/admin/analysis/all-time']),
+  ('בקשות ממתינות', url_for('admin'), ['/admin', '/admin/pending']),
+] %}
+<nav class="crm-nav">
+  <ul class="crm-nav__list">
+    {% for label, href, matches in nav_items %}
+      {% set ns = namespace(active=false) %}
+      {% for candidate in matches %}
+        {% set candidate_path = candidate.rstrip('/') if candidate != '/' else candidate %}
+        {% if current_path == candidate_path %}
+          {% set ns.active = true %}
+        {% endif %}
+      {% endfor %}
+      <li class="crm-nav__item {% if ns.active %}is-active{% endif %}">
+        <a href="{{ href }}" class="crm-nav__link">{{ label }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+<style>
+  .crm-nav {
+    margin: 12px 0 20px;
+  }
+  .crm-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .crm-nav__item {
+    margin: 0;
+  }
+  .crm-nav__link {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #d4d7dd;
+    color: #0b6efd;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .crm-nav__item.is-active .crm-nav__link {
+    background: #0b6efd;
+    color: #fff;
+    border-color: #0b6efd;
+    box-shadow: 0 1px 4px rgba(11, 110, 253, 0.2);
+  }
+  .crm-nav__link:hover {
+    background: #0b6efd;
+    color: #fff;
+    border-color: #0b6efd;
+  }
+</style>

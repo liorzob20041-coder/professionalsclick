@@ -1067,17 +1067,40 @@ runWhenIdle(function () {
   <script>
   runWhenIdle(function () {
     if (window.__LH) return;
-    function sendEvent(eventName, workerId) {
+    function sendEvent(eventName, maybePayload, extras) {
       try {
-        const payload = JSON.stringify({ event: String(eventName), worker_id: String(workerId) });
+        const payload = { event: String(eventName) };
+        if (maybePayload && typeof maybePayload === 'object' && !Array.isArray(maybePayload)) {
+          if (maybePayload.worker_id && !payload.worker_id) {
+            payload.worker_id = String(maybePayload.worker_id);
+          }
+          if (maybePayload.path && !payload.path) {
+            payload.path = String(maybePayload.path);
+          }
+          const props = Object.assign({}, maybePayload);
+          delete props.worker_id;
+          delete props.path;
+          if (Object.keys(props).length) {
+            payload.properties = props;
+          }
+        } else if (typeof maybePayload !== 'undefined') {
+          payload.worker_id = String(maybePayload);
+        }
+        if (extras && typeof extras === 'object' && !Array.isArray(extras)) {
+          Object.assign(payload, extras);
+        }
+        if (!payload.path && typeof window !== 'undefined') {
+          payload.path = window.location.pathname + window.location.search;
+        }
+        const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
-          const blob = new Blob([payload], { type: 'application/json' });
+          const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
         } else {
           fetch('/api/track', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: payload,
+            body: body,
             keepalive: true
           });
         }

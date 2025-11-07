@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>ביצועי בעלי מקצוע</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    body { font-family:"Assistant","Alef",sans-serif; margin:24px auto; max-width:1200px; padding:0 16px; background:#f8f9fb; color:#1e1f20; }
+    h1 { margin-bottom:12px; font-size:28px; }
+    .muted { color:#6c757d; font-size:14px; }
+    form.filters { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:20px; padding:16px; background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(15,25,40,0.08); }
+    form.filters label { font-size:14px; color:#444; display:flex; flex-direction:column; gap:4px; }
+    form.filters select, form.filters input { font-size:15px; padding:8px 10px; border:1px solid #d4d7dd; border-radius:8px; min-width:150px; }
+    form.filters button { background:#0b6efd; color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:15px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 1px 3px rgba(15,25,40,0.06); border-radius:12px; overflow:hidden; }
+    th, td { padding:12px 10px; text-align:start; border-bottom:1px solid #e6e8ec; font-size:14px; }
+    th { background:#f0f3f9; font-weight:600; }
+    tbody tr:hover { background:#f6f8fb; }
+    tfoot td { background:#f9fafc; font-weight:600; }
+    a.sort-link { color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+    .arrow { font-size:11px; color:#888; }
+  </style>
+</head>
+<body>
+  <h1>ביצועי בעלי מקצוע</h1>
+  <p class="muted">פילוח צפיות ולידים לפי עובדים מאושרים.</p>
+  <form class="filters" method="get">
+    <label>
+      טווח זמן
+      <select name="range">
+        <option value="30d" {{ 'selected' if resolved_range == '30d' else '' }}>30 ימים</option>
+        <option value="90d" {{ 'selected' if resolved_range == '90d' else '' }}>90 ימים</option>
+        <option value="all" {{ 'selected' if resolved_range == 'all' else '' }}>כל הזמנים</option>
+        <option value="custom" {{ 'selected' if resolved_range == 'custom' else '' }}>מותאם</option>
+      </select>
+    </label>
+    <label>
+      מתאריך
+      <input type="date" name="start" value="{{ start_date.isoformat() if start_date else '' }}">
+    </label>
+    <label>
+      עד תאריך
+      <input type="date" name="end" value="{{ end_date.isoformat() if end_date else '' }}">
+    </label>
+    <label>
+      תחום
+      <select name="field">
+        <option value="">הכל</option>
+        {% for option in fields_options %}
+          <option value="{{ option }}" {{ 'selected' if field_filter == option else '' }}>{{ option }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      עיר
+      <select name="city">
+        <option value="">הכל</option>
+        {% for option in cities_options %}
+          <option value="{{ option }}" {{ 'selected' if city_filter == option else '' }}>{{ option }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit">עדכן</button>
+  </form>
+  {% if rows %}
+  <table>
+    <thead>
+      <tr>
+        <th><a class="sort-link" href="{{ sort_links.name }}">שם{% if sort_key == 'name' %}<span class="arrow">{{ '▲' if sort_dir == 'asc' else '▼' }}</span>{% endif %}</a></th>
+        <th>תחום</th>
+        <th>עיר</th>
+        <th><a class="sort-link" href="{{ sort_links.views }}">צפיות{% if sort_key == 'views' %}<span class="arrow">{{ '▲' if sort_dir == 'asc' else '▼' }}</span>{% endif %}</a></th>
+        <th><a class="sort-link" href="{{ sort_links.leads_total }}">לידים{% if sort_key == 'leads_total' %}<span class="arrow">{{ '▲' if sort_dir == 'asc' else '▼' }}</span>{% endif %}</a></th>
+        <th><a class="sort-link" href="{{ sort_links.leads_call }}">שיחות{% if sort_key == 'leads_call' %}<span class="arrow">{{ '▲' if sort_dir == 'asc' else '▼' }}</span>{% endif %}</a></th>
+        <th><a class="sort-link" href="{{ sort_links.leads_whatsapp }}">וואטסאפ{% if sort_key == 'leads_whatsapp' %}<span class="arrow">{{ '▲' if sort_dir == 'asc' else '▼' }}</span>{% endif %}</a></th>
+        <th><a class="sort-link" href="{{ sort_links.ctr }}">CTR{% if sort_key == 'ctr' %}<span class="arrow">{{ '▲' if sort_dir == 'asc' else '▼' }}</span>{% endif %}</a></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.name or row.worker_id }}</td>
+        <td>{{ row.field }}</td>
+        <td>{{ row.base_city }}</td>
+        <td>{{ row.views }}</td>
+        <td>{{ row.leads_total }}</td>
+        <td>{{ row.leads_call }}</td>
+        <td>{{ row.leads_whatsapp }}</td>
+        <td>{{ '%.2f'|format(row.ctr) }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">סה"כ</td>
+        <td>{{ totals.views }}</td>
+        <td>{{ totals.leads_total }}</td>
+        <td>{{ totals.leads_call }}</td>
+        <td>{{ totals.leads_whatsapp }}</td>
+        <td>{{ '%.2f'|format(totals.ctr) }}%</td>
+      </tr>
+    </tfoot>
+  </table>
+  {% else %}
+    <p class="muted">לא נמצאו נתונים לתנאי הסינון שנבחרו.</p>
+  {% endif %}
+</body>
+</html>

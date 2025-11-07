@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>דשבורד CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    body { font-family: "Assistant", "Alef", sans-serif; margin: 24px auto; max-width: 1180px; padding: 0 16px; background:#f8f9fb; color:#1f1f1f; }
+    h1 { margin-bottom: 12px; font-size: 28px; }
+    a { color: #0056d6; }
+    form.filters { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:24px; padding:16px; background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(15,25,40,0.08); }
+    form.filters label { font-size:14px; color:#444; display:flex; flex-direction:column; gap:4px; }
+    form.filters input, form.filters select { font-size:15px; padding:8px 10px; border:1px solid #d4d7dd; border-radius:8px; min-width:140px; }
+    form.filters button { background:#0b6efd; color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:15px; cursor:pointer; }
+    .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px; }
+    .card { background:#fff; border-radius:12px; padding:18px; box-shadow:0 1px 3px rgba(15,25,40,0.08); }
+    .card h2 { font-size:17px; margin:0 0 6px; }
+    .card p { margin:4px 0; font-size:15px; }
+    .section { background:#fff; border-radius:12px; padding:18px; box-shadow:0 1px 3px rgba(15,25,40,0.06); margin-bottom:24px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:10px; text-align:start; border-bottom:1px solid #e6e8ec; font-size:14px; }
+    th { background:#f0f3f9; font-weight:600; }
+    tbody tr:hover { background:#f6f8fb; }
+    .muted { color:#6c757d; font-size:14px; }
+    .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+    .chip { padding:6px 12px; border-radius:999px; background:#eef3ff; font-size:13px; }
+    .layout-two { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:18px; }
+  </style>
+</head>
+<body>
+  <h1>דשבורד CRM</h1>
+  <p class="muted">תצוגה מרוכזת של צפיות, לידים וחיפושים מהאתר.</p>
+  <form class="filters" method="get">
+    <label>
+      טווח זמן
+      <select name="range">
+        <option value="30d" {{ 'selected' if resolved_range == '30d' else '' }}>30 ימים אחרונים</option>
+        <option value="90d" {{ 'selected' if resolved_range == '90d' else '' }}>90 ימים אחרונים</option>
+        <option value="all" {{ 'selected' if resolved_range == 'all' else '' }}>כל הזמנים</option>
+        <option value="custom" {{ 'selected' if resolved_range == 'custom' else '' }}>טווח מותאם</option>
+      </select>
+    </label>
+    <label>
+      מתאריך
+      <input type="date" name="start" value="{{ start_date.isoformat() if start_date else '' }}">
+    </label>
+    <label>
+      עד תאריך
+      <input type="date" name="end" value="{{ end_date.isoformat() if end_date else '' }}">
+    </label>
+    <button type="submit">עדכן</button>
+  </form>
+  <div class="cards">
+    <div class="card">
+      <h2>סה"כ צפיות</h2>
+      <p><strong>{{ kpis.views }}</strong></p>
+      <p class="muted">כל הצפיות בעמודי בעלי מקצוע בתקופה הנבחרת.</p>
+    </div>
+    <div class="card">
+      <h2>סה"כ לידים</h2>
+      <p><strong>{{ kpis.leads_total }}</strong></p>
+      <p class="muted">שיחות: {{ kpis.leads_call }} · וואטסאפ: {{ kpis.leads_whatsapp }}</p>
+    </div>
+    <div class="card">
+      <h2>יחס המרה</h2>
+      <p><strong>{{ '%.2f'|format(kpis.ctr) }}%</strong></p>
+      <p class="muted">לידים חלקי צפיות.</p>
+    </div>
+    <div class="card">
+      <h2>מס׳ חיפושים</h2>
+      <p><strong>{{ search_metrics.total }}</strong></p>
+      <p class="muted">שליחת טופס "מצא בעל מקצוע".</p>
+    </div>
+  </div>
+  <div class="section">
+    <h2>מגמות יומיות</h2>
+    {% if daily_series %}
+    <table>
+      <thead>
+        <tr>
+          <th>תאריך</th>
+          <th>צפיות</th>
+          <th>לידים</th>
+          <th>חיפושים</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in daily_series %}
+        <tr>
+          <td>{{ row.date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ row.views }}</td>
+          <td>{{ row.leads }}</td>
+          <td>{{ row.searches }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="muted">אין נתונים לתקופה זו.</p>
+    {% endif %}
+  </div>
+  <div class="section">
+    <h2>טופ 5 בעלי מקצוע</h2>
+    {% if top_workers %}
+    <table>
+      <thead>
+        <tr>
+          <th>שם</th>
+          <th>תחום</th>
+          <th>עיר</th>
+          <th>צפיות</th>
+          <th>לידים</th>
+          <th>CTR</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for worker in top_workers %}
+        <tr>
+          <td>{{ worker.name or worker.worker_id }}</td>
+          <td>{{ worker.field }}</td>
+          <td>{{ worker.base_city }}</td>
+          <td>{{ worker.views }}</td>
+          <td>{{ worker.leads_total }}</td>
+          <td>{{ '%.2f'|format(worker.ctr) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="muted">אין עדיין לידים בתקופה זו.</p>
+    {% endif %}
+  </div>
+  <div class="section">
+    <h2>ניתוח חיפושים</h2>
+    <div class="layout-two">
+      <div>
+        <h3>תחומים מובילים</h3>
+        {% if top_search_fields %}
+          <ul>
+            {% for label, count in top_search_fields %}
+              <li>{{ label }} · {{ count }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted">אין נתוני חיפוש.</p>
+        {% endif %}
+      </div>
+      <div>
+        <h3>ערים מובילות</h3>
+        {% if search_metrics.top_cities %}
+          <ul>
+            {% for label, count in search_metrics.top_cities[:5] %}
+              <li>{{ label }} · {{ count }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted">אין נתוני חיפוש.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

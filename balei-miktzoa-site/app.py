@@ -1,6 +1,6 @@
 # === Imports (clean) ===
-import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy, shutil, uuid, posixpath
-from io import BytesIO
+import os, re, ssl, json, time, math, smtplib, secrets, unicodedata, mimetypes, hashlib, threading, logging, copy, shutil, uuid, posixpath, csv
+from io import BytesIO, StringIO
 from pathlib import Path
 from datetime import datetime, timedelta, date, timezone, time as dt_time
 from zoneinfo import ZoneInfo
@@ -1238,7 +1238,18 @@ def _analytics_daily_path(dt=None):
     dt = dt or datetime.utcnow()
     return os.path.join(ANALYTICS_DIR, dt.strftime('%Y-%m-%d') + '.jsonl')
 
+def _append_analytics_record(record: dict, *, dt: datetime | None = None) -> bool:
+    """Append a single analytics record to the daily JSONL file."""
 
+    try:
+        day_dt = dt or datetime.utcnow()
+        os.makedirs(ANALYTICS_DIR, exist_ok=True)
+        with open(_analytics_daily_path(day_dt), 'a', encoding='utf-8') as f:
+            f.write(json.dumps(record, ensure_ascii=False) + '\n')
+        return True
+    except Exception:
+        return False
+    
 def log_analytics_event(event: str, worker_id: str, page_path: str = None) -> bool:
     """ רושם אירוע לוג יומי ב-JSON Lines.
     - צפיות בפרופיל (view) נספרות פעם ב-30 דק' פר סשן לעובד.
@@ -1265,14 +1276,7 @@ def log_analytics_event(event: str, worker_id: str, page_path: str = None) -> bo
         "ua": request.headers.get('User-Agent', '')[:200],
         "path": page_path or request.path
     }
-    try:
-        with open(_analytics_daily_path(), 'a', encoding='utf-8') as f:
-            f.write(json.dumps(rec, ensure_ascii=False) + '\n')
-        return True
-    except Exception:
-        return False
-
-
+    return _append_analytics_record(rec)
 
 def _norm_alias(s: str) -> str:
     s = normalize_slug(s or "")
@@ -4203,21 +4207,76 @@ def delete_pending(index):
 # ====== Analytics: API + helpers + admin pages (monthly + all-time with search) ======
 
 # --- api_track: מקבל גם path מתוך ה-payload/Referer ---
+def _log_lightweight_event(payload: dict):
+    try:
+        event = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "ip": request.headers.get('X-Forwarded-For', request.remote_addr),
+            "ua": request.headers.get('User-Agent', ''),
+        }
+        event.update(payload)
+        log_path = os.path.join(DATA_FOLDER, 'events.log')
+        os.makedirs(DATA_FOLDER, exist_ok=True)
+        with open(log_path, 'a', encoding='utf-8') as fh:
+            fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+    except Exception as exc:
+        logging.warning("api_track lightweight log failed: %s", exc)
+
 @csrf.exempt
 @app.post('/api/track')
 def api_track():
     data = request.get_json(silent=True) or {}
-    event = (data.get('event') or '').strip()
+    event_name = str(data.get('event') or '').strip().lower()
     worker_id = str(data.get('worker_id') or '').strip()
-    if event not in ('view', 'click_call', 'click_whatsapp') or not worker_id:
-        return jsonify({"ok": False, "error": "bad_request"}), 400
+    properties = data.get('properties') if isinstance(data.get('properties'), dict) else {}
+
 
     page_path = (data.get('path') or '').strip()
     if not page_path:
         page_path = _extract_path_from_referer(request.headers.get('Referer', '')) or '/'
 
-    logged = log_analytics_event(event, worker_id, page_path=page_path)
-    return jsonify({"ok": True, "logged": bool(logged)})
+    if event_name in ('view', 'click_call', 'click_whatsapp'):
+        if not worker_id:
+            return jsonify({"ok": False, "error": "bad_request"}), 400
+        logged = log_analytics_event(event_name, worker_id, page_path=page_path)
+        _log_lightweight_event({
+            "event": event_name,
+            "worker_id": worker_id,
+            "path": page_path,
+        })
+        return jsonify({"ok": True, "logged": bool(logged)})
+
+    if event_name == 'search_submit':
+        ts = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+        field_value = data.get('field') or properties.get('field')
+        city_value = data.get('city') or properties.get('city')
+        record = {
+            "ts": ts,
+            "event": event_name,
+            "worker_id": "",
+            "sid": session.get('sid'),
+            "ua": request.headers.get('User-Agent', '')[:200],
+            "path": page_path,
+        }
+        if field_value:
+            record['field'] = field_value
+        if city_value:
+            record['city'] = city_value
+        if properties:
+            record['properties'] = properties
+        logged = _append_analytics_record(record)
+        lightweight_payload = {
+            "event": event_name,
+            "path": page_path,
+        }
+        if field_value:
+            lightweight_payload['field'] = field_value
+        if city_value:
+            lightweight_payload['city'] = city_value
+        _log_lightweight_event(lightweight_payload)
+        return jsonify({"ok": True, "logged": bool(logged)})
+
+    return jsonify({"ok": False, "error": "unsupported_event"}), 400
 
 # --- נתיב מתוך Referer (למקרה שאין path ב-payload) ---
 def _extract_path_from_referer(ref: str) -> str:
@@ -4314,7 +4373,251 @@ def _aggregate_events(events_iterable):
         elif ev in ('click_whatsapp', 'wa'):
             per_worker[wid]['wa'] += 1
     return per_worker
+def _parse_event_ts(value) -> datetime | None:
+    if not value:
+        return None
+    try:
+        text = str(value)
+        if text.endswith('Z'):
+            text = text[:-1] + '+00:00'
+        dt = datetime.fromisoformat(text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
 
+
+def iter_events_between(start_date: date | None = None, end_date: date | None = None):
+    """Yield analytics events between the given dates (inclusive)."""
+
+    if start_date and end_date and end_date < start_date:
+        start_date, end_date = end_date, start_date
+
+    if not start_date and not end_date:
+        yield from _iter_all_events() or []
+        return
+
+    today = datetime.now(ISRAEL_TZ).date()
+    start = start_date or today
+    end = end_date or today
+
+    cur = start
+    while cur <= end:
+        yield from _iter_day_events(cur.strftime('%Y-%m-%d')) or []
+        cur += timedelta(days=1)
+
+
+def _get_approved_lookup() -> dict[str, dict]:
+    approved = read_json_file(APPROVED_FILE)
+    lookup: dict[str, dict] = {}
+    for worker in approved or []:
+        wid = str(worker.get('worker_id') or '').strip()
+        if not wid:
+            continue
+        lookup[wid] = worker
+    return lookup
+
+
+def iter_leads(events_iterable, workers_lookup: dict[str, dict] | None = None) -> list[dict]:
+    """Extract a flat list of leads (call / WhatsApp clicks) from raw events."""
+
+    workers_lookup = workers_lookup or _get_approved_lookup()
+    leads: list[dict] = []
+    for event in events_iterable or []:
+        ev = str(event.get('event') or '').strip().lower()
+        if ev not in ('click_call', 'call', 'click_whatsapp', 'wa'):
+            continue
+        worker_id = str(event.get('worker_id') or '').strip()
+        if not worker_id:
+            continue
+        ts = _parse_event_ts(event.get('ts'))
+        if ts is None:
+            continue
+        channel = 'call' if ev in ('click_call', 'call') else 'whatsapp'
+        worker = workers_lookup.get(worker_id, {})
+        leads.append({
+            'ts': ts.astimezone(ISRAEL_TZ),
+            'worker_id': worker_id,
+            'channel': channel,
+            'path': event.get('path') or '',
+            'sid': event.get('sid'),
+            'name': (worker.get('company_name') or worker.get('name') or '').strip(),
+            'field': (worker.get('field') or '').strip(),
+            'base_city': (worker.get('base_city') or '').strip(),
+        })
+    leads.sort(key=lambda item: item['ts'], reverse=True)
+    return leads
+
+
+def compute_general_kpis(events_iterable) -> dict[str, float]:
+    views = leads_call = leads_whatsapp = searches = 0
+    for event in events_iterable or []:
+        ev = str(event.get('event') or '').strip().lower()
+        if ev == 'view':
+            views += 1
+        elif ev in ('click_call', 'call'):
+            leads_call += 1
+        elif ev in ('click_whatsapp', 'wa'):
+            leads_whatsapp += 1
+        elif ev == 'search_submit':
+            searches += 1
+    total_leads = leads_call + leads_whatsapp
+    ctr = (total_leads / views * 100) if views else 0.0
+    return {
+        'views': views,
+        'leads_total': total_leads,
+        'leads_call': leads_call,
+        'leads_whatsapp': leads_whatsapp,
+        'ctr': round(ctr, 2),
+        'searches': searches,
+    }
+
+
+def compute_daily_timeseries(events_iterable) -> list[dict]:
+    buckets: dict[date, dict[str, int]] = defaultdict(lambda: {'views': 0, 'leads': 0, 'searches': 0})
+    for event in events_iterable or []:
+        ts = _parse_event_ts(event.get('ts'))
+        if ts is None:
+            continue
+        local_day = ts.astimezone(ISRAEL_TZ).date()
+        ev = str(event.get('event') or '').strip().lower()
+        if ev == 'view':
+            buckets[local_day]['views'] += 1
+        elif ev in ('click_call', 'call', 'click_whatsapp', 'wa'):
+            buckets[local_day]['leads'] += 1
+        elif ev == 'search_submit':
+            buckets[local_day]['searches'] += 1
+    series = []
+    for day in sorted(buckets.keys()):
+        entry = buckets[day]
+        series.append({'date': day, 'views': entry['views'], 'leads': entry['leads'], 'searches': entry['searches']})
+    return series
+
+
+def compute_worker_performance(events_iterable, workers_lookup: dict[str, dict], *, field: str | None = None, city: str | None = None) -> list[dict]:
+    stats: dict[str, dict[str, int]] = defaultdict(lambda: {'views': 0, 'leads_call': 0, 'leads_whatsapp': 0})
+    for event in events_iterable or []:
+        worker_id = str(event.get('worker_id') or '').strip()
+        if not worker_id:
+            continue
+        ev = str(event.get('event') or '').strip().lower()
+        if ev == 'view':
+            stats[worker_id]['views'] += 1
+        elif ev in ('click_call', 'call'):
+            stats[worker_id]['leads_call'] += 1
+        elif ev in ('click_whatsapp', 'wa'):
+            stats[worker_id]['leads_whatsapp'] += 1
+
+    rows: list[dict] = []
+    for worker_id, worker in workers_lookup.items():
+        worker_field = (worker.get('field') or '').strip()
+        worker_city = (worker.get('base_city') or '').strip()
+        if field and worker_field != field:
+            continue
+        if city and worker_city != city:
+            continue
+        record = stats.get(worker_id, {'views': 0, 'leads_call': 0, 'leads_whatsapp': 0})
+        leads_total = record['leads_call'] + record['leads_whatsapp']
+        ctr = (leads_total / record['views'] * 100) if record['views'] else 0.0
+        rows.append({
+            'worker_id': worker_id,
+            'name': (worker.get('company_name') or worker.get('name') or f'#{worker_id}').strip(),
+            'field': worker_field,
+            'base_city': worker_city,
+            'views': record['views'],
+            'leads_total': leads_total,
+            'leads_call': record['leads_call'],
+            'leads_whatsapp': record['leads_whatsapp'],
+            'ctr': round(ctr, 2),
+        })
+
+    rows.sort(key=lambda r: (r['leads_total'], r['views']), reverse=True)
+    return rows
+
+
+def filter_leads(leads: list[dict], *, start_date: date | None = None, end_date: date | None = None,
+                 field: str | None = None, city: str | None = None, channel: str | None = None) -> list[dict]:
+    filtered: list[dict] = []
+    for lead in leads:
+        ts: datetime = lead['ts']
+        if start_date and ts.date() < start_date:
+            continue
+        if end_date and ts.date() > end_date:
+            continue
+        if field and lead.get('field') != field:
+            continue
+        if city and lead.get('base_city') != city:
+            continue
+        if channel and lead.get('channel') != channel:
+            continue
+        filtered.append(lead)
+    return filtered
+
+
+def compute_search_metrics(events_iterable) -> dict:
+    total = 0
+    daily: dict[date, int] = defaultdict(int)
+    by_field: dict[str, int] = defaultdict(int)
+    by_city: dict[str, int] = defaultdict(int)
+    for event in events_iterable or []:
+        ev = str(event.get('event') or '').strip().lower()
+        if ev != 'search_submit':
+            continue
+        total += 1
+        ts = _parse_event_ts(event.get('ts'))
+        if ts is not None:
+            daily[ts.astimezone(ISRAEL_TZ).date()] += 1
+        payload = event.get('properties') if isinstance(event.get('properties'), dict) else {}
+        field = event.get('field') or payload.get('field')
+        city = event.get('city') or payload.get('city')
+        if field:
+            by_field[str(field).strip()] += 1
+        if city:
+            by_city[str(city).strip()] += 1
+    top_fields = sorted(by_field.items(), key=lambda item: item[1], reverse=True)
+    top_cities = sorted(by_city.items(), key=lambda item: item[1], reverse=True)
+    series = [{'date': day, 'searches': count} for day, count in sorted(daily.items())]
+    return {
+        'total': total,
+        'top_fields': top_fields,
+        'top_cities': top_cities,
+        'daily': series,
+    }
+
+
+def _parse_iso_date(value: str | None) -> date | None:
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, '%Y-%m-%d').date()
+    except Exception:
+        return None
+
+
+def _resolve_date_range(range_slug: str | None, start_param: str | None, end_param: str | None) -> tuple[date | None, date | None, str]:
+    today = datetime.now(ISRAEL_TZ).date()
+    range_slug = (range_slug or '').lower().strip()
+
+    if range_slug in {'30d', '90d'}:
+        days = int(range_slug.replace('d', '') or '0')
+        end_date = today
+        start_date = today - timedelta(days=days - 1) if days else None
+        return start_date, end_date, range_slug
+    if range_slug == 'all':
+        return None, None, range_slug
+
+    start_date = _parse_iso_date(start_param)
+    end_date = _parse_iso_date(end_param)
+    if start_date and end_date and end_date < start_date:
+        start_date, end_date = end_date, start_date
+    return start_date, end_date, 'custom'
+
+
+def _collect_field_city_options(workers_lookup: dict[str, dict]) -> tuple[list[str], list[str]]:
+    fields = sorted({(w.get('field') or '').strip() for w in workers_lookup.values() if (w.get('field') or '').strip()})
+    cities = sorted({(w.get('base_city') or '').strip() for w in workers_lookup.values() if (w.get('base_city') or '').strip()})
+    return fields, cities
 
 def _analytics_available_months():
     """רשימת חודשים (YYYY-MM) שקיימים להם קבצי אנליטיקס."""
@@ -4400,22 +4703,226 @@ def _monthly_totals(month_str):
 # --- ניהול אנליטיקס: אינדקס / חודשי / כל הזמנים ---
 @app.route('/admin/analysis/')
 def analysis_index():
-    months = _analytics_available_months()
+    """Legacy entry point – redirect to the new dashboard."""
 
-    # סכומים לכל חודש
-    month_cards = []
-    for m in months:
-        t = _monthly_totals(m)
-        month_cards.append({'month': m, **t})
+    args = request.args.to_dict(flat=True)
+    return redirect(url_for('admin_analysis_dashboard', **args))
 
-    # סכום all-time
-    agg_all = _aggregate_events(_iter_all_events())
-    all_totals = {
-        'views': sum(v['views'] for v in agg_all.values()),
-        'calls': sum(v['calls'] for v in agg_all.values()),
-        'wa': sum(v['wa'] for v in agg_all.values()),
+
+@app.route('/admin/analysis/dashboard')
+def admin_analysis_dashboard():
+    """/admin/analysis/dashboard – aggregated CRM dashboard.
+
+    Data sources: data/analytics/*.jsonl via iter_events_between + approved.json.
+    Query params: range (30d|90d|all), start (YYYY-MM-DD), end (YYYY-MM-DD).
+    """
+
+
+    range_param = request.args.get('range') or '30d'
+    start_param = request.args.get('start')
+    end_param = request.args.get('end')
+    start_date, end_date, resolved_range = _resolve_date_range(range_param, start_param, end_param)
+
+    events = list(iter_events_between(start_date, end_date))
+    workers_lookup = _get_approved_lookup()
+
+    kpis = compute_general_kpis(events)
+    daily_series = compute_daily_timeseries(events)
+    search_metrics = compute_search_metrics(events)
+    worker_rows = compute_worker_performance(events, workers_lookup)
+    top_workers = worker_rows[:5]
+    top_search_fields = search_metrics.get('top_fields', [])[:5]
+
+    return render_template(
+        'analysis/dashboard.html',
+        kpis=kpis,
+        daily_series=daily_series,
+        top_workers=top_workers,
+        search_metrics=search_metrics,
+        top_search_fields=top_search_fields,
+        range_param=range_param,
+        resolved_range=resolved_range,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+
+@app.route('/admin/analysis/workers')
+def admin_analysis_workers():
+    """/admin/analysis/workers – worker performance table.
+
+    Data sources: data/analytics/*.jsonl + approved.json.
+    Query params: range, start, end, field, city, sort, dir.
+    """
+
+    range_param = request.args.get('range') or '30d'
+    start_param = request.args.get('start')
+    end_param = request.args.get('end')
+    field_filter = (request.args.get('field') or '').strip() or None
+    city_filter = (request.args.get('city') or '').strip() or None
+    sort_key = (request.args.get('sort') or 'leads_total').strip()
+    sort_dir = (request.args.get('dir') or 'desc').strip().lower()
+
+    start_date, end_date, resolved_range = _resolve_date_range(range_param, start_param, end_param)
+    events = list(iter_events_between(start_date, end_date))
+    workers_lookup = _get_approved_lookup()
+    rows = compute_worker_performance(events, workers_lookup, field=field_filter, city=city_filter)
+
+    valid_sort_keys = {
+        'views': lambda r: r['views'],
+        'leads_total': lambda r: r['leads_total'],
+        'leads_call': lambda r: r['leads_call'],
+        'leads_whatsapp': lambda r: r['leads_whatsapp'],
+        'ctr': lambda r: r['ctr'],
+        'name': lambda r: r['name'],
     }
-    return render_template('analysis/index.html', months=months, month_cards=month_cards, all_totals=all_totals)
+    key_func = valid_sort_keys.get(sort_key, valid_sort_keys['leads_total'])
+    rows.sort(key=key_func, reverse=(sort_dir != 'asc'))
+
+    totals = {
+        'views': sum(r['views'] for r in rows),
+        'leads_total': sum(r['leads_total'] for r in rows),
+        'leads_call': sum(r['leads_call'] for r in rows),
+        'leads_whatsapp': sum(r['leads_whatsapp'] for r in rows),
+    }
+    totals['ctr'] = round((totals['leads_total'] / totals['views'] * 100) if totals['views'] else 0.0, 2)
+
+    fields_options, cities_options = _collect_field_city_options(workers_lookup)
+    current_params = {}
+    if resolved_range == 'custom':
+        current_params['range'] = 'custom'
+        if start_date:
+            current_params['start'] = start_date.isoformat()
+        if end_date:
+            current_params['end'] = end_date.isoformat()
+    else:
+        current_params['range'] = resolved_range or range_param
+    if field_filter:
+        current_params['field'] = field_filter
+    if city_filter:
+        current_params['city'] = city_filter
+
+    base_sort_params = dict(current_params)
+    sort_links = {}
+    for key in valid_sort_keys.keys():
+        params = dict(base_sort_params)
+        next_dir = 'desc'
+        if sort_key == key:
+            next_dir = 'asc' if sort_dir != 'asc' else 'desc'
+        params['sort'] = key
+        params['dir'] = next_dir
+        sort_links[key] = url_for('admin_analysis_workers', **params)
+
+    return render_template(
+        'analysis/workers.html',
+        rows=rows,
+        totals=totals,
+        range_param=range_param,
+        resolved_range=resolved_range,
+        start_date=start_date,
+        end_date=end_date,
+        field_filter=field_filter,
+        city_filter=city_filter,
+        sort_key=sort_key,
+        sort_dir=sort_dir,
+        fields_options=fields_options,
+        cities_options=cities_options,
+        current_params=current_params,
+        sort_links=sort_links,
+    )
+
+
+@app.route('/admin/analysis/leads')
+def admin_analysis_leads():
+    """/admin/analysis/leads – detailed leads list with CSV export.
+
+    Data sources: data/analytics/*.jsonl + approved.json.
+    Query params: range, start, end, field, city, channel, format (csv).
+    """
+
+    range_param = request.args.get('range') or '30d'
+    start_param = request.args.get('start')
+    end_param = request.args.get('end')
+    field_filter = (request.args.get('field') or '').strip() or None
+    city_filter = (request.args.get('city') or '').strip() or None
+    channel_filter = (request.args.get('channel') or '').strip() or None
+
+    start_date, end_date, resolved_range = _resolve_date_range(range_param, start_param, end_param)
+    events = list(iter_events_between(start_date, end_date))
+    workers_lookup = _get_approved_lookup()
+    leads = iter_leads(events, workers_lookup)
+    filtered_leads = filter_leads(leads, start_date=start_date, end_date=end_date, field=field_filter, city=city_filter, channel=channel_filter)
+
+    if request.args.get('format') == 'csv':
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['timestamp', 'date', 'time', 'worker_id', 'name', 'field', 'city', 'channel', 'path', 'session'])
+        for lead in filtered_leads:
+            local_ts = lead['ts']
+            writer.writerow([
+                local_ts.isoformat(),
+                local_ts.strftime('%Y-%m-%d'),
+                local_ts.strftime('%H:%M'),
+                lead.get('worker_id'),
+                lead.get('name'),
+                lead.get('field'),
+                lead.get('base_city'),
+                lead.get('channel'),
+                lead.get('path'),
+                lead.get('sid'),
+            ])
+        filename = 'leads.csv'
+        if start_date or end_date:
+            start_label = start_date.isoformat() if start_date else 'start'
+            end_label = end_date.isoformat() if end_date else 'today'
+            filename = f'leads_{start_label}_to_{end_label}.csv'
+        resp = Response(output.getvalue(), mimetype='text/csv; charset=utf-8')
+        resp.headers['Content-Disposition'] = f'attachment; filename={filename}'
+        return resp
+
+    fields_options, cities_options = _collect_field_city_options(workers_lookup)
+    csv_params = {
+        'range': range_param,
+        'start': start_param,
+        'end': end_param,
+        'field': field_filter,
+        'city': city_filter,
+        'channel': channel_filter,
+        'format': 'csv',
+    }
+    csv_params = {k: v for k, v in csv_params.items() if v}
+
+    current_params = {}
+    if resolved_range == 'custom':
+        current_params['range'] = 'custom'
+        if start_date:
+            current_params['start'] = start_date.isoformat()
+        if end_date:
+            current_params['end'] = end_date.isoformat()
+    else:
+        current_params['range'] = resolved_range or range_param
+    if field_filter:
+        current_params['field'] = field_filter
+    if city_filter:
+        current_params['city'] = city_filter
+    if channel_filter:
+        current_params['channel'] = channel_filter
+
+    return render_template(
+        'analysis/leads.html',
+        leads=filtered_leads,
+        range_param=range_param,
+        resolved_range=resolved_range,
+        start_date=start_date,
+        end_date=end_date,
+        field_filter=field_filter,
+        city_filter=city_filter,
+        channel_filter=channel_filter,
+        fields_options=fields_options,
+        cities_options=cities_options,
+        csv_params=csv_params,
+        current_params=current_params,
+    )
 
 
 @app.route('/admin/analysis/monthly')
@@ -4872,35 +5379,6 @@ def sitemap_xml():
 
 
 # ========= END REPLACEMENT =========
-
-
-
-
-# ===== Lightweight tracking endpoint =====
-@app.route('/api/track', methods=['POST'])
-def api_track_events():
-    """Collects lightweight UI telemetry without failing the client."""
-    try:
-        payload = request.get_json(silent=True) or {}
-    except Exception:
-        payload = {}
-    try:
-        event = {
-            "ts": datetime.now(timezone.utc).isoformat(),
-            "ip": request.headers.get('X-Forwarded-For', request.remote_addr),
-            "ua": request.headers.get('User-Agent', ''),
-        }
-        if isinstance(payload, dict):
-            event.update({k: payload[k] for k in payload.keys() if not str(k).startswith('_')})
-        log_path = os.path.join(DATA_FOLDER, 'events.log')
-        os.makedirs(DATA_FOLDER, exist_ok=True)
-        with open(log_path, 'a', encoding='utf-8') as fh:
-            fh.write(json.dumps(event, ensure_ascii=False) + "\n")
-        return jsonify({"ok": True})
-    except Exception as exc:
-        logging.warning("api_track failed: %s", exc)
-        return jsonify({"ok": False})
-
 
 # ===== Autocomplete: API בסיסי לבדיקה =====
 # ===== Autocomplete: API בסיסי לבדיקה =====

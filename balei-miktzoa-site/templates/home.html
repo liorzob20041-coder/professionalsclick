@@ -463,6 +463,9 @@
         if (hasError) return false;
         var areaSlug  = convertToSlug(areaValue);
         var fieldSlug = convertToSlug(fieldValue);
+        if (typeof window.trackEvent === 'function') {
+          window.trackEvent('search_submit', { field: fieldValue, city: areaValue });
+        }
         window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
         return false;
       };

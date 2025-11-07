@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>לידים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    body { font-family:"Assistant","Alef",sans-serif; margin:24px auto; max-width:1200px; padding:0 16px; background:#f8f9fb; color:#1e1f20; }
+    h1 { margin-bottom:12px; font-size:28px; }
+    .muted { color:#6c757d; font-size:14px; }
+    form.filters { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:20px; padding:16px; background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(15,25,40,0.08); }
+    form.filters label { font-size:14px; color:#444; display:flex; flex-direction:column; gap:4px; }
+    form.filters select, form.filters input { font-size:15px; padding:8px 10px; border:1px solid #d4d7dd; border-radius:8px; min-width:150px; }
+    form.filters button { background:#0b6efd; color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:15px; cursor:pointer; }
+    .actions { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .btn-secondary { display:inline-block; background:#fff; border:1px solid #0b6efd; color:#0b6efd; padding:8px 14px; border-radius:8px; text-decoration:none; }
+    table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 1px 3px rgba(15,25,40,0.06); border-radius:12px; overflow:hidden; }
+    th, td { padding:12px 10px; text-align:start; border-bottom:1px solid #e6e8ec; font-size:14px; }
+    th { background:#f0f3f9; font-weight:600; }
+    tbody tr:hover { background:#f6f8fb; }
+    td a { color:#0056d6; }
+  </style>
+</head>
+<body>
+  <h1>רשימת לידים</h1>
+  <p class="muted">כל הקליקים על "התקשר" או WhatsApp, עם אפשרות ייצוא.</p>
+  <form class="filters" method="get">
+    <label>
+      טווח זמן
+      <select name="range">
+        <option value="30d" {{ 'selected' if resolved_range == '30d' else '' }}>30 ימים</option>
+        <option value="90d" {{ 'selected' if resolved_range == '90d' else '' }}>90 ימים</option>
+        <option value="all" {{ 'selected' if resolved_range == 'all' else '' }}>כל הזמנים</option>
+        <option value="custom" {{ 'selected' if resolved_range == 'custom' else '' }}>מותאם</option>
+      </select>
+    </label>
+    <label>
+      מתאריך
+      <input type="date" name="start" value="{{ start_date.isoformat() if start_date else '' }}">
+    </label>
+    <label>
+      עד תאריך
+      <input type="date" name="end" value="{{ end_date.isoformat() if end_date else '' }}">
+    </label>
+    <label>
+      תחום
+      <select name="field">
+        <option value="">הכל</option>
+        {% for option in fields_options %}
+          <option value="{{ option }}" {{ 'selected' if field_filter == option else '' }}>{{ option }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      עיר
+      <select name="city">
+        <option value="">הכל</option>
+        {% for option in cities_options %}
+          <option value="{{ option }}" {{ 'selected' if city_filter == option else '' }}>{{ option }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      ערוץ
+      <select name="channel">
+        <option value="">הכל</option>
+        <option value="call" {{ 'selected' if channel_filter == 'call' else '' }}>טלפון</option>
+        <option value="whatsapp" {{ 'selected' if channel_filter == 'whatsapp' else '' }}>WhatsApp</option>
+      </select>
+    </label>
+    <button type="submit">עדכן</button>
+  </form>
+  <div class="actions">
+    <p class="muted">נמצאו {{ leads|length }} לידים בתצוגה הנוכחית.</p>
+    <a class="btn-secondary" href="{{ url_for('admin_analysis_leads', **csv_params) }}">ייצוא CSV</a>
+  </div>
+  {% if leads %}
+  <table>
+    <thead>
+      <tr>
+        <th>תאריך</th>
+        <th>שעה</th>
+        <th>שם</th>
+        <th>תחום</th>
+        <th>עיר</th>
+        <th>ערוץ</th>
+        <th>עמוד מקור</th>
+        <th>Session ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lead in leads %}
+      <tr>
+        <td>{{ lead.ts.strftime('%Y-%m-%d') }}</td>
+        <td>{{ lead.ts.strftime('%H:%M') }}</td>
+        <td>{{ lead.name or lead.worker_id }}</td>
+        <td>{{ lead.field }}</td>
+        <td>{{ lead.base_city }}</td>
+        <td>{{ 'טלפון' if lead.channel == 'call' else 'WhatsApp' }}</td>
+        <td>
+          {% if lead.path %}
+            <a href="{{ lead.path }}" target="_blank" rel="noopener">{{ lead.path }}</a>
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </td>
+        <td>{{ lead.sid or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">לא נמצאו לידים לתנאי הסינון.</p>
+  {% endif %}
+</body>
+</html>

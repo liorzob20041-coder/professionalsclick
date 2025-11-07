@@ -3,6 +3,7 @@
   "date": "2025-01-01",
   "category": "electricity",
   "status": "published",
+  "popular": true,
   "hero_image": "/static/articles/electrician-spotlight.jpg",
   "reading_minutes": 4,
   "he": {

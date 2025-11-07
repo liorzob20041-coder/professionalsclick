@@ -101,6 +101,16 @@
   'en': 'What helped other readers the most',
   'ru': 'Что больше всего помогло читателям'
 } %}
+{% set popular_title_map = {
+  'he': 'מאמרים פופולריים',
+  'en': 'Popular articles',
+  'ru': 'Популярные статьи'
+} %}
+{% set popular_subtitle_map = {
+  'he': 'המאמרים שהגולשים הכי אוהבים עכשיו.',
+  'en': 'What readers are loving right now.',
+  'ru': 'Статьи, которые сейчас читают чаще всего.'
+} %}
 {% set tip_heading = tip_heading_map.get(g.current_lang, tip_heading_map['he']) %}
 {% set tip_text = tip_text_map.get(g.current_lang, tip_text_map['he']) %}
 {% set find_pro_label_map = {
@@ -159,6 +169,8 @@
 {% set footer_home_label = footer_home_map.get(g.current_lang, footer_home_map['he']) %}
 {% set featured_title = featured_title_map.get(g.current_lang, featured_title_map['he']) %}
 {% set featured_subtitle = featured_subtitle_map.get(g.current_lang, featured_subtitle_map['he']) %}
+{% set popular_title = popular_title_map.get(g.current_lang, popular_title_map['he']) %}
+{% set popular_subtitle = popular_subtitle_map.get(g.current_lang, popular_subtitle_map['he']) %}
 <section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}" data-articles-root data-selected-category="{{ selected_category }}">
   <div class="container">
     <header class="articles-hero" dir="rtl">
@@ -191,6 +203,19 @@
       </div>
       <a href="#" class="categories-reset" data-reset-filter{% if not selected_category %} hidden{% endif %}>{{ clear_filter_label }}</a>
     </nav>
+    {% if popular_articles %}
+      <section class="articles-popular" dir="rtl">
+        <div class="articles-popular__head">
+          <h2 class="articles-popular__title">{{ popular_title }}</h2>
+          <p class="articles-popular__subtitle">{{ popular_subtitle }}</p>
+        </div>
+        <div class="articles-popular__row" role="list">
+          {% for article in popular_articles %}
+            {% include 'articles/partials/article-card-archive.html' %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
     {% if featured_articles %}
       <section class="articles-featured" dir="rtl">
         <div class="articles-featured__header">

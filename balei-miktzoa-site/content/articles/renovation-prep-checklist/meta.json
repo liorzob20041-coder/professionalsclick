@@ -3,6 +3,7 @@
   "date": "2025-01-01",
   "category": "renovation",
   "status": "published",
+  "popular": true,
   "hero_image": "/static/articles/renovation-spotlight.jpg",
   "reading_minutes": 6,
   "he": {

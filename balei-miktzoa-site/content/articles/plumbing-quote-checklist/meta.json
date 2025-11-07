@@ -3,6 +3,7 @@
   "date": "2025-01-01",
   "category": "plumbing",
   "status": "published",
+  "popular": true,
   "hero_image": "/static/articles/plumber-spotlight.jpg",
   "reading_minutes": 4,
   "he": {

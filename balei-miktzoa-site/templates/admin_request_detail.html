@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>פרטי בקשה – {{ item.company_name or item.name or 'ללא שם' }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
+</head>
+<body>
+<div class="admin-page admin-detail">
+  <header class="detail-header">
+    <div class="detail-header__primary">
+      <h1 class="admin-title">{{ item.company_name or item.name or 'ללא שם' }}</h1>
+      <p class="admin-subtitle">טלפון: <span class="mono">{{ item.phone or '—' }}</span> · תחום: {{ item._field_label or '—' }} · עיר: {{ item._city_label or '—' }}</p>
+    </div>
+    <div class="detail-header__badges">
+      <span class="status-badge status-badge--review-{{ item.review_status }}">{{ review_status_labels.get(item.review_status, item.review_status) }}</span>
+      <span class="status-badge status-badge--ai-{{ item._ai_status_tone }}">{{ item._ai_status_label }}</span>
+    </div>
+    <div class="detail-header__actions">
+      <a class="btn" href="{{ url_for('admin') }}">← חזרה לרשימת הבקשות</a>
+    </div>
+  </header>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-list">
+        {% for category, message in messages %}
+          {% set color = 'green' if category == 'success' else 'red' %}
+          <li class="msg-item" data-color="{{ color|e }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <div class="detail-grid">
+    <section class="detail-card">
+      <h2>מידע מקצועי</h2>
+      <dl class="description-panel__list">
+        <div>
+          <dt>שם איש קשר</dt>
+          <dd>{{ item.name or '—' }}</dd>
+        </div>
+        <div>
+          <dt>שם העסק</dt>
+          <dd>{{ item.company_name or '—' }}</dd>
+        </div>
+        <div>
+          <dt>טלפון</dt>
+          <dd class="mono">{{ item.phone or '—' }}</dd>
+        </div>
+        <div>
+          <dt>תחום</dt>
+          <dd>{{ item._field_label or '—' }}</dd>
+        </div>
+        <div>
+          <dt>עיר בסיס</dt>
+          <dd>
+            {{ item._city_label or '—' }}
+            {% if item.work_radius %}<span class="muted">· {{ item.work_radius }} ק"מ</span>{% endif %}
+          </dd>
+        </div>
+        <div>
+          <dt>שנות ניסיון</dt>
+          <dd>{{ item.experience or 0 }}</dd>
+        </div>
+        {% if item.sub_services %}
+        <div>
+          <dt>שירותים</dt>
+          <dd>{{ item.sub_services|join(' · ') }}</dd>
+        </div>
+        {% endif %}
+        {% if item.languages %}
+        <div>
+          <dt>שפות</dt>
+          <dd>{{ item.languages|join(', ') }}</dd>
+        </div>
+        {% endif %}
+        <div>
+          <dt>שירות חירום</dt>
+          <dd>{{ 'כן' if item.offers_emergency else 'לא' }}</dd>
+        </div>
+        {% if item.active_cities %}
+        <div>
+          <dt>ערים פעילות</dt>
+          <dd>{{ item.active_cities|join(', ') }}</dd>
+        </div>
+        {% endif %}
+      </dl>
+      <div class="description-panel__text-block">
+        <h5>תיאור חופשי</h5>
+        <p>{{ item.description or '—' }}</p>
+      </div>
+      {% if item.reviews %}
+      <div class="description-panel__text-block">
+        <h5>הערות נוספות</h5>
+        <p>{{ item.reviews }}</p>
+      </div>
+      {% endif %}
+    </section>
+    <section class="detail-card">
+      <h2>ניהול ביקורת</h2>
+      <form class="review-form" method="post" action="{{ url_for('admin_update_review', req_id=item._request_id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <label for="review-status-select">סטטוס טיפול</label>
+        <select id="review-status-select" name="review_status">
+          {% for value, label in review_status_choices %}
+          <option value="{{ value }}" {% if item.review_status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <label for="review-notes">הערות סוקר</label>
+        <textarea id="review-notes" name="review_notes" rows="6">{{ item.review_notes or '' }}</textarea>
+        <div class="detail-card__meta">נוצרה: {{ item.created_at }} · עודכן לאחרונה: {{ item.updated_at }}</div>
+        <button type="submit" class="btn btn-primary">שמירת עדכון</button>
+      </form>
+    </section>
+    <section class="detail-card detail-card--wide">
+      <h2>תיאור ו-AI</h2>
+      {% include 'admin_description_panel.html' with item=item, is_modal=False, legacy_generate_url=url_for('admin_ai_generate', index=item._original_index) %}
+    </section>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/admin_description.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    if (window.AdminDescription) {
+      window.AdminDescription.mountPanels(document);
+    }
+  });
+</script>
+</body>
+</html>

@@ -798,7 +798,166 @@ def write_json_file(path, data):
 def _now_iso() -> str:
     ts = datetime.now(timezone.utc).isoformat()
     return ts.replace("+00:00", "Z")
+REVIEW_STATUS_CHOICES: list[tuple[str, str]] = [
+    ("new", "חדש"),
+    ("in_review", "בטיפול"),
+    ("need_call", "צריך שיחה"),
+    ("waiting_customer", "מחכים ללקוח"),
+    ("ready_for_approval", "מוכן לאישור"),
+    ("rejected", "לא רלוונטי"),
+]
+REVIEW_STATUS_LABELS: dict[str, str] = {value: label for value, label in REVIEW_STATUS_CHOICES}
+REVIEW_STATUS_VALUES: set[str] = set(REVIEW_STATUS_LABELS)
 
+DESCRIPTION_STYLE_LABELS: dict[str, str] = {
+    "neutral_professional": "נייטרלי-מקצועי",
+    "service_human": "שירותי-אנושי",
+    "urgent_trust": "דחוף / אמינות",
+}
+DESCRIPTION_STYLE_ORDER: tuple[str, ...] = tuple(DESCRIPTION_STYLE_LABELS)
+
+AI_STATUS_META: dict[str, dict[str, str]] = {
+    "ready": {"label": "תיאור מוכן", "tone": "success"},
+    "running": {"label": "AI בתהליך", "tone": "warning"},
+    "pending": {"label": "AI בתהליך", "tone": "warning"},
+    "error": {"label": "שגיאה ב-AI", "tone": "error"},
+}
+
+
+def _normalize_pending_item(item: dict) -> dict:
+    if not isinstance(item, dict):
+        return {}
+
+    status = str(item.get("review_status") or "").strip()
+    if status not in REVIEW_STATUS_VALUES:
+        status = "new"
+    item["review_status"] = status
+
+    notes = item.get("review_notes")
+    if isinstance(notes, str):
+        item["review_notes"] = notes
+    elif notes is None:
+        item["review_notes"] = ""
+    else:
+        item["review_notes"] = str(notes)
+
+    created_at = item.get("created_at")
+    if not isinstance(created_at, str) or not created_at.strip():
+        created_at = _now_iso()
+        item["created_at"] = created_at
+
+    updated_at = item.get("updated_at")
+    if not isinstance(updated_at, str) or not updated_at.strip():
+        item["updated_at"] = created_at
+
+    return item
+
+
+def _pending_field_label(item: dict) -> str:
+    field_value = item.get("field")
+    if isinstance(field_value, dict):
+        for key in ("he", "en", "ru"):
+            val = str(field_value.get(key) or "").strip()
+            if val:
+                return val
+    for key in ("field_he", "field", "field_en", "field_ru"):
+        val = str(item.get(key) or "").strip()
+        if val:
+            return val
+    return ""
+
+
+def _pending_city_label(item: dict) -> str:
+    for key in ("base_city", "city", "area"):
+        val = str(item.get(key) or "").strip()
+        if val:
+            return val
+    cities = item.get("active_cities")
+    if isinstance(cities, list) and cities:
+        for city in cities:
+            city_val = str(city or "").strip()
+            if city_val:
+                return city_val
+    return ""
+
+
+def _collect_description_variants(item: dict) -> dict[str, dict[str, str]]:
+    variants: dict[str, dict[str, str]] = {}
+    stored = item.get("description_variants")
+    if isinstance(stored, dict):
+        for style in DESCRIPTION_STYLE_ORDER:
+            data = stored.get(style)
+            if isinstance(data, dict):
+                teaser = str(data.get("teaser") or "").strip()
+                body = str(data.get("body") or "").strip()
+                source = str(data.get("source") or "").strip() or "ai"
+                if teaser or body:
+                    variants[style] = {
+                        "teaser": teaser,
+                        "body": body,
+                        "source": source,
+                    }
+    fallback_teaser = str(item.get("ai_draft_bio_short") or item.get("ai_draft_bio") or "").strip()
+    fallback_body = str(item.get("ai_draft_bio_full") or item.get("ai_draft_bio") or "").strip()
+    if fallback_teaser or fallback_body:
+        for style in DESCRIPTION_STYLE_ORDER:
+            variants.setdefault(
+                style,
+                {
+                    "teaser": fallback_teaser,
+                    "body": fallback_body,
+                    "source": "ai_draft",
+                },
+            )
+    return variants
+
+
+def _prepare_pending_display_item(item: dict, index: int) -> dict:
+    normalized = _normalize_pending_item(item)
+    prepared = normalized.copy()
+    prepared["_original_index"] = index
+    prepared["_request_id"] = _request_id_for_item(normalized)
+    variants = prepared.get("description_variants")
+    if isinstance(variants, dict) and "used_fields" in variants and "description_used_fields" not in prepared:
+        prepared["description_used_fields"] = variants.get("used_fields") or {}
+    prepared["_field_label"] = _pending_field_label(prepared)
+    prepared["_city_label"] = _pending_city_label(prepared)
+    ai_status = str(prepared.get("ai_status") or "").strip()
+    status_meta = AI_STATUS_META.get(ai_status, {"label": "אין תוצאות עדיין", "tone": "muted"})
+    prepared["_ai_status_label"] = status_meta["label"]
+    prepared["_ai_status_tone"] = status_meta["tone"]
+    variants_map = _collect_description_variants(prepared)
+    prepared["_description_variants"] = variants_map
+    prepared["_ai_variants_count"] = sum(
+        1
+        for data in variants_map.values()
+        if (data.get("teaser") or data.get("body"))
+    )
+    cursor_next = prepared.get("ai_variant_cursor_next")
+    if isinstance(cursor_next, int):
+        prompts_sent = max(cursor_next, 0)
+    else:
+        cursor_val = prepared.get("ai_variant_cursor")
+        prompts_sent = (cursor_val + 1) if isinstance(cursor_val, int) else 0
+    prepared["_ai_prompts_sent"] = prompts_sent
+    selected = prepared.get("description_selected_text")
+    if isinstance(selected, dict):
+        prepared["_selected_teaser"] = selected.get("teaser") or ""
+        prepared["_selected_body"] = selected.get("body") or ""
+        prepared["_selected_style"] = selected.get("style") or ""
+        prepared["_selected_source"] = selected.get("source") or ""
+    else:
+        prepared["_selected_teaser"] = ""
+        prepared["_selected_body"] = ""
+        prepared["_selected_style"] = ""
+        prepared["_selected_source"] = ""
+    prepared["_has_selected_description"] = bool(
+        prepared["_selected_teaser"] or prepared["_selected_body"]
+    )
+    if ai_status == "ready" and prepared["_has_selected_description"]:
+        prepared["_ai_status_label"] = "תיאור מוכן"
+        prepared["_ai_status_tone"] = "success"
+    return prepared
 # ------------------------------
 # פונקציות עזר
 # ------------------------------
@@ -2792,6 +2951,7 @@ def request_professional(lang):
             "offers_emergency": offers_emergency,    # True/False
             "languages": languages                   # רשימת שפות מאומתת
         }
+        _normalize_pending_item(new_request)
 
         # שמירה לפנדינג
         with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
@@ -3746,6 +3906,7 @@ def _resolve_request_record(req_id: str):
 
     pending_list = read_json_file(PENDING_FILE)
     for idx, item in enumerate(pending_list):
+        _normalize_pending_item(item)
         if _request_id_for_item(item) == req_id:
             return "pending", pending_list, idx, item
 
@@ -3777,14 +3938,19 @@ def _persist_description_result(req_id: str, result: dict, generated_at: str):
     path = Path(PENDING_FILE if record_type == "pending" else APPROVED_FILE)
     with atomic_write_json(path, default_factory=list) as records:
         for idx, record in enumerate(records):
-            if _request_id_for_item(record) == req_id:
-                record["description_generated_at"] = generated_at
-                record["description_variants"] = safe_result
-                if isinstance(safe_result, dict):
-                    record["description_used_fields"] = safe_result.get("used_fields") or {}
-                record["request_id"] = _request_id_for_item(record)
-                records[idx] = record
-                break
+            if _request_id_for_item(record) != req_id:
+                continue
+
+            _normalize_pending_item(record)
+            record["description_generated_at"] = generated_at
+            record["description_variants"] = safe_result
+            if isinstance(safe_result, dict):
+                record["description_used_fields"] = safe_result.get("used_fields") or {}
+            record["request_id"] = _request_id_for_item(record)
+            if record_type == "pending":
+                record["updated_at"] = _now_iso()
+            records[idx] = record
+            break
 
 
 def _set_job_status(job_id: str, status: str, **extra):
@@ -3813,13 +3979,127 @@ def _prune_old_jobs(max_age_seconds: int = 3600):
 
 @app.route('/admin')
 def admin():
+    raw_pending = read_json_file(PENDING_FILE)
+    prepared_items: list[dict] = []
+    for idx, item in enumerate(raw_pending):
+        prepared_items.append(_prepare_pending_display_item(item, idx))
+
+    status_counts = {value: 0 for value, _ in REVIEW_STATUS_CHOICES}
+    for entry in prepared_items:
+        status_value = entry.get('review_status') or 'new'
+        if status_value not in status_counts:
+            status_counts[status_value] = 0
+        status_counts[status_value] += 1
+
+    status_filter = (request.args.get('status') or '').strip()
+    if status_filter not in REVIEW_STATUS_VALUES:
+        status_filter = ''
+    field_filter = (request.args.get('field') or '').strip()
+    city_filter = (request.args.get('city') or '').strip()
+
+    field_options = sorted({entry.get('_field_label') for entry in prepared_items if entry.get('_field_label')})
+    city_options = sorted({entry.get('_city_label') for entry in prepared_items if entry.get('_city_label')})
+
+    filtered_items: list[dict] = []
+    for entry in prepared_items:
+        if status_filter and entry.get('review_status') != status_filter:
+            continue
+        if field_filter and entry.get('_field_label') != field_filter:
+            continue
+        if city_filter and entry.get('_city_label') != city_filter:
+            continue
+        filtered_items.append(entry)
+
+    def _sort_key(record: dict) -> tuple[int, float | int]:
+        created_at = record.get('created_at')
+        if isinstance(created_at, str) and created_at.strip():
+            try:
+                dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                return (0, -dt.timestamp())
+            except ValueError:
+                pass
+        return (1, record.get('_original_index', 0))
+
+    filtered_items.sort(key=_sort_key)
+
+    return render_template(
+        'admin.html',
+        pending_list=filtered_items,
+        pending_total=len(prepared_items),
+        status_counts=status_counts,
+        review_status_labels=REVIEW_STATUS_LABELS,
+        review_status_choices=REVIEW_STATUS_CHOICES,
+        selected_status=status_filter,
+        selected_field=field_filter,
+        selected_city=city_filter,
+        field_options=field_options,
+        city_options=city_options,
+        description_style_labels=DESCRIPTION_STYLE_LABELS,
+        description_style_order=DESCRIPTION_STYLE_ORDER,
+        ai_status_meta=AI_STATUS_META,
+    )
+
+
+@app.get('/admin/requests/<req_id>')
+def admin_request_detail(req_id):
+    req_id = (req_id or '').strip()
+    if not req_id:
+        flash('בקשה לא נמצאה', 'error')
+        return redirect(url_for('admin'))
     pending_list = read_json_file(PENDING_FILE)
-    for item in pending_list:
-        item['_request_id'] = _request_id_for_item(item)
-        variants = item.get('description_variants')
-        if isinstance(variants, dict) and 'used_fields' in variants and 'description_used_fields' not in item:
-            item['description_used_fields'] = variants.get('used_fields') or {}
-    return render_template('admin.html', pending_list=pending_list)
+    for idx, item in enumerate(pending_list):
+        if _request_id_for_item(item) != req_id:
+            continue
+        prepared = _prepare_pending_display_item(item, idx)
+        return render_template(
+            'admin_request_detail.html',
+            item=prepared,
+            review_status_labels=REVIEW_STATUS_LABELS,
+            review_status_choices=REVIEW_STATUS_CHOICES,
+            description_style_labels=DESCRIPTION_STYLE_LABELS,
+            description_style_order=DESCRIPTION_STYLE_ORDER,
+            ai_status_meta=AI_STATUS_META,
+        )
+
+    flash('בקשה לא נמצאה', 'error')
+    return redirect(url_for('admin'))
+
+
+@app.post('/admin/requests/<req_id>/update_review')
+def admin_update_review(req_id):
+    req_id = (req_id or '').strip()
+    if not req_id:
+        flash('בקשה לא נמצאה', 'error')
+        return redirect(url_for('admin'))
+
+    new_status = (request.form.get('review_status') or '').strip()
+    if new_status not in REVIEW_STATUS_VALUES:
+        new_status = 'new'
+    notes = request.form.get('review_notes')
+    if notes is None:
+        notes = ''
+
+    updated = False
+    now_iso = _now_iso()
+    with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
+        for idx, record in enumerate(records):
+            if _request_id_for_item(record) != req_id:
+                continue
+            _normalize_pending_item(record)
+            record['review_status'] = new_status
+            record['review_notes'] = notes
+            record['updated_at'] = now_iso
+            record['request_id'] = _request_id_for_item(record)
+            records[idx] = record
+            updated = True
+            break
+
+    if not updated:
+        flash('בקשה לא נמצאה', 'error')
+        return redirect(url_for('admin'))
+
+    flash('הסטטוס עודכן בהצלחה.', 'success')
+    return redirect(url_for('admin_request_detail', req_id=req_id))
 
 
 @app.post('/admin/requests/<req_id>/generate_description')
@@ -3946,11 +4226,13 @@ def admin_select_description(req_id):
 
     path = Path(PENDING_FILE if record_type == 'pending' else APPROVED_FILE)
     updated_item = None
+    now_iso = _now_iso()
     with atomic_write_json(path, default_factory=list) as records:
         for idx, record in enumerate(records):
             if _request_id_for_item(record) != req_id:
                 continue
 
+            _normalize_pending_item(record)
             if job_result:
                 safe_result = json.loads(json.dumps(job_result, ensure_ascii=False, default=str))
                 record['description_variants'] = safe_result
@@ -3976,7 +4258,9 @@ def admin_select_description(req_id):
             record['request_id'] = _request_id_for_item(record)
 
             if record_type == 'approved':
-                record['updated_at'] = _now_iso()
+                record['updated_at'] = now_iso
+            else:
+                record['updated_at'] = now_iso
 
             records[idx] = record
             updated_item = json.loads(json.dumps(record, ensure_ascii=False, default=str))
@@ -5099,7 +5383,8 @@ def admin_ai_generate(index):
         # נשמור גם את מצב הדפדוף ומטא:
         draft["ai_variant_cursor"] = v_idx
         item.update(draft)
-
+        _normalize_pending_item(item)
+        item['updated_at'] = _now_iso()
         # נשמור חזרה
         with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
             for idx, record in enumerate(records):
@@ -5121,6 +5406,8 @@ def admin_ai_generate(index):
     except Exception as e:
         # לא מפילים—נרשום שגיאה ונמשיך
         item["ai_status"] = "error"
+        _normalize_pending_item(item)
+        item['updated_at'] = _now_iso()
         with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
             for idx, record in enumerate(records):
                 if _request_id_for_item(record) == req_id:

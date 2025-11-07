@@ -1,0 +1,175 @@
+{% set req_id = item._request_id %}
+<div class="description-panel" data-req-id="{{ req_id }}"
+     data-generate-url="{{ url_for('admin_generate_description', req_id=req_id) }}"
+     data-status-url="{{ url_for('admin_description_status', req_id=req_id) }}"
+     data-select-url="{{ url_for('admin_select_description', req_id=req_id) }}"
+     {% if legacy_generate_url %}data-legacy-generate-url="{{ legacy_generate_url }}"{% endif %}>
+  <header class="description-panel__header">
+    <div class="description-panel__headline">
+      <h3 class="description-panel__title">ניהול תיאורי AI – {{ item.company_name or item.name or 'ללא שם' }}</h3>
+      <div class="description-panel__meta">
+        <span>וריאנטים זמינים: <strong>{{ item._ai_variants_count }}</strong></span>
+        <span>פרומפטים שנשלחו: <strong>{{ item._ai_prompts_sent }}</strong></span>
+        {% if item.description_generated_at %}
+        <span>עודכן לאחרונה: {{ item.description_generated_at }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="description-panel__badges">
+      <span class="status-badge status-badge--ai-{{ item._ai_status_tone }}">{{ item._ai_status_label }}</span>
+      {% if item._has_selected_description %}
+        <span class="status-badge status-badge--selected">תיאור נבחר</span>
+      {% endif %}
+    </div>
+    <div class="description-panel__actions">
+      <button type="button" class="btn btn-primary" data-action="generate">יצירת תיאור חדש ב-AI</button>
+      <button type="button" class="btn" data-action="refresh-status">רענן סטטוס</button>
+      {% if legacy_generate_url %}
+      <form action="{{ legacy_generate_url }}" method="POST" class="description-panel__legacy-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-secondary">⚙️ פרומפט ישן</button>
+      </form>
+      <form action="{{ legacy_generate_url }}?reset=1" method="POST" class="description-panel__legacy-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn">↺ אפס וריאנטים</button>
+      </form>
+      {% endif %}
+      {% if is_modal %}
+      <button type="button" class="btn" data-action="close-panel">סגירה</button>
+      {% endif %}
+    </div>
+  </header>
+  <div class="description-panel__feedback" data-role="panel-feedback"></div>
+  <div class="description-panel__body">
+    <section class="description-panel__column description-panel__column--original">
+      <h4>מידע מקורי של בעל המקצוע</h4>
+      <dl class="description-panel__list">
+        <div>
+          <dt>שם</dt>
+          <dd>{{ item.company_name or item.name or '—' }}</dd>
+        </div>
+        <div>
+          <dt>טלפון</dt>
+          <dd class="mono">{{ item.phone or '—' }}</dd>
+        </div>
+        <div>
+          <dt>תחום</dt>
+          <dd>{{ item._field_label or '—' }}</dd>
+        </div>
+        <div>
+          <dt>עיר / רדיוס</dt>
+          <dd>
+            {{ item._city_label or '—' }}
+            {% if item.work_radius %}<span class="muted">· {{ item.work_radius }} ק"מ</span>{% endif %}
+          </dd>
+        </div>
+        <div>
+          <dt>וותק</dt>
+          <dd>{{ item.experience or 0 }} שנים</dd>
+        </div>
+        {% if item.sub_services %}
+        <div>
+          <dt>שירותים</dt>
+          <dd>{{ item.sub_services|join(' · ') }}</dd>
+        </div>
+        {% endif %}
+        {% if item.languages %}
+        <div>
+          <dt>שפות</dt>
+          <dd>{{ item.languages|join(', ') }}</dd>
+        </div>
+        {% endif %}
+        <div>
+          <dt>חירום</dt>
+          <dd>{{ 'כן' if item.offers_emergency else 'לא' }}</dd>
+        </div>
+      </dl>
+      <div class="description-panel__text-block">
+        <h5>תיאור חופשי</h5>
+        <p>{{ item.description or '—' }}</p>
+      </div>
+      {% if item.reviews %}
+      <div class="description-panel__text-block">
+        <h5>הערות נוספות</h5>
+        <p>{{ item.reviews }}</p>
+      </div>
+      {% endif %}
+    </section>
+    <section class="description-panel__column description-panel__column--variants">
+      <h4>וריאנטים של AI</h4>
+      <div class="variant-tabs" role="tablist" aria-label="סגנונות תיאור">
+        {% for style in description_style_order %}
+        <button type="button" role="tab" data-variant-tab="{{ style }}" aria-selected="{{ 'true' if loop.first else 'false' }}">
+          {{ description_style_labels[style] }}
+        </button>
+        {% endfor %}
+      </div>
+      <div class="variant-panels">
+        {% for style in description_style_order %}
+        {% set variant = item._description_variants.get(style) %}
+        {% set source_value = '' %}
+        {% if variant %}
+          {% set source_value = (variant.get('source') or 'AI') %}
+        {% endif %}
+        {% set payload = {
+          'style': style,
+          'source': source_value,
+          'teaser': variant.get('teaser') if variant else '',
+          'body': variant.get('body') if variant else ''
+        } %}
+        <article class="variant-panel{% if loop.first %} is-active{% endif %}" data-variant-style="{{ style }}" data-variant='{{ payload|tojson }}'>
+          <header class="variant-panel__header">
+            <div>
+              <div class="variant-panel__title">{{ description_style_labels[style] }}</div>
+              <div class="variant-panel__source">מקור: {{ source_value or 'AI' }}</div>
+            </div>
+            {% if item._selected_style == style and item._has_selected_description %}
+            <span class="status-badge status-badge--selected">נבחר</span>
+            {% endif %}
+          </header>
+          {% if variant and (variant.get('teaser') or variant.get('body')) %}
+          <div class="variant-panel__content">
+            <div class="variant-panel__block">
+              <div class="variant-panel__label">תיאור קצר</div>
+              <div class="variant-panel__text">{{ variant.get('teaser') or '—' }}</div>
+            </div>
+            <div class="variant-panel__block">
+              <div class="variant-panel__label">תיאור מלא</div>
+              <div class="variant-panel__text">{{ variant.get('body') or '—' }}</div>
+            </div>
+          </div>
+          <div class="variant-panel__actions">
+            <button type="button" class="btn btn-success" data-action="select-variant">סמן כתיאור שנבחר</button>
+          </div>
+          {% else %}
+          <p class="muted">אין עדיין תיאור בסגנון זה.</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="description-panel__column description-panel__column--selected">
+      <h4>תיאור נבחר לפרסום</h4>
+      {% if item._has_selected_description %}
+      <div class="selected-description">
+        {% if item._selected_style %}
+        <div class="selected-description__meta">סגנון: {{ description_style_labels.get(item._selected_style, item._selected_style) }}</div>
+        {% endif %}
+        {% if item._selected_source %}
+        <div class="selected-description__meta">מקור: {{ item._selected_source }}</div>
+        {% endif %}
+        <div class="selected-description__block">
+          <div class="selected-description__label">תיאור קצר</div>
+          <div class="selected-description__text">{{ item._selected_teaser or '—' }}</div>
+        </div>
+        <div class="selected-description__block">
+          <div class="selected-description__label">תיאור מלא</div>
+          <div class="selected-description__text">{{ item._selected_body or '—' }}</div>
+        </div>
+      </div>
+      {% else %}
+      <p class="muted">טרם נבחר תיאור לפרסום.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>

@@ -189,7 +189,7 @@
           </header>
           <div class="articles-grid" role="list">
             {% for article in general_articles %}
-              {% include 'articles/partials/article-card.html' %}
+              {% include 'articles/partials/article-card-archive.html' %}
             {% endfor %}
           </div>
         </section>
@@ -208,7 +208,7 @@
             </header>
             <div class="articles-grid" role="list">
               {% for article in category_articles %}
-                {% include 'articles/partials/article-card.html' %}
+                {% include 'articles/partials/article-card-archive.html' %}
               {% endfor %}
             </div>
             <div class="articles-inline-cta" data-category-cta>
@@ -238,7 +238,7 @@
             </header>
             <div class="articles-grid" role="list">
               {% for article in category_articles %}
-                {% include 'articles/partials/article-card.html' %}
+                {% include 'articles/partials/article-card-archive.html' %}
               {% endfor %}
             </div>
           </section>

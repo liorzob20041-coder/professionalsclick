@@ -91,6 +91,16 @@
   'en': 'Before you call an electrician, check whether a breaker tripped in your panel.',
   'ru': 'Прежде чем звонить электрику, проверьте, не выбил ли автомат в щитке.'
 } %}
+{% set featured_title_map = {
+  'he': 'מאמרים מומלצים',
+  'en': 'Featured articles',
+  'ru': 'Рекомендуемые статьи'
+} %}
+{% set featured_subtitle_map = {
+  'he': 'מה שהכי עזר לגולשים אחרים',
+  'en': 'What helped other readers the most',
+  'ru': 'Что больше всего помогло читателям'
+} %}
 {% set tip_heading = tip_heading_map.get(g.current_lang, tip_heading_map['he']) %}
 {% set tip_text = tip_text_map.get(g.current_lang, tip_text_map['he']) %}
 {% set find_pro_label_map = {
@@ -147,6 +157,8 @@
 {% set footer_title = footer_title_map.get(g.current_lang, footer_title_map['he']) %}
 {% set footer_subtitle = footer_subtitle_map.get(g.current_lang, footer_subtitle_map['he']) %}
 {% set footer_home_label = footer_home_map.get(g.current_lang, footer_home_map['he']) %}
+{% set featured_title = featured_title_map.get(g.current_lang, featured_title_map['he']) %}
+{% set featured_subtitle = featured_subtitle_map.get(g.current_lang, featured_subtitle_map['he']) %}
 <section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}" data-articles-root data-selected-category="{{ selected_category }}">
   <div class="container">
     <header class="articles-hero" dir="rtl">
@@ -179,6 +191,21 @@
       </div>
       <a href="#" class="categories-reset" data-reset-filter{% if not selected_category %} hidden{% endif %}>{{ clear_filter_label }}</a>
     </nav>
+    {% if featured_articles %}
+      <section class="articles-featured" dir="rtl">
+        <div class="articles-featured__header">
+          <h2 class="articles-featured__title">{{ featured_title }}</h2>
+          {% if featured_subtitle %}
+            <p class="articles-featured__subtitle">{{ featured_subtitle }}</p>
+          {% endif %}
+        </div>
+        <div class="articles-featured__row" role="list">
+          {% for article in featured_articles %}
+            {% include 'articles/partials/article-card-archive.html' %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
     {% if articles %}
       {% set general_articles = grouped_articles.get('general') %}
       {% if general_articles %}

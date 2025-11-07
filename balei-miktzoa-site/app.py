@@ -2458,6 +2458,7 @@ def contact(lang):
 def articles_index(lang):
     g.current_lang = lang
     articles = load_articles_list(lang)
+    featured_articles = [a for a in articles if a.get("featured")]
     categories = sorted({a.get("category") for a in articles if a.get("category")})
     grouped_articles: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
     for article in articles:
@@ -2466,6 +2467,7 @@ def articles_index(lang):
     return render_template(
         'articles/index.html',
         articles=articles,
+        featured_articles=featured_articles,
         categories=categories,
         grouped_articles=dict(grouped_articles),
     )

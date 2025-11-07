@@ -42,6 +42,7 @@ def load_articles_list(lang: str) -> List[Dict[str, Any]]:
                 "slug": slug,
                 "date": meta.get("date"),
                 "category": meta.get("category"),
+                "featured": bool(meta.get("featured", False)),
                 "hero_image": meta.get("hero_image"),
                 "reading_minutes": meta.get("reading_minutes"),
                 "title": lang_data.get("title"),

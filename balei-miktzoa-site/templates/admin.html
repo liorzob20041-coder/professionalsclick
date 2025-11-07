@@ -6,105 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSRF למודאל -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <style>
-    :root{
-      --bg:#0f1115;--panel:#171a1f;--ink:#e6edf3;--muted:#9aa4b2;
-      --line:#232a36;--ok:#16a34a;--warn:#f59e0b;--err:#ef4444;--btn:#243045;--btn2:#1f6feb;
-    }
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    h1{font-size:20px;margin:18px 12px}
-    a{color:#7cc3ff;text-decoration:none}
-    .wrap{max-width:1200px;margin:0 auto;padding:0 12px 24px}
-
-    .admin-toolbar{display:flex;gap:10px;margin:6px 0 18px 0;flex-wrap:wrap}
-    .tool{display:inline-block;padding:8px 12px;border-radius:8px;background:#0ea5e9;color:#fff}
-    .tool.secondary{background:#6b7280}
-
-    .flash-list{list-style:none;padding:0;margin:0 0 14px 0}
-    .flash-list li{padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#122331}
-    .flash-list li[data-color="red"]{background:#2a1515}
-    .flash-list li[data-color="green"]{background:#152a1a}
-
-    table{width:100%;border-collapse:separate;border-spacing:0 10px}
-    thead th{font-size:13px;color:var(--muted);text-align:right;padding:6px 10px}
-    tbody tr{background:var(--panel);border:1px solid var(--line)}
-    tbody td{vertical-align:top;padding:12px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-    tbody td:first-child{border-right:1px solid var(--line);border-top-right-radius:12px;border-bottom-right-radius:12px}
-    tbody td:last-child{border-left:1px solid var(--line);border-top-left-radius:12px;border-bottom-left-radius:12px}
-    .mono{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace}
-    .muted{color:var(--muted)}
-    .badge{
-      display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-inline-start:6px;
-      border:1px solid #314056;background:#1a2231;color:#cfe3ff
-    }
-    .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
-    .status.ready{color:#d1fae5;background:#0b2a1b;border-color:#1b3f2b}
-    .status.err{color:#fee2e2;background:#3a1212;border-color:#6b1b1b}
-    .status.na{color:#cbd5e1;background:#0f172a;border-color:#1f2937}
-
-    .thumb{display:flex;gap:10px;align-items:flex-start}
-    .thumb img{width:72px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
-    .name{font-weight:700;margin:0 0 4px 0}
-    .pill{display:inline-block;background:#0f1520;border:1px solid #283144;padding:2px 8px;border-radius:999px;font-size:12px;color:#cbd6e2;margin-inline-start:6px}
-
-    .text-block{max-width:520px}
-    .text-block .text{display:-webkit-box;-webkit-box-orient:vertical;line-clamp:1;-webkit-line-clamp:1;overflow:hidden}
-    .text-block.open .text{line-clamp:none;-webkit-line-clamp:initial;overflow:visible;white-space:normal}
-    .toggle-link{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;font-size:12px;color:#7cc3ff;margin-top:4px}
-
-    .ai-sec-title{margin:6px 0 4px;font-size:12px;color:#cfe3ff;font-weight:700}
-    .ai-meta{font-size:12px;color:#cbd5e1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
-    .ai-meta .kv{background:#0f1520;border:1px solid #283144;border-radius:999px;padding:2px 8px}
-
-    .actions form{display:inline-block;margin:4px 4px 0}
-    .btn{background:var(--btn);color:var(--ink);border:1px solid #2b3240;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer}
-    .btn[disabled]{opacity:.6;cursor:default}
-    .btn.primary{background:var(--btn2);border-color:#2c67c0}
-    .btn.ok{background:#1b5e20;border-color:#2e7d32}
-    .btn.danger{background:#7a1b1b;border-color:#9a2a2a}
-    .btn.warn{background:#7a4c00;border-color:#9a6700}
-    .checkbox{font-size:13px;color:#cbd5e1;margin-inline-end:8px}
-    @media (max-width:920px){.hide-md{display:none}}
-
-    /* ==== MODAL ==== */
-    .desc-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50}
-    .desc-modal[hidden]{display:none}
-    .desc-modal__backdrop{position:absolute;inset:0;background:rgba(9,11,19,0.75)}
-    .desc-modal__dialog{position:relative;background:#10131a;border:1px solid #1b2333;border-radius:14px;padding:20px 22px;width:min(780px,92vw);max-height:92vh;overflow:auto;box-shadow:0 24px 48px rgba(3,5,10,0.45)}
-    .desc-modal__close{position:absolute;top:10px;left:14px;background:none;border:0;color:#a9b4c6;font-size:22px;cursor:pointer}
-    .desc-modal__title{margin:0 0 12px;font-size:18px}
-    .desc-modal__status{font-size:13px;margin-bottom:12px;color:#8ba3c2;min-height:18px;display:flex;align-items:center;gap:8px}
-    .desc-tabs{display:flex;gap:8px;margin-bottom:12px}
-    .desc-tabs button{flex:1;background:#111826;border:1px solid #1f2a3d;color:#cfe3ff;padding:8px;border-radius:10px;cursor:pointer;font-size:13px}
-    .desc-tabs button[aria-selected="true"]{background:#1b2a3f;border-color:#4a6fae;color:#f8fbff}
-    .desc-form label{display:block;font-size:13px;margin:10px 0 4px;color:#cfe3ff}
-    .desc-form textarea{width:100%;background:#0f1520;border:1px solid #263247;border-radius:8px;color:#f1f5f9;padding:10px;font-size:13px;min-height:70px;resize:vertical}
-    .desc-form textarea:focus{outline:2px solid #2c67c0}
-    .desc-meta-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;color:#cfe3ff;font-size:12px}
-    .desc-meta-tags .tag{background:#162036;border:1px solid #253149;border-radius:999px;padding:2px 10px}
-    .char-row{margin-top:6px;display:flex;gap:12px;font-size:12px;color:#94a3b8;align-items:center}
-    .char-count.warn{color:var(--warn)}
-    .char-count.ok{color:#38bdf8}
-    .status-indicator{width:14px;height:14px;border-radius:50%;border:2px solid rgba(124,195,255,0.3);border-top-color:#7cc3ff;animation:spin 1s linear infinite;opacity:0}
-    .status-indicator.active{opacity:1}
-    .btn.is-busy{position:relative;padding-inline-end:32px}
-    .btn.is-busy::after{content:"";position:absolute;top:50%;transform:translateY(-50%);left:12px;width:14px;height:14px;border-radius:50%;border:2px solid rgba(230,237,243,0.35);border-top-color:#e6edf3;animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .desc-modal__actions{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
-    .copy-btn{margin-top:6px;font-size:12px;padding:4px 8px;border-radius:8px;border:1px solid #2b3240;background:#182032;color:#e6edf3;cursor:pointer}
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
-<div class="wrap">
-  <h1>ניהול בקשות בעלי מקצוע</h1>
-
-  <nav class="admin-toolbar">
-    <a class="tool" href="{{ url_for('analysis_index') }}">דשבורד אנליטיקס</a>
-    <a class="tool secondary" href="{{ url_for('analysis_monthly') }}">דוח חודשי</a>
-    <a class="tool secondary" href="{{ url_for('analysis_all_time') }}">כל הזמנים</a>
-    <a class="tool secondary" href="{{ url_for('admin_logout') }}">התנתקות</a>
-  </nav>
-
+<div class="admin-page">
+  <header class="admin-header">
+    <div class="admin-header__text">
+      <h1 class="admin-title">בקשות ממתינות</h1>
+      <p class="admin-subtitle">כאן רואים ומאשרים בעלי מקצוע חדשים לפני שהם עולים לאתר.</p>
+    </div>
+    <span class="admin-badge" aria-label="מספר בקשות ממתינות">{{ pending_list|length }}</span>
+  </header>
+  <div class="admin-actions-bar">
+    <div class="admin-actions-bar__links">
+      <a class="admin-link" href="{{ url_for('analysis_index') }}">דשבורד אנליטיקס</a>
+      <a class="admin-link" href="{{ url_for('analysis_monthly') }}">דוח חודשי</a>
+      <a class="admin-link" href="{{ url_for('analysis_all_time') }}">כל הזמנים</a>
+      <a class="admin-link" href="/admin/analysis/dashboard">מעקב וביצועים (CRM קטן)</a>
+      <a class="admin-link admin-link--muted" href="{{ url_for('admin_logout') }}">התנתקות</a>
+    </div>
+    <label class="admin-search" for="pending-search">
+      <span class="admin-search__label">חיפוש</span>
+      <input id="pending-search" type="search" placeholder="חיפוש לפי שם / טלפון / תחום / עיר…" aria-label="חיפוש בקשות" />
+    </label>
+  </div>
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <ul class="flash-list">
@@ -119,15 +44,14 @@
   {% if not pending_list %}
     <p class="muted">אין פנדינג כרגע.</p>
   {% else %}
-    <table>
+    <table class="admin-table">
       <thead>
         <tr>
-          <th>שם</th>
-          <th class="hide-md">תחום</th>
-          <th>איזור</th>
-          <th class="hide-md">טלפון</th>
+          <th>שם / טלפון</th>
+          <th>תחום</th>
+          <th>עיר / רדיוס</th>
           <th>וותק</th>
-          <th>טיוטת AI</th>
+          <th>סטטוס תיאור</th>
           <th>פעולות</th>
         </tr>
       </thead>
@@ -135,48 +59,71 @@
         {% for item in pending_list %}
         {% set req_id = (item._request_id or item.request_id or ('row-' ~ loop.index0)) %}
         <tr data-row-id="{{ req_id }}">
-          <td>
-            <div class="thumb">
+          <td data-searchable>
+            <div class="admin-professional">
               {% if item.image_filename %}
-                <img alt="" src="{{ url_for('img_proxy', filename=item.image_filename, w=160, h=120, fit='cover', format='auto', q=80) }}">
+                <img class="admin-professional__image" alt="" src="{{ url_for('img_proxy', filename=item.image_filename, w=160, h=120, fit='cover', format='auto', q=80) }}">
               {% endif %}
-              <div>
-                <div class="name">
+              <div class="admin-professional__details">
+                <div class="admin-professional__name">
                   {{ item.company_name or item.name or 'ללא שם' }}
                   {% if item.offers_emergency %}<span class="badge">חירום 24/7</span>{% endif %}
                 </div>
-                <div class="muted mono">{{ item.phone or '—' }}</div>
+                <div class="admin-professional__meta">
+                  <span class="mono" data-searchable>{{ item.phone or '—' }}</span>
+                </div>
                 {% if item.sub_services %}
-                  <div class="muted" style="margin-top:4px">תתי־תחומים: {{ item.sub_services|length }}</div>
+                  <div class="admin-professional__sub">תתי־תחומים: {{ item.sub_services|length }}</div>
                 {% endif %}
               </div>
             </div>
           </td>
-
-          <td class="hide-md">{{ item.field or '—' }}</td>
-
-          <td>
-            {{ item.get('area') or item.get('base_city') or '—' }}
-            {% if item.work_radius %}
-              <span class="pill">רדיוס {{ item.work_radius }} ק״מ</span>
-            {% endif %}
-          </td>
-
-          <td class="hide-md mono">{{ item.phone or '—' }}</td>
-          <td>{{ item.experience or 0 }} שנים</td>
-
-          <td>
-            {% set ai_status = item.get('ai_status') %}
-            <div style="margin-bottom:6px">
-              {% if ai_status == 'ready' %}
-                <span class="status ready" data-role="ai-status">מוכן</span>
-              {% elif ai_status == 'error' %}
-                <span class="status err" data-role="ai-status">שגיאה</span>
-              {% else %}
-                <span class="status na" data-role="ai-status">טרם הופעל</span>
+          <td data-searchable>
+            <div class="admin-field">
+              <span>{{ item.field or '—' }}</span>
+              {% if item.sub_services %}
+                <div class="admin-field__subs">{{ item.sub_services|join(' · ') }}</div>
               {% endif %}
             </div>
-
+          </td>
+          <td data-searchable>
+            <div class="admin-location">
+              <span>{{ item.get('area') or item.get('base_city') or '—' }}</span>
+              {% if item.work_radius %}
+                <span class="pill">רדיוס {{ item.work_radius }} ק״מ</span>
+              {% endif %}
+              {% set served = item.get('cities_served') %}
+              {% if served %}
+                <div class="admin-location__extra">
+                  {% if served is iterable and served is not string %}
+                    {{ served|join(', ') }}
+                  {% else %}
+                    {{ served }}
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="admin-experience">
+              <strong>{{ item.experience or 0 }}</strong>
+              <span>שנים</span>
+            </div>
+          </td>
+          <td>
+            {% set ai_status = item.get('ai_status') %}
+            {% set has_ready = ai_status == 'ready' and (item.get('ai_draft_bio_short') or item.get('ai_draft_bio_full') or item.get('ai_draft_bio')) %}
+            <div class="admin-status">
+              {% if has_ready %}
+                <span class="status admin-status-badge status--ready" data-role="ai-status">תיאור מוכן</span>
+              {% elif ai_status in ['pending', 'running'] %}
+                <span class="status admin-status-badge status--pending" data-role="ai-status">AI עובד…</span>
+              {% elif ai_status == 'error' %}
+                <span class="status admin-status-badge status--error" data-role="ai-status">שגיאה ב-AI</span>
+              {% else %}
+                <span class="status admin-status-badge status--empty" data-role="ai-status">אין תיאור עדיין</span>
+              {% endif %}
+            </div>
             <div class="ai-meta">
               <span class="kv">וריאנט: <span class="mono" data-role="ai-variant-id">{{ item.get('ai_variant_used') or '—' }}</span></span>
               <span class="kv">מונה פרומפט: <span data-role="ai-prompt-counter">#{{ (item.ai_variant_cursor or 0) + 1 }}</span></span>
@@ -186,36 +133,38 @@
                 <span class="kv" data-role="ai-exhausted" style="display:none"></span>
               {% endif %}
             </div>
-
-            {% if ai_status == 'ready' %}
-              <div class="ai-sec-title">תיאור קצר (כרטיס):</div>
-              <div class="text-block" id="ai-short-{{ loop.index0 }}">
-                <div class="text" data-role="ai-short-text">{{ item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '—' }}</div>
-                <button class="toggle-link" type="button" onclick="toggleBlock('ai-short-{{ loop.index0 }}', this)">הצג הכל</button>
-              </div>
-
-              <div class="ai-sec-title">תיאור מלא (פרופיל):</div>
-              <div class="text-block" id="ai-full-{{ loop.index0 }}">
-                <div class="text" data-role="ai-full-text">{{ item.get('ai_draft_bio_full') or item.get('ai_draft_bio') or '—' }}</div>
-                <button class="toggle-link" type="button" onclick="toggleBlock('ai-full-{{ loop.index0 }}', this)">הצג הכל</button>
-              </div>
-
-              <div class="ai-sec-title">שירותים:</div>
-              <div class="text-block" id="svc-{{ loop.index0 }}">
-                <div class="text" data-role="ai-services-text">
-                  {% if item.get('ai_draft_services_sentence') %}
-                    {{ item['ai_draft_services_sentence'] }}
-                  {% else %}
-                    {% set svc_list = item.get('sub_services') or [] %}
-                    {{ svc_list and (svc_list|join(', ')) or '—' }}
-                  {% endif %}
+            {% if has_ready %}
+              <div class="ai-sec">
+                <div class="ai-sec-title">תיאור קצר (כרטיס)</div>
+                <div class="text-block" id="ai-short-{{ loop.index0 }}">
+                  <div class="text" data-role="ai-short-text">{{ item.get('ai_draft_bio_short') or item.get('ai_draft_bio') or '—' }}</div>
+                  <button class="toggle-link" type="button" onclick="toggleBlock('ai-short-{{ loop.index0 }}', this)">הצג הכל</button>
                 </div>
-                <button class="toggle-link" type="button" onclick="toggleBlock('svc-{{ loop.index0 }}', this)">הצג הכל</button>
+              </div>
+              <div class="ai-sec">
+                <div class="ai-sec-title">תיאור מלא (פרופיל)</div>
+                <div class="text-block" id="ai-full-{{ loop.index0 }}">
+                  <div class="text" data-role="ai-full-text">{{ item.get('ai_draft_bio_full') or item.get('ai_draft_bio') or '—' }}</div>
+                  <button class="toggle-link" type="button" onclick="toggleBlock('ai-full-{{ loop.index0 }}', this)">הצג הכל</button>
+                </div>
+              </div>
+              <div class="ai-sec">
+                <div class="ai-sec-title">שירותים</div>
+                <div class="text-block" id="svc-{{ loop.index0 }}">
+                  <div class="text" data-role="ai-services-text">
+                    {% if item.get('ai_draft_services_sentence') %}
+                      {{ item['ai_draft_services_sentence'] }}
+                    {% else %}
+                      {% set svc_list = item.get('sub_services') or [] %}
+                      {{ svc_list and (svc_list|join(', ')) or '—' }}
+                    {% endif %}
+                  </div>
+                  <button class="toggle-link" type="button" onclick="toggleBlock('svc-{{ loop.index0 }}', this)">הצג הכל</button>
+                </div>
               </div>
             {% else %}
               <em class="muted">אין טיוטה</em>
             {% endif %}
-
             <!-- JSON למודאל: prompt-based בלבד -->
             <script type="application/json" class="desc-data" data-req-id="{{ req_id }}">
             {
@@ -256,30 +205,27 @@
           </td>
 
           <td>
-            <div class="actions">
-              <button type="button" class="btn primary" data-open-modal="{{ req_id }}">✏️ פתח חלון</button>
-
-              <!-- הכפתורים הישנים (גיבוי) -->
+            <div class="admin-actions">
+              <button type="button" class="btn btn-primary" data-open-modal="{{ req_id }}">✏️ עריכת תיאור</button>
               <form action="{{ url_for('admin_ai_generate', index=loop.index0) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="btn">⚙️ פרומפט הבא</button>
+                <button type="submit" class="btn btn-secondary">⚙️ פרומפט הבא</button>
               </form>
               <form action="{{ url_for('admin_ai_generate', index=loop.index0) }}?reset=1" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="btn warn">↺ אפס ודלג</button>
+                <button type="submit" class="btn btn-secondary">↺ אפס ודלג</button>
               </form>
-
               <form action="{{ url_for('approve_professional', index=loop.index0) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <label class="checkbox">
                   <input type="checkbox" name="use_ai" value="1" {% if item.get('ai_status') != 'ready' %}disabled{% endif %}>
                   השתמש בטיוטת AI
                 </label>
-                <button type="submit" class="btn ok">אשר</button>
+                <button type="submit" class="btn btn-success">אשר</button>
               </form>
               <form action="{{ url_for('delete_pending', index=loop.index0) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="btn danger">דחה</button>
+                <button type="submit" class="btn btn-danger">דחה</button>
               </form>
             </div>
           </td>
@@ -343,7 +289,32 @@
     var isOpen = el.classList.toggle('open');
     btn.textContent = isOpen ? 'הסתר' : 'הצג הכל';
   }
-
+  document.addEventListener('DOMContentLoaded', function(){
+    var searchInput = document.getElementById('pending-search');
+    if(!searchInput) return;
+    var rows = Array.prototype.slice.call(document.querySelectorAll('tbody tr[data-row-id]'));
+    function rowText(row){
+      return Array.prototype.slice.call(row.querySelectorAll('[data-searchable]'))
+        .map(function(el){ return (el.textContent || '').trim().toLowerCase(); })
+        .join(' ');
+    }
+    searchInput.addEventListener('input', function(){
+      var term = (this.value || '').trim().toLowerCase();
+      rows.forEach(function(row){
+        var text = rowText(row);
+        if(!term || text.indexOf(term) !== -1){
+          row.classList.remove('is-hidden');
+        } else {
+          row.classList.add('is-hidden');
+        }
+      });
+    });
+    if(searchInput.value){
+      var event = document.createEvent('Event');
+      event.initEvent('input', true, true);
+      searchInput.dispatchEvent(event);
+    }
+  });
   (function(){
     const modal = document.getElementById('descModal');
     const titleEl = document.getElementById('descModalTitle');
@@ -536,9 +507,9 @@
         dstEx.textContent = srcEx.textContent;
         dstEx.style.display = getComputedStyle(srcEx).display;
       }
-      // ai-status תמיד "מוכן" אחרי יצירה מוצלחת (כמו בצד שרת)
+      // ai-status תמיד "מוכן" אחרי יצירה מוצלחת (כמו בצד שרת)␊
       const st = localRow.querySelector('[data-role="ai-status"]');
-      if (st){ st.className = 'status ready'; st.textContent = 'מוכן'; }
+      if (st){ st.className = 'status admin-status-badge status--ready'; st.textContent = 'תיאור מוכן'; }
     }
 
     function copyText(srcRoot, dstRoot, selector){

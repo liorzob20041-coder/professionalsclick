@@ -201,7 +201,11 @@
           </td>
         </tr>
         <template id="panel-template-{{ item._request_id }}">
-          {% include 'admin_description_panel.html' with item=item, is_modal=True, legacy_generate_url=url_for('admin_ai_generate', index=item._original_index) %}
+          {% with item=item,
+                 is_modal=True,
+                 legacy_generate_url=url_for('admin_ai_generate', index=item._original_index) %}
+            {% include 'admin_description_panel.html' %}
+          {% endwith %}
         </template>
         {% endfor %}
       </tbody>

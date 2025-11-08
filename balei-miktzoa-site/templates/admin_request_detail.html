@@ -115,7 +115,11 @@
     </section>
     <section class="detail-card detail-card--wide">
       <h2>תיאור ו-AI</h2>
-      {% include 'admin_description_panel.html' with item=item, is_modal=False, legacy_generate_url=url_for('admin_ai_generate', index=item._original_index) %}
+      {% with item=item,
+             is_modal=False,
+             legacy_generate_url=url_for('admin_ai_generate', index=item._original_index) %}
+        {% include 'admin_description_panel.html' %}
+      {% endwith %}
     </section>
   </div>
 </div>

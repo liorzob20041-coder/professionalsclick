@@ -3980,8 +3980,12 @@ def _prune_old_jobs(max_age_seconds: int = 3600):
 @app.route('/admin')
 def admin():
     raw_pending = read_json_file(PENDING_FILE)
+    if not isinstance(raw_pending, list):
+        raw_pending = []
     prepared_items: list[dict] = []
     for idx, item in enumerate(raw_pending):
+        if not isinstance(item, dict):
+            continue
         prepared_items.append(_prepare_pending_display_item(item, idx))
 
     status_counts = {value: 0 for value, _ in REVIEW_STATUS_CHOICES}

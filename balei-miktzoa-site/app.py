@@ -5328,6 +5328,87 @@ def admin_login():
 
 
 
+def _generate_next_prompt_for_item(item: dict, index: int, *, reset: bool = False):
+    if not isinstance(item, dict):
+        return False, "פריט לא קיים", "error", None
+
+    req_id = _request_id_for_item(item)
+
+    pre_id = _pre_worker_id(item)
+
+    if reset:
+
+        cur = session.get("ai_vcur", {})
+        if pre_id in cur:
+            cur.pop(pre_id, None)
+            session["ai_vcur"] = cur
+            session.modified = True
+
+    def _field_key_for_variants(s: str) -> str:
+        s = (s or "").strip()
+        if s in ("חשמלאים", "חשמלאי"):
+            return "חשמלאי"
+        if s in ("אינסטלטורים", "אינסטלטור"):
+            return "אינסטלטור"
+        return s
+
+    field_for_variants = _field_key_for_variants(item.get("field") or "")
+    try:
+        variants_meta = list_variants(field_for_variants)
+        total_variants = len(variants_meta)
+    except Exception:
+        variants_meta, total_variants = [], 0
+
+    if total_variants <= 0:
+        total_variants = int(os.environ.get("AI_VARIANTS_TOTAL", "7"))
+
+    v_idx = _bump_variant_cursor(pre_id, total=total_variants)
+
+
+    worker = dict(item)
+    worker["original_bio"] = item.get("description") or item.get("about") or ""
+    worker["variant_refresh"] = v_idx
+    ok = True
+    tone = "success"
+    message = ""
+    try:
+        draft = generate_draft(worker, lang='he')
+        draft["ai_variant_cursor"] = v_idx
+        item.update(draft)
+        _normalize_pending_item(item)
+        item['updated_at'] = _now_iso()
+        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
+            for idx, record in enumerate(records):
+                if _request_id_for_item(record) == req_id:
+                    records[idx] = item
+                    break
+
+        used_id = (draft.get("ai_variant_used") or "").strip()
+        label = ""
+        if used_id and variants_meta:
+            for v in variants_meta:
+                if v.get("id") == used_id:
+                    label = v.get("label") or ""
+                    break
+        suffix = f" • {used_id}" + (f" – {label}" if label else "")
+        message = f"טיוטת AI #{v_idx + 1} נוצרה{suffix}."
+
+    except Exception:
+        ok = False
+        tone = "error"
+        item["ai_status"] = "error"
+        _normalize_pending_item(item)
+        item['updated_at'] = _now_iso()
+        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
+            for idx, record in enumerate(records):
+                if _request_id_for_item(record) == req_id:
+                    records[idx] = item
+                    break
+        message = "אירעה שגיאה ביצירת הטיוטה."
+    prepared = _prepare_pending_display_item(item, index)
+    return ok, message, tone, prepared
+
+
 @app.route('/admin/pending/<int:index>/ai-generate', methods=['POST'])
 def admin_ai_generate(index):
     """
@@ -5340,92 +5421,65 @@ def admin_ai_generate(index):
         return redirect(url_for('admin'))
 
     item = pending_list[index]
-    req_id = _request_id_for_item(item)
-
-    # מזהה יציב לפנדינג (כי עדיין אין worker_id)
-    pre_id = _pre_worker_id(item)
-
-    # איפוס קורסור (אופציונלי): /admin/pending/<i>/ai-generate?reset=1
-    if request.args.get("reset") in ("1", "true", "yes"):
-        cur = session.get("ai_vcur", {})
-        if pre_id in cur:
-            cur.pop(pre_id, None)
-            session["ai_vcur"] = cur
-            session.modified = True
-
-    # --- בחירת גודל המאגר לפי תחום בפועל (עם פולבאק ל-ENV/7) ---
-    def _field_key_for_variants(s: str) -> str:
-        s = (s or "").strip()
-        if s in ("חשמלאים", "חשמלאי"):
-            return "חשמלאי"
-        if s in ("אינסטלטורים", "אינסטלטור"):
-            return "אינסטלטור"
-        return s
-
-    field_for_variants = _field_key_for_variants(item.get("field") or "")
-    try:
-        variants_meta = list_variants(field_for_variants)  # [{'id','label',...}, ...]
-        total_variants = len(variants_meta)
-    except Exception:
-        variants_meta, total_variants = [], 0
-
-    if total_variants <= 0:
-        total_variants = int(os.environ.get("AI_VARIANTS_TOTAL", "7"))
-
-    # דפדוף: כל לחיצה מקדמת
-    v_idx = _bump_variant_cursor(pre_id, total=total_variants)
-
-    # מכינים payload למנוע הכתיבה:
-    # - original_bio: התיאור שבעל המקצוע כתב על עצמו
-    # - variant_refresh: האינדקס (קורסור) לשינוי הניסוח/הסדר
-    worker = dict(item)
-    worker["original_bio"] = item.get("description") or item.get("about") or ""
-    worker["variant_refresh"] = v_idx
-
-    try:
-        draft = generate_draft(worker, lang='he')  # services.ai_writer תומך ב-variant_refresh
-        # נשמור גם את מצב הדפדוף ומטא:
-        draft["ai_variant_cursor"] = v_idx
-        item.update(draft)
-        _normalize_pending_item(item)
-        item['updated_at'] = _now_iso()
-        # נשמור חזרה
-        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
-            for idx, record in enumerate(records):
-                if _request_id_for_item(record) == req_id:
-                    records[idx] = item
-                    break
-
-        # דגל הצלחה: מציגים גם מזהה וריאנט, ואם ניתן – label
-        used_id = (draft.get("ai_variant_used") or "").strip()
-        label = ""
-        if used_id and variants_meta:
-            for v in variants_meta:
-                if v.get("id") == used_id:
-                    label = v.get("label") or ""
-                    break
-        suffix = f" • {used_id}" + (f" – {label}" if label else "")
-        flash(f"טיוטת AI #{v_idx + 1} נוצרה{suffix}.", "success")
-
-    except Exception as e:
-        # לא מפילים—נרשום שגיאה ונמשיך
-        item["ai_status"] = "error"
-        _normalize_pending_item(item)
-        item['updated_at'] = _now_iso()
-        with atomic_write_json(Path(PENDING_FILE), default_factory=list) as records:
-            for idx, record in enumerate(records):
-                if _request_id_for_item(record) == req_id:
-                    records[idx] = item
-                    break
-        flash("אירעה שגיאה ביצירת הטיוטה.", "error")
-
+    reset_requested = request.args.get("reset") in ("1", "true", "yes")
+    ok, message, tone, _ = _generate_next_prompt_for_item(item, index, reset=reset_requested)
+    flash(message, "success" if ok else "error")
     return redirect(url_for('admin'))
 
+@app.post('/admin/requests/<req_id>/next_prompt')
+def admin_request_next_prompt(req_id):
+    req_id = (req_id or '').strip()
+    if not req_id:
+        return jsonify({
+            'ok': False,
+            'message': 'בקשה לא נמצאה',
+            'tone': 'error',
+            'panel_html': '',
+        })
 
+    pending_list = read_json_file(PENDING_FILE)
+    if not isinstance(pending_list, list):
+        pending_list = []
 
+    target_index = None
+    target_item = None
+    for idx, record in enumerate(pending_list):
+        if _request_id_for_item(record) == req_id:
+            target_index = idx
+            target_item = record
+            break
 
+    if target_index is None or target_item is None:
+        return jsonify({
+            'ok': False,
+            'message': 'בקשה לא נמצאה',
+            'tone': 'error',
+            'panel_html': '',
+        })
 
+    reset_requested = request.form.get('reset') in ('1', 'true', 'yes')
+    ok, message, tone, prepared = _generate_next_prompt_for_item(target_item, target_index, reset=reset_requested)
 
+    is_modal = request.form.get('is_modal') in ('1', 'true', 'yes')
+    panel_html = ''
+    if prepared:
+        legacy_url = url_for('admin_ai_generate', index=prepared.get('_original_index', target_index))
+        panel_html = render_template(
+            'admin_description_panel.html',
+            item=prepared,
+            is_modal=is_modal,
+            legacy_generate_url=legacy_url,
+            description_style_labels=DESCRIPTION_STYLE_LABELS,
+            description_style_order=DESCRIPTION_STYLE_ORDER,
+            ai_status_meta=AI_STATUS_META,
+        )
+
+    return jsonify({
+        'ok': ok,
+        'message': message,
+        'tone': tone,
+        'panel_html': panel_html,
+    })
 
 @app.route('/favicon.ico')
 def favicon_route():

@@ -3,6 +3,8 @@
     return;
   }
   var STATUS_POLL_INTERVAL = 4000;
+  var SCROLL_STORAGE_KEY = 'admin_pending_scroll';
+  var scrollInitialized = false;
   function getCsrfToken(){
     var meta = document.querySelector('meta[name="csrf-token"]');
     return meta ? meta.getAttribute('content') : '';
@@ -14,9 +16,8 @@
     feedback.setAttribute('data-tone', tone || 'info');
   }
   function setBusy(panel, busy){
-    var generateBtn = panel.querySelector('[data-action="generate"]');
-    var refreshBtn = panel.querySelector('[data-action="refresh-status"]');
-    [generateBtn, refreshBtn].forEach(function(btn){
+    ['[data-action="generate"]', '[data-action="refresh-status"]', '[data-action="next-prompt"]'].forEach(function(selector){
+      var btn = panel.querySelector(selector);
       if (btn) {
         if (busy) {
           btn.setAttribute('disabled', 'disabled');
@@ -34,6 +35,7 @@
     tabs.forEach(function(tab){
       var isActive = tab.getAttribute('data-variant-tab') === style;
       tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      tab.classList.toggle('is-active', isActive);
     });
     variantPanels.forEach(function(el){
       if (el.getAttribute('data-variant-style') === style) {
@@ -44,8 +46,11 @@
     });
   }
   function initTabs(panel){
-    var firstTab = panel.querySelector('[data-variant-tab]');
-    var initialStyle = firstTab ? firstTab.getAttribute('data-variant-tab') : null;
+    var initialStyle = panel.getAttribute('data-initial-style');
+    if (!initialStyle) {
+      var firstTab = panel.querySelector('[data-variant-tab]');
+      initialStyle = firstTab ? firstTab.getAttribute('data-variant-tab') : null;
+    }
     if (initialStyle) {
       activateTab(panel, initialStyle);
     }
@@ -127,6 +132,33 @@
         setBusy(panel, false);
       });
   }
+  function replacePanel(panel, html, message, tone){
+    if (!html) {
+      if (message) {
+        showMessage(panel, message, tone || 'info');
+      }
+      setBusy(panel, false);
+      return;
+    }
+    var temp = document.createElement('div');
+    temp.innerHTML = html;
+    var nextPanel = temp.querySelector('.description-panel');
+    if (!nextPanel) {
+      if (message) {
+        showMessage(panel, message, tone || 'info');
+      }
+      setBusy(panel, false);
+      return;
+    }
+    panel.replaceWith(nextPanel);
+    if (global.AdminDescription) {
+      global.AdminDescription.setupPanel(nextPanel);
+    }
+    initPreserveScroll();
+    if (message) {
+      showMessage(nextPanel, message, tone || 'info');
+    }
+  }
   function handleGenerate(panel){
     var url = panel.getAttribute('data-generate-url');
     if (!url) return;
@@ -155,6 +187,45 @@
     showMessage(panel, 'בודק סטטוס…', 'info');
     pollStatus(panel, 0);
   }
+  function handleNextPrompt(panel){
+    var url = panel.getAttribute('data-next-prompt-url');
+    if (!url) {
+      return;
+    }
+    setBusy(panel, true);
+    showMessage(panel, 'יוצר וריאנט נוסף…', 'info');
+    var formData = new FormData();
+    formData.append('csrf_token', getCsrfToken());
+    var modalAttr = panel.getAttribute('data-is-modal');
+    if (modalAttr !== null) {
+      formData.append('is_modal', modalAttr);
+    }
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'fetch',
+        'Accept': 'application/json'
+      }
+    }).then(function(resp){
+      if (!resp.ok) {
+        throw new Error('next_prompt_failed');
+      }
+      return resp.json();
+    }).then(function(data){
+      var tone = (data && data.tone) || (data && data.ok ? 'success' : 'error');
+      var message = (data && data.message) || '';
+      if (data && data.panel_html) {
+        replacePanel(panel, data.panel_html, message, tone);
+        return;
+      }
+      showMessage(panel, message || 'הפעולה הושלמה.', tone || 'info');
+      setBusy(panel, false);
+    }).catch(function(){
+      showMessage(panel, 'לא הצלחנו להביא פרומפט חדש.', 'error');
+      setBusy(panel, false);
+    });
+  }
   function setupPanel(panel){
     if (!panel || panel.__adminDescriptionReady) {
       return;
@@ -169,9 +240,47 @@
     if (refreshBtn) {
       refreshBtn.addEventListener('click', function(){ handleRefresh(panel); });
     }
+    var nextPromptBtn = panel.querySelector('[data-action="next-prompt"]');
+    if (nextPromptBtn) {
+      nextPromptBtn.addEventListener('click', function(){ handleNextPrompt(panel); });
+    }
     panel.querySelectorAll('[data-action="select-variant"]').forEach(function(btn){
       btn.addEventListener('click', function(){ handleSelect(panel, btn.closest('.variant-panel')); });
     });
+  }
+  function bindPreserveScrollForms(){
+    document.querySelectorAll('form[data-preserve-scroll]').forEach(function(form){
+      if (form.__adminPreserveScrollBound) {
+        return;
+      }
+      form.__adminPreserveScrollBound = true;
+      form.addEventListener('submit', function(){
+        try {
+          sessionStorage.setItem(SCROLL_STORAGE_KEY, String(window.scrollY || 0));
+        } catch (err) {
+          // ignore storage errors (private mode, etc.)
+        }
+      });
+    });
+  }
+  function initPreserveScroll(){
+    bindPreserveScrollForms();
+    if (scrollInitialized) {
+      return;
+    }
+    scrollInitialized = true;
+    try {
+      var stored = sessionStorage.getItem(SCROLL_STORAGE_KEY);
+      if (stored !== null) {
+        var value = parseInt(stored, 10);
+        if (!isNaN(value)) {
+          window.scrollTo({ top: value, behavior: 'auto' });
+        }
+        sessionStorage.removeItem(SCROLL_STORAGE_KEY);
+      }
+    } catch (err) {
+      // ignore retrieval errors
+    }
   }
   var AdminDescription = {
     setupPanel: setupPanel,
@@ -180,4 +289,9 @@
     }
   };
   global.AdminDescription = AdminDescription;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPreserveScroll);
+  } else {
+    initPreserveScroll();
+  }
 })(window);

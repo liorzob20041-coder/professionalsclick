@@ -177,15 +177,15 @@
             <div class="admin-actions">
               <button type="button" class="btn btn-primary" data-open-panel="{{ item._request_id }}">ניהול תיאור AI</button>
               <a class="btn" href="{{ url_for('admin_request_detail', req_id=item._request_id) }}">פרטי בקשה</a>
-              <form action="{{ url_for('admin_ai_generate', index=item._original_index) }}" method="POST">
+              <form action="{{ url_for('admin_ai_generate', index=item._original_index) }}" method="POST" data-preserve-scroll="1">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-secondary">⚙️ פרומפט הבא</button>
               </form>
-              <form action="{{ url_for('admin_ai_generate', index=item._original_index) }}?reset=1" method="POST">
+              <form action="{{ url_for('admin_ai_generate', index=item._original_index) }}?reset=1" method="POST" data-preserve-scroll="1">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn">↺ אפס וריאנטים</button>
               </form>
-              <form action="{{ url_for('approve_professional', index=item._original_index) }}" method="POST">
+              <form action="{{ url_for('approve_professional', index=item._original_index) }}" method="POST" data-preserve-scroll="1">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <label class="checkbox">
                   <input type="checkbox" name="use_ai" value="1" {% if item.get('ai_status') != 'ready' %}disabled{% endif %} />
@@ -193,7 +193,7 @@
                 </label>
                 <button type="submit" class="btn btn-success">אשר</button>
               </form>
-              <form action="{{ url_for('delete_pending', index=item._original_index) }}" method="POST">
+              <form action="{{ url_for('delete_pending', index=item._original_index) }}" method="POST" data-preserve-scroll="1">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-danger">דחה</button>
               </form>

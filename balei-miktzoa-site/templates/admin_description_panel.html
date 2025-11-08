@@ -1,41 +1,91 @@
 {% set req_id = item._request_id %}
+{% set selected_style = item._selected_style %}
+{% set initial_style = selected_style %}
+{% if not initial_style %}
+  {% for style in description_style_order %}
+    {% set variant_candidate = item._description_variants.get(style) %}
+    {% if variant_candidate and (variant_candidate.get('teaser') or variant_candidate.get('body')) %}
+      {% set initial_style = style %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% if not initial_style %}
+  {% set initial_style = description_style_order[0] %}
+{% endif %}
 <div class="description-panel" data-req-id="{{ req_id }}"
      data-generate-url="{{ url_for('admin_generate_description', req_id=req_id) }}"
      data-status-url="{{ url_for('admin_description_status', req_id=req_id) }}"
      data-select-url="{{ url_for('admin_select_description', req_id=req_id) }}"
+     data-next-prompt-url="{{ url_for('admin_request_next_prompt', req_id=req_id) }}"
+     data-initial-style="{{ initial_style }}"
+     data-is-modal="{{ '1' if is_modal else '0' }}"
      {% if legacy_generate_url %}data-legacy-generate-url="{{ legacy_generate_url }}"{% endif %}>
   <header class="description-panel__header">
     <div class="description-panel__headline">
-      <h3 class="description-panel__title">ניהול תיאורי AI – {{ item.company_name or item.name or 'ללא שם' }}</h3>
-      <div class="description-panel__meta">
-        <span>וריאנטים זמינים: <strong>{{ item._ai_variants_count }}</strong></span>
-        <span>פרומפטים שנשלחו: <strong>{{ item._ai_prompts_sent }}</strong></span>
+      <div class="description-panel__title-group">
+        <h3 class="description-panel__title">ניהול תיאורי AI – {{ item.company_name or item.name or 'ללא שם' }}</h3>
+        <div class="description-panel__status">
+          <span class="status-dot status-dot--{{ item._ai_status_tone }}" aria-hidden="true"></span>
+          <span>סטטוס AI: {{ item._ai_status_label }}</span>
+        </div>
+      </div>
+      <div class="description-panel__summary" aria-label="תקציר סטטוס התיאורים">
+        <div class="description-panel__summary-item">
+          <span class="description-panel__summary-label">וריאנטים זמינים</span>
+          <span class="description-panel__summary-value">{{ item._ai_variants_count }}</span>
+        </div>
+        <div class="description-panel__summary-item">
+          <span class="description-panel__summary-label">פרומפטים שנשלחו</span>
+          <span class="description-panel__summary-value">{{ item._ai_prompts_sent }}</span>
+        </div>
         {% if item.description_generated_at %}
-        <span>עודכן לאחרונה: {{ item.description_generated_at }}</span>
+        <div class="description-panel__summary-item">
+          <span class="description-panel__summary-label">עודכן</span>
+          <span class="description-panel__summary-value">{{ item.description_generated_at }}</span>
+        </div>
         {% endif %}
       </div>
+      {% if item._has_selected_description %}
+      <div class="description-panel__selection-banner">
+        <span class="status-badge status-badge--selected">תיאור נבחר לפרסום</span>
+        {% if item._selected_style %}
+        <span class="description-panel__selection-note">סגנון פעיל: {{ description_style_labels.get(item._selected_style, item._selected_style) }}</span>
+        {% endif %}
+        {% if item._selected_source %}
+        <span class="description-panel__selection-note">מקור: {{ item._selected_source }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
     <div class="description-panel__badges">
-      <span class="status-badge status-badge--ai-{{ item._ai_status_tone }}">{{ item._ai_status_label }}</span>
-      {% if item._has_selected_description %}
-        <span class="status-badge status-badge--selected">תיאור נבחר</span>
+      {% if not item._has_selected_description %}
+      <span class="status-badge status-badge--ai-{{ item._ai_status_tone }}">{{ item._ai_status_label }}</span>      <button type="button" class="btn btn-primary" data-action="generate">יצירת תיאור חדש ב-AI</button>
+      <button type="button" class="btn" data-action="refresh-status">רענן סטטוס</button>
       {% endif %}
     </div>
     <div class="description-panel__actions">
-      <button type="button" class="btn btn-primary" data-action="generate">יצירת תיאור חדש ב-AI</button>
-      <button type="button" class="btn" data-action="refresh-status">רענן סטטוס</button>
+      <div class="description-panel__actions-group">
+        <button type="button" class="btn btn-primary" data-action="generate">יצירת תיאור חדש ב-AI</button>
+        <button type="button" class="btn btn-secondary" data-action="next-prompt">⏭️ פרומפט הבא</button>
+        <button type="button" class="btn" data-action="refresh-status">רענן סטטוס</button>
+      </div>
       {% if legacy_generate_url %}
-      <form action="{{ legacy_generate_url }}" method="POST" class="description-panel__legacy-form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-secondary">⚙️ פרומפט ישן</button>
-      </form>
-      <form action="{{ legacy_generate_url }}?reset=1" method="POST" class="description-panel__legacy-form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn">↺ אפס וריאנטים</button>
-      </form>
+      <div class="description-panel__actions-group description-panel__actions-group--legacy">
+        <form action="{{ legacy_generate_url }}" method="POST" class="description-panel__legacy-form" data-preserve-scroll="1">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-secondary">⚙️ פרומפט ישן</button>
+        </form>
+        <form action="{{ legacy_generate_url }}?reset=1" method="POST" class="description-panel__legacy-form" data-preserve-scroll="1">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn">↺ אפס וריאנטים</button>
+        </form>
+      </div>
       {% endif %}
       {% if is_modal %}
-      <button type="button" class="btn" data-action="close-panel">סגירה</button>
+      <div class="description-panel__actions-group">
+        <button type="button" class="btn" data-action="close-panel">סגירה</button>
+      </div>
       {% endif %}
     </div>
   </header>
@@ -97,9 +147,10 @@
     </section>
     <section class="description-panel__column description-panel__column--variants">
       <h4>וריאנטים של AI</h4>
+      <p class="variant-tabs__hint">בחרו סגנון כדי לעבור בין הטיוטות שנוצרו. ניתן לבחור כל סגנון לפרסום.</p>
       <div class="variant-tabs" role="tablist" aria-label="סגנונות תיאור">
         {% for style in description_style_order %}
-        <button type="button" role="tab" data-variant-tab="{{ style }}" aria-selected="{{ 'true' if loop.first else 'false' }}">
+        <button type="button" role="tab" data-variant-tab="{{ style }}" aria-selected="{{ 'true' if style == initial_style else 'false' }}" class="{% if style == initial_style %}is-active{% endif %}">
           {{ description_style_labels[style] }}
         </button>
         {% endfor %}
@@ -117,7 +168,7 @@
           'teaser': variant.get('teaser') if variant else '',
           'body': variant.get('body') if variant else ''
         } %}
-        <article class="variant-panel{% if loop.first %} is-active{% endif %}" data-variant-style="{{ style }}" data-variant='{{ payload|tojson }}'>
+        <article class="variant-panel{% if style == initial_style %} is-active{% endif %}" data-variant-style="{{ style }}" data-variant='{{ payload|tojson }}'>
           <header class="variant-panel__header">
             <div>
               <div class="variant-panel__title">{{ description_style_labels[style] }}</div>

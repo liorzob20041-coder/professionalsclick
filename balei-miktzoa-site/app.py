@@ -954,6 +954,18 @@ def _prepare_pending_display_item(item: dict, index: int) -> dict:
     prepared["_has_selected_description"] = bool(
         prepared["_selected_teaser"] or prepared["_selected_body"]
     )
+    initial_style = prepared["_selected_style"]
+    if not initial_style:
+        for style in DESCRIPTION_STYLE_ORDER:
+            variant_candidate = variants_map.get(style)
+            if variant_candidate and (
+                variant_candidate.get("teaser") or variant_candidate.get("body")
+            ):
+                initial_style = style
+                break
+    if not initial_style and DESCRIPTION_STYLE_ORDER:
+        initial_style = DESCRIPTION_STYLE_ORDER[0]
+    prepared["_initial_description_style"] = initial_style
     if ai_status == "ready" and prepared["_has_selected_description"]:
         prepared["_ai_status_label"] = "תיאור מוכן"
         prepared["_ai_status_tone"] = "success"

@@ -1,18 +1,6 @@
 {% set req_id = item._request_id %}
 {% set selected_style = item._selected_style %}
-{% set initial_style = selected_style %}
-{% if not initial_style %}
-  {% for style in description_style_order %}
-    {% set variant_candidate = item._description_variants.get(style) %}
-    {% if variant_candidate and (variant_candidate.get('teaser') or variant_candidate.get('body')) %}
-      {% set initial_style = style %}
-      {% break %}
-    {% endif %}
-  {% endfor %}
-{% endif %}
-{% if not initial_style %}
-  {% set initial_style = description_style_order[0] %}
-{% endif %}
+{% set initial_style = item._initial_description_style or (description_style_order|first if description_style_order else '') %}
 <div class="description-panel" data-req-id="{{ req_id }}"
      data-generate-url="{{ url_for('admin_generate_description', req_id=req_id) }}"
      data-status-url="{{ url_for('admin_description_status', req_id=req_id) }}"

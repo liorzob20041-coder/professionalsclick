@@ -1,0 +1,21 @@
+{
+  "slug": "upgrading-to-three-phase",
+  "date": "2025-02-08",
+  "category": "electricity",
+  "status": "published",
+  "reading_minutes": 8,
+  "hero_image": "/static/articles/electrician-spotlight.jpg",
+  "content_type": "guide",
+  "tags": [
+    "חשמל",
+    "תלת פאזי",
+    "עומס יתר"
+  ],
+  "target_audience": "בעלי בתים שחווים עומסים תכופים או מתכננים מכשירי חשמל זוללי אנרגיה",
+  "business_goal": "להסביר את שלבי השדרוג, ליישר ציפיות ולהניע לפנייה לחשמלאי מוסמך",
+  "he": {
+    "title": "שדרוג לתלת-פאזי והכנת הבית למכשירים זוללי חשמל",
+    "description": "מתי כדאי לעבור לתלת-פאזי, איך נראה התהליך ומה לבדוק לפני שמזמינים חשמלאי.",
+    "excerpt": "סובלים מקפיצות חשמל? כך שדרוג לתלת-פאזי יכול לעזור ומה צריך לדעת לפני."
+  }
+}

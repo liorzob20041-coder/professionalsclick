@@ -65,9 +65,6 @@ body.request-body {
   gap: var(--request-gap);
 }
 .form-progress {
-  position: sticky;
-  top: clamp(60px, 8vh, 96px);
-  z-index: 5;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: clamp(12px, 2vw, 18px);
@@ -228,7 +225,8 @@ form {
 .lang-option input,
 .subsvc-item input,
 .radio-option input,
-.checkbox-option input {
+.checkbox-option input,
+.day-option input {
   width: 20px;
   height: 20px;
   accent-color: var(--color-accent-500);
@@ -246,11 +244,96 @@ form {
   background: var(--color-surface);
   box-shadow: var(--shadow-subtle);
 }
+.work-hours-blocks {
+  display: grid;
+  gap: clamp(12px, 2vw, 18px);
+  margin-top: 12px;
+}
+.work-hours-block {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: clamp(12px, 2vw, 18px);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+  display: grid;
+  gap: clamp(12px, 2vw, 18px);
+}
+.work-hours-row {
+  display: grid;
+  gap: clamp(12px, 2vw, 18px);
+  grid-template-columns: 1fr;
+}
+.work-hours-days .day-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+}
+.work-hours-subtitle {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+.work-hours-time-selects {
+  display: grid;
+  gap: 10px;
+}
+.work-hours-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.work-hours-select span {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+.work-hours-remove {
+  justify-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0;
+}
+.work-hours-remove:hover,
+.work-hours-remove:focus-visible {
+  color: var(--color-accent-600);
+  text-decoration: underline;
+}
+.btn-small {
+  padding: 10px 18px;
+  min-height: 0;
+  font-size: 0.95rem;
+}
+.video-helper {
+  margin: 6px 0 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+.video-helper p {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.video-helper ol {
+  margin: 0;
+  padding-inline-start: 1.2em;
+  display: grid;
+  gap: 4px;
+}
 .lang-option,
 .subsvc-item,
 .radio-option,
-.checkbox-option {  display: flex;
-
+.checkbox-option,
+.day-option {
+  display: flex;
   align-items: center;
   gap: 10px;
   border: 1px solid var(--color-border);
@@ -423,5 +506,17 @@ form {
   }
   .file-label + .file-label {
     margin-inline-start: 0;
+  }
+}
+.work-hours-time-selects {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .work-hours-row {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+  }
+  .work-hours-time-selects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

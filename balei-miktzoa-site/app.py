@@ -515,22 +515,29 @@ os.makedirs(VIDEO_UPLOAD_SUBDIR, exist_ok=True)
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'ogg'}
 MAX_VIDEO_MB = 50  # רף רך – אופציונלי
 # טווחי רדיוס ידידותיים למשתמש → ק"מ בפועל
-WORK_RADIUS_UI_TO_KM = {
-    "בעיקר בעיר שלי": 5,
-    "בעיר שלי והסביבה": 10,
-    "באזור שלי והערים ליד": 20,
-    "באזור המרכז": 30,
-    "בכל הארץ": 120,
-}
+WORK_RADIUS_OPTIONS = [
+    (5, "עד 5 ק״מ"),
+    (10, "עד 10 ק״מ"),
+    (15, "עד 15 ק״מ"),
+    (20, "עד 20 ק״מ"),
+    (30, "עד 30 ק״מ"),
+]
+WORK_RADIUS_ALLOWED_VALUES = {value for value, _ in WORK_RADIUS_OPTIONS}
+WORK_RADIUS_LABEL_BY_VALUE = {value: label for value, label in WORK_RADIUS_OPTIONS}
 WORK_RADIUS_DEFAULT_KM = 10
 
-# טווחי זמינות פשוטים לטופס בקשת בעלי מקצוע
-AVAILABILITY_SLOTS = (
-    "בעיקר בוקר (08:00–12:00)",
-    "בעיקר צהריים (12:00–17:00)",
-    "בעיקר ערב (17:00–21:00)",
-    "אין שעה קבועה – תלוי בעבודה",
-)
+# בחירת שעות עבודה לטפסים
+WORK_HOUR_CHOICES = [f"{hour:02d}:00" for hour in range(6, 24)]
+WORK_DAY_CHOICES = [
+    ("ראשון", "א׳"),
+    ("שני", "ב׳"),
+    ("שלישי", "ג׳"),
+    ("רביעי", "ד׳"),
+    ("חמישי", "ה׳"),
+    ("שישי", "ו׳"),
+    ("שבת", "ש׳"),
+]
+MAX_WORK_HOUR_BLOCKS = 4
 # וידאו מאושר – נרמול ושמירה בתיקייה קבועה
 WORKER_VIDEO_UPLOAD_DIR = BASE_DIR / 'static' / 'uploads' / 'worker_videos'
 os.makedirs(WORKER_VIDEO_UPLOAD_DIR, exist_ok=True)
@@ -2894,8 +2901,13 @@ def request_professional(lang):
         "invite_key": invite_key if invite_valid else None,
         "language_choices": WORKER_LANGUAGE_CHOICES,
         "default_languages": list(DEFAULT_WORKER_LANGUAGES),
-        "work_radius_options": list(WORK_RADIUS_UI_TO_KM.keys()),
-        "availability_slots": list(AVAILABILITY_SLOTS),
+        "work_radius_options": [
+            {"value": value, "label": label}
+            for value, label in WORK_RADIUS_OPTIONS
+        ],
+        "work_hour_choices": list(WORK_HOUR_CHOICES),
+        "work_day_choices": list(WORK_DAY_CHOICES),
+        "max_work_hour_blocks": MAX_WORK_HOUR_BLOCKS,
         "canonical_trades": list(CANON_FIELDS_HE),
         "trade_synonyms": TRADE_SYNONYMS,
     }
@@ -2934,7 +2946,7 @@ def request_professional(lang):
         company_name = (request.form.get('company_name') or '').strip()
         field_value = (request.form.get('field') or '').strip()
         base_city = (request.form.get('base_city') or '').strip()
-        work_radius_label = (request.form.get('work_radius') or '').strip()
+        work_radius_raw = (request.form.get('work_radius') or '').strip()
         phone_raw = (request.form.get('phone') or '').strip()
         experience_raw = (request.form.get('experience') or '').strip()
         description = (request.form.get('description') or '').strip()
@@ -2942,8 +2954,8 @@ def request_professional(lang):
         sub_services = [s.strip() for s in request.form.getlist('sub_services') if s.strip()]
         sub_services_text = (request.form.get('sub_services_text') or '').strip()
         offers_emergency_value = (request.form.get('offers_emergency') or '').strip().lower()
-        availability_slot = (request.form.get('availability_slot') or '').strip()
         terms_accepted_raw = (request.form.get('terms_accepted') or '').strip().lower()
+        work_hours_total_raw = (request.form.get('work_hours_total') or '').strip()
 
         # שפות שירות – צ'קבוקסים name="languages"
         languages_raw = request.form.getlist('languages')
@@ -2965,10 +2977,20 @@ def request_professional(lang):
         if not base_city:
             add_field_error('base_city', 'נא לציין מאיזה עיר נוח לצאת לעבודה.')
 
-        work_radius_km = WORK_RADIUS_UI_TO_KM.get(work_radius_label)
-        if work_radius_km is None:
-            add_field_error('work_radius', 'נא לבחור אזור פעילות מהרשימה.')
+        work_radius_value: int | None = None
+        work_radius_label = ''
+        if work_radius_raw:
+            try:
+                work_radius_value = int(float(work_radius_raw))
+            except (TypeError, ValueError):
+                work_radius_value = None
+        if work_radius_value in WORK_RADIUS_ALLOWED_VALUES:
+            work_radius_km = int(work_radius_value)
+            work_radius_label = WORK_RADIUS_LABEL_BY_VALUE.get(work_radius_km, '')
+        else:
+            add_field_error('work_radius', 'נא לבחור מרחק מהרשימה.')
             work_radius_km = WORK_RADIUS_DEFAULT_KM
+            work_radius_label = WORK_RADIUS_LABEL_BY_VALUE.get(work_radius_km, '')
 
         phone_digits = re.sub(r'[^0-9]', '', phone_raw)
         if phone_digits.startswith('972') and len(phone_digits) > 3:
@@ -3001,7 +3023,60 @@ def request_professional(lang):
             add_field_error('terms_accepted', 'חובה לאשר שניתן לשמור את הפרטים ליצירת קשר.')
 
         offers_emergency = offers_emergency_value == 'yes'
+        try:
+            work_hours_total = int(float(work_hours_total_raw or 0))
+        except (TypeError, ValueError):
+            work_hours_total = 0
+        work_hours_total = max(0, min(int(work_hours_total), MAX_WORK_HOUR_BLOCKS))
+        work_hours_blocks: list[dict[str, Any]] = []
+        work_blocks: list[dict[str, Any]] = []
+        work_hours_error = False
 
+        for idx in range(work_hours_total):
+            start_key = f'start_hour_{idx}'
+            end_key = f'end_hour_{idx}'
+            days_key = f'days_{idx}[]'
+            start_value = (request.form.get(start_key) or '').strip()
+            end_value = (request.form.get(end_key) or '').strip()
+            days_values = [d.strip() for d in request.form.getlist(days_key) if d.strip()]
+
+            if not start_value and not end_value and not days_values:
+                continue
+
+            if not start_value or not end_value or not days_values:
+                work_hours_error = True
+                continue
+
+            if start_value not in WORK_HOUR_CHOICES or end_value not in WORK_HOUR_CHOICES:
+                work_hours_error = True
+                continue
+
+            try:
+                start_hour_int = int(start_value.split(':', 1)[0])
+                end_hour_int = int(end_value.split(':', 1)[0])
+            except (TypeError, ValueError):
+                work_hours_error = True
+                continue
+
+            if end_hour_int <= start_hour_int:
+                work_hours_error = True
+                continue
+
+            block_display = {
+                'days': days_values,
+                'start': start_value,
+                'end': end_value,
+            }
+            block_storage = {
+                'days': days_values,
+                'start_hour': start_hour_int,
+                'end_hour': end_hour_int,
+            }
+            work_hours_blocks.append(block_display)
+            work_blocks.append(block_storage)
+
+        if work_hours_error:
+            add_field_error('work_hours', 'נא למלא ימים ושעות חוקיים בכל טווח או להשאיר אותו ריק.')
         if image and image.filename:
             filename = secure_filename(image.filename)
             try:
@@ -3058,11 +3133,11 @@ def request_professional(lang):
             "image_filename": image_filename,
             "video_url": None,
             "video_local": saved_video_relpath,
-            "work_blocks": [],
+            "work_blocks": work_blocks,
+            "work_hours_blocks": work_hours_blocks,
             "sub_services": sub_services,
             "offers_emergency": offers_emergency,
             "languages": languages,
-            "availability_slot": availability_slot,
             "terms_accepted": terms_accepted,
         }
         if sub_services_text:

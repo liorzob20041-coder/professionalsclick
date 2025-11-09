@@ -108,14 +108,14 @@
               <p class="step-subtitle">נדייק את אזור השירות והשפות כדי להתאים לך פניות טובות.</p>
             </header>
             <div class="field" data-field-name="work_radius">
-              <label for="work_radius" class="label">עד איפה נוח לך להגיע לעבודה?</label>
+              <label for="work_radius" class="label">עד כמה קילומטרים נוח לך להגיע לעבודה?</label>
               <select class="select" id="work_radius" name="work_radius" required>
-                <option value="" disabled selected>בחר/י אפשרות</option>
+                <option value="" disabled selected>בחר/י מרחק</option>
                 {% for option in work_radius_options %}
-                  <option value="{{ option }}">{{ option }}</option>
+                  <option value="{{ option.value }}">{{ option.label }}</option>
                 {% endfor %}
               </select>
-              <p class="hint">לא צריך להיות מדויק. תבחר מה שהכי קרוב למציאות.</p>
+              <p class="hint">בחר/י את המרחק המקסימלי בקילומטרים – זה עוזר לנו להציע לך פניות קרובות.</p>
               <p class="field-error" data-error-for="work_radius"></p>
             </div>
             <div class="field" data-field-name="experience">
@@ -145,28 +145,29 @@
             </header>
             <div class="field" data-field-name="sub_services">
               <span class="label">איזה סוג עבודות אתה עושה בדרך כלל?</span>
+              <p class="hint">אם יש רשימה מוכנה – סמן/י כמה אפשרויות מתאימות. אם לא, פשוט כתוב/י בשדה שמופיע מיד אחר כך.</p>
               <div class="subsvc-wrap">
                 <div id="subservices_checkbox_container" class="subsvc-grid" hidden></div>
-                <div id="subservices_empty" class="subsvc-empty">כתוב כמה עבודות עיקריות שאתה עושה הכי הרבה.</div>
+                <div id="subservices_empty" class="subsvc-empty">לא מצאנו רשימה מוכנה למקצוע הזה. כתוב/י בקצרה את העבודות שאתה עושה הכי הרבה בשדה הבא.</div>
               </div>
-              <p class="hint">2–5 דברים עיקריים שאתה עושה הכי הרבה.</p>
+              <p class="field-error" data-error-for="sub_services"></p>
             </div>
             <div class="field" id="sub_services_text_wrapper" data-field-name="sub_services_text">
               <label for="sub_services_text" class="label">איזה סוג עבודות אתה עושה בדרך כלל?</label>
               <textarea class="textarea" id="sub_services_text" name="sub_services_text" placeholder="לדוגמה: התקנת נקודות חשמל, החלפת לוחות, בדיקות תקינות..."></textarea>
-              <p class="hint">2–5 דברים עיקריים שאתה עושה הכי הרבה.</p>
+              <p class="hint">רשום/י 2–5 סוגי עבודות עיקריים. אין צורך בפסקה ארוכה – משפטים קצרים יספיקו.</p>
               <p class="field-error" data-error-for="sub_services_text"></p>
             </div>
             <div class="field" data-field-name="description">
               <label for="description" class="label">כמה מילים עליך ועל העבודה שלך</label>
-              <textarea class="textarea" id="description" name="description" required placeholder="לדוגמה: חשמלאי מוסמך, מעל 12 שנות ניסיון, מומחה לתקלות מהירות בדירות ולוחות חשמל."></textarea>
-              <p class="hint">מומלץ 2–4 משפטים. זה המידע שהלקוח רואה ראשון.</p>
+              <textarea class="textarea" id="description" name="description" required placeholder="לדוגמה: חשמלאי מוסמך עם 12 שנות ניסיון, מתמחה בהתקנת לוחות וחידוש תשתיות חשמל בבתי מגורים באזור השרון."></textarea>
+              <p class="hint">ספר/י על הניסיון, סוגי העבודות והאזור בו אתה עובד. מומלץ 2–4 משפטים.</p>
               <p class="field-error" data-error-for="description"></p>
             </div>
             <div class="field" data-field-name="reviews">
               <label for="reviews" class="label">המלצות קצרות מלקוחות (לא חובה)</label>
-              <textarea class="textarea" id="reviews" name="reviews" placeholder="לדוגמה: 'יוסי הגיע מהר, פתר את הבעיה בתוך חצי שעה והשאיר נקי'."></textarea>
-              <p class="hint">יש לך הודעות מוואטסאפ / פייסבוק? אפשר להדביק כאן כמה משפטים. אפשר גם לשלוח לנו אחר כך.</p>
+              <textarea class="textarea" id="reviews" name="reviews" placeholder="לדוגמה: 'אורן הגיע בזמן, פתר את התקלה במהירות והשאיר את הבית נקי'"></textarea>
+              <p class="hint">אפשר להעתיק הודעות קצרות מלקוחות מוואטסאפ, פייסבוק או SMS. שורה או שתיים מכל לקוח מספיקות.</p>
             </div>
           </section>
           <section class="card wizard-step" data-step="3">
@@ -189,15 +190,52 @@
               </div>
               <p class="hint">לא חובה. זה רק עוזר לנו להבין איזה פניות להעביר אליך.</p>
             </div>
-            <div class="field" data-field-name="availability_slot">
-              <label for="availability_slot" class="label">מתי בדרך כלל נוח לך לעבוד?</label>
-              <select class="select" id="availability_slot" name="availability_slot">
-                <option value="" selected>בחר/י אפשרות</option>
-                {% for slot in availability_slots %}
-                  <option value="{{ slot }}">{{ slot }}</option>
-                {% endfor %}
-              </select>
+            <div class="field" data-field-name="work_hours">
+              <span class="label">מתי בדרך כלל נוח לך לעבוד?</span>
+              <p class="hint">אפשר להוסיף עד {{ max_work_hour_blocks }} טווחים שונים – למשל "א׳–ה׳ 08:00–17:00" או "ו׳ 08:00–13:00".</p>
+              <input type="hidden" id="work_hours_total" name="work_hours_total" value="0">
+              <div id="work-hours-blocks" class="work-hours-blocks" data-max-blocks="{{ max_work_hour_blocks }}"></div>
+              <button type="button" class="btn btn-secondary btn-small" id="add-work-hour-block">הוסף טווח שעות נוסף</button>
+              <p class="field-error" data-error-for="work_hours"></p>
             </div>
+            <template id="work-hour-block-template">
+              <div class="work-hours-block" data-block-index="0">
+                <div class="work-hours-row">
+                  <div class="work-hours-days">
+                    <span class="work-hours-subtitle">ימים</span>
+                    <div class="day-grid">
+                      {% for value, label in work_day_choices %}
+                        <label class="day-option">
+                          <input type="checkbox" data-name-base="days" value="{{ value }}">
+                          <span>{{ label }}</span>
+                        </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="work-hours-time-selects">
+                    <label class="work-hours-select">
+                      <span>שעת התחלה</span>
+                      <select class="select" data-name-base="start_hour">
+                        <option value="">בחר/י שעה</option>
+                        {% for hour in work_hour_choices %}
+                          <option value="{{ hour }}">{{ hour }}</option>
+                        {% endfor %}
+                      </select>
+                    </label>
+                    <label class="work-hours-select">
+                      <span>שעת סיום</span>
+                      <select class="select" data-name-base="end_hour">
+                        <option value="">בחר/י שעה</option>
+                        {% for hour in work_hour_choices %}
+                          <option value="{{ hour }}">{{ hour }}</option>
+                        {% endfor %}
+                      </select>
+                    </label>
+                  </div>
+                </div>
+                <button type="button" class="work-hours-remove" data-action="remove-block">הסר טווח</button>
+              </div>
+            </template>
             <div class="field" data-field-name="image">
               <label for="image" class="label">תמונה לפרופיל (לא חובה)</label>
               <label class="file-label">
@@ -219,7 +257,15 @@
                   <input type="file" name="video_file_gallery" accept="video/*" hidden>
                 </label>
               </div>
-              <p class="hint">עד 50MB, בערך עד דקה. תציג את עצמך בכמה מילים ותראה קצת מהעבודה שלך.</p>
+              <div class="video-helper">
+                <p>לא בטוח מה להגיד בסרטון? אפשר לענות בקצרה על השאלות הבאות:</p>
+                <ol>
+                  <li>איך קוראים לך ומה אתה עושה?</li>
+                  <li>כמה שנות ניסיון יש לך בתחום?</li>
+                  <li>איזה סוג עבודות אתה עושה בדרך כלל ואיפה אתה עובד בארץ?</li>
+                </ol>
+              </div>
+              <p class="hint">עד 50MB, בערך עד דקה. הצג/י את עצמך בקצרה, זה עוזר ללקוחות להכיר אותך.</p>
               <p class="field-error" data-error-for="video"></p>
             </div>
             <div class="field" data-field-name="terms_accepted">
@@ -525,6 +571,99 @@
         input.addEventListener('input', handler);
         input.addEventListener('change', handler);
       });
+      const workHoursContainer = document.getElementById('work-hours-blocks');
+      const workHoursTemplate = document.getElementById('work-hour-block-template');
+      const addWorkHoursBtn = document.getElementById('add-work-hour-block');
+      const workHoursTotalInput = document.getElementById('work_hours_total');
+      const maxWorkHours = workHoursContainer ? parseInt(workHoursContainer.dataset.maxBlocks || '4', 10) || 4 : 4;
+      function getWorkHourBlocks() {
+        return workHoursContainer ? Array.from(workHoursContainer.querySelectorAll('.work-hours-block')) : [];
+      }
+      function reindexWorkHourBlocks() {
+        const blocks = getWorkHourBlocks();
+        blocks.forEach((block, index) => {
+          block.dataset.blockIndex = index;
+          block.querySelectorAll('[data-name-base]').forEach((el) => {
+            const base = el.dataset.nameBase;
+            if (!base) {
+              return;
+            }
+            if (el.matches('input[type="checkbox"]')) {
+              el.name = `${base}_${index}[]`;
+            } else if (el.matches('select')) {
+              el.name = `${base}_${index}`;
+            }
+          });
+        });
+        if (workHoursTotalInput) {
+          workHoursTotalInput.value = String(blocks.length);
+        }
+        if (addWorkHoursBtn) {
+          addWorkHoursBtn.disabled = blocks.length >= maxWorkHours;
+        }
+        blocks.forEach((block) => {
+          const removeBtn = block.querySelector('[data-action="remove-block"]');
+          if (removeBtn) {
+            removeBtn.hidden = blocks.length <= 1;
+          }
+        });
+      }
+      function bindWorkHourBlock(block) {
+        block.querySelectorAll('input, select').forEach((el) => {
+          el.addEventListener('change', () => clearFieldError('work_hours'));
+          el.addEventListener('input', () => clearFieldError('work_hours'));
+        });
+        const removeBtn = block.querySelector('[data-action="remove-block"]');
+        if (removeBtn) {
+          removeBtn.addEventListener('click', () => {
+            const blocks = getWorkHourBlocks();
+            if (blocks.length <= 1) {
+              block.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+                input.checked = false;
+              });
+              block.querySelectorAll('select').forEach((select) => {
+                select.value = '';
+              });
+              clearFieldError('work_hours');
+              return;
+            }
+            block.remove();
+            clearFieldError('work_hours');
+            reindexWorkHourBlocks();
+          });
+        }
+      }
+      function createWorkHourBlock() {
+        if (!workHoursContainer || !workHoursTemplate) {
+          return null;
+        }
+        const fragment = workHoursTemplate.content.cloneNode(true);
+        const block = fragment.querySelector('.work-hours-block');
+        if (!block) {
+          return null;
+        }
+        workHoursContainer.appendChild(block);
+        bindWorkHourBlock(block);
+        reindexWorkHourBlocks();
+        return block;
+      }
+      if (workHoursContainer && workHoursTemplate) {
+        if (!getWorkHourBlocks().length) {
+          createWorkHourBlock();
+        } else {
+          getWorkHourBlocks().forEach((block) => bindWorkHourBlock(block));
+          reindexWorkHourBlocks();
+        }
+      }
+      if (addWorkHoursBtn) {
+        addWorkHoursBtn.addEventListener('click', () => {
+          if (getWorkHourBlocks().length >= maxWorkHours) {
+            return;
+          }
+          createWorkHourBlock();
+          clearFieldError('work_hours');
+        });
+      }
       const checkboxContainer = document.getElementById('subservices_checkbox_container');
       const emptyState = document.getElementById('subservices_empty');
       const subServicesTextWrapper = document.getElementById('sub_services_text_wrapper');

@@ -291,21 +291,8 @@
   </script>
   {% if not invite_invalid %}
   <script>
-    const CANONICAL_TRADES = JSON.parse('{{ canonical_trades|tojson|safe }}');
-    const TRADE_SYNONYMS = {
-      'אינסטלטור': 'אינסטלטורים',
-      'אינסטלטורים': 'אינסטלטורים',
-      'חשמלאי': 'חשמלאים',
-      'חשמלאים': 'חשמלאים',
-      'שיפוצניק': 'שיפוצים',
-      'שיפוצים': 'שיפוצים',
-      'מנעולן': 'מנעולנים',
-      'מנעולנים': 'מנעולנים',
-      'טכנאי מזגנים': 'מיזוג אוויר',
-      'טכנאי מיזוג אוויר': 'מיזוג אוויר',
-      'מיזוג אוויר': 'מיזוג אוויר',
-      'מזגנים': 'מיזוג אוויר'
-    };
+    const CANONICAL_TRADES = {{ canonical_trades|tojson|safe }};
+    const TRADE_SYNONYMS = {{ trade_synonyms|tojson|safe }};
     const TAXONOMY = {
       'אינסטלטורים': [
         'פתיחת סתימות',

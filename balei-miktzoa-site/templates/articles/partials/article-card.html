@@ -1,6 +1,10 @@
-{% set detail_url = url_for_lang('article_detail', lang=g.current_lang, slug=article.slug) %}
+{% set lang_code = lang_code if lang_code is defined else g.current_lang %}
+{% set detail_url = url_for_lang('article_detail', lang=lang_code, slug=article.slug) %}
 {% set card_tag = article.category or '' %}
-{% set tag_label = article.tag_label if article.tag_label is defined else '' %}
+{% set tag_label = article.category_label if article.category_label is defined else '' %}
+{% if not tag_label %}
+  {% set tag_label = article.tag_label if article.tag_label is defined else '' %}
+{% endif %}
 {% if not tag_label and card_tag %}
   {% set label_key = 'articles_index.category.' ~ card_tag %}
   {% set potential = (_(label_key) if _ else card_tag) %}
@@ -46,39 +50,42 @@
     {% set use_proxy = proxy_filename is not none and proxy_filename != '' %}
   {% endif %}
 {% endif %}
-<article class="a-card reveal" role="listitem" data-tag="{{ card_tag }}">
-  <a class="a-thumb{% if not hero_path %} is-placeholder{% endif %}" href="{{ detail_url }}" aria-label="{{ article.title }}">
-    {% if hero_path and use_proxy %}
-      {% set fallback_w = 640 if hero_width <= 640 else 960 %}
-      <picture>
-        <img src="{{ url_for('img_proxy', filename=proxy_filename, w=fallback_w, q=78, fit='cover', format='jpeg', v=BUILD) }}"
-             srcset="{{ url_for('img_proxy', filename=proxy_filename, w=360, q=78, fit='cover', format='jpeg', v=BUILD) }} 360w,
-                     {{ url_for('img_proxy', filename=proxy_filename, w=480, q=78, fit='cover', format='jpeg', v=BUILD) }} 480w,
-                     {{ url_for('img_proxy', filename=proxy_filename, w=640, q=78, fit='cover', format='jpeg', v=BUILD) }} 640w,
-                     {{ url_for('img_proxy', filename=proxy_filename, w=768, q=78, fit='cover', format='jpeg', v=BUILD) }} 768w,
-                     {{ url_for('img_proxy', filename=proxy_filename, w=960, q=78, fit='cover', format='jpeg', v=BUILD) }} 960w"
-             sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
-             width="{{ hero_width }}" height="{{ hero_height }}"
-             loading="lazy" decoding="async"
-             alt="{{ hero_alt }}">
-      </picture>
-    {% elif hero_path %}
-      <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async" width="{{ hero_width }}" height="{{ hero_height }}">
-    {% else %}
-      <span class="a-thumb__placeholder">{{ placeholder }}</span>
-    {% endif %}
-    {% if tag_label %}
-      <span class="a-tag">{{ tag_label }}</span>
-    {% endif %}
+<article class="bm-article-card" data-category="{{ card_tag }}">
+  <a href="{{ detail_url }}" class="bm-article-card-link">
+    <div class="bm-article-card-thumb">
+      {% if hero_path and use_proxy %}
+        {% set fallback_w = 640 if hero_width <= 640 else 960 %}
+        <picture>
+          <img src="{{ url_for('img_proxy', filename=proxy_filename, w=fallback_w, q=78, fit='cover', format='jpeg', v=BUILD) }}"
+               srcset="{{ url_for('img_proxy', filename=proxy_filename, w=360, q=78, fit='cover', format='jpeg', v=BUILD) }} 360w,
+                       {{ url_for('img_proxy', filename=proxy_filename, w=480, q=78, fit='cover', format='jpeg', v=BUILD) }} 480w,
+                       {{ url_for('img_proxy', filename=proxy_filename, w=640, q=78, fit='cover', format='jpeg', v=BUILD) }} 640w,
+                       {{ url_for('img_proxy', filename=proxy_filename, w=768, q=78, fit='cover', format='jpeg', v=BUILD) }} 768w,
+                       {{ url_for('img_proxy', filename=proxy_filename, w=960, q=78, fit='cover', format='jpeg', v=BUILD) }} 960w"
+               sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
+               width="{{ hero_width }}" height="{{ hero_height }}"
+               loading="lazy" decoding="async"
+               alt="{{ hero_alt }}">
+        </picture>
+      {% elif hero_path %}
+        <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async" width="{{ hero_width }}" height="{{ hero_height }}">
+      {% else %}
+        <span class="bm-article-card-thumb-placeholder">{{ placeholder }}</span>
+      {% endif %}
+    </div>
+    <div class="bm-article-card-content">
+      {% if tag_label %}
+        <div class="bm-article-card-tag">{{ tag_label }}</div>
+      {% endif %}
+      <h3 class="bm-article-card-title">{{ article.title }}</h3>
+      {% if excerpt %}
+        <p class="bm-article-card-excerpt">{{ excerpt }}</p>
+      {% endif %}
+      <div class="bm-article-card-meta">
+        {% if article.reading_minutes %}
+          <span>~{{ article.reading_minutes }} דק׳ קריאה</span>
+        {% endif %}
+      </div>
+    </div>
   </a>
-  <div class="a-body">
-    <h3 class="a-title"><a href="{{ detail_url }}">{{ article.title }}</a></h3>
-    {% if excerpt %}
-      <p class="a-excerpt">{{ excerpt }}</p>
-    {% endif %}
-    <a class="a-more" href="{{ detail_url }}">
-      <span>{{ _('homepage.articles.read_more') }}</span>
-      <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
-    </a>
-  </div>
 </article>

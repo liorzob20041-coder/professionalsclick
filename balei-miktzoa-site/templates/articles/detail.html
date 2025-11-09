@@ -42,6 +42,7 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+  {% set lang_code = g.current_lang %}
   {% set article_theme = theme_slug_map.get(meta.category) %}
   {% set category_labels = {
     'electricity': {'he': 'חשמל', 'en': 'Electricity', 'ru': 'Электрика'},
@@ -51,38 +52,41 @@
   } %}
   {% set category_label = category_labels.get(meta.category, {}).get(g.current_lang, category_labels.get(meta.category, {}).get('he')) %}
   {% set reading_template = t('articles_index.reading_time', '~{minutes} דקות קריאה') or '~{minutes} דקות קריאה' %}
-  <main class="bm-article-layout article-layout" data-layout="standard">
-    <article class="bm-article article"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
-      <!-- Hero block with primary article metadata -->
-      <header class="bm-article-hero">
-        {% set eyebrow_label = t('homepage.articles.kicker', 'home') %}
-        <div class="bm-article-eyebrow">
-          {{ eyebrow_label }}{% if category_label %} • {{ category_label }}{% endif %}
+  <main class="bm-article-page article" dir="rtl"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
+    <div class="bm-article-page-inner">
+      <header class="bm-article-header">
+        <a href="{{ url_for_lang('articles_index', lang=lang_code) }}" class="bm-article-breadcrumb">
+          ← חזרה למרכז המידע
+        </a>
+        <div class="bm-article-header-top">
+          {% if category_label %}
+            <span class="bm-article-tag">{{ category_label }}</span>
+          {% endif %}
         </div>
-        <h1 class="bm-article-title">{{ title }}</h1>
-        {% if description %}
-          <p class="bm-article-subtitle">{{ description }}</p>
-        {% endif %}
+        <h1 class="bm-article-title">
+          {{ title }}
+        </h1>
         <div class="bm-article-meta">
           {% if meta.date %}
-            <span class="bm-article-date">{{ meta.date }}</span>
+            <span class="bm-article-meta-item">{{ meta.date }}</span>
+          {% endif %}
+          {% if meta.date and meta.reading_minutes %}
+            <span class="bm-article-meta-sep">•</span>
           {% endif %}
           {% if meta.reading_minutes %}
-            <span class="bm-article-reading">{{ reading_template|format(minutes=meta.reading_minutes) }}</span>
+            <span class="bm-article-meta-item">{{ reading_template|format(minutes=meta.reading_minutes) }}</span>
           {% endif %}
         </div>
       </header>
       {% if meta.hero_image %}
-        <!-- Responsive hero image -->
-        <figure class="bm-article-hero-image">
-          <img src="{{ meta.hero_image }}" alt="{{ title }}" loading="lazy" decoding="async">
-        </figure>
+        <div class="bm-article-hero-image-wrapper">
+          <img src="{{ meta.hero_image }}" alt="{{ title }}" class="bm-article-hero-image" loading="lazy" decoding="async">
+        </div>
       {% endif %}
-      <div class="bm-article-body">
+      <article class="bm-article-body">
         {{ body_html | safe }}
-      </div>
-      <!-- Article CTA -->
+      </article>
       {% include 'articles/partials/article-cta-find-pro.html' %}
-    </article>
+    </div>
   </main>
 {% endblock %}

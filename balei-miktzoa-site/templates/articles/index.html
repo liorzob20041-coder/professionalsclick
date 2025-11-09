@@ -46,7 +46,35 @@
   'electricity': {'he': 'חשמל – מאמרים וטיפים', 'en': 'Electricity – Articles & Tips', 'ru': 'Электрика – статьи и советы'},
   'plumbing': {'he': 'אינסטלציה – מאמרים וטיפים', 'en': 'Plumbing – Articles & Tips', 'ru': 'Сантехника – статьи и советы'},
   'moisture': {'he': 'רטיבות ועובש – מאמרים וטיפים', 'en': 'Moisture & Mold – Articles & Tips', 'ru': 'Влажность и плесень – статьи и советы'},
-  'renovation': {'he': 'שיפוצים – מאמרים וטיפים', 'en': 'Renovations – Articles & Tips', 'ru': 'Ремонты – статьи и советы'}
+  'renovation': {'he': 'שיפוצים – מאמרים וטיפים', 'en': 'Renovations – Articles & Tips', 'ru': 'Ремонты – статьи и советы'},
+  'general': {'he': 'מדריכים לכל בית', 'en': 'Home Care Guides', 'ru': 'Общие руководства для дома'}
+} %}
+{% set category_description_map = {
+  'electricity': {
+    'he': 'טיפים להתמודדות עם תקלות חשמל בבית ובמשרד.',
+    'en': 'Tips for handling everyday electrical issues at home.',
+    'ru': 'Советы по решению бытовых электрических проблем.'
+  },
+  'plumbing': {
+    'he': 'איך לטפל בנזילות, סתימות וכל מה שקשור לצנרת.',
+    'en': 'Learn to handle leaks, clogs, and plumbing maintenance.',
+    'ru': 'Как справляться с протечками, засорами и уходом за трубами.'
+  },
+  'moisture': {
+    'he': 'דרכים לזהות ולטפל בבעיות רטיבות ועובש במהירות.',
+    'en': 'Ways to spot and fix moisture and mold issues quickly.',
+    'ru': 'Способы выявить и устранить проблемы с влажностью и плесенью.'
+  },
+  'renovation': {
+    'he': 'עצות שימושיות לשיפוץ וחידוש חללים בבית.',
+    'en': 'Practical advice for refreshing and renovating your home.',
+    'ru': 'Практичные советы по обновлению и ремонту жилья.'
+  },
+  'general': {
+    'he': 'מאמרים חשובים שתקפים לכל תחומי הבית והתחזוקה.',
+    'en': 'Helpful reads that apply to every part of home care.',
+    'ru': 'Полезные материалы для общего ухода за домом.'
+  }
 } %}
 {% set category_cta_text = {
   'electricity': {
@@ -154,6 +182,7 @@
   'ru': 'Вернуться на главную'
 } %}
 {% set selected_category = request.args.get('category', '') %}
+{% set lang_code = g.current_lang %}
 {% set hero_title = hero_title_map.get(g.current_lang, hero_title_map['he']) %}
 {% set hero_lead = hero_lead_map.get(g.current_lang, hero_lead_map['he']) %}
 {% set search_placeholder = search_placeholder_map.get(g.current_lang, search_placeholder_map['he']) %}
@@ -171,7 +200,7 @@
 {% set featured_subtitle = featured_subtitle_map.get(g.current_lang, featured_subtitle_map['he']) %}
 {% set popular_title = popular_title_map.get(g.current_lang, popular_title_map['he']) %}
 {% set popular_subtitle = popular_subtitle_map.get(g.current_lang, popular_subtitle_map['he']) %}
-<section class="articles-archive" aria-label="{{ _('articles_index.aria_label') }}" data-articles-root data-selected-category="{{ selected_category }}">
+<section class="articles-archive articles-index-page" aria-label="{{ _('articles_index.aria_label') }}" data-articles-root data-selected-category="{{ selected_category }}">
   <div class="container">
     <header class="articles-hero" dir="rtl">
       <span class="articles-hero__kicker">{{ t('homepage.articles.kicker', 'home') }}</span>
@@ -209,9 +238,9 @@
           <h2 class="articles-popular__title">{{ popular_title }}</h2>
           <p class="articles-popular__subtitle">{{ popular_subtitle }}</p>
         </div>
-        <div class="articles-popular__row" role="list">
+        <div class="articles-popular__row bm-article-category-grid" role="list">
           {% for article in popular_articles %}
-            {% include 'articles/partials/article-card-archive.html' %}
+            {% include 'articles/partials/article-card.html' %}
           {% endfor %}
         </div>
       </section>
@@ -224,73 +253,80 @@
             <p class="articles-featured__subtitle">{{ featured_subtitle }}</p>
           {% endif %}
         </div>
-        <div class="articles-featured__row" role="list">
+        <div class="articles-featured__row bm-article-category-grid" role="list">
           {% for article in featured_articles %}
-            {% include 'articles/partials/article-card-archive.html' %}
+            {% include 'articles/partials/article-card.html' %}
           {% endfor %}
         </div>
       </section>
     {% endif %}
     {% if articles %}
-      {% set general_articles = grouped_articles.get('general') %}
-      {% if general_articles %}
-        <section class="articles-section" data-article-section data-category="general" dir="rtl">
-          <header class="articles-section__head">
-            <h2 class="articles-section__title">{{ _('articles_index.all_heading') }}</h2>
-            <p class="articles-section__intro">{{ _('articles_index.section_intro') }}</p>
-          </header>
-          <div class="articles-grid" role="list">
-            {% for article in general_articles %}
-              {% include 'articles/partials/article-card-archive.html' %}
-            {% endfor %}
-          </div>
-        </section>
-      {% endif %}
       {% set ordered_categories = ['electricity', 'plumbing', 'moisture', 'renovation'] %}
       {% set extra_categories = categories | reject('in', ordered_categories) | list %}
+      {% set general_articles = grouped_articles.get('general') %}
+      {% set section_intro = _('articles_index.section_intro') %}
       {% for category in ordered_categories %}
         {% set category_articles = grouped_articles.get(category) %}
         {% if category_articles %}
-          {% set title = category_titles.get(category, {}).get(g.current_lang, category_titles.get(category, {}).get('he')) %}
-          {% set cta_copy = category_cta_text.get(category, {}).get(g.current_lang, category_cta_text.get(category, {}).get('he')) %}
-          <section class="articles-section" id="category-{{ category }}" data-article-section data-category="{{ category }}" dir="rtl">
-            <header class="articles-section__head">
-              <h2 class="articles-section__title">{{ title }}</h2>
-              <p class="articles-section__intro">{{ _('articles_index.section_intro') }}</p>
+          {% set category_label = category_titles.get(category, {}).get(g.current_lang, category_titles.get(category, {}).get('he')) %}
+          {% set category_description = category_description_map.get(category, {}).get(g.current_lang, category_description_map.get(category, {}).get('he')) %}
+          <section class="bm-article-category-section" id="articles-{{ category }}" data-article-section data-category="{{ category }}" dir="rtl">
+            <header class="bm-article-category-header">
+              <h2 class="bm-article-category-title">{{ category_label }}</h2>
+              {% if category_description %}
+                <p class="bm-article-category-desc">{{ category_description }}</p>
+              {% elif section_intro %}
+                <p class="bm-article-category-desc">{{ section_intro }}</p>
+              {% endif %}
             </header>
-            <div class="articles-grid" role="list">
+            <div class="bm-article-category-grid">
               {% for article in category_articles %}
-                {% include 'articles/partials/article-card-archive.html' %}
+                {% include 'articles/partials/article-card.html' %}
               {% endfor %}
-            </div>
-            <div class="articles-inline-cta" data-category-cta>
-              <div class="articles-inline-cta__content">
-                <p class="articles-inline-cta__text">{{ cta_copy }}</p>
-                <a class="articles-inline-cta__button" href="{{ url_for_lang('niches', lang=g.current_lang) }}">
-                  <span>{{ find_pro_label }}</span>
-                  <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                </a>
-              </div>
             </div>
           </section>
         {% endif %}
       {% endfor %}
+      {% if general_articles %}
+        {% set category_label = category_titles.get('general', {}).get(g.current_lang, category_titles.get('general', {}).get('he')) %}
+        {% set category_description = category_description_map.get('general', {}).get(g.current_lang, category_description_map.get('general', {}).get('he')) %}
+        <section class="bm-article-category-section" id="articles-general" data-article-section data-category="general" dir="rtl">
+          <header class="bm-article-category-header">
+            <h2 class="bm-article-category-title">{{ category_label }}</h2>
+            {% if category_description %}
+              <p class="bm-article-category-desc">{{ category_description }}</p>
+            {% elif section_intro %}
+              <p class="bm-article-category-desc">{{ section_intro }}</p>
+            {% endif %}
+          </header>
+          <div class="bm-article-category-grid">
+            {% for article in general_articles %}
+              {% include 'articles/partials/article-card.html' %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
       {% for category in extra_categories %}
         {% set category_articles = grouped_articles.get(category) %}
         {% if category_articles %}
           {% set label_key = 'articles_index.category.' ~ category %}
-          {% set title_label = (_(label_key) if _ else category) %}
-          {% if _ and title_label == label_key %}
-            {% set title_label = category %}
+          {% set category_label = (_(label_key) if _ else category) %}
+          {% if _ and category_label == label_key %}
+            {% set category_label = category %}
           {% endif %}
-          <section class="articles-section" id="category-{{ category }}" data-article-section data-category="{{ category }}" dir="rtl">
-            <header class="articles-section__head">
-              <h2 class="articles-section__title">{{ title_label }}</h2>
-              <p class="articles-section__intro">{{ _('articles_index.section_intro') }}</p>
+          {% set category_description = category_description_map.get(category, {}).get(g.current_lang, category_description_map.get(category, {}).get('he')) %}
+          <section class="bm-article-category-section" id="articles-{{ category }}" data-article-section data-category="{{ category }}" dir="rtl">
+            <header class="bm-article-category-header">
+              <h2 class="bm-article-category-title">{{ category_label }}</h2>
+              {% if category_description %}
+                <p class="bm-article-category-desc">{{ category_description }}</p>
+              {% elif section_intro %}
+                <p class="bm-article-category-desc">{{ section_intro }}</p>
+              {% endif %}
             </header>
-            <div class="articles-grid" role="list">
+            <div class="bm-article-category-grid">
               {% for article in category_articles %}
-                {% include 'articles/partials/article-card-archive.html' %}
+                {% include 'articles/partials/article-card.html' %}
               {% endfor %}
             </div>
           </section>
@@ -352,7 +388,7 @@
       const chips = Array.from(document.querySelectorAll('.category-chip[data-category]'));
       const resetLink = document.querySelector('[data-reset-filter]');
       const sections = Array.from(document.querySelectorAll('[data-article-section]'));
-      const cards = Array.from(document.querySelectorAll('.article-card'));
+      const cards = Array.from(document.querySelectorAll('.bm-article-card'));
       const articlesRoot = document.querySelector('[data-articles-root]');
       function setActiveChip(activeCategory){
         chips.forEach((chip)=>{

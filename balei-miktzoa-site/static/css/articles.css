@@ -689,3 +689,122 @@ html[dir="ltr"] .articles-archive .article-card__more:focus-visible .fa-arrow-le
 .chip--static {
   pointer-events: none;
 }
+/* Articles index refresh */
+.articles-index-page {
+  background-color: #F8FAFC;
+}
+.bm-article-category-section {
+  padding: 24px 16px 32px;
+}
+.bm-article-category-section:not(:first-of-type) {
+  border-top: 1px solid #E5E7EB;
+}
+.bm-article-category-header {
+  margin-bottom: 12px;
+  text-align: right;
+}
+.bm-article-category-title {
+  font-size: 1.1rem;
+  margin: 0 0 4px;
+}
+.bm-article-category-desc {
+  font-size: 0.9rem;
+  color: #6B7280;
+  margin: 0;
+}
+.bm-article-category-grid {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 992px) {
+  .bm-article-category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+.bm-article-card {
+  background-color: #FFFFFF;
+  border-radius: 18px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+.bm-article-card-link {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+.bm-article-card-thumb {
+  flex: 0 0 32%;
+  max-width: 32%;
+  min-height: 110px;
+  position: relative;
+  background: #f1f5f9;
+}
+.bm-article-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bm-article-card-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 12px;
+  font-size: 0.8rem;
+  color: #64748b;
+  text-align: center;
+}
+.bm-article-card-content {
+  flex: 1;
+  padding: 12px 12px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bm-article-card-tag {
+  font-size: 0.75rem;
+  color: #8B1538;
+  background-color: #FDF2F8;
+  border-radius: 999px;
+  padding: 2px 8px;
+  align-self: flex-start;
+}
+.bm-article-card-title {
+  font-size: 0.95rem;
+  margin: 0;
+}
+.bm-article-card-excerpt {
+  font-size: 0.85rem;
+  color: #6B7280;
+  margin: 0;
+}
+.bm-article-card-meta {
+  margin-top: auto;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+}
+@media (hover: hover) {
+  .bm-article-card-link:hover .bm-article-card-title {
+    color: #8B1538;
+  }
+}
+@media (min-width: 768px) {
+  .bm-article-card-link {
+    flex-direction: column;
+  }
+  .bm-article-card-thumb {
+    flex: none;
+    max-width: 100%;
+    height: 170px;
+  }
+  .bm-article-card-content {
+    padding: 12px 14px 14px;
+  }
+  .bm-article-card-thumb-placeholder {
+    padding: 18px;
+    font-size: 0.85rem;
+  }
+}

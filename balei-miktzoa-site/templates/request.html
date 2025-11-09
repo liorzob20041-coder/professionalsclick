@@ -2,678 +2,784 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>בקשת הצטרפות כבעל מקצוע</title>
-
-  <style>
-    :root{
-      --bg:#ffffff;
-      --text:#1f2937;            /* gray-800 */
-      --muted:#6b7280;           /* gray-500 */
-      --line:#e5e7eb;            /* gray-200 */
-      --brand:#111827;
-      --accent:#2563eb;
-      --radius:14px;
-      --shadow:0 6px 18px rgba(0,0,0,.06);
-      --focus:0 0 0 3px rgba(37,99,235,.25);
-      --field-h:46px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      line-height:1.5;
-    }
-
-    .wrap{ max-width:960px; margin:0 auto; padding:18px 14px 28px; }
-    .page-title{ margin:4px 0 6px; font-size:clamp(1.35rem,2.2vw + .8rem,2rem); font-weight:800; color:var(--brand); }
-    .sub-note{ margin:0 0 18px; color:var(--muted); font-size:.95rem; }
-
-    /* טור אחד בכל רוחב מסך */
-    .stack{ display:grid; grid-template-columns:1fr; gap:16px; }
-
-    .card{
-      background:#fff; border:1px solid var(--line); border-radius:var(--radius);
-      box-shadow:var(--shadow); padding:14px;
-    }
-    .card h3{ margin:0 0 10px; font-size:1.05rem; font-weight:800; color:var(--brand); }
-
-    form{ margin:0 }
-    .field{ margin:10px 0 12px; position:relative; }
-    .label{ display:block; font-weight:700; margin-bottom:6px; }
-    .hint{ display:block; font-size:.9rem; color:var(--muted); margin-top:6px; }
-
-    .input, .select, .textarea{
-      width:100%; height:var(--field-h); padding:10px 12px; border:1px solid var(--line);
-      border-radius:10px; background:#fff; color:var(--text); font-size:1rem; outline:none;
-      transition:border-color .15s, box-shadow .15s;
-    }
-    .textarea{ height:auto; min-height:110px; resize:vertical; }
-    .input:focus, .select:focus, .textarea:focus{ border-color:var(--accent); box-shadow:var(--focus); }
-
-    .row{ display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width:600px){
-      .row--2{ grid-template-columns:1fr 1fr; }
-      .row--3{ grid-template-columns:repeat(3,1fr); }
-    }
-
-    .tips{
-      border:1px dashed var(--line); border-radius:12px; padding:10px 12px; background:#fafafa; margin:8px 0 12px;
-    }
-    .tips .t-title{ font-weight:800; margin:0 0 6px; font-size:.98rem; }
-    .tips p{ margin:6px 0; color:#444; }
-    .tips ul{ margin:0 0 0 1em; padding:0; color:#444; }
-    [dir="rtl"] .tips ul{ margin:0 1em 0 0; }
-
-    .btn{ appearance:none; border:none; border-radius:12px; height:48px; padding:0 18px; cursor:pointer; font-weight:800; font-size:1rem; }
-    .btn-primary{ background:#111827; color:#fff; transition:transform .08s ease; }
-    .btn-primary:hover{ transform:translateY(-1px); }
-    .btn-secondary{ background:#f3f4f6; border:1px solid var(--line); color:#111827; }
-    .btn-row{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
-    .form-status{ margin-top:16px; font-weight:700; font-size:1rem; }
-    .form-status--pending{ color:var(--muted); }
-    .form-status--success{ color:#047857; }
-    .form-status--error{ color:#b91c1c; }
-    .form-status__details{ margin:6px 0 0; padding:0 0 0 1.1em; font-size:.95rem; font-weight:500; color:var(--muted); }
-    [dir="rtl"] .form-status__details{ padding:0 1.1em 0 0; }
-    .work-block{ border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:10px 0; background:#fff; }
-    .days{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
-    .day{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); padding:6px 10px; border-radius:999px; background:#fff; user-select:none; }
-
-    .ltr{ direction:ltr; text-align:left; }
-    .form-note{ font-size:.92rem; color:var(--muted); margin-top:6px; }
-
-    .file-label{ display:inline-block; padding:10px 14px; border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer; font-weight:700; }
-    .file-label + .file-label { margin-inline-start: 8px; }
-
-    /* ===== Autocomplete UI ===== */
-    .ac-wrap{ position:relative; }
-    .ac-list{
-      position:absolute; left:0; right:0; top: calc(100% + 6px);
-      z-index:40; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
-      max-height:220px; overflow:auto; display:none;
-    }
-    .ac-item{
-      padding:10px 12px; cursor:pointer; border-bottom:1px solid #f3f4f6;
-      font-size:0.98rem;
-    }
-    .ac-item:last-child{ border-bottom:none; }
-    .ac-item[aria-selected="true"], .ac-item:hover{ background:#f3f4f6; }
-    .ac-empty{ padding:10px 12px; color:#6b7280; }
-
-    /* ===== Sub-services UI ===== */
-    .subsvc-wrap { border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff; }
-    .subsvc-grid { display:grid; grid-template-columns:1fr; gap:8px; margin-top:8px; }
-    @media (min-width:600px){ .subsvc-grid { grid-template-columns:repeat(2,1fr); } }
-    .subsvc-item { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff; }
-    .lang-wrap { border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff; }
-    .lang-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:8px; }
-    .lang-option { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff; }
-    .lang-option input{ width:18px; height:18px; accent-color:var(--accent); }
-    .lang-option span{ font-weight:600; }
-    .subsvc-empty { color:#6b7280; font-size:.95rem; margin-top:6px; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/request.css') }}">
 </head>
-<body>
+<body class="request-body">
   <div class="wrap">
-
-    <h1 class="page-title">בקשת הצטרפות כבעל מקצוע</h1>
-    <p class="sub-note">מילוי הטופס אורך כ-2–4 דקות. לאחר האישור ניצור איתך קשר.</p>
-
-    <form action="{{ url_for('request_professional', lang=(g.current_lang or 'he')) }}?key={{ invite_key }}"
-          method="POST" enctype="multipart/form-data" novalidate>
-
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="key" value="{{ invite_key }}">
-
-      <div class="stack">
-        <!-- ===== 1) פרטים בסיסיים ===== -->
-        <section class="card">
-          <h3>פרטים בסיסיים</h3>
-
-          <div class="field">
-            <label for="company_name" class="label">שם עסק (לא חובה)</label>
-            <input class="input" type="text" id="company_name" name="company_name" placeholder="לדוגמה: אלקטרו-יוסי בע״מ" />
-            <span class="hint">אפשר להשאיר ריק.</span>
+    <header class="request-header">
+      <h1 class="page-title">בקשת הצטרפות כבעל מקצוע</h1>
+      <p class="sub-note">הטופס מותאם לנייד, נוח ומדויק. 4 צעדים קצרים ואנחנו כבר נדאג לכל היתר.</p>
+    </header>
+    {% if invite_invalid %}
+      <section class="card invite-card">
+        <h2 class="card-title">צריך הזמנה אישית בשביל להמשיך</h2>
+        <p class="invite-text">העמוד מיועד לבעלי מקצוע שקיבלו מאיתנו קישור אישי. אם לא קיבלת הזמנה עדיין – נשמח להכיר אותך! השאר/י שם וטלפון ונחזור אליך עם כל הפרטים.</p>
+        <form id="invite-lead-form" class="invite-lead-form" method="post" action="{{ url_for('send_message', lang=lang) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="email" value="pros-invite@baley-mikzoa.co.il">
+          <input type="hidden" name="message" value="">
+          <div class="field" data-field-name="invite_name">
+            <label for="invite_name" class="label">שם מלא</label>
+            <input class="input" type="text" id="invite_name" name="name" required placeholder="לדוגמה: יעל כהן" />
           </div>
-
-          <div class="field">
-            <label for="name" class="label">שם מלא</label>
-            <input class="input" type="text" id="name" name="name" required placeholder="הקלד/י שם מלא" />
+          <div class="field" data-field-name="invite_phone">
+            <label for="invite_phone" class="label">טלפון נייד</label>
+            <input class="input" type="tel" id="invite_phone" name="phone" inputmode="tel" required placeholder="לדוגמה: 052-1234567" />
           </div>
-
-          <div class="row row--2">
-            <!-- מקצוע – השלמה אוטומטית -->
-            <div class="field ac-wrap">
-              <label for="field" class="label">מקצוע</label>
-              <input class="input" id="field" name="field" type="text" autocomplete="off" placeholder="לדוגמה: אינסטלטורים / חשמלאים / שיפוצים" required>
-              <div id="ac-field" class="ac-list" role="listbox" aria-label="מקצוע"></div>
-              <span class="hint">התחל להקליד ונציע מקצועות נפוצים.</span>
+          <input type="hidden" name="website" value="">
+          <div class="invite-actions">
+            <button type="submit" class="btn btn-primary">שלחו לי הזמנה</button>
+          </div>
+          <p class="hint invite-whatsapp">מעדיפים? אפשר לשלוח לנו הודעה קצרה בוואטסאפ ל-<a href="https://wa.me/972502255368?text=%D7%94%D7%99%D7%99%20%D7%90%D7%A0%D7%99%20%D7%A8%D7%95%D7%A6%D7%94%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9B%D7%91%D7%A2%D7%9C%20%D7%9E%D7%A7%D7%A6%D7%95%D7%A2" target="_blank" rel="noopener">050-225-5368</a>.</p>
+          <div id="invite_lead_status" class="form-status" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+    {% else %}
+      <div class="form-shell">
+        <nav class="form-progress" aria-label="ניווט שלבי הטופס">
+          <ol>
+            <li class="is-active" data-step-index="1">
+              <button type="button" data-step-target="0"><span>מי אתה ואיך מדברים איתך</span></button>
+            </li>
+            <li data-step-index="2">
+              <button type="button" data-step-target="1"><span>איפה אתה עובד ומה הניסיון</span></button>
+            </li>
+            <li data-step-index="3">
+              <button type="button" data-step-target="2"><span>מה בדיוק אתה עושה</span></button>
+            </li>
+            <li data-step-index="4">
+              <button type="button" data-step-target="3"><span>תמונה, וידאו וזמינות</span></button>
+            </li>
+          </ol>
+        </nav>
+        <form id="pro-request-form"
+              action="{{ url_for('request_professional', lang=(g.current_lang or 'he'), key=invite_key) if invite_key else url_for('request_professional', lang=(g.current_lang or 'he')) }}"
+              method="POST" enctype="multipart/form-data" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          {% if invite_key %}
+            <input type="hidden" name="key" value="{{ invite_key }}">
+          {% endif %}
+          <section class="card wizard-step is-active" data-step="0">
+            <header class="step-header">
+              <p class="step-count"><span class="step-index">שלב 1</span> מתוך 4</p>
+              <h2 class="step-title">מי אתה ואיך מדברים איתך</h2>
+              <p class="step-subtitle">נתחיל בפרטים הבסיסיים כדי שנדע איך לפנות אליך.</p>
+            </header>
+            <div class="field" data-field-name="name">
+              <label for="name" class="label">שם מלא</label>
+              <input class="input" type="text" id="name" name="name" required placeholder="לדוגמה: יוסי כהן" />
+              <p class="hint">זה השם שיופיע ללקוחות באתר.</p>
+              <p class="field-error" data-error-for="name"></p>
             </div>
-
-            <!-- עיר – השלמה אוטומטית -->
-            <div class="field ac-wrap">
-              <label for="base_city" class="label">עיר/יישוב</label>
-              <input class="input" id="base_city" name="base_city" type="text" autocomplete="off" placeholder="לדוגמה: תל אביב" required>
-              <div id="ac-city" class="ac-list" role="listbox" aria-label="עיר/יישוב"></div>
-              <span class="hint">התחל להקליד ונציע יישובים.</span>
+            <div class="field" data-field-name="phone">
+              <label for="phone" class="label">טלפון נייד</label>
+              <input class="input ltr" type="tel" id="phone" name="phone" required inputmode="tel" placeholder="לדוגמה: 052-1234567" />
+              <p class="hint">המספר לא נמסר לכל אחד. משתמשים בו כדי לחבר בינך לבין לקוחות.</p>
+              <p class="field-error" data-error-for="phone"></p>
             </div>
-          </div>
-
-          <div class="row row--2">
-            <div class="field">
-              <label for="work_radius" class="label">רדיוס עבודה</label>
-              <select id="work_radius" name="work_radius" required class="select">
-                <option value="">בחר/י</option>
-                <option value="5">עד 5 ק״מ</option>
-                <option value="10">עד 10 ק״מ</option>
-                <option value="15">עד 15 ק״מ</option>
-                <option value="20">עד 20 ק״מ</option>
-                <option value="30">עד 30 ק״מ</option>
+            <div class="field ac-wrap" data-field-name="field">
+              <label for="field" class="label">מה המקצוע שלך?</label>
+              <input class="input" type="text" id="field" name="field" autocomplete="off" required placeholder="לדוגמה: חשמלאי, אינסטלטור, מזגנים..." />
+              <div id="field-suggestions" class="ac-list" role="listbox" aria-label="מקצוע"></div>
+              <p class="hint">אפשר לבחור מהרשימה או לכתוב במילים שלך. זה לא חייב להיות בדיוק כמו אצלנו.</p>
+              <p class="field-error" data-error-for="field"></p>
+            </div>
+            <div class="field ac-wrap" data-field-name="base_city">
+              <label for="base_city" class="label">מאיזה עיר אתה יוצא לעבודה?</label>
+              <input class="input" type="text" id="base_city" name="base_city" autocomplete="off" required placeholder="לדוגמה: תל אביב, פתח תקווה..." />
+              <div id="city-suggestions" class="ac-list" role="listbox" aria-label="עיר"></div>
+              <p class="hint">זו נקודת המוצא. משם נבין לאן נוח לך להגיע.</p>
+              <p class="field-error" data-error-for="base_city"></p>
+            </div>
+            <div class="field" data-field-name="company_name">
+              <label for="company_name" class="label">שם העסק (אם יש)</label>
+              <input class="input" type="text" id="company_name" name="company_name" placeholder="לדוגמה: אלקטרו-יוסי בע״מ" />
+              <p class="hint">אם אתה עובד כעצמאי בלי שם עסק, אפשר להשאיר ריק.</p>
+              <p class="field-error" data-error-for="company_name"></p>
+            </div>
+          </section>
+          <section class="card wizard-step" data-step="1">
+            <header class="step-header">
+              <p class="step-count"><span class="step-index">שלב 2</span> מתוך 4</p>
+              <h2 class="step-title">איפה אתה עובד וכמה ניסיון יש לך</h2>
+              <p class="step-subtitle">נדייק את אזור השירות והשפות כדי להתאים לך פניות טובות.</p>
+            </header>
+            <div class="field" data-field-name="work_radius">
+              <label for="work_radius" class="label">עד איפה נוח לך להגיע לעבודה?</label>
+              <select class="select" id="work_radius" name="work_radius" required>
+                <option value="" disabled selected>בחר/י אפשרות</option>
+                {% for option in work_radius_options %}
+                  <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
               </select>
+              <p class="hint">לא צריך להיות מדויק. תבחר מה שהכי קרוב למציאות.</p>
+              <p class="field-error" data-error-for="work_radius"></p>
             </div>
-
-            <div class="field">
-              <label for="phone" class="label">טלפון</label>
-              <input class="input ltr" type="text" id="phone" name="phone"
-                     required placeholder="למשל 052-1234567"
-                     pattern="^0(5\\d|7\\d|2|3|4|8|9)-?\\d{7}$" />
-              <span class="hint">מס׳ נייד או קווי בפורמט תקין.</span>
+            <div class="field" data-field-name="experience">
+              <label for="experience" class="label">כמה שנות ניסיון יש לך בתחום?</label>
+              <input class="input" type="number" id="experience" name="experience" min="0" inputmode="numeric" required placeholder="לדוגמה: 7" />
+              <p class="hint">אפשר גם 1, 3, 27... כמה שאתה רוצה. אם אתה חדש לגמרי, כתוב 0 או 1 – זה בסדר לגמרי.</p>
+              <p class="field-error" data-error-for="experience"></p>
             </div>
-          </div>
-
-          <div class="row row--2">
-            <div class="field">
-              <label for="experience" class="label">וותק (שנים)</label>
-              <input class="input" type="number" id="experience" name="experience" min="0"
-                     required placeholder="לדוגמה: 7" />
-            </div>
-          </div>
-
-          <div class="field">
-            <span id="languagesLabel" class="label">שפות שירות</span>
-            <div class="lang-wrap" role="group" aria-labelledby="languagesLabel">
-              {% set _language_choices = language_choices|default([], true) %}
-              {% set _default_languages = default_languages|default([], true) %}
+            <div class="field" data-field-name="languages">
+              <span class="label">באילו שפות נוח לך לדבר עם לקוחות?</span>
               <div class="lang-grid">
-                {% for lang_label in _language_choices %}
+                {% for lang_label in language_choices %}
                   <label class="lang-option">
-                    <input type="checkbox" name="languages" value="{{ lang_label }}"{% if lang_label in _default_languages %} checked{% endif %}>
+                    <input type="checkbox" name="languages" value="{{ lang_label }}"{% if lang_label in default_languages %} checked{% endif %}>
                     <span>{{ lang_label }}</span>
                   </label>
                 {% endfor %}
               </div>
+              <p class="hint">אפשר לבחור כמה שפות. זה עוזר לנו להתאים אליך לקוחות מתאימים.</p>
             </div>
-            <span class="hint">בחר/י את השפות שבהן את/ה נותן שירות (ניתן לבחור יותר מאחת).</span>
-          </div>
-          <div class="field">
-            <label for="description" class="label">תיאור קצר עליך</label>
-            <textarea class="textarea" id="description" name="description" required
-                      placeholder="ספר/י בקצרה מה את/ה עושה, באילו סוגי עבודות מתמחה, אזורי פעילות ועוד."></textarea>
-            <span class="hint">אפשר להוסיף קישורים או ניסיון ייחודי. בלי מחירים.</span>
-          </div>
-
-          <div class="field">
-            <label for="reviews" class="label">המלצות/ביקורות (לא חובה)</label>
-            <textarea class="textarea" id="reviews" name="reviews"
-                      placeholder="אם יש—ציין/י כאן כמה מילים מהלקוחות."></textarea>
-            <span class="hint">בחירה חופשית.</span>
-          </div>
-        </section>
-
-        <!-- ===== 1א) תתי-שירותים לפי תחום ===== -->
-        <section class="card">
-          <h3>תתי-שירותים</h3>
-          <div class="subsvc-wrap">
-            <p class="sub-note">בחר/י תתי-שירותים רלוונטיים. הרשימה מתעדכנת אוטומטית לפי המקצוע שבחרת.</p>
-
-            <div id="subservices_container">
-              <div class="subsvc-empty">נא לבחור תחום כדי לראות תתי-שירותים.</div>
-            </div>
-
-            <div class="field" style="margin-top:10px;">
-              <label class="label" style="font-weight:700;">
-                <input type="checkbox" id="offers_emergency" name="offers_emergency" value="1">
-                מענה חירום 24/7
-              </label>
-            </div>
-          </div>
-        </section>
-
-        <!-- ===== 2) תמונה / וידאו ===== -->
-        <section class="card">
-          <h3>תמונה / וידאו</h3>
-
-          <div class="tips">
-            <p class="t-title">טיפים לתמונה טובה</p>
-            <p>תמונה איכותית מעלה אמון ומגדילה פניות.</p>
-            <ul>
-              <li>תאורה טבעית ועדינה</li>
-              <li>פנים נראות וברורות</li>
-              <li>רקע נקי ללא עומס</li>
-            </ul>
-          </div>
-
-          <div class="field">
-            <label for="image" class="label">תמונה</label>
-            <label class="file-label">
-              העלאת תמונה
-              <input type="file" id="image" name="image" accept="image/*" hidden>
-            </label>
-            <span class="hint">JPEG/PNG עד 5MB.</span>
-          </div>
-
-          <div class="tips">
-            <p class="t-title">טיפים לוידאו</p>
-            <p>וידאו קצר עם הצגה עצמית ועבודות מייצר אמון גבוה.</p>
-            <ul>
-              <li>פתח/י במשפט היכרות קצר</li>
-              <li>ציין/י ניסיון ונישות</li>
-              <li>ציין/י אזור פעילות וקריאה לפנייה</li>
-            </ul>
-          </div>
-
-          <div class="field">
-            <span class="label">וידאו (לא חובה)</span>
-            <div class="btn-row">
-              <label class="file-label">
-                צילום מהמצלמה
-                <input type="file" name="video_file_cam" accept="video/*" capture="environment" hidden>
-              </label>
-              <label class="file-label">
-                בחירה מהגלריה
-                <input type="file" name="video_file_gallery" accept="video/*" hidden>
-              </label>
-            </div>
-            <span class="hint">MP4 עד 100MB.</span>
-          </div>
-        </section>
-
-        <!-- ===== 3) שעות עבודה ===== -->
-        <section class="card">
-          <h3>שעות עבודה</h3>
-
-          <div id="work_blocks_container">
-            <div class="work-block">
-              <div class="row row--3">
-                <div class="field">
-                  <label class="label" for="start_hour_0">שעת התחלה</label>
-                  <select class="select" id="start_hour_0" name="start_hour_0">
-                    <option value="8">8:00</option><option value="9">9:00</option>
-                    <option value="10">10:00</option><option value="11">11:00</option>
-                    <option value="12">12:00</option><option value="13">13:00</option>
-                    <option value="14">14:00</option><option value="15">15:00</option>
-                    <option value="16">16:00</option><option value="17">17:00</option>
-                    <option value="18">18:00</option><option value="19">19:00</option>
-                    <option value="20">20:00</option>
-                  </select>
-                </div>
-
-                <div class="field">
-                  <label class="label" for="end_hour_0">שעת סיום</label>
-                  <select class="select" id="end_hour_0" name="end_hour_0">
-                    <option value="9">9:00</option><option value="10">10:00</option>
-                    <option value="11">11:00</option><option value="12">12:00</option>
-                    <option value="13">13:00</option><option value="14">14:00</option>
-                    <option value="15">15:00</option><option value="16">16:00</option>
-                    <option value="17">17:00</option><option value="18">18:00</option>
-                    <option value="19">19:00</option><option value="20">20:00</option>
-                    <option value="21">21:00</option>
-                  </select>
-                </div>
+          </section>
+          <section class="card wizard-step" data-step="2">
+            <header class="step-header">
+              <p class="step-count"><span class="step-index">שלב 3</span> מתוך 4</p>
+              <h2 class="step-title">מה בדיוק אתה עושה</h2>
+              <p class="step-subtitle">כמה נקודות עיקריות על סוגי העבודות והניסיון שלך.</p>
+            </header>
+            <div class="field" data-field-name="sub_services">
+              <span class="label">איזה סוג עבודות אתה עושה בדרך כלל?</span>
+              <div class="subsvc-wrap">
+                <div id="subservices_checkbox_container" class="subsvc-grid" hidden></div>
+                <div id="subservices_empty" class="subsvc-empty">כתוב כמה עבודות עיקריות שאתה עושה הכי הרבה.</div>
               </div>
-
-              <div class="days" aria-label="בחירת ימים">
-                <label class="day"><input type="checkbox" name="days_0" value="ראשון"> ראשון</label>
-                <label class="day"><input type="checkbox" name="days_0" value="שני"> שני</label>
-                <label class="day"><input type="checkbox" name="days_0" value="שלישי"> שלישי</label>
-                <label class="day"><input type="checkbox" name="days_0" value="רביעי"> רביעי</label>
-                <label class="day"><input type="checkbox" name="days_0" value="חמישי"> חמישי</label>
-                <label class="day"><input type="checkbox" name="days_0" value="שישי"> שישי</label>
-                <label class="day"><input type="checkbox" name="days_0" value="שבת"> שבת</label>
-              </div>
+              <p class="hint">2–5 דברים עיקריים שאתה עושה הכי הרבה.</p>
             </div>
+            <div class="field" id="sub_services_text_wrapper" data-field-name="sub_services_text">
+              <label for="sub_services_text" class="label">איזה סוג עבודות אתה עושה בדרך כלל?</label>
+              <textarea class="textarea" id="sub_services_text" name="sub_services_text" placeholder="לדוגמה: התקנת נקודות חשמל, החלפת לוחות, בדיקות תקינות..."></textarea>
+              <p class="hint">2–5 דברים עיקריים שאתה עושה הכי הרבה.</p>
+              <p class="field-error" data-error-for="sub_services_text"></p>
+            </div>
+            <div class="field" data-field-name="description">
+              <label for="description" class="label">כמה מילים עליך ועל העבודה שלך</label>
+              <textarea class="textarea" id="description" name="description" required placeholder="לדוגמה: חשמלאי מוסמך, מעל 12 שנות ניסיון, מומחה לתקלות מהירות בדירות ולוחות חשמל."></textarea>
+              <p class="hint">מומלץ 2–4 משפטים. זה המידע שהלקוח רואה ראשון.</p>
+              <p class="field-error" data-error-for="description"></p>
+            </div>
+            <div class="field" data-field-name="reviews">
+              <label for="reviews" class="label">המלצות קצרות מלקוחות (לא חובה)</label>
+              <textarea class="textarea" id="reviews" name="reviews" placeholder="לדוגמה: 'יוסי הגיע מהר, פתר את הבעיה בתוך חצי שעה והשאיר נקי'."></textarea>
+              <p class="hint">יש לך הודעות מוואטסאפ / פייסבוק? אפשר להדביק כאן כמה משפטים. אפשר גם לשלוח לנו אחר כך.</p>
+            </div>
+          </section>
+          <section class="card wizard-step" data-step="3">
+            <header class="step-header">
+              <p class="step-count"><span class="step-index">שלב 4</span> מתוך 4</p>
+              <h2 class="step-title">תמונה, וידאו וזמינות</h2>
+              <p class="step-subtitle">תוספות שעוזרות לנו להציג אותך טוב יותר ללקוחות.</p>
+            </header>
+            <div class="field" data-field-name="offers_emergency">
+              <span class="label">אתה נותן מענה חירום בשעות לא שגרתיות?</span>
+              <div class="radio-grid">
+                <label class="radio-option">
+                  <input type="radio" name="offers_emergency" value="yes">
+                  <span>כן, יש מענה חירום</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="offers_emergency" value="no" checked>
+                  <span>לא, רק בשעות רגילות</span>
+                </label>
+              </div>
+              <p class="hint">לא חובה. זה רק עוזר לנו להבין איזה פניות להעביר אליך.</p>
+            </div>
+            <div class="field" data-field-name="availability_slot">
+              <label for="availability_slot" class="label">מתי בדרך כלל נוח לך לעבוד?</label>
+              <select class="select" id="availability_slot" name="availability_slot">
+                <option value="" selected>בחר/י אפשרות</option>
+                {% for slot in availability_slots %}
+                  <option value="{{ slot }}">{{ slot }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field" data-field-name="image">
+              <label for="image" class="label">תמונה לפרופיל (לא חובה)</label>
+              <label class="file-label">
+                העלאת תמונה
+                <input type="file" id="image" name="image" accept="image/*" hidden>
+              </label>
+              <p class="hint">עד 5MB, עדיף תמונה שלך בעבודה. אפשר גם לדלג ולהוסיף אחר כך.</p>
+              <p class="field-error" data-error-for="image"></p>
+            </div>
+            <div class="field" data-field-name="video">
+              <span class="label">סרטון קצר עליך (לא חובה)</span>
+              <div class="video-actions">
+                <label class="file-label">
+                  צלם סרטון עכשיו
+                  <input type="file" name="video_file_cam" accept="video/*" capture="environment" hidden>
+                </label>
+                <label class="file-label">
+                  בחר סרטון מהטלפון
+                  <input type="file" name="video_file_gallery" accept="video/*" hidden>
+                </label>
+              </div>
+              <p class="hint">עד 50MB, בערך עד דקה. תציג את עצמך בכמה מילים ותראה קצת מהעבודה שלך.</p>
+              <p class="field-error" data-error-for="video"></p>
+            </div>
+            <div class="field" data-field-name="terms_accepted">
+              <label class="checkbox-option">
+                <input type="checkbox" id="terms_accepted" name="terms_accepted" value="1" required>
+                <span>אני מאשר/ת לבעלי מקצוע בקליק לשמור את הפרטים שלי לצורך יצירת קשר ופרופיל באתר.</span>
+              </label>
+              <p class="field-error" data-error-for="terms_accepted"></p>
+            </div>
+          </section>
+          <div class="wizard-nav">
+            <button type="button" class="btn btn-secondary wizard-prev" data-action="prev" disabled>הקודם</button>
+            <button type="button" class="btn btn-primary wizard-next" data-action="next">הבא</button>
+            <button type="submit" class="btn btn-primary wizard-submit" data-action="submit">שליחה</button>
           </div>
-
-          <div class="btn-row">
-            <button type="button" id="add_block_btn" class="btn btn-secondary">הוסף בלוק שעות</button>
-          </div>
-
-          <p class="form-note">ניתן להוסיף כמה בלוקים שונים (למשל ימי חול ושישי).</p>
-        </section>
+          <div id="form_status" class="form-status" role="status" aria-live="polite"></div>
+        </form>
       </div>
-
-      <div class="btn-row" style="justify-content:flex-end">
-        <button type="submit" class="btn btn-primary">שליחה</button>
-      </div>
-      <div id="request_status" class="form-status" role="status" aria-live="polite"></div>
-    </form>
+    {% endif %}
   </div>
-
   <script>
-    // ===== טקסטים ל-JS =====
-    const LABELS = {
-      add_hours_block: "הוסף בלוק שעות",
-      start_time: "שעת התחלה",
-      end_time: "שעת סיום",
-      days_group: "בחירת ימים",
-      day_sun: "ראשון",
-      day_mon: "שני",
-      day_tue: "שלישי",
-      day_wed: "רביעי",
-      day_thu: "חמישי",
-      day_fri: "שישי",
-      day_sat: "שבת"
-    };
-
-    // ===== מסיכת טלפון עדינה =====
-    (function(){
-      const phone = document.getElementById('phone');
-      if (!phone) return;
-      phone.addEventListener('input', e => {
-        let v = e.target.value.replace(/[^\d]/g,'');
-        if (v.startsWith('0') && v.length > 10) v = v.slice(0,10);
-        if (v.length >= 3) v = v.slice(0,3) + '-' + v.slice(3);
-        e.target.value = v;
-      });
-    })();
-
-    // ===== הוספת בלוק שעות נוסף =====
-    (function(){
-      let blockCount = 1;
-      const addBtn = document.getElementById('add_block_btn');
-      const container = document.getElementById('work_blocks_container');
-      if (!addBtn || !container) return;
-
-      addBtn.addEventListener('click', () => {
-        const n = blockCount++;
-
-        const wrap = document.createElement('div');
-        wrap.className = 'work-block';
-        wrap.innerHTML = `
-          <div class="row row--3">
-            <div class="field">
-              <label class="label" for="start_hour_${n}">${LABELS.start_time}</label>
-              <select class="select" id="start_hour_${n}" name="start_hour_${n}">
-                <option value="8">8:00</option><option value="9">9:00</option>
-                <option value="10">10:00</option><option value="11">11:00</option>
-                <option value="12">12:00</option><option value="13">13:00</option>
-                <option value="14">14:00</option><option value="15">15:00</option>
-                <option value="16">16:00</option><option value="17">17:00</option>
-                <option value="18">18:00</option><option value="19">19:00</option>
-                <option value="20">20:00</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="label" for="end_hour_${n}">${LABELS.end_time}</label>
-              <select class="select" id="end_hour_${n}" name="end_hour_${n}">
-                <option value="9">9:00</option><option value="10">10:00</option>
-                <option value="11">11:00</option><option value="12">12:00</option>
-                <option value="13">13:00</option><option value="14">14:00</option>
-                <option value="15">15:00</option><option value="16">16:00</option>
-                <option value="17">17:00</option><option value="18">18:00</option>
-                <option value="19">19:00</option><option value="20">20:00</option>
-                <option value="21">21:00</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="days" aria-label="${LABELS.days_group}">
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_sun}"> ${LABELS.day_sun}</label>
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_mon}"> ${LABELS.day_mon}</label>
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_tue}"> ${LABELS.day_tue}</label>
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_wed}"> ${LABELS.day_wed}</label>
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_thu}"> ${LABELS.day_thu}</label>
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_fri}"> ${LABELS.day_fri}</label>
-            <label class="day"><input type="checkbox" name="days_${n}" value="${LABELS.day_sat}"> ${LABELS.day_sat}</label>
-          </div>
-        `;
-        container.appendChild(wrap);
-      });
-    })();
-
-    // ===== Autocomplete לשדות מקצוע ועיר (שרת: /api/suggest?type=field|area&q=) =====
-    (function(){
-      const FIELD = document.getElementById('field');
-      const CITY  = document.getElementById('base_city');
-      const acField = document.getElementById('ac-field');
-      const acCity  = document.getElementById('ac-city');
-
-      function debounce(fn, ms=180){
-        let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
-      }
-
-      function bindAuto(inputEl, listEl, type){
-        let idx = -1; // בחירה נוכחית
-        let items = [];
-
-        function hide(){ listEl.style.display = 'none'; idx=-1; items=[]; listEl.innerHTML=''; }
-        function show(){ listEl.style.display = 'block'; }
-
-        function render(results){
-          listEl.innerHTML = '';
-          idx = -1;
-          items = Array.isArray(results) ? results : [];
-          if(!items.length){
-            const empty = document.createElement('div');
-            empty.className='ac-item ac-empty';
-            empty.textContent = "לא נמצאו תוצאות";
-            listEl.appendChild(empty);
-          }else{
-            items.forEach((r,i)=>{
-              const text = r.label || r.value || r;
-              const div = document.createElement('div');
-              div.className='ac-item';
-              div.setAttribute('role','option');
-              div.textContent = text;
-              div.addEventListener('mousedown',(e)=>{ e.preventDefault(); inputEl.value = text; hide(); renderSubservices(inputEl.value); });
-              listEl.appendChild(div);
-            });
-          }
-          show();
-        }
-
-        const fetcher = debounce(async (q)=>{
-          q = (q||'').trim().toLowerCase();
-          if(q.length < 1){ hide(); return; }
-          try{
-            const res = await fetch(`/api/suggest?type=${encodeURIComponent(type)}&q=${encodeURIComponent(q)}`, {headers:{'Accept':'application/json'}});
-            const data = await res.json();
-            render((data && data.results) || []);
-          }catch(e){ hide(); }
-        }, 180);
-
-        inputEl.addEventListener('input', ()=> fetcher(inputEl.value));
-        inputEl.addEventListener('focus', ()=> { if(inputEl.value) fetcher(inputEl.value); });
-        inputEl.addEventListener('blur', ()=> setTimeout(hide, 120));
-
-        inputEl.addEventListener('keydown', (e)=>{
-          const options = listEl.querySelectorAll('.ac-item:not(.ac-empty)');
-          if(!options.length) return;
-
-          if(e.key === 'ArrowDown'){ e.preventDefault(); idx = (idx+1) % options.length; options.forEach((o,i)=>o.setAttribute('aria-selected', i===idx)); }
-          else if(e.key === 'ArrowUp'){ e.preventDefault(); idx = (idx-1+options.length) % options.length; options.forEach((o,i)=>o.setAttribute('aria-selected', i===idx)); }
-          else if(e.key === 'Enter'){ if(idx>=0){ e.preventDefault(); inputEl.value = options[idx].textContent; hide(); renderSubservices(inputEl.value); } }
-          else if(e.key === 'Escape'){ hide(); }
-        });
-      }
-
-      bindAuto(FIELD, acField, 'field');
-      bindAuto(CITY,  acCity,  'area');
-    })();
-
-    // ===== טקסונומיה בסיסית של תתי-שירותים =====
-    const TAXONOMY = {
-      "אינסטלטורים": [
-        "פתיחת סתימות",
-        "איתור נזילות",
-        "התקנת כלים סניטריים",
-        "החלפת צנרת",
-        "תיקון פיצוצי צנרת",
-        "התקנת ברזים ומקלחונים"
-      ],
-      "חשמלאים": [
-        "תיקון קצרי חשמל",
-        "התקנת שקעים ומפסקים",
-        "שדרוג ללוח תלת פאזי",
-        "התקנת תאורה",
-        "תכנון נקודות חשמל",
-        "הכנת תשתיות לדוד/מזגן"
-      ],
-      "שיפוצים": [
-        "עבודות צבע",
-        "טיח ושליכט",
-        "ריצוף וחיפוי",
-        "שיפוץ חדרי רחצה",
-        "שבירת קירות",
-        "איטום"
-      ],
-      "מיזוג אוויר": [
-        "התקנת מזגנים",
-        "מילוי גז",
-        "ניקוי/חיטוי מזגנים",
-        "איתור ותיקון נזילות",
-        "העברת נקודת ניקוז/חשמל"
-      ],
-      "מנעולנים": [
-        "פריצת דלתות",
-        "החלפת/תיקון צילינדר",
-        "התקנת מנעולים חכמים",
-        "פריצת רכבים"
-      ]
-    };
-
-    // רינדור תתי-שירותים לפי המקצוע
-    function renderSubservices(fieldName){
-      const cont = document.getElementById('subservices_container');
-      if (!cont) return;
-      cont.innerHTML = '';
-
-      const list = TAXONOMY[(fieldName||'').trim()] || [];
-      if (!list.length){
-        cont.innerHTML = '<div class="subsvc-empty">לתחום זה אין עדיין רשימה מוכנה. אפשר לפרט בשדה "תיאור".</div>';
+    // ====== הזנת לידים כשאין קוד הזמנה ======
+    (() => {
+      const form = document.getElementById('invite-lead-form');
+      if (!form || !window.fetch) {
         return;
       }
-
-      const grid = document.createElement('div');
-      grid.className = 'subsvc-grid';
-
-      list.forEach((label, i) => {
-        const item = document.createElement('label');
-        item.className = 'subsvc-item';
-        item.innerHTML = `
-          <input type="checkbox" name="sub_services" value="${label}">
-          <span>${label}</span>
-        `;
-        grid.appendChild(item);
-      });
-
-      cont.appendChild(grid);
-    }
-
-    // קשר לשדה המקצוע
-    (function(){
-      const fieldEl = document.getElementById('field');
-      if (!fieldEl) return;
-      if (fieldEl.value) renderSubservices(fieldEl.value);
-      fieldEl.addEventListener('input', () => renderSubservices(fieldEl.value));
-      fieldEl.addEventListener('blur',  () => renderSubservices(fieldEl.value));
-    })();
-    // ===== שליחת טופס אסינכרונית עם פידבק מידי =====
-    (function(){
-      const form = document.querySelector('form');
-      if (!form || !window.fetch || !window.FormData) return;
-      const statusEl = document.getElementById('request_status');
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.textContent : '';
-      const TEXTS = {
-        pending: 'שולחים את הבקשה… זה עלול לקחת כמה שניות.',
-        slow: 'הבקשה נשלחת ברקע – אפשר להמשיך לגלוש, ניצור קשר אחרי האישור.',
-        successFallback: 'הבקשה נקלטה! ניצור קשר בהקדם 🙏',
-        errorFallback: 'אירעה תקלה בשליחת הבקשה. נסו שוב בעוד רגע.'
-      };
-      function setStatus(state, text){
-        if (!statusEl) return;
-        statusEl.className = 'form-status';
-        if (state) statusEl.classList.add(`form-status--${state}`);
-        statusEl.textContent = text || '';
-      }
-      function appendDetails(messages){
-        if (!statusEl || !messages || !messages.length) return;
-        const list = document.createElement('ul');
-        list.className = 'form-status__details';
-        messages.forEach(msg => {
-          const item = document.createElement('li');
-          item.textContent = msg;
-          list.appendChild(item);
-        });
-        statusEl.appendChild(list);
-      }
+      const statusEl = document.getElementById('invite_lead_status');
+      const phoneInput = document.getElementById('invite_phone');
+      const nameInput = document.getElementById('invite_name');
       form.addEventListener('submit', async (event) => {
-        if (form.dataset.submitting === 'true') {
-          event.preventDefault();
+        event.preventDefault();
+        if (!nameInput.value.trim() || !phoneInput.value.trim()) {
           return;
         }
-        if (!window.fetch) return;
-        event.preventDefault();
-        form.dataset.submitting = 'true';
-        let slowNoticeTimer = null;
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'שולחים…';
+        const messageField = form.querySelector('input[name="message"]');
+        const payload = `בקשת הצטרפות ללא קוד הזמנה\nשם: ${nameInput.value.trim()}\nטלפון: ${phoneInput.value.trim()}`;
+        if (messageField) {
+          messageField.value = payload;
         }
-        setStatus('pending', TEXTS.pending);
-        slowNoticeTimer = window.setTimeout(() => {
-          if (form.dataset.submitting === 'true') {
-            setStatus('pending', TEXTS.slow);
-          }
-        }, 6000);
+        const formData = new FormData(form);
         try {
-          const formData = new FormData(form);
+          if (statusEl) {
+            statusEl.className = 'form-status form-status--pending';
+            statusEl.textContent = 'שולחים...';
+          }
           const response = await fetch(form.action, {
             method: 'POST',
             body: formData,
-            headers: { 'Accept': 'application/json' }
+            headers: { 'X-Requested-With': 'fetch', 'Accept': 'application/json' }
           });
-          let payload = null;
-          try {
-            payload = await response.json();
-          } catch (err) {
-            payload = null;
+          const data = await response.json().catch(() => null);
+          const ok = response.ok && data && data.ok !== false;
+          if (statusEl) {
+            statusEl.className = ok ? 'form-status form-status--success' : 'form-status form-status--error';
+            statusEl.textContent = ok ? 'תודה! נחזור אליך בהקדם.' : 'לא הצלחנו לשלוח כרגע. נסה/י שוב בעוד רגע.';
           }
-          const messages = payload && Array.isArray(payload.messages) ? payload.messages : [];
-          const successMessage = messages.find(m => m && m.category === 'success');
-          const errorMessages = messages.filter(m => m && m.category === 'error').map(m => m.text).filter(Boolean);
-          if (response.ok && payload && payload.ok) {
-            setStatus('success', (successMessage && successMessage.text) || TEXTS.successFallback);
-            if (errorMessages.length) {
-              appendDetails(errorMessages);
-            }
+          if (ok) {
             form.reset();
-            renderSubservices('');
-          } else {
-            const fallback = (payload && payload.error) || TEXTS.errorFallback;
-            setStatus('error', fallback);
-            if (errorMessages.length) {
-              appendDetails(errorMessages);
-            }
           }
         } catch (err) {
-          setStatus('error', TEXTS.errorFallback);
-        } finally {
-          window.clearTimeout(slowNoticeTimer);
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
+          if (statusEl) {
+            statusEl.className = 'form-status form-status--error';
+            statusEl.textContent = 'תקלה בשליחה. נסה/י שוב מאוחר יותר.';
           }
-          delete form.dataset.submitting;
         }
       });
     })();
   </script>
+  {% if not invite_invalid %}
+  <script>
+    const CANONICAL_TRADES = JSON.parse('{{ canonical_trades|tojson|safe }}');
+    const TRADE_SYNONYMS = {
+      'אינסטלטור': 'אינסטלטורים',
+      'אינסטלטורים': 'אינסטלטורים',
+      'חשמלאי': 'חשמלאים',
+      'חשמלאים': 'חשמלאים',
+      'שיפוצניק': 'שיפוצים',
+      'שיפוצים': 'שיפוצים',
+      'מנעולן': 'מנעולנים',
+      'מנעולנים': 'מנעולנים',
+      'טכנאי מזגנים': 'מיזוג אוויר',
+      'טכנאי מיזוג אוויר': 'מיזוג אוויר',
+      'מיזוג אוויר': 'מיזוג אוויר',
+      'מזגנים': 'מיזוג אוויר'
+    };
+    const TAXONOMY = {
+      'אינסטלטורים': [
+        'פתיחת סתימות',
+        'איתור נזילות',
+        'התקנת כלים סניטריים',
+        'החלפת צנרת',
+        'תיקון פיצוצי צנרת',
+        'התקנת ברזים ומקלחונים'
+      ],
+      'חשמלאים': [
+        'תיקון תקלות חשמל',
+        'התקנת נקודות חשמל',
+        'החלפת לוחות חשמל',
+        'חיבור חשמל לדירות חדשות',
+        'תאורת חירום וחיישנים'
+      ],
+      'שיפוצים': [
+        'שיפוץ דירות מלא',
+        'שיפוץ חדרי אמבטיה',
+        'עבודות גבס ועיצובים',
+        'ריצוף וחיפוי קירות',
+        'צביעה ותיקוני צבע'
+      ],
+      'מנעולנים': [
+        'פריצת דלתות',
+        'החלפת צילינדרים',
+        'פריצת רכבים',
+        'תיקון מנגנוני דלתות',
+        'התקנת דלתות ביטחון'
+      ],
+      'מיזוג אוויר': [
+        'התקנת מזגנים חדשים',
+        'תחזוקה וניקוי',
+        'מילוי גז למזגן',
+        'איתור ותיקון נזילות במערכת',
+        'פירוק והתקנה בעת מעבר דירה'
+      ]
+    };
+    const form = document.getElementById('pro-request-form');
+    if (form) {
+      const steps = Array.from(form.querySelectorAll('.wizard-step'));
+      const progressItems = Array.from(document.querySelectorAll('.form-progress li'));
+      const prevBtn = form.querySelector('.wizard-prev');
+      const nextBtn = form.querySelector('.wizard-next');
+      const submitBtn = form.querySelector('.wizard-submit');
+      const statusEl = document.getElementById('form_status');
+      const fieldErrorEls = {};
+      const fieldErrorState = {};
+      form.querySelectorAll('[data-error-for]').forEach((el) => {
+        fieldErrorEls[el.dataset.errorFor] = el;
+        fieldErrorState[el.dataset.errorFor] = false;
+      });
+      let currentStep = 0;
+      const stepCount = steps.length;
+      steps.forEach((step, index) => {
+        const label = step.querySelector('.step-index');
+        if (label) {
+          label.textContent = `שלב ${index + 1}`;
+        }
+      });
+      function normalizeTradeName(value) {
+        const trimmed = (value || '').trim();
+        if (!trimmed) {
+          return '';
+        }
+        return TRADE_SYNONYMS[trimmed] || trimmed;
+      }
+      function setGeneralStatus(state, text, details) {
+        if (!statusEl) {
+          return;
+        }
+        statusEl.className = 'form-status';
+        if (state) {
+          statusEl.classList.add(`form-status--${state}`);
+        }
+        statusEl.textContent = text || '';
+        if (Array.isArray(details) && details.length) {
+          const list = document.createElement('ul');
+          list.className = 'form-status__details';
+          details.forEach((msg) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            list.appendChild(item);
+          });
+          statusEl.appendChild(list);
+        }
+      }
+      function clearGeneralStatus() {
+        setGeneralStatus(null, '', []);
+      }
+      function findStepIndexByField(name) {
+        if (!name) {
+          return -1;
+        }
+        return steps.findIndex((step) => !!step.querySelector(`[name="${CSS.escape(name)}"]`));
+      }
+      function refreshStepErrorState(name) {
+        const stepIdx = findStepIndexByField(name);
+        if (stepIdx === -1) {
+          return;
+        }
+        const step = steps[stepIdx];
+        const hasError = Object.entries(fieldErrorState).some(([fieldName, has]) => {
+          return Boolean(has) && !!step.querySelector(`[name="${CSS.escape(fieldName)}"]`);
+        });
+        step.classList.toggle('has-error', hasError);
+        if (progressItems[stepIdx]) {
+          progressItems[stepIdx].classList.toggle('has-error', hasError);
+        }
+      }
+      function setFieldError(name, message) {
+        if (!name || !fieldErrorEls[name]) {
+          return;
+        }
+        fieldErrorState[name] = true;
+        const errorEl = fieldErrorEls[name];
+        errorEl.textContent = message || '';
+        const wrapper = errorEl.closest('.field');
+        if (wrapper) {
+          wrapper.classList.add('has-error');
+        }
+        refreshStepErrorState(name);
+      }
+      function clearFieldError(name) {
+        if (!name || !fieldErrorEls[name]) {
+          return;
+        }
+        fieldErrorState[name] = false;
+        const errorEl = fieldErrorEls[name];
+        errorEl.textContent = '';
+        const wrapper = errorEl.closest('.field');
+        if (wrapper) {
+          wrapper.classList.remove('has-error');
+        }
+        refreshStepErrorState(name);
+      }
+      function clearAllFieldErrors() {
+        Object.keys(fieldErrorEls).forEach((name) => clearFieldError(name));
+      }
+      function showStep(index) {
+        currentStep = Math.max(0, Math.min(index, stepCount - 1));
+        steps.forEach((step, idx) => {
+          const active = idx === currentStep;
+          step.classList.toggle('is-active', active);
+          if (progressItems[idx]) {
+            progressItems[idx].classList.toggle('is-active', active);
+            progressItems[idx].classList.toggle('is-complete', idx < currentStep);
+            progressItems[idx].setAttribute('aria-current', active ? 'step' : 'false');
+          }
+        });
+        if (prevBtn) {
+          prevBtn.disabled = currentStep === 0;
+        }
+        if (nextBtn) {
+          nextBtn.style.display = currentStep === stepCount - 1 ? 'none' : '';
+        }
+        if (submitBtn) {
+          submitBtn.style.display = currentStep === stepCount - 1 ? '' : 'none';
+        }
+        clearGeneralStatus();
+      }
+      function validateStep(index) {
+        const step = steps[index];
+        if (!step) {
+          return true;
+        }
+        let valid = true;
+        const requiredElements = step.querySelectorAll('[required]');
+        requiredElements.forEach((el) => {
+          const name = el.name;
+          if (!name) {
+            return;
+          }
+          if (el.type === 'radio') {
+            const radios = step.querySelectorAll(`input[name="${CSS.escape(name)}"]`);
+            const checked = Array.from(radios).some((radio) => radio.checked);
+            if (!checked) {
+              setFieldError(name, 'נא לבחור אפשרות לפני שממשיכים.');
+              valid = false;
+            }
+          } else if (el.type === 'checkbox') {
+            if (!el.checked) {
+              setFieldError(name, 'יש לאשר לפני שממשיכים.');
+              valid = false;
+            }
+          } else if (!el.value || !el.value.trim()) {
+            setFieldError(name, 'נא למלא שדה זה לפני שממשיכים.');
+            valid = false;
+          }
+        });
+        if (!valid) {
+          setGeneralStatus('error', 'יש להשלים את שדות החובה בשלב הזה לפני שממשיכים.');
+        }
+        return valid;
+      }
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          if (currentStep > 0) {
+            showStep(currentStep - 1);
+          }
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          clearGeneralStatus();
+          if (!validateStep(currentStep)) {
+            return;
+          }
+          showStep(currentStep + 1);
+        });
+      }
+      progressItems.forEach((item) => {
+        const btn = item.querySelector('button[data-step-target]');
+        if (!btn) {
+          return;
+        }
+        btn.addEventListener('click', () => {
+          const target = parseInt(btn.dataset.stepTarget, 10);
+          if (!Number.isInteger(target)) {
+            return;
+          }
+          if (target <= currentStep || validateStep(currentStep)) {
+            clearGeneralStatus();
+            showStep(target);
+          }
+        });
+      });
+      form.querySelectorAll('input, select, textarea').forEach((input) => {
+        const handler = () => clearFieldError(input.name);
+        input.addEventListener('input', handler);
+        input.addEventListener('change', handler);
+      });
+      const checkboxContainer = document.getElementById('subservices_checkbox_container');
+      const emptyState = document.getElementById('subservices_empty');
+      const subServicesTextWrapper = document.getElementById('sub_services_text_wrapper');
+      const subServicesText = document.getElementById('sub_services_text');
+      function renderSubservices(fieldValue) {
+        const canonical = normalizeTradeName(fieldValue);
+        const list = TAXONOMY[canonical] || [];
+        if (checkboxContainer) {
+          checkboxContainer.innerHTML = '';
+        }
+        if (list.length && checkboxContainer) {
+          checkboxContainer.hidden = false;
+          list.forEach((label, index) => {
+            const id = `subsvc_${index}`;
+            const wrapper = document.createElement('label');
+            wrapper.className = 'subsvc-item';
+            wrapper.innerHTML = `
+              <input type="checkbox" name="sub_services" value="${label.replace(/"/g, '&quot;')}">
+              <span>${label}</span>
+            `;
+            checkboxContainer.appendChild(wrapper);
+            const input = wrapper.querySelector('input');
+            if (input) {
+              input.addEventListener('change', () => clearFieldError('sub_services'));
+            }
+          });
+          if (emptyState) {
+            emptyState.hidden = true;
+          }
+          if (subServicesTextWrapper) {
+            subServicesTextWrapper.hidden = true;
+          }
+          if (subServicesText) {
+            subServicesText.value = '';
+          }
+          clearFieldError('sub_services_text');
+        } else {
+          if (checkboxContainer) {
+            checkboxContainer.hidden = true;
+          }
+          if (emptyState) {
+            emptyState.hidden = false;
+          }
+          if (subServicesTextWrapper) {
+            subServicesTextWrapper.hidden = false;
+          }
+        }
+      }
+      const fieldInput = document.getElementById('field');
+      if (fieldInput) {
+        renderSubservices(fieldInput.value);
+        fieldInput.addEventListener('blur', () => renderSubservices(fieldInput.value));
+        fieldInput.addEventListener('change', () => renderSubservices(fieldInput.value));
+      }
+      // ===== Autocomplete for field and city =====
+      function bindAutocomplete(inputEl, listEl, type) {
+        if (!inputEl || !listEl) {
+          return;
+        }
+        let items = [];
+        let activeIndex = -1;
+        function hide() {
+          listEl.style.display = 'none';
+          listEl.innerHTML = '';
+          items = [];
+          activeIndex = -1;
+        }
+        function show() {
+          listEl.style.display = 'block';
+        }
+        function render(results) {
+          listEl.innerHTML = '';
+          items = Array.isArray(results) ? results : [];
+          if (!items.length) {
+            const empty = document.createElement('div');
+            empty.className = 'ac-item ac-empty';
+            empty.textContent = 'לא נמצאו הצעות';
+            listEl.appendChild(empty);
+            show();
+            return;
+          }
+          items.forEach((item, index) => {
+            const option = document.createElement('div');
+            option.className = 'ac-item';
+            option.setAttribute('role', 'option');
+            option.textContent = item.label || item.value || item;
+            option.addEventListener('mousedown', (event) => {
+              event.preventDefault();
+              inputEl.value = option.textContent;
+              hide();
+              if (inputEl === fieldInput) {
+                renderSubservices(inputEl.value);
+              }
+            });
+            listEl.appendChild(option);
+          });
+          show();
+        }
+        async function fetchSuggestions(query) {
+          const q = (query || '').trim();
+          if (!q) {
+            hide();
+            return;
+          }
+          try {
+            const response = await fetch(`/api/suggest?type=${encodeURIComponent(type)}&q=${encodeURIComponent(q)}`, {
+              headers: { 'Accept': 'application/json' }
+            });
+            const data = await response.json();
+            render((data && data.results) || []);
+          } catch (err) {
+            hide();
+          }
+        }
+        const debounced = (() => {
+          let timer = null;
+          return (value) => {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(() => fetchSuggestions(value), 200);
+          };
+        })();
+        inputEl.addEventListener('input', () => debounced(inputEl.value));
+        inputEl.addEventListener('focus', () => debounced(inputEl.value));
+        inputEl.addEventListener('blur', () => window.setTimeout(hide, 150));
+        inputEl.addEventListener('keydown', (event) => {
+          const options = listEl.querySelectorAll('.ac-item:not(.ac-empty)');
+          if (!options.length) {
+            return;
+          }
+          if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            activeIndex = (activeIndex + 1) % options.length;
+          } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            activeIndex = (activeIndex - 1 + options.length) % options.length;
+          } else if (event.key === 'Enter') {
+            if (activeIndex >= 0) {
+              event.preventDefault();
+              const chosen = options[activeIndex];
+              inputEl.value = chosen.textContent;
+              hide();
+              if (inputEl === fieldInput) {
+                renderSubservices(inputEl.value);
+              }
+            }
+          } else if (event.key === 'Escape') {
+            hide();
+          }
+          options.forEach((opt, idx) => {
+            opt.setAttribute('aria-selected', idx === activeIndex ? 'true' : 'false');
+          });
+        });
+      }
+      bindAutocomplete(fieldInput, document.getElementById('field-suggestions'), 'field');
+      bindAutocomplete(document.getElementById('base_city'), document.getElementById('city-suggestions'), 'area');
+      // ===== Phone mask =====
+      const phoneInputEl = document.getElementById('phone');
+      if (phoneInputEl) {
+        phoneInputEl.addEventListener('input', (event) => {
+          let value = event.target.value.replace(/[^0-9]/g, '');
+          if (value.startsWith('0') && value.length > 10) {
+            value = value.slice(0, 10);
+          }
+          if (value.startsWith('972')) {
+            value = '0' + value.slice(3);
+          }
+          if (value.length > 3) {
+            value = value.slice(0, 3) + '-' + value.slice(3);
+          }
+          event.target.value = value;
+        });
+      }
+      const submitOriginalText = submitBtn ? submitBtn.textContent : '';
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearGeneralStatus();
+        if (!validateStep(currentStep)) {
+          return;
+        }
+        const formData = new FormData(form);
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'שולחים…';
+        }
+        setGeneralStatus('pending', 'שולחים את הבקשה… זה עלול לקחת כמה שניות.');
+        clearAllFieldErrors();
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'fetch' }
+          });
+          const payload = await response.json().catch(() => null);
+          const messages = payload && Array.isArray(payload.messages) ? payload.messages : [];
+          const successMsg = messages.find((m) => m && m.category === 'success');
+          const errorMsgs = messages.filter((m) => m && m.category === 'error').map((m) => m.text).filter(Boolean);
+          if (response.ok && payload && payload.ok) {
+            setGeneralStatus('success', (successMsg && successMsg.text) || 'הבקשה נקלטה! ניצור קשר בהקדם.', errorMsgs.slice(0));
+            form.reset();
+            renderSubservices('');
+            showStep(0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            const fieldErrors = (payload && payload.field_errors) || {};
+            const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+            let firstErrorStep = null;
+            Object.entries(fieldErrors).forEach(([name, message]) => {
+              setFieldError(name, message);
+              const idx = findStepIndexByField(name);
+              if (firstErrorStep === null && idx >= 0) {
+                firstErrorStep = idx;
+              }
+            });
+            if (firstErrorStep !== null) {
+              showStep(firstErrorStep);
+            }
+            let topMessage = null;
+            let extraMessages = [];
+            if (errorMsgs.length) {
+              topMessage = errorMsgs[0];
+              extraMessages = errorMsgs.slice(1);
+            } else if (!hasFieldErrors) {
+              topMessage = 'לא הצלחנו לשלוח את הבקשה. נסו שוב בעוד רגע.';
+            }
+            if (topMessage) {
+              setGeneralStatus('error', topMessage, extraMessages);
+            } else {
+              clearGeneralStatus();
+            }
+          }
+        } catch (err) {
+          setGeneralStatus('error', 'תקלה ברשת – נסו שוב בעוד רגע.');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitOriginalText || 'שליחה';
+          }
+        }
+      });
+      showStep(0);
+    }
+  </script>
+  {% endif %}
 </body>
 </html>

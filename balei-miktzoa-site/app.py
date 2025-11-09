@@ -514,7 +514,23 @@ VIDEO_UPLOAD_SUBDIR = os.path.join(UPLOAD_FOLDER, 'videos')
 os.makedirs(VIDEO_UPLOAD_SUBDIR, exist_ok=True)
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'ogg'}
 MAX_VIDEO_MB = 50  # רף רך – אופציונלי
+# טווחי רדיוס ידידותיים למשתמש → ק"מ בפועל
+WORK_RADIUS_UI_TO_KM = {
+    "בעיקר בעיר שלי": 5,
+    "בעיר שלי והסביבה": 10,
+    "באזור שלי והערים ליד": 20,
+    "באזור המרכז": 30,
+    "בכל הארץ": 120,
+}
+WORK_RADIUS_DEFAULT_KM = 10
 
+# טווחי זמינות פשוטים לטופס בקשת בעלי מקצוע
+AVAILABILITY_SLOTS = (
+    "בעיקר בוקר (08:00–12:00)",
+    "בעיקר צהריים (12:00–17:00)",
+    "בעיקר ערב (17:00–21:00)",
+    "אין שעה קבועה – תלוי בעבודה",
+)
 # וידאו מאושר – נרמול ושמירה בתיקייה קבועה
 WORKER_VIDEO_UPLOAD_DIR = BASE_DIR / 'static' / 'uploads' / 'worker_videos'
 os.makedirs(WORKER_VIDEO_UPLOAD_DIR, exist_ok=True)
@@ -614,13 +630,14 @@ for ru, he in city_map_ru_to_he.items():
 
 
 # ---- קנוניזציה של תחומים + תרגומים קבועים ----
-CANON_FIELDS_HE = ("שיפוצים", "אינסטלטורים", "חשמלאים", "מנעולנים")
+CANON_FIELDS_HE = ("שיפוצים", "אינסטלטורים", "חשמלאים", "מנעולנים", "מיזוג אוויר")
 
 FIELD_I18N = {
     "שיפוצים":      {"he": "שיפוצים",      "en": "Renovations",  "ru": "ремонт"},
     "אינסטלטורים":  {"he": "אינסטלטורים",  "en": "Plumbers",     "ru": "сантехники"},
     "חשמלאים":      {"he": "חשמלאים",      "en": "Electricians",  "ru": "электрики"},
     "מנעולנים":     {"he": "מנעולנים",     "en": "Locksmiths",    "ru": "слесари"},
+    "מיזוג אוויר":   {"he": "מיזוג אוויר",   "en": "HVAC",          "ru": "кондиционирование"},
 }
 
 def _canon_he_field(s: str) -> str:
@@ -631,6 +648,8 @@ def _canon_he_field(s: str) -> str:
         "אינסטלטור": "אינסטלטורים", "אינסטלטורים": "אינסטלטורים",
         "שיפוצניק": "שיפוצים", "שיפוצים": "שיפוצים",
         "מנעולן": "מנעולנים", "מנעולנים": "מנעולנים",
+        "טכנאי מזגנים": "מיזוג אוויר", "טכנאי מיזוג אוויר": "מיזוג אוויר",
+        "מזגנים": "מיזוג אוויר", "מיזוג אוויר": "מיזוג אוויר",
     }
     return mapping.get(s, s)
 
@@ -2854,140 +2873,209 @@ def request_professional(lang):
     if current_app.config.get("ENV") != "production" and not invite_key:
         invite_key = "dev-invite"
     supplied_key = (request.args.get('key') or request.form.get('key') or '').strip()
-    if not invite_key or supplied_key != invite_key:
-        abort(403)
+    wants_json = False
+
 
     if request.method == 'POST':
-        wants_json = 'application/json' in (request.headers.get('Accept') or '') \
-            or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        wants_json = (
+            'application/json' in (request.headers.get('Accept') or '')
+            or request.headers.get('X-Requested-With', '').lower() in ('xmlhttprequest', 'fetch')
+        )
 
-        form_messages = []
+    invite_valid = bool(invite_key and supplied_key == invite_key)
 
-        def add_message(category, text):
+    template_context = {
+        "lang": lang,
+        "invite_key": invite_key if invite_valid else None,
+        "language_choices": WORKER_LANGUAGE_CHOICES,
+        "default_languages": list(DEFAULT_WORKER_LANGUAGES),
+        "work_radius_options": list(WORK_RADIUS_UI_TO_KM.keys()),
+        "availability_slots": list(AVAILABILITY_SLOTS),
+        "canonical_trades": list(CANON_FIELDS_HE),
+    }
+
+    if not invite_valid:
+        friendly_payload = {
+            "ok": False,
+            "messages": [
+                {
+                    "category": "error",
+                    "text": "העמוד מיועד לבעלי מקצוע שקיבלו מאיתנו הזמנה. השאר/י שם וטלפון ונחזור אליך.",
+                }
+            ],
+        }
+        if request.method == 'POST':
+            if wants_json:
+                return jsonify(friendly_payload), 403
+            flash(friendly_payload["messages"][0]["text"], "error")
+            return render_template('request.html', invite_invalid=True, **template_context), 403
+        return render_template('request.html', invite_invalid=True, **template_context), 403
+
+    if request.method == 'POST':
+        form_messages: list[dict[str, str]] = []
+        field_errors: dict[str, str] = {}
+
+        def add_message(category: str, text: str):
             flash(text, category)
             form_messages.append({"category": category, "text": text})
 
+        def add_field_error(field_name: str, message: str):
+            if field_name not in field_errors:
+                field_errors[field_name] = message
+
         # --- איסוף נתונים מהטופס ---
-        name = request.form.get('name')
-        company_name = request.form.get('company_name')
-        field = request.form.get('field')
-        area = request.form.get('area')
-        base_city = request.form.get('base_city')
-        work_radius = request.form.get('work_radius')
-        phone = request.form.get('phone')
-        experience = request.form.get('experience')
-        description = request.form.get('description')
-        reviews = request.form.get('reviews')
-        image = request.files.get('image')
-        image_filename = ''
+        name = (request.form.get('name') or '').strip()
+        company_name = (request.form.get('company_name') or '').strip()
+        field_value = (request.form.get('field') or '').strip()
+        base_city = (request.form.get('base_city') or '').strip()
+        work_radius_label = (request.form.get('work_radius') or '').strip()
+        phone_raw = (request.form.get('phone') or '').strip()
+        experience_raw = (request.form.get('experience') or '').strip()
+        description = (request.form.get('description') or '').strip()
+        reviews = (request.form.get('reviews') or '').strip()
+        sub_services = [s.strip() for s in request.form.getlist('sub_services') if s.strip()]
+        sub_services_text = (request.form.get('sub_services_text') or '').strip()
+        offers_emergency_value = (request.form.get('offers_emergency') or '').strip().lower()
+        availability_slot = (request.form.get('availability_slot') or '').strip()
+        terms_accepted_raw = (request.form.get('terms_accepted') or '').strip().lower()
 
-        # NEW: שדות חדשים מהטופס
-        # 1) תת-תחומים – אם בטופס יש כמה צ'קבוקסים עם אותו name="sub_services"
-        #    זה יחזיר רשימה של מה שסומן. אם אין – נקבל רשימה ריקה.
-        sub_services = request.form.getlist('sub_services')
-
-        # 2) שירות חירום – צ'קבוקס בודד name="offers_emergency"
-        #    כל ערך שאינו ריק ייחשב True.
-        offers_emergency = bool(request.form.get('offers_emergency'))
-
-        # 3) שפות שירות – צ'קבוקסים name="languages"
+        # שפות שירות – צ'קבוקסים name="languages"
         languages_raw = request.form.getlist('languages')
         languages = normalize_worker_languages(languages_raw, default=DEFAULT_WORKER_LANGUAGES)
 
-        # --- וידאו: לינק/קובץ ---
+        image = request.files.get('image')
+        image_filename = ''
         video_file_cam = request.files.get('video_file_cam')
         video_file_gallery = request.files.get('video_file_gallery')
         video_file = video_file_cam or video_file_gallery
-        saved_video_relpath = None  # נתיב יחסי ל-static אם נשמר קובץ
+        saved_video_relpath = None
 
-        if image and image.filename != '':
+        if not name:
+            add_field_error('name', 'נא לכתוב שם מלא.')
+
+        if not field_value:
+            add_field_error('field', 'נא לכתוב מה המקצוע שלך.')
+
+        if not base_city:
+            add_field_error('base_city', 'נא לציין מאיזה עיר נוח לצאת לעבודה.')
+
+        work_radius_km = WORK_RADIUS_UI_TO_KM.get(work_radius_label)
+        if work_radius_km is None:
+            add_field_error('work_radius', 'נא לבחור אזור פעילות מהרשימה.')
+            work_radius_km = WORK_RADIUS_DEFAULT_KM
+
+        phone_digits = re.sub(r'[^0-9]', '', phone_raw)
+        if phone_digits.startswith('972') and len(phone_digits) > 3:
+            phone_digits = '0' + phone_digits[3:]
+        if phone_digits.startswith('00') and len(phone_digits) > 2:
+            phone_digits = phone_digits[2:]
+        phone_pattern = re.compile(r'^0(5\d|7\d|[23489])\d{7}$')
+        if not phone_pattern.match(phone_digits):
+            add_field_error('phone', 'נא להכניס מספר טלפון ישראלי תקין.')
+        phone_to_store = format_phone_display(phone_digits) if phone_digits else ''
+
+        experience_val: int | None = None
+        if experience_raw:
+            if experience_raw.isdigit():
+                experience_val = int(experience_raw)
+            else:
+                try:
+                    experience_val = int(float(experience_raw))
+                except (TypeError, ValueError):
+                    experience_val = None
+        if experience_val is None or experience_val < 0:
+            add_field_error('experience', 'נא לכתוב מספר שנות ניסיון (0 ומעלה).')
+            experience_val = max(experience_val or 0, 0)
+
+        if not description:
+            add_field_error('description', 'נא לכתוב כמה מילים עליך ועל העבודה שלך.')
+
+        terms_accepted = terms_accepted_raw in {'1', 'on', 'yes', 'true'}
+        if not terms_accepted:
+            add_field_error('terms_accepted', 'חובה לאשר שניתן לשמור את הפרטים ליצירת קשר.')
+
+        offers_emergency = offers_emergency_value == 'yes'
+
+        if image and image.filename:
             filename = secure_filename(image.filename)
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            image_filename = 'upload_pending/' + filename
+            try:
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_filename = 'upload_pending/' + filename
+            except Exception:
+                add_field_error('image', 'לא הצלחנו לשמור את התמונה. נסה/י שוב או דלג/י.')
 
-        # אם אין קישור אבל הועלה קובץ – נשמור אותו
         if video_file and video_file.filename:
             if allowed_video_file(video_file.filename):
                 safe_name = secure_filename(f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{video_file.filename}")
                 save_path = os.path.join(VIDEO_UPLOAD_SUBDIR, safe_name)
                 try:
-                    # בדיקת גודל (אופציונלי)
                     video_file.stream.seek(0, os.SEEK_END)
                     size_mb = video_file.stream.tell() / (1024 * 1024)
                     video_file.stream.seek(0)
                     if size_mb > MAX_VIDEO_MB:
-                        add_message("error", f"וידאו גדול מדי (>{MAX_VIDEO_MB}MB). נסה/י קובץ קטן יותר.")
+                        add_field_error('video', f"הקובץ גדול מדי. המגבלה היא עד {MAX_VIDEO_MB}MB.")
                     else:
                         video_file.save(save_path)
                         saved_video_relpath = f"upload_pending/videos/{safe_name}"
                 except Exception:
-                    add_message("error", "אירעה שגיאה בשמירת הווידאו. נסה/י שוב.")
+                    add_field_error('video', 'הייתה בעיה בשמירת הווידאו. נסה/י שוב.')
             else:
-                add_message("error", "סוג הקובץ אינו נתמך. מותר: mp4, webm, ogg")
+                add_field_error('video', 'סוג הקובץ אינו נתמך. מותר: mp4, webm, ogg.')
 
-        he_field   = _canon_he_field(field)
+        if field_errors:
+            payload = {"ok": False, "field_errors": field_errors, "messages": form_messages}
+            if wants_json:
+                return jsonify(payload), 400
+            for msg in field_errors.values():
+                flash(msg, 'error')
+            return render_template('request.html', form_errors=field_errors, **template_context), 400
+
+        he_field = _canon_he_field(field_value)
         i18n_field = FIELD_I18N.get(he_field, {"he": he_field, "en": he_field, "ru": he_field})
 
-        # שעות עבודה – בלוק ראשון (כפי שהיה)
-        work_blocks = []
-        start_hour_0 = request.form.get('start_hour_0')
-        end_hour_0 = request.form.get('end_hour_0')
-        days_0 = request.form.getlist('days_0')
-        if start_hour_0 and end_hour_0 and days_0:
-            work_blocks.append({"start_hour": int(start_hour_0), "end_hour": int(end_hour_0), "days": days_0})
+        cities_in_radius = get_cities_in_radius(base_city, int(work_radius_km) if work_radius_km else 0)
 
-        # ערים בטווח רדיוס
-        cities_in_radius = get_cities_in_radius(base_city, int(work_radius) if work_radius else 0)
-
-        # בניית הרשומה החדשה לפנדינג
         new_request = {
             "company_name": company_name,
             "name": name,
-            "field":    i18n_field["he"],
+            "field": i18n_field["he"],
             "field_en": i18n_field["en"],
             "field_ru": i18n_field["ru"],
             "base_city": base_city,
-            "work_radius": int(work_radius) if work_radius else 0,
+            "work_radius": int(work_radius_km or 0),
+            "work_radius_label": work_radius_label,
             "active_cities": cities_in_radius,
-            "phone": phone,
-            "experience": int(experience) if experience and experience.isdigit() else 0,
+            "phone": phone_to_store,
+            "experience": int(experience_val or 0),
             "description": description,
             "reviews": reviews,
             "image_filename": image_filename,
             "video_url": None,
             "video_local": saved_video_relpath,
-            "work_blocks": work_blocks,
-
-            # NEW: שמירה ב-JSON
-            "sub_services": sub_services,            # רשימת המחרוזות שסומנו בטופס (בעברית כרגע)
-            "offers_emergency": offers_emergency,    # True/False
-            "languages": languages                   # רשימת שפות מאומתת
+            "work_blocks": [],
+            "sub_services": sub_services,
+            "offers_emergency": offers_emergency,
+            "languages": languages,
+            "availability_slot": availability_slot,
+            "terms_accepted": terms_accepted,
         }
+        if sub_services_text:
+            new_request["sub_services_notes"] = sub_services_text
         _normalize_pending_item(new_request)
 
-        # שמירה לפנדינג
         with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
             pending_list.append(new_request)
 
-        add_message("success", "הבקשה נשלחה בהצלחה! תודה רבה.")
+        add_message('success', 'הבקשה נשלחה בהצלחה! תודה רבה.')
+        payload = {"ok": True, "messages": form_messages}
 
         if wants_json:
-            return jsonify({
-                "ok": True,
-                "messages": form_messages,
-            })
+            return jsonify(payload)
 
-        # שומרים את ה-key גם בחזרה, כדי שהעמוד יישאר נגיש ברענון
         return redirect(url_for('request_professional', lang=lang, key=invite_key))
 
-    # GET — מעבירים invite_key לטמפלט (שדה חבוי + ב-action)
-    return render_template(
-        'request.html',
-        lang=lang,
-        invite_key=invite_key,
-        language_choices=WORKER_LANGUAGE_CHOICES,
-        default_languages=list(DEFAULT_WORKER_LANGUAGES),
-    )
+    return render_template('request.html', invite_invalid=False, **template_context)
+
 # ------------------------------
 # Workers list
 # ------------------------------
@@ -5797,7 +5885,7 @@ def api_suggest():
 
     # --- רשימות קנוניות בעברית (HE) ---
     cities_he = ["תל אביב", "ירושלים", "חיפה", "באר שבע", "פתח תקווה", "נתניה", "אשדוד", "ראשון לציון", "רמת גן", "בת ים"]
-    fields_he = ["שיפוצים", "אינסטלטורים", "חשמלאים", "מנעולנים"]  # שמות תואמים לאתר
+    fields_he = list(CANON_FIELDS_HE)
 
     # --- פונקציות תצוגה לפי שפה ---
     def label_field(he_value):

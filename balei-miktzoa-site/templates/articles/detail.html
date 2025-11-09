@@ -43,32 +43,46 @@
 {% endblock %}
 {% block content %}
   {% set article_theme = theme_slug_map.get(meta.category) %}
-  <div class="article-layout" data-layout="standard">
-    <article class="article"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
-      <header class="article__header article-surface">
-        <div class="article__meta">
-          <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="chip chip--ghost">
-            {{ t('homepage.articles.kicker', 'home') }}
-          </a>
+  {% set category_labels = {
+    'electricity': {'he': 'חשמל', 'en': 'Electricity', 'ru': 'Электрика'},
+    'plumbing': {'he': 'אינסטלציה', 'en': 'Plumbing', 'ru': 'Сантехника'},
+    'renovation': {'he': 'שיפוצים', 'en': 'Renovations', 'ru': 'Ремонты'},
+    'moisture': {'he': 'רטיבות / עובש', 'en': 'Moisture / Mold', 'ru': 'Влажность / Плесень'}
+  } %}
+  {% set category_label = category_labels.get(meta.category, {}).get(g.current_lang, category_labels.get(meta.category, {}).get('he')) %}
+  {% set reading_template = t('articles_index.reading_time', '~{minutes} דקות קריאה') or '~{minutes} דקות קריאה' %}
+  <main class="bm-article-layout article-layout" data-layout="standard">
+    <article class="bm-article article"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
+      <!-- Hero block with primary article metadata -->
+      <header class="bm-article-hero">
+        {% set eyebrow_label = t('homepage.articles.kicker', 'home') %}
+        <div class="bm-article-eyebrow">
+          {{ eyebrow_label }}{% if category_label %} • {{ category_label }}{% endif %}
         </div>
-        <h1>{{ title }}</h1>
-        {% if meta.date %}
-          <p class="article__date">{{ meta.date }}</p>
-        {% endif %}
+        <h1 class="bm-article-title">{{ title }}</h1>
         {% if description %}
-          <p class="article__intro">{{ description }}</p>
+          <p class="bm-article-subtitle">{{ description }}</p>
         {% endif %}
+        <div class="bm-article-meta">
+          {% if meta.date %}
+            <span class="bm-article-date">{{ meta.date }}</span>
+          {% endif %}
+          {% if meta.reading_minutes %}
+            <span class="bm-article-reading">{{ reading_template|format(minutes=meta.reading_minutes) }}</span>
+          {% endif %}
+        </div>
       </header>
       {% if meta.hero_image %}
-        <figure class="article__hero article-surface">
-          <div class="hero-media">
-            <img src="{{ meta.hero_image }}" alt="{{ title }}" loading="lazy" decoding="async">
-          </div>
+        <!-- Responsive hero image -->
+        <figure class="bm-article-hero-image">
+          <img src="{{ meta.hero_image }}" alt="{{ title }}" loading="lazy" decoding="async">
         </figure>
       {% endif %}
-      <div class="article__body article-surface">
+      <div class="bm-article-body">
         {{ body_html | safe }}
       </div>
+      <!-- Article CTA -->
+      {% include 'articles/partials/article-cta-find-pro.html' %}
     </article>
-  </div>
+  </main>
 {% endblock %}

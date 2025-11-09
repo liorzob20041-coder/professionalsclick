@@ -1,0 +1,51 @@
+{% set lang = g.current_lang or 'he' %}
+{% set category = meta.category %}
+{% set cta_content = {
+  'default': {
+    'headline': {
+      'he': 'צריכים בעל מקצוע מומלץ?',
+      'en': 'Need a trusted professional?',
+      'ru': 'Нужен надежный мастер?'
+    },
+    'body': {
+      'he': 'ספרו לנו מה צריך לעשות ונתאים לכם בעלי מקצוע מומלצים באזור שלכם.',
+      'en': 'Tell us what needs fixing and we will match you with vetted pros in your area.',
+      'ru': 'Расскажите, что нужно сделать, и мы подберем проверенных специалистов рядом с вами.'
+    },
+    'action': {
+      'he': 'מצאו בעל מקצוע',
+      'en': 'Find a professional',
+      'ru': 'Найти мастера'
+    }
+  },
+  'electricity': {
+    'headline': {
+      'he': 'חשמל זה עסק למקצוענים',
+      'en': 'Electrical work belongs to the pros',
+      'ru': 'Работы по электрике — для профессионалов'
+    },
+    'body': {
+      'he': 'קבלו עזרה מחשמלאים מוסמכים שכבר נבדקו על ידינו ותאמו ביקור במהירות.',
+      'en': 'Get help from licensed electricians we trust and schedule a visit fast.',
+      'ru': 'Получите помощь сертифицированных электриков, которым мы доверяем, и быстро назначьте визит.'
+    },
+    'action': {
+      'he': 'מצאו חשמלאי',
+      'en': 'Find an electrician',
+      'ru': 'Найти электрика'
+    }
+  }
+} %}
+{% set cta = cta_content.get(category, cta_content['default']) %}
+{% set headline = cta['headline'].get(lang, cta['headline']['he']) %}
+{% set body = cta['body'].get(lang, cta['body']['he']) %}
+{% set action = cta['action'].get(lang, cta['action']['he']) %}
+<div class="bm-article-cta">
+  <h2 class="bm-article-cta__headline">{{ headline }}</h2>
+  <p class="bm-article-cta__copy">{{ body }}</p>
+  <div class="bm-article-cta__actions">
+    <a class="bm-article-cta__button" href="{{ url_for_lang('estimate', lang=g.current_lang) }}">
+      {{ action }}
+    </a>
+  </div>
+</div>

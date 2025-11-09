@@ -200,6 +200,18 @@
   transform: translateY(-6px);
   box-shadow: var(--shadow-hover);
 }
+/* Article detail responsive helpers */
+@media (max-width: 480px) {
+  .bm-article-layout {
+    padding: clamp(18px, 7vw, 32px) clamp(12px, 6vw, 26px);
+  }
+  .bm-article-title {
+    font-size: 1.75rem;
+  }
+  .bm-article-meta {
+    gap: 0.5rem;
+  }
+}
 .articles-archive .articles-featured {
   background: rgba(139, 21, 56, 0.04);
   border: 1px solid rgba(139, 21, 56, 0.12);

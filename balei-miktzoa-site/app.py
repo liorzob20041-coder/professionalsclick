@@ -2703,6 +2703,16 @@ def _render_article_detail(lang: str, slug: str):
             hero_image_absolute = urljoin(request.url_root, hero_image.lstrip("/"))
 
     related_articles: list[dict[str, Any]] = []
+    raw_quick_info = meta.get("quick_info")
+    quick_info: list[dict[str, Any]] = []
+    if isinstance(raw_quick_info, list):
+        for entry in raw_quick_info:
+            if not isinstance(entry, dict):
+                continue
+            label = entry.get("label")
+            value = entry.get("value")
+            if label and value:
+                quick_info.append({"label": label, "value": value})
     try:
         all_articles = load_articles_list(lang)
     except FileNotFoundError:
@@ -2748,6 +2758,7 @@ def _render_article_detail(lang: str, slug: str):
         hero_image_absolute=hero_image_absolute,
         lang=lang,
         related_articles=related_articles,
+        quick_info=quick_info,
     )
 
 

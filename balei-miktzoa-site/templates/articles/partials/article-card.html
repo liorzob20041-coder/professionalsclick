@@ -50,9 +50,9 @@
     {% set use_proxy = proxy_filename is not none and proxy_filename != '' %}
   {% endif %}
 {% endif %}
-<article class="bm-article-card" data-category="{{ card_tag }}">
+<article class="bm-article-card a-card" data-category="{{ card_tag }}">
   <a href="{{ detail_url }}" class="bm-article-card-link">
-    <div class="bm-article-card-thumb">
+    <div class="bm-article-card-thumb a-thumb{% if not hero_path %} is-placeholder{% endif %}">
       {% if hero_path and use_proxy %}
         {% set fallback_w = 640 if hero_width <= 640 else 960 %}
         <picture>
@@ -70,16 +70,16 @@
       {% elif hero_path %}
         <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async" width="{{ hero_width }}" height="{{ hero_height }}">
       {% else %}
-        <span class="bm-article-card-thumb-placeholder">{{ placeholder }}</span>
+        <span class="bm-article-card-thumb-placeholder a-thumb__placeholder article-thumb__placeholder">{{ placeholder }}</span>
       {% endif %}
     </div>
-    <div class="bm-article-card-content">
+    <div class="bm-article-card-content a-body">
       {% if tag_label %}
-        <div class="bm-article-card-tag">{{ tag_label }}</div>
+        <div class="bm-article-card-tag a-tag">{{ tag_label }}</div>
       {% endif %}
-      <h3 class="bm-article-card-title">{{ article.title }}</h3>
+      <h3 class="bm-article-card-title a-title">{{ article.title }}</h3>
       {% if excerpt %}
-        <p class="bm-article-card-excerpt">{{ excerpt }}</p>
+        <p class="bm-article-card-excerpt a-excerpt">{{ excerpt }}</p>
       {% endif %}
       <div class="bm-article-card-meta">
         {% if article.reading_minutes %}

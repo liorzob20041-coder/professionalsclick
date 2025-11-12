@@ -202,13 +202,13 @@
 }
 /* Article detail responsive helpers */
 @media (max-width: 480px) {
-  .bm-article-layout {
+  .bm-article-page .bm-article-layout {
     padding: clamp(18px, 7vw, 32px) clamp(12px, 6vw, 26px);
   }
-  .bm-article-title {
+  .bm-article-page .bm-article-title {
     font-size: 1.75rem;
   }
-  .bm-article-meta {
+  .bm-article-page .bm-article-meta {
     gap: 0.5rem;
   }
 }

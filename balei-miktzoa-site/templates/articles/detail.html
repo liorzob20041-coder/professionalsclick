@@ -12,7 +12,8 @@
   'renovation': 'renovation',
   'moisture': 'moisture'
 } %}
-{% set theme_css = theme_map.get(meta.category) %}
+{% set category = meta.get('category') %}
+{% set theme_css = theme_map.get(category) %}
 {% block title %}
   {{ (title ~ ' | בעלי מקצוע בקליק') if title else 'בעלי מקצוע בקליק' }}
 {% endblock %}
@@ -43,17 +44,18 @@
 {% endblock %}
 {% block content %}
   {% set lang_code = g.current_lang %}
-  {% set article_theme = theme_slug_map.get(meta.category) %}
+  {% set article_theme = theme_slug_map.get(category) %}
   {% set category_labels = {
     'electricity': {'he': 'חשמל', 'en': 'Electricity', 'ru': 'Электрика'},
     'plumbing': {'he': 'אינסטלציה', 'en': 'Plumbing', 'ru': 'Сантехника'},
     'renovation': {'he': 'שיפוצים', 'en': 'Renovations', 'ru': 'Ремонты'},
     'moisture': {'he': 'רטיבות / עובש', 'en': 'Moisture / Mold', 'ru': 'Влажность / Плесень'}
   } %}
-  {% set category_label = category_labels.get(meta.category, {}).get(g.current_lang, category_labels.get(meta.category, {}).get('he')) %}
+  {% set category_map = category_labels.get(category, {}) %}
+  {% set category_label = category_map.get(g.current_lang, category_map.get('he')) %}
   {% set reading_template = t('articles_index.reading_time', '~{minutes} דקות קריאה') or '~{minutes} דקות קריאה' %}
   {% set quick_info_items = quick_info if quick_info is defined and quick_info else [] %}
-  <main class="bm-article" dir="rtl"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
+  <main class="bm-article-page" dir="rtl"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
     <div class="bm-article-inner">
       <header class="bm-article-hero">
         <div class="bm-article-hero-top">
@@ -68,26 +70,25 @@
         {% if description %}
           <p class="bm-article-subtitle">{{ description }}</p>
         {% endif %}
-        {% set author = meta.author if meta.author else 'צוות בעלי מקצוע בקליק' %}
-        {% set meta_items = namespace(values=[]) %}
-        {% do meta_items.values.append(author) %}
-        {% if meta.date %}
-          {% do meta_items.values.append(meta.date) %}
+        {% set author = meta.get('author') if meta.get('author') else 'צוות בעלי מקצוע בקליק' %}
+        {% set meta_items = [author] %}
+        {% if meta.get('date') %}
+          {% set meta_items = meta_items + [meta.get('date')] %}
         {% endif %}
-        {% if meta.reading_minutes %}
-          {% do meta_items.values.append(reading_template|format(minutes=meta.reading_minutes)) %}
+        {% if meta.get('reading_minutes') %}
+          {% set meta_items = meta_items + [reading_template|format(minutes=meta.get('reading_minutes'))] %}
         {% endif %}
         <div class="bm-article-meta" aria-label="פרטי המאמר">
-          {% for item in meta_items.values %}
+          {% for item in meta_items %}
             {% if loop.index > 1 %}
               <span class="bm-article-meta-sep" aria-hidden="true">•</span>
             {% endif %}
             <span class="bm-article-meta-item">{{ item }}</span>
           {% endfor %}
         </div>
-        {% if meta.hero_image %}
+        {% if meta.get('hero_image') %}
           <figure class="bm-article-hero-media">
-            <img src="{{ meta.hero_image }}" alt="{{ title }}" loading="lazy" decoding="async">
+            <img src="{{ meta.get('hero_image') }}" alt="{{ title }}" loading="lazy" decoding="async">
           </figure>
         {% endif %}
       </header>
@@ -145,7 +146,7 @@
         'plumbing': 'אינסטלטורים',
         'renovation': 'שיפוצים'
       } %}
-      {% set cta_field = cta_field_map.get(meta.category) %}
+      {% set cta_field = cta_field_map.get(category) %}
       {% set cta_field_slug = field_slug(cta_field) if cta_field else None %}
       {% set cta_href = url_for('show_workers', lang=lang_code, field=cta_field_slug) if cta_field_slug else url_for('home', lang=lang_code) %}
       <section class="bm-article-cta" aria-labelledby="bm-article-cta-title">

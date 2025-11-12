@@ -2,6 +2,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+def _ensure_he_meta(meta: Dict[str, Any]) -> Dict[str, Any]:
+    """Return the Hebrew meta dictionary, ensuring it is a mapping."""
+    he_meta = meta.get("he")
+    if not isinstance(he_meta, dict):
+        he_meta = {}
+        meta["he"] = he_meta
+    return he_meta
 BASE_DIR = Path(__file__).resolve().parent
 CONTENT_ROOT = BASE_DIR / "content"
 def _iter_article_directories() -> Iterable[tuple[str, Path]]:
@@ -70,6 +77,7 @@ def load_article(slug: str, lang: str) -> Tuple[Dict[str, Any], Dict[str, Any], 
             derived_category = category if category != "articles" else None
             if derived_category:
                 meta["category"] = derived_category
+        _ensure_he_meta(meta)
         lang_data = _extract_lang_data(meta, lang)
         body_path = _resolve_body_path(article_dir, slug, lang)
         body_html = ""
@@ -94,6 +102,7 @@ def load_articles_list(lang: str) -> List[Dict[str, Any]]:
         slug = meta.get("slug") or article_dir.name
         lang_data = _extract_lang_data(meta, lang)
         derived_category = meta.get("category") or (category if category != "articles" else None)
+        _ensure_he_meta(meta)
         article_data: Dict[str, Any] = {
             "slug": slug,
             "date": meta.get("date"),
@@ -120,3 +129,30 @@ def load_articles_list(lang: str) -> List[Dict[str, Any]]:
         articles.append(article_data)
     articles.sort(key=lambda a: a.get("date") or "", reverse=True)
     return articles
+def get_related_articles(
+    current_slug: str,
+    category: Optional[str],
+    lang: str = "he",
+    limit: int = 3,
+) -> List[Dict[str, Any]]:
+    """Return a list of related articles that share the same category."""
+    related: List[Dict[str, Any]] = []
+    articles = load_articles_list(lang)
+    for article in articles:
+        slug = article.get("slug")
+        if not slug or slug == current_slug:
+            continue
+        if category and article.get("category") != category:
+            continue
+        try:
+            meta, lang_data, _ = load_article(slug, lang)
+        except FileNotFoundError:
+            continue
+        related.append({
+            "slug": meta.get("slug") or slug,
+            "meta": meta,
+            "lang_data": lang_data,
+        })
+        if len(related) >= limit:
+            break
+    return related

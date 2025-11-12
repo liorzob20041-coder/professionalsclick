@@ -47,7 +47,7 @@ from services.json_store import atomic_write_json
 from services.translation import translate as translate_text
 from services.video_utils import get_local_video_metadata, normalize_video_file
 
-from articles_content import load_article, load_articles_list
+from articles_content import load_article, load_articles_list, get_related_articles
 
 
 load_dotenv()
@@ -2691,74 +2691,119 @@ def _render_article_detail(lang: str, slug: str):
         abort(404)
 
     body_html = render_template_string(body_template, meta=meta, lang_data=lang_data)
+    he_meta = meta.get("he")
+    if not isinstance(he_meta, dict):
+        he_meta = {}
+        meta["he"] = he_meta
+
+    raw_info_box = he_meta.get("info_box")
+    if isinstance(raw_info_box, dict):
+        cleaned_items: list[dict[str, str]] = []
+        for row in raw_info_box.get("items", []):
+            if not isinstance(row, dict):
+                continue
+            label = row.get("label")
+            value = row.get("value")
+            if not label or not value:
+                continue
+            label_str = str(label).strip()
+            value_str = str(value).strip()
+            if label_str and value_str:
+                cleaned_items.append({"label": label_str, "value": value_str})
+        if cleaned_items:
+            he_meta["info_box"] = {
+                "title": str(raw_info_box.get("title", "")).strip() or None,
+                "items": cleaned_items,
+            }
+        else:
+            he_meta.pop("info_box", None)
+    elif "info_box" in he_meta:
+        he_meta.pop("info_box")
+
+    raw_toc = he_meta.get("toc")
+    if isinstance(raw_toc, list):
+        cleaned_toc: list[dict[str, str]] = []
+        for entry in raw_toc:
+            if not isinstance(entry, dict):
+                continue
+            anchor_id = entry.get("id")
+            title = entry.get("title")
+            if not anchor_id or not title:
+                continue
+            anchor_id_str = str(anchor_id).strip()
+            title_str = str(title).strip()
+            if anchor_id_str and title_str:
+                cleaned_toc.append({"id": anchor_id_str, "title": title_str})
+        if cleaned_toc:
+            he_meta["toc"] = cleaned_toc
+        else:
+            he_meta.pop("toc", None)
+    elif "toc" in he_meta:
+        he_meta.pop("toc")
+
+    raw_highlights = he_meta.get("highlights")
+    if isinstance(raw_highlights, list):
+        cleaned_highlights = [str(item).strip() for item in raw_highlights if isinstance(item, (str, int, float)) and str(item).strip()]
+        if cleaned_highlights:
+            he_meta["highlights"] = cleaned_highlights
+        else:
+            he_meta.pop("highlights", None)
+    elif "highlights" in he_meta:
+        he_meta.pop("highlights")
+
+    raw_summary = he_meta.get("summary_card")
+    if isinstance(raw_summary, dict):
+        summary_label = raw_summary.get("label")
+        summary_value = raw_summary.get("value")
+        badges = raw_summary.get("badges")
+        cleaned_badges: list[str] = []
+        if isinstance(badges, list):
+            for badge in badges:
+                if not isinstance(badge, (str, int, float)):
+                    continue
+                badge_str = str(badge).strip()
+                if badge_str:
+                    cleaned_badges.append(badge_str)
+        summary_card: Dict[str, Any] = {}
+        if isinstance(summary_label, (str, int, float)) and str(summary_label).strip():
+            summary_card["label"] = str(summary_label).strip()
+        if isinstance(summary_value, (str, int, float)) and str(summary_value).strip():
+            summary_card["value"] = str(summary_value).strip()
+        if cleaned_badges:
+            summary_card["badges"] = cleaned_badges
+        if summary_card:
+            he_meta["summary_card"] = summary_card
+        else:
+            he_meta.pop("summary_card", None)
+    elif "summary_card" in he_meta:
+        he_meta.pop("summary_card")
     hero_image = meta.get("hero_image")
     hero_image_absolute = None
     if hero_image:
-        if hero_image.startswith("/static/"):
+        if isinstance(hero_image, str) and hero_image.startswith("/static/"):
             static_path = hero_image[len("/static/"):]
             hero_image_absolute = url_for('static', filename=static_path, _external=True)
-        elif hero_image.startswith("http"):
+        elif isinstance(hero_image, str) and hero_image.startswith("http"):
             hero_image_absolute = hero_image
-        else:
+        elif isinstance(hero_image, str):
             hero_image_absolute = urljoin(request.url_root, hero_image.lstrip("/"))
 
-    related_articles: list[dict[str, Any]] = []
-    raw_quick_info = meta.get("quick_info")
-    quick_info: list[dict[str, Any]] = []
-    if isinstance(raw_quick_info, list):
-        for entry in raw_quick_info:
-            if not isinstance(entry, dict):
-                continue
-            label = entry.get("label")
-            value = entry.get("value")
-            if label and value:
-                quick_info.append({"label": label, "value": value})
-    try:
-        all_articles = load_articles_list(lang)
-    except FileNotFoundError:
-        all_articles = []
+    article_slug = meta.get("slug") or slug
+    related_articles = get_related_articles(article_slug, meta.get("category"), lang=lang, limit=3)
 
-    if all_articles:
-        current_slug = meta.get("slug")
-        current_category = meta.get("category")
-        same_category: list[dict[str, Any]] = []
-        other_categories: list[dict[str, Any]] = []
-        for article in all_articles:
-            candidate_slug = article.get("slug")
-            if not candidate_slug or candidate_slug == current_slug:
-                continue
-            if current_category and article.get("category") == current_category:
-                same_category.append(article)
-            else:
-                other_categories.append(article)
-
-        for article in same_category + other_categories:
-            if len(related_articles) >= 4:
-                break
-            candidate_slug = article.get("slug")
-            if not candidate_slug:
-                continue
-            related_articles.append(
-                {
-                    "title": article.get("title"),
-                    "category": article.get("category"),
-                    "reading_minutes": article.get("reading_minutes"),
-                    "hero_image": article.get("hero_image") or article.get("img_file"),
-                    "url": url_for('article_detail', lang=lang, slug=candidate_slug),
-                }
-            )
+    article = {
+        "slug": article_slug,
+        "meta": meta,
+        "lang_data": lang_data,
+        "body_html": body_html,
+    }
 
     return render_template(
         'articles/detail.html',
-        meta=meta,
-        title=lang_data.get('title'),
-        description=lang_data.get('description'),
-        body_html=body_html,
-        slug=meta.get('slug'),
-        hero_image_absolute=hero_image_absolute,
-        lang=lang,
+        article=article,
         related_articles=related_articles,
-        quick_info=quick_info,
+        hero_image_absolute=hero_image_absolute,
+        lang_code=lang,
     )
 
 

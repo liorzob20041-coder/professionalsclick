@@ -2702,6 +2702,42 @@ def _render_article_detail(lang: str, slug: str):
         else:
             hero_image_absolute = urljoin(request.url_root, hero_image.lstrip("/"))
 
+    related_articles: list[dict[str, Any]] = []
+    try:
+        all_articles = load_articles_list(lang)
+    except FileNotFoundError:
+        all_articles = []
+
+    if all_articles:
+        current_slug = meta.get("slug")
+        current_category = meta.get("category")
+        same_category: list[dict[str, Any]] = []
+        other_categories: list[dict[str, Any]] = []
+        for article in all_articles:
+            candidate_slug = article.get("slug")
+            if not candidate_slug or candidate_slug == current_slug:
+                continue
+            if current_category and article.get("category") == current_category:
+                same_category.append(article)
+            else:
+                other_categories.append(article)
+
+        for article in same_category + other_categories:
+            if len(related_articles) >= 4:
+                break
+            candidate_slug = article.get("slug")
+            if not candidate_slug:
+                continue
+            related_articles.append(
+                {
+                    "title": article.get("title"),
+                    "category": article.get("category"),
+                    "reading_minutes": article.get("reading_minutes"),
+                    "hero_image": article.get("hero_image") or article.get("img_file"),
+                    "url": url_for('article_detail', lang=lang, slug=candidate_slug),
+                }
+            )
+
     return render_template(
         'articles/detail.html',
         meta=meta,
@@ -2711,6 +2747,7 @@ def _render_article_detail(lang: str, slug: str):
         slug=meta.get('slug'),
         hero_image_absolute=hero_image_absolute,
         lang=lang,
+        related_articles=related_articles,
     )
 
 

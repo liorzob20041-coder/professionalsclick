@@ -48,6 +48,7 @@ from services.translation import translate as translate_text
 from services.video_utils import get_local_video_metadata, normalize_video_file
 
 from articles_content import load_article, load_articles_list, get_related_articles
+from app.articles import articles_bp
 
 
 load_dotenv()
@@ -2053,6 +2054,7 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-change-me')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_VIDEO_MB * 1024 * 1024  # מגביל קבצים ל-50MB (אותו ערך כמו MAX_VIDEO_MB)
 register_jinja_filters(app)
+app.register_blueprint(articles_bp)
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.config['PREFERRED_URL_SCHEME'] = 'https'

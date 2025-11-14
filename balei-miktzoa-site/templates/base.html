@@ -583,6 +583,7 @@
   <link rel="alternate icon" type="image/x-icon" href="{{ static_rel('icons/favicon.ico') }}">
   <link rel="apple-touch-icon" href="{{ static_rel('branding/logo-kit/apple-touch-icon.svg') }}">
 
+  {% block head_extra %}{% endblock %}
   {% block extra_head %}{% endblock %}
 
   <style id="ac-open-guard">
@@ -1502,6 +1503,6 @@ runWhenIdle(function(){
     <a href="{{ url_for('accessibility', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">נגישות</a>
     <div style="margin-top:10px;">© 2025 בעלי מקצוע בקליק. כל הזכויות שמורות.</div>
   </footer>
-
+  {% block body_end_extra %}{% endblock %}
 </body>
 </html>

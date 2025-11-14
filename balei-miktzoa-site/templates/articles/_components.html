@@ -1,0 +1,205 @@
+{% macro summary_cost_card(data) %}
+  {% set payload = data or {} %}
+  {% set avg = payload.get('avg') %}
+  {% set low = payload.get('low') %}
+  {% set high = payload.get('high') %}
+  {% if not payload or (not avg and not (low and high)) %}{{- '' -}}{% else %}
+  <section class="bm-article-page__summary-card">
+    <div class="bm-article-page__summary-header">
+      {% if payload.title %}
+        <h2 class="bm-article-page__summary-title">{{ payload.title }}</h2>
+      {% endif %}
+      {% if payload.badges %}
+        <div class="bm-article-page__badge-row">
+          {% for badge in payload.badges %}
+            {% if badge %}<span class="bm-article-page__badge">{{ badge }}</span>{% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="bm-article-page__summary-grid">
+      <div class="bm-article-page__summary-metric">
+        <span>עלות ממוצעת</span>
+        <strong>{{ avg or '—' }}</strong>
+      </div>
+      {% if low and high %}
+      <div class="bm-article-page__summary-metric">
+        <span>טווח מחירים שכיח</span>
+        <strong>{{ low }} – {{ high }}</strong>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+{% endmacro %}
+{% macro data_table(tbl) %}
+  {% if not tbl or not tbl.rows %}{{- '' -}}{% else %}
+  <section class="bm-article-page__section">
+    {% if tbl.title %}<h3 class="bm-article-page__section-title">{{ tbl.title }}</h3>{% endif %}
+    <div class="bm-article-page__section--flush">
+      <table class="bm-article-page__table">
+        {% if tbl.headers %}
+        <thead>
+          <tr>
+            {% for header in tbl.headers %}
+              <th scope="col">{{ header }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        {% endif %}
+        <tbody>
+          {% for row in tbl.rows %}
+            <tr>
+              {% for cell in row %}
+                <td>{{ cell }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+{% endmacro %}
+{% macro pros_cons_grid(grid) %}
+  {% if not grid or not grid.items %}{{- '' -}}{% else %}
+  <section class="bm-article-page__section">
+    {% if grid.title %}<h3 class="bm-article-page__section-title">{{ grid.title }}</h3>{% endif %}
+    <div class="bm-article-page__pros-cons">
+      {% for item in grid.items if item and (item.pros or item.cons) %}
+        <article class="bm-article-page__pros-cons-item">
+          {% if item.name %}<h4 class="bm-article-page__pros-cons-title">{{ item.name }}</h4>{% endif %}
+          <div class="bm-article-page__pros-cons-columns">
+            {% if item.pros %}
+              <div>
+                <div class="bm-article-page__pros-header">יתרונות</div>
+                <ul class="bm-article-page__pros-list">
+                  {% for pro in item.pros if pro %}<li>{{ pro }}</li>{% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+            {% if item.cons %}
+              <div>
+                <div class="bm-article-page__cons-header">חסרונות</div>
+                <ul class="bm-article-page__cons-list">
+                  {% for con in item.cons if con %}<li>{{ con }}</li>{% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{% endmacro %}
+{% macro _note_block(box, tone) %}
+  {% if not box %}{{- '' -}}{% else %}
+  {% set has_title = box.title %}
+  {% set has_text = box.text %}
+  {% set has_items = box.items %}
+  {% if not (has_title or has_text or has_items) %}{{- '' -}}{% else %}
+  <section class="bm-article-page__note bm-article-page__note--{{ tone }}">
+    {% if has_title %}<h3 class="bm-article-page__note-title">{{ box.title }}</h3>{% endif %}
+    {% if has_text %}<p>{{ box.text }}</p>{% endif %}
+    {% if has_items %}
+      <ul>
+        {% for item in box.items if item %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+  {% endif %}
+  {% endif %}
+{% endmacro %}
+{% macro warning_block(box) %}{{ _note_block(box, 'warning') }}{% endmacro %}
+{% macro tip_block(box) %}{{ _note_block(box, 'tip') }}{% endmacro %}
+{% macro info_box(box) %}
+  {% if not box %}{{- '' -}}{% else %}
+  {% set has_title = box.title %}
+  {% set has_text = box.text %}
+  {% set has_items = box.items %}
+  {% if not (has_title or has_text or has_items) %}{{- '' -}}{% else %}
+  <aside class="bm-article-page__infobox">
+    {% if has_title %}<h3 class="bm-article-page__infobox-title">{{ box.title }}</h3>{% endif %}
+    {% if has_text %}<p>{{ box.text }}</p>{% endif %}
+    {% if has_items %}
+      <ul class="bm-article-page__infobox-list">
+        {% for item in box.items if item %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  </aside>
+  {% endif %}
+  {% endif %}
+{% endmacro %}
+{% macro checklist_block(box) %}
+  {% if not box or not box.items %}{{- '' -}}{% else %}
+  <section class="bm-article-page__section">
+    {% if box.title %}<h3 class="bm-article-page__section-title">{{ box.title }}</h3>{% endif %}
+    <div class="bm-article-page__checklist">
+      {% for item in box.items if item and item.text %}
+        <div class="bm-article-page__checklist-item" data-checked="{{ 'true' if item.checked else 'false' }}">
+          <span class="bm-article-page__checklist-icon">{{ '✔' if item.checked else '•' }}</span>
+          <div>{{ item.text }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{% endmacro %}
+{% macro process_steps(steps) %}
+  {% if not steps or not steps.items %}{{- '' -}}{% else %}
+  <section class="bm-article-page__section">
+    {% if steps.title %}<h3 class="bm-article-page__section-title">{{ steps.title }}</h3>{% endif %}
+    <div class="bm-article-page__steps">
+      {% for step in steps.items if step and (step.title or step.text) %}
+        <div class="bm-article-page__step">
+          {% if step.title %}<h4 class="bm-article-page__pros-cons-title">{{ step.title }}</h4>{% endif %}
+          {% if step.text %}<p>{{ step.text }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{% endmacro %}
+{% macro questions_block(box) %}
+  {% if not box or not box.items %}{{- '' -}}{% else %}
+  <section class="bm-article-page__section">
+    {% if box.title %}<h3 class="bm-article-page__section-title">{{ box.title }}</h3>{% endif %}
+    <div class="bm-article-page__questions">
+      {% for qa in box.items if qa and (qa.question or qa.answer) %}
+        <div class="bm-article-page__question">
+          {% if qa.question %}<h4 class="bm-article-page__question-title">{{ qa.question }}</h4>{% endif %}
+          {% if qa.answer %}<p>{{ qa.answer }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{% endmacro %}
+{% macro comparison_table(tbl) %}
+  {% if not tbl or not tbl.rows %}{{- '' -}}{% else %}
+  <section class="bm-article-page__section">
+    {% if tbl.title %}<h3 class="bm-article-page__section-title">{{ tbl.title }}</h3>{% endif %}
+    <table class="bm-article-page__comparison-table">
+      {% if tbl.headers %}
+      <thead>
+        <tr>
+          {% for header in tbl.headers %}
+            <th scope="col">{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      {% endif %}
+      <tbody>
+        {% for row in tbl.rows %}
+          <tr>
+            {% for cell in row %}
+              <td>{{ cell }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+{% endmacro %}

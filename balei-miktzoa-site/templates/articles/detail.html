@@ -1,219 +1,162 @@
-{% extends 'base.html' %}
-{% set lang_code = lang_code|default(g.current_lang, true) %}
-{% set meta = article.meta %}
-{% set he_meta = meta.get('he', {}) %}
-{% set canonical_url = url_for_lang('article_detail', lang=lang_code, slug=article.slug, _external=True) %}
-{% set theme_map = {
-  'electricity': 'articles/theme-electrician.css',
-  'plumbing': 'articles/theme-plumbing.css',
-  'renovation': 'articles/theme-renovation.css',
-  'moisture': 'articles/theme-moisture.css'
-} %}
-{% set theme_slug_map = {
-  'electricity': 'electrician',
-  'plumbing': 'plumbing',
-  'renovation': 'renovation',
-  'moisture': 'moisture'
-} %}
-{% set category = meta.get('category') %}
-{% set theme_css = theme_map.get(category) %}
-{% set article_theme = theme_slug_map.get(category) %}
-{% set category_labels = {
-  'electricity': {'he': 'חשמל', 'en': 'Electricity', 'ru': 'Электрика'},
-  'plumbing': {'he': 'אינסטלציה', 'en': 'Plumbing', 'ru': 'Сантехника'},
-  'renovation': {'he': 'שיפוצים', 'en': 'Renovations', 'ru': 'Ремонты'},
-  'moisture': {'he': 'רטיבות / עובש', 'en': 'Moisture / Mold', 'ru': 'Влажность / Плесень'}
-} %}
-{% set category_map = category_labels.get(category, {}) %}
-{% set category_label = meta.get('category_he') if lang_code == 'he' else None %}
-{% if not category_label %}
-  {% set category_label = category_map.get(lang_code) or category_map.get('he') or meta.get('category_he') or meta.get('category') %}
-{% endif %}
-{% set title = article.lang_data.get('title') or he_meta.get('title') or meta.get('title') %}
-{% set description = article.lang_data.get('description') or he_meta.get('description') or meta.get('description') %}
-{% set reading_template = t('articles_index.reading_time', '~{minutes} דקות קריאה') or '~{minutes} דקות קריאה' %}
-{% set reading_minutes = meta.get('reading_minutes') %}
-{% set info_box = he_meta.get('info_box') if he_meta else None %}
-{% set toc_items = he_meta.get('toc') if he_meta else None %}
-{% set highlights = he_meta.get('highlights') if he_meta else None %}
-{% set summary_card = he_meta.get('summary_card') if he_meta else None %}
-{% block title %}
-  {{ (title ~ ' | בעלי מקצוע בקליק') if title else 'בעלי מקצוע בקליק' }}
-{% endblock %}
-{% block head_seo %}
-  {{ super() }}
-  <link rel="canonical" href="{{ canonical_url }}">
-  {% if description %}
-    <meta name="description" content="{{ description }}">
-    <meta property="og:description" content="{{ description }}">
-    <meta name="twitter:description" content="{{ description }}">
+{% extends "base.html" %}
+{% import "articles/_components.html" as components %}
+{% block title %}{{ article.title }} | בעלי מקצוע בקליק{% endblock %}
+{% block head_extra %}
+  {{ super() }} set canonical_url = url_for_lang('article_detail', lang=lang_code, slug=article.slug, _external=True) %}
+  {% set theme_map = {
+    'electricity': 'articles/theme-electrician.css',
+    'plumbing': 'articles/theme-plumbing.css',
+    'renovation': 'articles/theme-renovation.css',
+    'moisture': 'articles/theme-moisture.css'
+  } %}
+  {% set theme_slug_map = {
+    'electricity': 'electrician',
+    'plumbing': 'plumbing',
+    'renovation': 'renovation',
+    'moisture': 'moisture'
+  } %}
+  {% set category = meta.get('category') %}
+  {% set theme_css = theme_map.get(category) %}
+  {% set article_theme = theme_slug_map.get(category) %}
+  {% set category_labels = {
+    'electricity': {'he': 'חשמל', 'en': 'Electricity', 'ru': 'Электрика'},
+    'plumbing': {'he': 'אינסטלציה', 'en': 'Plumbing', 'ru': 'Сантехника'},
+    'renovation': {'he': 'שיפוצים', 'en': 'Renovations', 'ru': 'Ремонты'},
+    'moisture': {'he': 'רטיבות / עובש', 'en': 'Moisture / Mold', 'ru': 'Влажность / Плесень'}
+  } %}
+  {% set category_map = category_labels.get(category, {}) %}
+  {% set category_label = meta.get('category_he') if lang_code == 'he' else None %}
+  {% if not category_label %}
+    {% set category_label = category_map.get(lang_code) or category_map.get('he') or meta.get('category_he') or meta.get('category') %}
   {% endif %}
-  <meta property="og:type" content="article">
-  {% if title %}
-    <meta property="og:title" content="{{ title }}">
-  {% endif %}
-  <meta property="og:url" content="{{ canonical_url }}">
-  {% if hero_image_absolute %}
-    <meta property="og:image" content="{{ hero_image_absolute }}">
-    <meta name="twitter:image" content="{{ hero_image_absolute }}">
-  {% endif %}
-  <meta name="twitter:card" content="summary_large_image">
-{% endblock %}
-{% block extra_head %}
-  {{ super() }}
-  <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
-  <link rel="stylesheet" href="{{ static_rel('css/articles.css') }}">
-  {% if theme_css %}
-    <link rel="stylesheet" href="{{ static_rel(theme_css) }}">
-  {% endif %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bm-article.css') }}">
 {% endblock %}
 {% block content %}
-  <div class="bm-article-page" dir="rtl"{% if article_theme %} data-theme="{{ article_theme }}"{% endif %}>
-    <div class="bm-article-inner">
-      <header class="bm-article-hero">
-        <div class="bm-article-hero-top">
-          <a href="{{ url_for_lang('articles_index', lang=lang_code) }}" class="bm-article-breadcrumb">
-            מרכז ידע
-          </a>
-          {% if category_label %}
-            <div class="bm-article-category-pill">{{ category_label }}</div>
+<div class="bm-article-page">
+  <div class="bm-article-page__container">
+    {% set sidebar_items = sidebar_info | default([]) %}
+    <header class="bm-article-page__hero">
+      <div class="bm-article-page__hero-content">
+        <div class="bm-article-page__hero-copy">
+          {% if article.category %}
+            <span class="bm-article-page__pill">{{ article.category }}</span>
+          {% endif %}
+          <h1 class="bm-article-page__title">{{ article.title }}</h1>
+          {% if article.subtitle %}
+            <p class="bm-article-page__subtitle">{{ article.subtitle }}</p>
+          {% endif %}
+          {% if article.meta %}
+            <div class="bm-article-page__meta">
+              {% if article.meta.published_at %}<span>{{ article.meta.published_at }}</span>{% endif %}
+              {% if article.meta.read_time %}<span>{{ article.meta.read_time }}</span>{% endif %}
+              {% if article.meta.updated_at %}<span>עודכן: {{ article.meta.updated_at }}</span>{% endif %}
+            </div>
           {% endif %}
         </div>
-        {% if title %}
-          <h1 class="bm-article-title">{{ title }}</h1>
-        {% endif %}
-        {% if description %}
-          <p class="bm-article-subtitle">{{ description }}</p>
-        {% endif %}
-        {% set meta_items = [] %}
-        {% if meta.get('date') %}
-          {% set meta_items = meta_items + [meta.get('date')] %}
-        {% endif %}
-        {% if reading_minutes %}
-          {% set meta_items = meta_items + [reading_template|format(minutes=reading_minutes)] %}
-        {% endif %}
-        {% if meta.get('author') %}
-          {% set meta_items = meta_items + [meta.get('author')] %}
-        {% endif %}
-        {% if meta_items %}
-          <div class="bm-article-meta" aria-label="פרטי המאמר">
-            {% for item in meta_items %}
-              {% if loop.index > 1 %}
-                <span class="bm-article-meta-sep" aria-hidden="true">•</span>
-              {% endif %}
-              <span class="bm-article-meta-item">{{ item }}</span>
-            {% endfor %}
+        {% if article.hero_image %}
+          <div class="bm-article-page__hero-media">
+            <img src="{{ article.hero_image }}" alt="{{ article.hero_alt or article.title }}" loading="lazy" decoding="async">
           </div>
         {% endif %}
-        {% if meta.get('hero_image') %}
-          <figure class="bm-article-hero-media">
-            <img src="{{ meta.get('hero_image') }}" alt="{{ title or 'Hero image' }}" loading="lazy" decoding="async">
-          </figure>
-        {% endif %}
-      </header>
-      <div class="bm-article-layout{% if info_box or toc_items %} has-sidebar{% endif %}">
-        {% if info_box or toc_items %}
-          <aside class="bm-article-sidebar">
-            {% if info_box %}
-              <section class="bm-article-info-box">
-                <h2 class="bm-article-info-title">{{ info_box.title or 'מידע מהיר' }}</h2>
-                <ul class="bm-article-info-list">
-                  {% for row in info_box.items %}
-                    <li class="bm-article-info-row">
-                      <p class="bm-article-info-label">{{ row.label }}</p>
-                      <p class="bm-article-info-value">{{ row.value }}</p>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </section>
+      </div>
+    </header>
+    {% if article.summary_cost %}
+      {{ components.summary_cost_card(article.summary_cost) }}
+    {% endif %}
+    <div class="bm-article-page__layout">
+      <div class="bm-article-page__main" id="bm-article-main">
+        {% set text_types = ['paragraph', 'list', 'heading'] %}
+        {% set ns = namespace(open_text=false, body_seen=false) %}
+        {% for block in blocks %}
+          {% if block.type in text_types %}
+            {% if not ns.open_text %}
+              <section class="bm-article-page__section bm-article-page__body-text" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
+                {% set ns.open_text = True %}
+                {% set ns.body_seen = True %}
             {% endif %}
-            {% if toc_items %}
-              <nav class="bm-article-toc" aria-label="תוכן העניינים של המאמר">
-                <h3 class="bm-article-toc-title">במאמר זה</h3>
-                <ul class="bm-article-toc-list">
-                  {% for item in toc_items %}
-                    <li>
-                      <a href="#{{ item.id }}">{{ item.title }}</a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </nav>
-            {% endif %}
-          </aside>
-        {% endif %}
-        <div class="bm-article-body">
-          {% if highlights %}
-            <section class="bm-article-intro">
-              <h2>עיקרי הדברים</h2>
+            {% if block.type == 'heading' %}
+              {% set level = block.data.level if block.data.level in [2,3] else 2 %}
+              {% if level == 3 %}
+                <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
+              {% else %}
+                <h2 id="{{ block.data.slug }}">{{ block.data.text }}</h2>
+              {% endif %}
+            {% elif block.type == 'list' %}
               <ul>
-                {% for item in highlights %}
-                  <li>{{ item }}</li>
+                {% for item in block.data.items %}
+                  {% if item %}<li>{{ item }}</li>{% endif %}
                 {% endfor %}
               </ul>
-            </section>
+            {% else %}
+              <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+          {% else %}
+            {% if ns.open_text %}
+              </section>
+              {% set ns.open_text = False %}
+            {% endif %}
+            {% if block.type == 'data_table' %}
+              {{ components.data_table(block.data) }}
+            {% elif block.type == 'pros_cons_grid' %}
+              {{ components.pros_cons_grid(block.data) }}
+            {% elif block.type == 'warning' %}
+              {{ components.warning_block(block.data) }}
+            {% elif block.type == 'tip' %}
+              {{ components.tip_block(block.data) }}
+            {% elif block.type == 'checklist' %}
+              {{ components.checklist_block(block.data) }}
+            {% elif block.type == 'process_steps' %}
+              {{ components.process_steps(block.data) }}
+            {% elif block.type == 'questions' %}
+              {{ components.questions_block(block.data) }}
+            {% elif block.type == 'comparison_table' %}
+              {{ components.comparison_table(block.data) }}
+            {% elif block.type == 'summary_cost' %}
+              {{ components.summary_cost_card(block.data) }}
+            {% endif %}
           {% endif %}
-          {% if summary_card %}
-            <section class="bm-article-summary-card">
-              {% if summary_card.label %}
-                <p class="bm-article-summary-label">{{ summary_card.label }}</p>
-              {% endif %}
-              {% if summary_card.value %}
-                <p class="bm-article-summary-value">{{ summary_card.value }}</p>
-              {% endif %}
-              {% if summary_card.badges %}
-                <div class="bm-article-summary-badges">
-                  {% for badge in summary_card.badges %}
-                    <span class="bm-article-summary-badge">{{ badge }}</span>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            </section>
-          {% endif %}
-          <section class="bm-article-section">
-            {{ article.body_html | safe }}
-          </section>
-        </div>
+        {% endfor %}
+        {% if ns.open_text %}</section>{% endif %}
       </div>
-      {% if related_articles %}
-        <section class="bm-article-related">
-          <div class="bm-article-related-inner">
-            <h2 class="bm-article-related-title">מאמרים נוספים שיעניינו אותך</h2>
-            <div class="bm-article-related-grid">
-              {% for rel in related_articles %}
-                <a href="{{ url_for('article_detail', lang=lang_code, slug=rel.slug) }}" class="bm-article-related-card">
-                  <div class="bm-article-related-thumb">
-                    {% if rel.meta.hero_image %}
-                      <img src="{{ rel.meta.hero_image }}" alt="{{ rel.meta.he.title or rel.lang_data.title or rel.meta.title }}" loading="lazy" decoding="async">
-                    {% endif %}
-                  </div>
-                  <div class="bm-article-related-content">
-                    {% set rel_category_map = category_labels.get(rel.meta.get('category'), {}) %}
-                    {% set rel_category_label = rel.meta.get('category_he') if lang_code == 'he' else rel_category_map.get(lang_code) %}
-                    {% if not rel_category_label %}
-                      {% set rel_category_label = rel_category_map.get('he') or rel.meta.get('category') %}
-                    {% endif %}
-                    {% if rel_category_label %}
-                      <div class="bm-article-related-category">{{ rel_category_label }}</div>
-                    {% endif %}
-                    <h3 class="bm-article-related-heading">{{ rel.meta.he.title or rel.lang_data.title or rel.meta.title }}</h3>
-                    {% if rel.meta.reading_minutes %}
-                      <div class="bm-article-related-reading">{{ reading_template|format(minutes=rel.meta.reading_minutes) }}</div>
-                    {% endif %}
-                  </div>
-                </a>
-              {% endfor %}
-            </div>
+      <aside class="bm-article-page__sidebar">
+        <div class="bm-article-page__sidebar-inner">
+          <div class="bm-article-page__toc" id="bm-article-toc" data-empty="true">
+            <h3 class="bm-article-page__toc-title">תוכן העניינים</h3>
+            <ul class="bm-article-page__toc-list" id="bm-article-toc-list"></ul>
           </div>
-        </section>
-      {% endif %}
-      {% set cta_href = url_for('home', lang=lang_code) + '#lead-form' %}
-      <section class="bm-article-cta">
-        <div class="bm-article-cta-inner">
-          <h2>לא בטוחים מה לעשות עכשיו?</h2>
-          <p>השאירו פרטים ונעזור לכם למצוא בעל מקצוע{% if category_label %} בתחום {{ category_label }}{% endif %} מוסמך ואמין באזור שלכם.</p>
-          <a href="{{ cta_href }}" class="bm-article-cta-button">מצאו בעל מקצוע</a>
+          {% if sidebar_items %}
+            {% for info in sidebar_items %}
+              {{ components.info_box(info) }}
+            {% endfor %}
+          {% endif %}
         </div>
-      </section>
+      </aside>
     </div>
+    {% if article.related %}
+      <section class="bm-article-page__related">
+        {% for item in article.related %}
+          {% if item.url and item.title %}
+            <a class="bm-article-page__related-item" href="{{ item.url }}">
+              <h4>{{ item.title }}</h4>
+              {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </section>
+    {% endif %}
+    {% if article.cta %}
+      <section class="bm-article-page__cta">
+        {% if article.cta.title %}<h3>{{ article.cta.title }}</h3>{% endif %}
+        {% if article.cta.text %}<p>{{ article.cta.text }}</p>{% endif %}
+        {% if article.cta.action_url and article.cta.action_text %}
+          <a href="{{ article.cta.action_url }}">{{ article.cta.action_text }}</a>
+        {% endif %}
+      </section>
+    {% endif %}
   </div>
+</div>
+{% endblock %}
+{% block body_end_extra %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/article.js') }}" defer></script>
 {% endblock %}

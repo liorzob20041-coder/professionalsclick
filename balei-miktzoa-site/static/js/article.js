@@ -115,6 +115,18 @@
   }
   ready(function () {
     var root = document.querySelector('.bm-article-page') || document;
+    var heroImage = document.querySelector('.article-hero img');
+    var bodyImages = root.querySelectorAll('.article-body img');
+    bodyImages.forEach(function (img) {
+      if (!heroImage || img !== heroImage) {
+        if (!img.getAttribute('loading')) {
+          img.setAttribute('loading', 'lazy');
+        }
+        if (!img.getAttribute('decoding')) {
+          img.setAttribute('decoding', 'async');
+        }
+      }
+    });
     enhanceCallouts(root);
     enhanceChecklists(root);
     enhanceSteps(root);

@@ -30,28 +30,58 @@
   margin: 0 auto;
 }
 .bm-article-page__hero {
-  background: linear-gradient(135deg, rgba(139, 21, 56, 0.92), rgba(139, 21, 56, 0.78));
+  background: none;
   border-radius: var(--bm-article-radius-lg);
-  padding: clamp(28px, 5vw, 48px);
-  color: #fff;
+  padding: 0;
+  color: var(--bm-article-muted);
   position: relative;
-  overflow: hidden;
-  margin-bottom: clamp(24px, 5vw, 40px);
-  box-shadow: 0 32px 80px rgba(139, 21, 56, 0.26);
+  overflow: visible;
+  margin-bottom: clamp(16px, 3vw, 28px);
+  box-shadow: none;
 }
 .bm-article-page__hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.28), transparent 55%),
-              radial-gradient(circle at 80% 0%, rgba(255,255,255,0.18), transparent 55%);
-  pointer-events: none;
+  content: none;
 }
 .bm-article-page__hero-content {
   position: relative;
   display: grid;
   gap: clamp(16px, 2vw, 28px);
   align-items: start;
+}
+.bm-article-page__hero-content::after {
+  content: none;
+}
+.article-hero {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: clamp(8px, 2vw, 24px) 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  background: none;
+}
+.article-hero picture,
+.article-hero img {
+  display: block;
+  width: 100%;
+}
+.article-hero img {
+  height: clamp(240px, 48vh, 560px);
+  object-fit: cover;
+}
+.bm-article-hero,
+.hero-card {
+  background: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  display: block;
+  margin: 16px auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 .bm-article-page__hero-media {
   border-radius: var(--bm-article-radius-md);
@@ -85,7 +115,7 @@
 .bm-article-page__subtitle {
   font-size: var(--bm-article-subhead-size);
   margin: 0;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--bm-article-muted);
   line-height: 1.6;
 }
 .bm-article-page__meta {
@@ -93,7 +123,7 @@
   flex-wrap: wrap;
   gap: 12px 18px;
   font-size: var(--bm-article-small-size);
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(26, 21, 35, 0.72);
 }
 .bm-article-page__meta span {
   display: inline-flex;

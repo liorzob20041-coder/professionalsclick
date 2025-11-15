@@ -2854,6 +2854,7 @@ def _render_article_detail(lang: str, slug: str):
         "lang_data": lang_data,
         "body_html": body_html,
     }
+    canonical_url = url_for('article_detail', lang=lang, slug=article_slug, _external=True)
 
     return render_template(
         'articles/detail.html',
@@ -2865,6 +2866,7 @@ def _render_article_detail(lang: str, slug: str):
         meta=meta,
         lang_data=lang_data,
         lang_code=lang,
+        canonical_url=canonical_url,
     )
 
 

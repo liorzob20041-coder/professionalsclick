@@ -21,7 +21,6 @@
   {% set default_description = _('site.default_description') if _ else 'בעלי מקצוע בקליק – מצאו בעלי מקצוע אמינים לפי עיר ותחום.' %}
   {% set default_url = request.url if request else '' %}
   {% set default_image = static_url('og/home-' ~ (g.current_lang or 'he') ~ '.jpg') %}
-  {% set canonical_url = request.base_url if request else default_url %}
   {% set og_locale = 'he_IL' if g.current_lang == 'he' else ('en_US' if g.current_lang == 'en' else 'ru_RU') %}
 
   <title>{% block title %}{{ default_title }}{% endblock %}</title>
@@ -185,7 +184,7 @@
 
   {# --- FALLBACKS: אם הדף לא סיפק meta description/OG, ניתן לשמור בסיס עדין --- #}
   {% block head_fallbacks %}
-    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="canonical" href="{{ canonical_url | default(request.url, true) }}">
     <link rel="alternate" hreflang="he" href="{{ url_for_lang(lang='he', _external=True) }}">
     <link rel="alternate" hreflang="en" href="{{ url_for_lang(lang='en', _external=True) }}">
     <link rel="alternate" hreflang="ru" href="{{ url_for_lang(lang='ru', _external=True) }}">
@@ -199,7 +198,7 @@
     <meta property="og:title" content="{{ default_title }}">
     <meta property="og:description" content="{{ default_description }}">
     <meta property="og:image" content="{{ default_image }}">
-    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:url" content="{{ canonical_url | default(request.url, true) }}">
     <meta property="og:locale" content="{{ og_locale }}">
     <meta property="og:locale:alternate" content="he_IL">
     <meta property="og:locale:alternate" content="en_US">

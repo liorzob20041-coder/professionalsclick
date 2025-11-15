@@ -2,7 +2,7 @@
 {% import "articles/_components.html" as components %}
 {% block title %}{{ article.title }} | בעלי מקצוע בקליק{% endblock %}
 {% block head_extra %}
-  {{ super() }} set canonical_url = url_for_lang('article_detail', lang=lang_code, slug=article.slug, _external=True) %}
+  {{ super() }}
   {% set theme_map = {
     'electricity': 'articles/theme-electrician.css',
     'plumbing': 'articles/theme-plumbing.css',
@@ -53,13 +53,25 @@
             </div>
           {% endif %}
         </div>
-        {% if article.hero_image %}
-          <div class="bm-article-page__hero-media">
-            <img src="{{ article.hero_image }}" alt="{{ article.hero_alt or article.title }}" loading="lazy" decoding="async">
-          </div>
-        {% endif %}
       </div>
     </header>
+    {% if article.hero_image %}
+      {% set _hero_src = article.hero_image %}
+      <figure class="article-hero">
+        <picture>
+          {% if _hero_src and _hero_src|lower.endswith('.webp') %}
+            <source srcset="{{ _hero_src }}" type="image/webp">
+          {% endif %}
+          <img src="{{ _hero_src }}"
+               alt="{{ article.hero_alt or article.title }}"
+               loading="eager"
+               decoding="async"
+               fetchpriority="high"
+               width="1600"
+               height="900">
+        </picture>
+      </figure>
+    {% endif %}
     {% if article.summary_cost %}
       {{ components.summary_cost_card(article.summary_cost) }}
     {% endif %}
@@ -71,7 +83,7 @@
           {% for block in blocks %}
             {% if block.type in text_types %}
               {% if not ns.open_text %}
-                <section class="bm-article-page__section bm-article-page__body-text" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
+                <section class="bm-article-page__section bm-article-page__body-text article-body" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
                   {% set ns.open_text = True %}
                   {% set ns.body_seen = True %}
                 {% endif %}
@@ -121,7 +133,7 @@
           {% endfor %}
           {% if ns.open_text %}</section>{% endif %}
         {% elif article.body_html %}
-          <section class="bm-article-page__section bm-article-page__body-text" id="bm-article-body">
+          <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
             {{ article.body_html | safe }}
           </section>
         {% endif %}

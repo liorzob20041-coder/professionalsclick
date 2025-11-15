@@ -55,23 +55,36 @@
         </div>
       </div>
     </header>
-    {% if article.hero_image %}
+    {% set _hero_src = none %}
+    {% if article.hero_image_source is defined and article.hero_image_source %}
+      {% set _hero_src = article.hero_image_source %}
+    {% elif article.hero_image is defined and article.hero_image %}
       {% set _hero_src = article.hero_image %}
-      <figure class="article-hero">
-        <picture>
-          {% if _hero_src and _hero_src|lower.endswith('.webp') %}
-            <source srcset="{{ _hero_src }}" type="image/webp">
-          {% endif %}
-          <img src="{{ _hero_src }}"
-               alt="{{ article.hero_alt or article.title }}"
-               loading="eager"
-               decoding="async"
-               fetchpriority="high"
-               width="1600"
-               height="900">
-        </picture>
-      </figure>
+    {% elif meta is defined and meta.hero_image is defined and meta.hero_image %}
+      {% set _hero_src = meta.hero_image %}
+    {% elif meta is defined and meta.hero_image_file is defined and meta.hero_image_file %}
+      {% set _hero_src = '/static/' ~ meta.hero_image_file.lstrip('/') %}
     {% endif %}
+    {% if _hero_src %}
+      {% if _hero_src.startswith('/static/') %}
+        {% set _hero_src = url_for('static', filename=_hero_src[8:]) %}
+      {% elif '://' not in _hero_src %}
+        {% set _hero_src = url_for('static', filename=_hero_src.lstrip('/')) %}
+      {% endif %}
+    {% endif %}
+    {% if not _hero_src %}
+      {% set _hero_src = url_for('static', filename='img/placeholders/article-hero.png') %}
+    {% endif %}
+    {% set _hero_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
+    <figure class="article-hero">
+      <img src="{{ _hero_src }}"
+           alt="{{ _hero_alt | default('', true) }}"
+           loading="eager"
+           decoding="async"
+           fetchpriority="high"
+           width="1600"
+           height="900">
+    </figure>
     {% if article.summary_cost %}
       {{ components.summary_cost_card(article.summary_cost) }}
     {% endif %}

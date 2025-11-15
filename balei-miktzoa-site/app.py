@@ -2683,7 +2683,18 @@ def articles_index(lang):
         categories=categories,
         grouped_articles=dict(grouped_articles),
     )
+def _build_canonical(lang_code: str, slug: str) -> str:
+    """נסה לבנות קישור קאנוניקל יציב עם fallback ל-request.url."""
 
+    try:
+        return url_for("article_detail", lang=lang_code, slug=slug, _external=True)
+    except Exception:
+        try:
+            return url_for(
+                "articles.article_detail", lang=lang_code, slug=slug, _external=True
+            )
+        except Exception:
+            return request.url
 
 def _render_article_detail(lang: str, slug: str):
     g.current_lang = lang
@@ -2839,7 +2850,15 @@ def _render_article_detail(lang: str, slug: str):
         or lang_data.get("title")
         or meta.get("title")
     )
-
+    hero_placeholder = url_for("static", filename="img/placeholders/article-hero.png")
+    hero_image_source = hero_image_absolute or hero_placeholder
+    if not hero_image_absolute and isinstance(hero_image, str):
+        if hero_image.startswith("/static/"):
+            hero_image_source = url_for("static", filename=hero_image[len("/static/"):])
+        elif hero_image.startswith("http"):
+            hero_image_source = hero_image
+        else:
+            hero_image_source = urljoin(request.url_root, hero_image.lstrip("/"))
     article = {
         "slug": article_slug,
         "title": lang_data.get("title") or meta.get("title") or he_meta.get("title"),
@@ -2847,6 +2866,7 @@ def _render_article_detail(lang: str, slug: str):
         "category": meta.get("category") or he_meta.get("category"),
         "meta": {k: v for k, v in article_meta.items() if v},
         "hero_image": hero_image,
+        "hero_image_source": hero_image_source,
         "hero_alt": hero_alt,
         "summary_cost": he_meta.get("summary_card") or meta.get("summary_card"),
         "related": related_articles,
@@ -2854,7 +2874,7 @@ def _render_article_detail(lang: str, slug: str):
         "lang_data": lang_data,
         "body_html": body_html,
     }
-    canonical_url = url_for('article_detail', lang=lang, slug=article_slug, _external=True)
+    canonical_url = _build_canonical(lang, article_slug)
 
     return render_template(
         'articles/detail.html',

@@ -571,6 +571,116 @@
 .bm-article-page__comparison-table tbody tr:last-child td {
   border-bottom: none;
 }
+[data-ui="warning"],
+[data-ui="tip"],
+[data-ui="info"] {
+  position: relative;
+  display: block;
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin: 24px 0;
+  border-inline-start: 6px solid transparent;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+}
+[data-ui="warning"] {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: #EF4444;
+  color: #7f1d1d;
+}
+[data-ui="tip"] {
+  background: rgba(245, 158, 11, 0.10);
+  border-color: #F59E0B;
+  color: #92400e;
+}
+[data-ui="info"] {
+  background: rgba(37, 99, 235, 0.10);
+  border-color: #2563EB;
+  color: #1e3a8a;
+}
+[data-ui="info"] h4 {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+ul[data-ui="checklist"] {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+ul[data-ui="checklist"] > li {
+  position: relative;
+  padding-inline-start: 28px;
+}
+ul[data-ui="checklist"] > li::before {
+  content: "✔";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  font-weight: 700;
+  color: #16A34A;
+}
+ol[data-ui="steps"] {
+  counter-reset: bmstep;
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+ol[data-ui="steps"] > li {
+  counter-increment: bmstep;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+ol[data-ui="steps"] > li::before {
+  content: counter(bmstep);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bm-color-primary, #8B1538);
+  color: #fff;
+  font-weight: 700;
+}
+table[data-ui="datatable"] {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 1rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+table[data-ui="datatable"] th,
+table[data-ui="datatable"] td {
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  padding: 12px 16px;
+  text-align: right;
+}
+table[data-ui="datatable"] thead th {
+  background: #f7f5f8;
+  font-weight: 700;
+}
+.bm-chart-wrap {
+  margin: 16px 0 32px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+}
+.bm-chart-title {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  color: #111827;
+}
 @media (max-width: 991px) {
   .bm-article-page {
     padding-block: clamp(24px, 6vw, 42px);

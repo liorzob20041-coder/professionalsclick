@@ -2697,6 +2697,9 @@ def _render_article_detail(lang: str, slug: str):
     if not isinstance(he_meta, dict):
         he_meta = {}
         meta["he"] = he_meta
+    has_shortcode_syntax = bool(re.search(r"\[[A-Za-z0-9_]+", body_template))
+    blocks: list[dict[str, Any]] = []
+    sidebar_info: list[dict[str, Any]] = []
 
     raw_info_box = he_meta.get("info_box")
     if isinstance(raw_info_box, dict):
@@ -2779,23 +2782,75 @@ def _render_article_detail(lang: str, slug: str):
             he_meta.pop("summary_card", None)
     elif "summary_card" in he_meta:
         he_meta.pop("summary_card")
-    hero_image = meta.get("hero_image")
+    raw_hero_image = meta.get("hero_image") or meta.get("hero_image_file")
     hero_image_absolute = None
-    if hero_image:
-        if isinstance(hero_image, str) and hero_image.startswith("/static/"):
-            static_path = hero_image[len("/static/"):]
+    if raw_hero_image:
+        if isinstance(raw_hero_image, str) and raw_hero_image.startswith("/static/"):
+            static_path = raw_hero_image[len("/static/"):]
             hero_image_absolute = url_for('static', filename=static_path, _external=True)
-        elif isinstance(hero_image, str) and hero_image.startswith("http"):
-            hero_image_absolute = hero_image
-        elif isinstance(hero_image, str):
-            hero_image_absolute = urljoin(request.url_root, hero_image.lstrip("/"))
+        elif isinstance(raw_hero_image, str) and raw_hero_image.startswith("http"):
+            hero_image_absolute = raw_hero_image
+        elif isinstance(raw_hero_image, str):
+            hero_image_absolute = urljoin(request.url_root, raw_hero_image.lstrip("/"))
 
     article_slug = meta.get("slug") or slug
     related_articles = get_related_articles(article_slug, meta.get("category"), lang=lang, limit=3)
+    if has_shortcode_syntax or "<" not in body_template:
+        raw_blocks = parse_shortcodes(body_template)
+        for block in raw_blocks:
+            if block.get("type") == "info_box":
+                data = block.get("data") or {}
+                if isinstance(data, dict) and data:
+                    sidebar_info.append(data)
+                continue
+            blocks.append(block)
+    else:
+        sidebar_info = []
+
+    info_box_meta = he_meta.get("info_box")
+    if isinstance(info_box_meta, dict) and info_box_meta.get("items"):
+        if info_box_meta not in sidebar_info:
+            sidebar_info.append(info_box_meta)
+
+    read_time_value = lang_data.get("read_time") or meta.get("read_time")
+    reading_minutes = meta.get("reading_minutes")
+    if not read_time_value and isinstance(reading_minutes, (int, float)):
+        minutes = int(reading_minutes)
+        if lang == "en":
+            read_time_value = f"{minutes} min read"
+        elif lang == "ru":
+            read_time_value = f"{minutes} мин. чтения"
+        else:
+            read_time_value = f"{minutes} דקות קריאה"
+    elif not read_time_value and isinstance(reading_minutes, str) and reading_minutes.strip():
+        read_time_value = reading_minutes.strip()
+
+    article_meta = {
+        "published_at": meta.get("published_at") or meta.get("date"),
+        "read_time": read_time_value,
+        "updated_at": meta.get("updated_at") or lang_data.get("updated_at"),
+    }
+
+    hero_image = raw_hero_image
+    hero_alt = (
+        lang_data.get("hero_alt")
+        or meta.get("hero_alt")
+        or he_meta.get("hero_alt")
+        or lang_data.get("title")
+        or meta.get("title")
+    )
 
     article = {
         "slug": article_slug,
-        "meta": meta,
+        "title": lang_data.get("title") or meta.get("title") or he_meta.get("title"),
+        "subtitle": lang_data.get("subtitle") or meta.get("subtitle") or he_meta.get("subtitle"),
+        "category": meta.get("category") or he_meta.get("category"),
+        "meta": {k: v for k, v in article_meta.items() if v},
+        "hero_image": hero_image,
+        "hero_alt": hero_alt,
+        "summary_cost": he_meta.get("summary_card") or meta.get("summary_card"),
+        "related": related_articles,
+        "cta": he_meta.get("cta") or meta.get("cta"),
         "lang_data": lang_data,
         "body_html": body_html,
     }
@@ -2805,6 +2860,10 @@ def _render_article_detail(lang: str, slug: str):
         article=article,
         related_articles=related_articles,
         hero_image_absolute=hero_image_absolute,
+        blocks=blocks,
+        sidebar_info=sidebar_info,
+        meta=meta,
+        lang_data=lang_data,
         lang_code=lang,
     )
 

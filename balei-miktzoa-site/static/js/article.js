@@ -1,4 +1,5 @@
 (function () {
+  'use strict';
   function ready(fn) {
     if (document.readyState !== 'loading') {
       fn();
@@ -14,7 +15,110 @@
     slug = slug.replace(/^-|-$/g, '');
     return slug || 'section';
   }
+  function enhanceCallouts(root) {
+    var keys = ['warning', 'tip', 'info'];
+    keys.forEach(function (key) {
+      var nodes = root.querySelectorAll('[data-ui="' + key + '"]');
+      Array.prototype.forEach.call(nodes, function () {});
+    });
+  }
+  function enhanceChecklists(root) {
+    var lists = root.querySelectorAll('ul[data-ui="checklist"]');
+    Array.prototype.forEach.call(lists, function (list) {
+      list.setAttribute('role', 'list');
+    });
+  }
+  function enhanceSteps(root) {
+    var lists = root.querySelectorAll('ol[data-ui="steps"]');
+    Array.prototype.forEach.call(lists, function (list) {
+      list.setAttribute('role', 'list');
+    });
+  }
+  function tableToChartData(table) {
+    var rows = table.querySelectorAll('tbody tr');
+    var type = (table.getAttribute('data-chart') || '').toLowerCase();
+    if (!type || !rows.length) {
+      return null;
+    }
+    var labels = [];
+    var values = [];
+    Array.prototype.forEach.call(rows, function (row) {
+      var cells = row.children;
+      if (!cells || cells.length < 2) {
+        return;
+      }
+      var label = cells[0].textContent ? cells[0].textContent.trim() : '';
+      var rawValue = cells[1].textContent ? cells[1].textContent.trim() : '';
+      var numeric = parseFloat(String(rawValue).replace(/[^\d.\-]/g, ''));
+      if (label && !isNaN(numeric) && isFinite(numeric)) {
+        labels.push(label);
+        values.push(numeric);
+      }
+    });
+    if (!labels.length) {
+      return null;
+    }
+    return {
+      type: type,
+      title: table.getAttribute('data-chart-title') || '',
+      labels: labels,
+      values: values,
+    };
+  }
+  function renderChartNextToTable(table, data) {
+    if (typeof window.Chart !== 'function') {
+      return;
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'bm-chart-wrap';
+    if (data.title) {
+      var heading = document.createElement('div');
+      heading.className = 'bm-chart-title';
+      heading.textContent = data.title;
+      wrap.appendChild(heading);
+    }
+    var canvas = document.createElement('canvas');
+    wrap.appendChild(canvas);
+    table.insertAdjacentElement('afterend', wrap);
+    var config = {
+      type: data.type === 'pie' ? 'pie' : 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            data: data.values,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true },
+        },
+      },
+    };
+    if (config.type !== 'pie') {
+      config.options.scales = { y: { beginAtZero: true } };
+    }
+    wrap.style.height = '360px';
+    new window.Chart(canvas.getContext('2d'), config);
+  }
+  function enhanceTables(root) {
+    var tables = root.querySelectorAll('table[data-ui="datatable"]');
+    Array.prototype.forEach.call(tables, function (table) {
+      var data = tableToChartData(table);
+      if (data) {
+        renderChartNextToTable(table, data);
+      }
+    });
+  }
   ready(function () {
+    var root = document.querySelector('.bm-article-page') || document;
+    enhanceCallouts(root);
+    enhanceChecklists(root);
+    enhanceSteps(root);
+    enhanceTables(root);
     var tocContainer = document.getElementById('bm-article-toc');
     var tocList = document.getElementById('bm-article-toc-list');
     if (!tocContainer || !tocList) {

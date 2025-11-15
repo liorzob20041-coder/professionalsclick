@@ -65,58 +65,66 @@
     {% endif %}
     <div class="bm-article-page__layout">
       <div class="bm-article-page__main" id="bm-article-main">
-        {% set text_types = ['paragraph', 'list', 'heading'] %}
-        {% set ns = namespace(open_text=false, body_seen=false) %}
-        {% for block in blocks %}
-          {% if block.type in text_types %}
-            {% if not ns.open_text %}
-              <section class="bm-article-page__section bm-article-page__body-text" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
-                {% set ns.open_text = True %}
-                {% set ns.body_seen = True %}
-            {% endif %}
-            {% if block.type == 'heading' %}
-              {% set level = block.data.level if block.data.level in [2,3] else 2 %}
-              {% if level == 3 %}
-                <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
+        {% if blocks %}
+          {% set text_types = ['paragraph', 'list', 'heading'] %}
+          {% set ns = namespace(open_text=false, body_seen=false) %}
+          {% for block in blocks %}
+            {% if block.type in text_types %}
+              {% if not ns.open_text %}
+                <section class="bm-article-page__section bm-article-page__body-text" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
+                  {% set ns.open_text = True %}
+                  {% set ns.body_seen = True %}
+                {% endif %}
+              {% if block.type == 'heading' %}
+                {% set level = block.data.level if block.data.level in [2,3] else 2 %}
+                {% if level == 3 %}
+                  <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
+                {% else %}
+                <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
+                {% endif %}
+              {% elif block.type == 'list' %}
+                <ul>
+                  {% for item in block.data.items %}
+                    {% if item %}<li>{{ item }}</li>{% endif %}
+                  {% endfor %}
+                </ul>
               {% else %}
                 <h2 id="{{ block.data.slug }}">{{ block.data.text }}</h2>
               {% endif %}
-            {% elif block.type == 'list' %}
-              <ul>
-                {% for item in block.data.items %}
-                  {% if item %}<li>{{ item }}</li>{% endif %}
-                {% endfor %}
-              </ul>
             {% else %}
-              <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
+              {% if ns.open_text %}
+                </section>
+                {% set ns.open_text = False %}
+              {% endif %}
+              {% if block.type == 'data_table' %}
+                {{ components.data_table(block.data) }}
+              {% elif block.type == 'pros_cons_grid' %}
+                {{ components.pros_cons_grid(block.data) }}
+              {% elif block.type == 'warning' %}
+                {{ components.warning_block(block.data) }}
+              {% elif block.type == 'tip' %}
+                {{ components.tip_block(block.data) }}
+              {% elif block.type == 'checklist' %}
+                {{ components.checklist_block(block.data) }}
+              {% elif block.type == 'process_steps' %}
+                {{ components.process_steps(block.data) }}
+              {% elif block.type == 'questions' %}
+                {{ components.questions_block(block.data) }}
+              {% elif block.type == 'comparison_table' %}
+                {{ components.comparison_table(block.data) }}
+              {% elif block.type == 'summary_cost' %}
+                {{ components.summary_cost_card(block.data) }}
+              {% elif block.type == 'raw_html' %}
+                {{ block.data.html | safe }}
+              {% endif %}
             {% endif %}
-          {% else %}
-            {% if ns.open_text %}
-              </section>
-              {% set ns.open_text = False %}
-            {% endif %}
-            {% if block.type == 'data_table' %}
-              {{ components.data_table(block.data) }}
-            {% elif block.type == 'pros_cons_grid' %}
-              {{ components.pros_cons_grid(block.data) }}
-            {% elif block.type == 'warning' %}
-              {{ components.warning_block(block.data) }}
-            {% elif block.type == 'tip' %}
-              {{ components.tip_block(block.data) }}
-            {% elif block.type == 'checklist' %}
-              {{ components.checklist_block(block.data) }}
-            {% elif block.type == 'process_steps' %}
-              {{ components.process_steps(block.data) }}
-            {% elif block.type == 'questions' %}
-              {{ components.questions_block(block.data) }}
-            {% elif block.type == 'comparison_table' %}
-              {{ components.comparison_table(block.data) }}
-            {% elif block.type == 'summary_cost' %}
-              {{ components.summary_cost_card(block.data) }}
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-        {% if ns.open_text %}</section>{% endif %}
+          {% endfor %}
+          {% if ns.open_text %}</section>{% endif %}
+        {% elif article.body_html %}
+          <section class="bm-article-page__section bm-article-page__body-text" id="bm-article-body">
+            {{ article.body_html | safe }}
+          </section>
+        {% endif %}
       </div>
       <aside class="bm-article-page__sidebar">
         <div class="bm-article-page__sidebar-inner">
@@ -158,5 +166,8 @@
 {% endblock %}
 {% block body_end_extra %}
   {{ super() }}
-  <script src="{{ url_for('static', filename='js/article.js') }}" defer></script>
+  <!-- existing article markup -->
+  <!-- Scripts only for article page -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="{{ url_for('static', filename='js/article.js') }}"></script>
 {% endblock %}

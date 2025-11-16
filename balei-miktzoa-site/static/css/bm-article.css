@@ -708,6 +708,44 @@ table[data-ui="datatable"] thead th {
   font-weight: 700;
   color: #111827;
 }
+/* charts layout */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.chart-card {
+  background: var(--bm-article-surface, #fff);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 16px 18px 12px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chart-card h3,
+.chart-card h4 {
+  font-size: 1.05rem;
+  margin: 0;
+  line-height: 1.4;
+}
+.chart-card canvas {
+  width: 100%;
+  height: 240px;
+}
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
 @media (max-width: 991px) {
   .bm-article-page {
     padding-block: clamp(24px, 6vw, 42px);

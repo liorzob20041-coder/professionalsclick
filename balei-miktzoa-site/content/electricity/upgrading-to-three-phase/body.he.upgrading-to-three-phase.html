@@ -16,30 +16,26 @@
     <li>קפיצות בעת הפעלה מקבילית?</li>
     <li>יכולת חלוקת עומסים בין פאזות?</li>
   </ul>
-  <div class="charts-grid cols-2">
-    <div class="chart-card">
-      <h4>מרכיבי עלות (טווחים ₪)</h4>
-      <table data-ui="datatable" data-chart="bar" data-chart-title="עלות שדרוג">
-        <thead><tr><th>מרכיב</th><th>טווח</th></tr></thead>
-        <tbody>
-          <tr><td>אגרת חח"י</td><td>1500-3500</td></tr>
-          <tr><td>עבודת חשמלאי</td><td>2000-6000</td></tr>
-          <tr><td>ציוד/לוח</td><td>1200-4000</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="chart-card">
-      <h4>סיבות נפוצות לשדרוג (הערכה)</h4>
-      <table data-ui="datatable" data-chart="donut" data-chart-title="למה משדרגים?">
-        <thead><tr><th>סיבה</th><th>אחוז</th></tr></thead>
-        <tbody>
-          <tr><td>כיריים אינדוקציה</td><td>35%</td></tr>
-          <tr><td>מיזוג/מערכות חום</td><td>28%</td></tr>
-          <tr><td>עמדת טעינה EV</td><td>22%</td></tr>
-          <tr><td>בית גדול/עומסים</td><td>15%</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="charts-grid">
+    <table data-ui="datatable" data-chart="bar" data-chart-title="עומסים טיפוסיים (kW)">
+      <thead><tr><th>מכשיר</th><th>kW</th></tr></thead>
+      <tbody>
+        <tr><td>כיריים אינדוקציה</td><td>7.5</td></tr>
+        <tr><td>מטען רכב חשמלי</td><td>7.0</td></tr>
+        <tr><td>דוד מיידי</td><td>10.0</td></tr>
+        <tr><td>תנור אפייה</td><td>3.5</td></tr>
+        <tr><td>מיזוג מרכזי</td><td>3.5</td></tr>
+      </tbody>
+    </table>
+    <table data-ui="datatable" data-chart="bar" data-chart-title="אומדן רכיבי עלות (₪)">
+      <thead><tr><th>רכיב</th><th>₪ ממוצע</th></tr></thead>
+      <tbody>
+        <tr><td>אגרת חברת חשמל</td><td>1900</td></tr>
+        <tr><td>לוח/ממסרים</td><td>1400</td></tr>
+        <tr><td>עבודה/חיווט</td><td>1800</td></tr>
+        <tr><td>בדיקות/ביקורת</td><td>600</td></tr>
+      </tbody>
+    </table>
   </div>
   <div data-ui="tip">
     טיפ: לפני קניית צרכן כבד – בדקו התאמה לחיבור קיים והאם כדאי לשדרג מראש.

@@ -20,29 +20,24 @@
     <li>ייעוד המכשיר (צרכן כבד? שוקלים קו נפרד).</li>
     <li>תשתית קרובה לחיסכון בחציבה.</li>
   </ul>
-  <div class="charts-grid cols-2">
-    <div class="chart-card">
-      <h4>שיטות התקנה – התפלגות שימוש (דוגמה)</h4>
-      <table data-ui="datatable" data-chart="pie" data-chart-title="שיטות התקנה">
-        <thead><tr><th>שיטה</th><th>אחוז</th></tr></thead>
-        <tbody>
-          <tr><td>חציבה נסתרת</td><td>40%</td></tr>
-          <tr><td>תעלת פלסטיק</td><td>35%</td></tr>
-          <tr><td>סלילה גלויה</td><td>25%</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="chart-card">
-      <h4>מרכיבי עלות (טווחים ₪)</h4>
-      <table data-ui="datatable" data-chart="bar" data-chart-title="מרכיבי עלות">
-        <thead><tr><th>מרכיב</th><th>טווח</th></tr></thead>
-        <tbody>
-          <tr><td>עבודת חשמלאי</td><td>400-900</td></tr>
-          <tr><td>קופסה/שקע/כבל</td><td>120-350</td></tr>
-          <tr><td>חציבה/טיח/צביעה</td><td>250-700</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <h3>עלות/זמן לפי שיטת התקנה</h3>
+  <div class="charts-grid">
+    <table data-ui="datatable" data-chart="bar" data-chart-title="עלות ממוצעת (₪) לפי שיטה">
+      <thead><tr><th>שיטה</th><th>₪ ממוצע</th></tr></thead>
+      <tbody>
+        <tr><td>חציבה והטמעה</td><td>2100</td></tr>
+        <tr><td>תעלת פלסטיק</td><td>1500</td></tr>
+        <tr><td>סלילה גלויה</td><td>900</td></tr>
+      </tbody>
+    </table>
+    <table data-ui="datatable" data-chart="bar" data-chart-title="זמן עבודה משוער (דקות)">
+      <thead><tr><th>שיטה</th><th>זמן</th></tr></thead>
+      <tbody>
+        <tr><td>חציבה והטמעה</td><td>150</td></tr>
+        <tr><td>תעלת פלסטיק</td><td>90</td></tr>
+        <tr><td>סלילה גלויה</td><td>60</td></tr>
+      </tbody>
+    </table>
   </div>
   <div data-ui="tip">
     טיפ: אם כבר מזמינים – חשבו קדימה והוסיפו עוד נקודות באותו ביקור.

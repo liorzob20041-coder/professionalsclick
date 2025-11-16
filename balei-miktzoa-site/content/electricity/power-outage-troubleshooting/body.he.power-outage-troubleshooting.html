@@ -19,30 +19,29 @@
     <li>האם נפילות קורות בעת הפעלה במקביל (עומס)?</li>
     <li>האם יש רטיבות/קיר לח ליד שקעים?</li>
   </ul>
-  <div class="charts-grid cols-2">
-    <div class="chart-card">
-      <h4>שכיחות גורמים לנפילת מפסק (הערכה)</h4>
-      <table data-ui="datatable" data-chart="donut" data-chart-title="גורמי תקלה נפוצים">
-        <thead><tr><th>גורם</th><th>אחוז</th></tr></thead>
+  <div class="charts-grid">
+    <div>
+      <h3>מה קפץ בלוח? (התפלגות משוערת)</h3>
+      <table data-ui="datatable" data-chart="doughnut" data-chart-title="רכיב שנפל בלוח">
+        <thead><tr><th>רכיב</th><th>אחוז</th></tr></thead>
         <tbody>
-          <tr><td>עומס יתר במעגל</td><td>46%</td></tr>
-          <tr><td>קצר במכשיר</td><td>24%</td></tr>
-          <tr><td>רטיבות/סביבה</td><td>12%</td></tr>
-          <tr><td>חיווט פגום</td><td>10%</td></tr>
-          <tr><td>אחר</td><td>8%</td></tr>
+          <tr><td>מא"ז שקעים</td><td>40</td></tr>
+          <tr><td>מא"ז תאורה</td><td>15</td></tr>
+          <tr><td>פחת</td><td>27</td></tr>
+          <tr><td>מפסק ראשי</td><td>8</td></tr>
+          <tr><td>אחר</td><td>10</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="chart-card">
-      <h4>משקל צעדי האבחון</h4>
-      <table data-ui="datatable" data-chart="bar" data-chart-title="מה עושים קודם?">
-        <thead><tr><th>צעד</th><th>משקל</th></tr></thead>
+    <div>
+      <h3>בדיקות בטוחות שאפשר לעשות לבד</h3>
+      <table data-ui="datatable" data-chart="bar" data-chart-title="פעולות אבחון בסיסיות (מדד 0–100)">
+        <thead><tr><th>בדיקה</th><th>מדד</th></tr></thead>
         <tbody>
-          <tr><td>בדיקת לוח</td><td>30</td></tr>
-          <tr><td>ניתוק מכשירים</td><td>25</td></tr>
-          <tr><td>הרמה מדורגת</td><td>20</td></tr>
-          <tr><td>איתור מעגל</td><td>15</td></tr>
-          <tr><td>פנייה למוסמך</td><td>10</td></tr>
+          <tr><td>ניתוק מכשירים כבדים</td><td>100</td></tr>
+          <tr><td>הרמת מפסקים אחד-אחד</td><td>90</td></tr>
+          <tr><td>בדיקת אזור לפי סימון בלוח</td><td>80</td></tr>
+          <tr><td>שינוי עומס בין שקעים</td><td>70</td></tr>
         </tbody>
       </table>
     </div>

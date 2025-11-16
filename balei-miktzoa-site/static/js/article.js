@@ -34,82 +34,189 @@
       list.setAttribute('role', 'list');
     });
   }
-  function tableToChartData(table) {
+  function normalizeChartType(type) {
+    if (!type) {
+      return '';
+    }
+    if (type === 'donut') {
+      return 'doughnut';
+    }
+    if (type === 'pie' || type === 'doughnut' || type === 'bar') {
+      return type;
+    }
+    return '';
+  }
+  function ensureChartCard(table) {
+    var card = table.closest('.chart-card');
+    if (card) {
+      card.classList.add('chart-card');
+      return card;
+    }
+    var parent = table.parentElement;
+    if (parent && !parent.classList.contains('charts-grid')) {
+      parent.classList.add('chart-card');
+      return parent;
+    }
+    card = document.createElement('div');
+    card.className = 'chart-card';
+    if (parent) {
+      parent.insertBefore(card, table);
+    }
+    card.appendChild(table);
+    return card;
+  }
+  function extractTableDataset(table) {
     var rows = table.querySelectorAll('tbody tr');
-    var type = (table.getAttribute('data-chart') || '').toLowerCase();
-    if (!type || !rows.length) {
-      return null;
+    var labelIndex = parseInt(table.getAttribute('data-label-index'), 10);
+    var valueIndex = parseInt(table.getAttribute('data-value-index'), 10);
+    if (isNaN(labelIndex)) {
+      labelIndex = 0;
+    }
+    if (isNaN(valueIndex)) {
+      valueIndex = 1;
     }
     var labels = [];
     var values = [];
     Array.prototype.forEach.call(rows, function (row) {
       var cells = row.children;
-      if (!cells || cells.length < 2) {
+      if (!cells || !cells.length) {
         return;
       }
-      var label = cells[0].textContent ? cells[0].textContent.trim() : '';
-      var rawValue = cells[1].textContent ? cells[1].textContent.trim() : '';
-      var numeric = parseFloat(String(rawValue).replace(/[^\d.\-]/g, ''));
+      var labelCell = cells[labelIndex];
+      var valueCell = cells[valueIndex];
+      if (!labelCell || !valueCell) {
+        return;
+      }
+      var label = labelCell.textContent ? labelCell.textContent.trim() : '';
+      var rawValue = valueCell.textContent ? valueCell.textContent.trim() : '';
+      var normalized = rawValue.replace(/[^0-9.,\-]/g, '');
+      if (normalized.indexOf(',') !== -1 && normalized.indexOf('.') === -1) {
+        normalized = normalized.replace(',', '.');
+      } else {
+        normalized = normalized.replace(/,/g, '');
+      }
+      var numeric = parseFloat(normalized);
       if (label && !isNaN(numeric) && isFinite(numeric)) {
         labels.push(label);
         values.push(numeric);
       }
     });
-    if (!labels.length) {
-      return null;
-    }
-    return {
-      type: type,
-      title: table.getAttribute('data-chart-title') || '',
-      labels: labels,
-      values: values,
-    };
+    return { labels: labels, values: values };
   }
-  function renderChartNextToTable(table, data) {
-    if (typeof window.Chart !== 'function') {
-      return;
-    }
-    var wrap = document.createElement('div');
-    wrap.className = 'bm-chart-wrap';
-    if (data.title) {
-      var heading = document.createElement('div');
-      heading.className = 'bm-chart-title';
-      heading.textContent = data.title;
-      wrap.appendChild(heading);
-    }
-    var canvas = document.createElement('canvas');
-    wrap.appendChild(canvas);
-    table.insertAdjacentElement('afterend', wrap);
+  function buildChartConfig(type, dataset, palette, title) {
+    var colors = dataset.labels.map(function (_, index) {
+      return palette[index % palette.length];
+    });
     var config = {
-      type: data.type === 'pie' ? 'pie' : 'bar',
+      type: type === 'doughnut' ? 'doughnut' : type === 'bar' ? 'bar' : 'pie',
       data: {
-        labels: data.labels,
+        labels: dataset.labels,
         datasets: [
           {
-            data: data.values,
+            data: dataset.values,
+            backgroundColor: colors,
+            borderWidth: 0,
+            borderRadius: type === 'bar' ? 12 : 0,
+            hoverOffset: 6,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        locale: 'he-IL',
+        layout: { padding: 8 },
         plugins: {
-          legend: { display: true },
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 14,
+            },
+          },
+          tooltip: { rtl: true, titleAlign: 'right', bodyAlign: 'right' },
+          title: {
+            display: Boolean(title),
+            text: title,
+            align: 'start',
+            font: { weight: '600', size: 15 },
+            padding: { bottom: 10 },
+          },
         },
       },
     };
-    if (config.type !== 'pie') {
-      config.options.scales = { y: { beginAtZero: true } };
+    if (config.type === 'bar') {
+      config.options.indexAxis = 'y';
+      config.options.scales = {
+        x: {
+          grid: { display: false },
+          ticks: { precision: 0 },
+        },
+        y: {
+          grid: { display: false },
+        },
+      };
     }
-    wrap.style.height = '360px';
-    new window.Chart(canvas.getContext('2d'), config);
+    return config;
   }
-  function enhanceTables(root) {
-    var tables = root.querySelectorAll('table[data-ui="datatable"]');
+  function upgradeTablesToCharts(root) {
+    if (typeof window.Chart !== 'function') {
+      return;
+    }
+    var scope = root || document;
+    var tables = scope.querySelectorAll('table[data-ui="datatable"][data-chart]');
+    if (!tables.length) {
+      return;
+    }
+    var computed = window.getComputedStyle(document.documentElement);
+    var brand = computed.getPropertyValue('--brand').trim() || '#8A1538';
+    var brandSoft = computed.getPropertyValue('--brand-soft').trim() || '#EBD0D8';
+    var accent = computed.getPropertyValue('--hero-accent').trim() || '#2E3A45';
+    var palette = [
+      brand,
+      accent,
+      brandSoft,
+      '#4a6b6f',
+      '#7fbfb0',
+      '#a7d7c5',
+      '#2f4858',
+      '#b56982',
+      '#6a9fb5',
+      '#94c678',
+      '#e6a266',
+      '#c1b6e0',
+    ];
     Array.prototype.forEach.call(tables, function (table) {
-      var data = tableToChartData(table);
-      if (data) {
-        renderChartNextToTable(table, data);
+      if (table.dataset.chartProcessed === '1') {
+        return;
+      }
+      var rawType = (table.getAttribute('data-chart') || '').toLowerCase();
+      var type = normalizeChartType(rawType);
+      if (!type) {
+        return;
+      }
+      var dataset = extractTableDataset(table);
+      if (!dataset.labels.length || !dataset.values.length) {
+        return;
+      }
+      var card = ensureChartCard(table);
+      var canvas = document.createElement('canvas');
+      canvas.dir = document.documentElement.getAttribute('dir') || 'rtl';
+      var title = table.getAttribute('data-chart-title') || '';
+      canvas.setAttribute('role', 'img');
+      canvas.setAttribute('aria-label', title || table.getAttribute('aria-label') || 'תרשים נתונים');
+      card.insertBefore(canvas, table);
+      table.classList.add('visually-hidden');
+      table.dataset.chartProcessed = '1';
+      var config = buildChartConfig(type, dataset, palette, title);
+      try {
+        new window.Chart(canvas.getContext('2d'), config);
+      } catch (chartError) {
+        table.classList.remove('visually-hidden');
+        table.dataset.chartProcessed = '0';
+        if (window && window.console) {
+          console.warn('chart render failed', chartError);
+        }
       }
     });
   }
@@ -130,7 +237,13 @@
     enhanceCallouts(root);
     enhanceChecklists(root);
     enhanceSteps(root);
-    enhanceTables(root);
+    try {
+      upgradeTablesToCharts(root);
+    } catch (err) {
+      if (window && window.console) {
+        console.warn('chart upgrade failed', err);
+      }
+    }
     var tocContainer = document.getElementById('bm-article-toc');
     var tocList = document.getElementById('bm-article-toc-list');
     if (!tocContainer || !tocList) {

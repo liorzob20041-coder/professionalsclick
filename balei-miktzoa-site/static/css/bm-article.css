@@ -708,40 +708,53 @@ table[data-ui="datatable"] thead th {
   font-weight: 700;
   color: #111827;
 }
-/* charts layout */
+/* ----- Charts layout ----- */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
   margin: 1.25rem 0;
 }
+.charts-grid.two-up {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.charts-grid > * {
+  min-width: 0;
+}
 .chart-card {
-  background: var(--bm-article-surface, #fff);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  padding: 14px 14px 10px;
-}
-.chart-card h3,
-.chart-card h4 {
-  font-size: 0.98rem;
-  margin: 0 0 0.5rem 0;
-  line-height: 1.3;
-}
-.chart-wrap {
-  width: 100%;
-  max-height: 300px;
-  height: clamp(200px, 28vh, 300px);
   position: relative;
+  width: 100%;
+  max-width: 920px;
+  margin-inline: auto;
+  padding: 1rem 1.25rem 1.5rem;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(17, 24, 39, 0.06);
+  border: 1px solid rgba(17, 24, 39, 0.06);
+}
+.chart-card h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.85rem;
+  color: #2e3a46;
+  text-align: right;
+}
+.chart-canvas {
+  width: 100%;
+  display: block;
+  min-height: 220px;
+}
+.chart-canvas[data-size='sm'] {
+  min-height: 240px;
+}
+.chart-canvas[data-size='md'] {
+  min-height: 300px;
+}
+.chart-canvas[data-size='lg'] {
+  min-height: 380px;
 }
 .chart-card canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-@media (max-width: 980px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
+  max-width: 100%;
 }
 .visually-hidden {
   position: absolute !important;

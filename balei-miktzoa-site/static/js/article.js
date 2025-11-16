@@ -36,6 +36,12 @@
   }
   var chartRegistry = [];
   var chartDefaultsApplied = false;
+  var CHART_HEIGHTS = {
+    xs: 180,
+    sm: 220,
+    md: 260,
+    lg: 320,
+  };
   var BRAND_COLORS = {
     primary: '#8A1538',
     dark: '#2E3A46',
@@ -53,14 +59,7 @@
     BRAND_COLORS.blush,
     BRAND_COLORS.soft,
   ];
-  var BAR_COLORS = [
-    BRAND_COLORS.primary,
-    BRAND_COLORS.mint,
-    BRAND_COLORS.dark,
-    BRAND_COLORS.soft,
-    '#6CA7A8',
-    BRAND_COLORS.blush,
-  ];
+  var BAR_COLORS = [BRAND_COLORS.mint, BRAND_COLORS.soft];
   function applyChartDefaults() {
     if (chartDefaultsApplied || typeof window.Chart !== 'function') {
       return;
@@ -69,6 +68,8 @@
     if (window.Chart.defaults) {
       window.Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif';
       window.Chart.defaults.font.size = 14;
+      window.Chart.defaults.animation = false;
+      window.Chart.defaults.responsiveAnimationDuration = 0;
       if (!window.Chart.defaults.plugins) {
         window.Chart.defaults.plugins = {};
       }
@@ -131,6 +132,13 @@
     }
     return { labels: labels, values: values };
   }
+  function getSafeChartSize(value) {
+    var normalized = (value || 'sm').toLowerCase();
+    if (!CHART_HEIGHTS[normalized]) {
+      return 'sm';
+    }
+    return normalized;
+  }
   function ensureChartCard(table, titleText) {
     var card = table.previousElementSibling;
     var createdCard = false;
@@ -143,6 +151,10 @@
       card.dir = document.documentElement.getAttribute('dir') || 'rtl';
       table.parentNode.insertBefore(card, table);
       createdCard = true;
+    }
+    var maxWidth = parseInt(table.getAttribute('data-chart-maxw') || '', 10);
+    if (!isNaN(maxWidth) && maxWidth >= 320) {
+      card.style.maxWidth = maxWidth + 'px';
     }
     var heading = card.querySelector('h4');
     if (titleText) {
@@ -163,11 +175,9 @@
       card.appendChild(canvas);
       createdCanvas = true;
     }
-    var requestedSize = (table.getAttribute('data-chart-size') || 'sm').toLowerCase();
-    if (requestedSize !== 'md' && requestedSize !== 'lg') {
-      requestedSize = 'sm';
-    }
+    var requestedSize = getSafeChartSize(table.getAttribute('data-chart-size'));
     canvas.setAttribute('data-size', requestedSize);
+    canvas.style.height = (CHART_HEIGHTS[requestedSize] || CHART_HEIGHTS.sm) + 'px';
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', titleText || table.getAttribute('aria-label') || 'תרשים נתונים');
     return { card: card, canvas: canvas, createdCard: createdCard, createdCanvas: createdCanvas };
@@ -192,6 +202,8 @@
     var options = {
       responsive: true,
       maintainAspectRatio: false,
+      animation: false,
+      responsiveAnimationDuration: 0,
       locale: 'he-IL',
       interaction: { intersect: false, mode: 'nearest' },
       plugins: {
@@ -300,25 +312,28 @@
     if (!tables.length) {
       return;
     }
-    Array.prototype.forEach.call(tables, function (table) {
+    var buildOnce = function (table) {
       renderChartFromTable(table);
-    });
-  }
-  function rebuildCharts() {
-    if (!chartRegistry.length) {
-      return;
+    };
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) {
+              return;
+            }
+            observer.unobserve(entry.target);
+            buildOnce(entry.target);
+          });
+        },
+        { rootMargin: '200px 0px' }
+      );
+      Array.prototype.forEach.call(tables, function (table) {
+        observer.observe(table);
+      });
+    } else {
+      Array.prototype.forEach.call(tables, buildOnce);
     }
-    var tables = chartRegistry.map(function (entry) {
-      if (entry.instance && typeof entry.instance.destroy === 'function') {
-        entry.instance.destroy();
-      }
-      entry.table.dataset.chartProcessed = '0';
-      return entry.table;
-    });
-    chartRegistry = [];
-    tables.forEach(function (table) {
-      renderChartFromTable(table);
-    });
   }
   var resizeTimer = null;
   window.addEventListener(
@@ -330,7 +345,13 @@
       if (resizeTimer) {
         window.clearTimeout(resizeTimer);
       }
-      resizeTimer = window.setTimeout(rebuildCharts, 200);
+      resizeTimer = window.setTimeout(function () {
+        chartRegistry.forEach(function (entry) {
+          if (entry.instance && typeof entry.instance.resize === 'function') {
+            entry.instance.resize();
+          }
+        });
+      }, 180);
     },
     { passive: true }
   );

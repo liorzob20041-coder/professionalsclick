@@ -147,7 +147,9 @@
           {% if ns.open_text %}</section>{% endif %}
         {% elif article.body_html %}
           <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
-            {{ article.body_html | safe }}
+            <section class="charts-grid">
+              {{ article.body_html | safe }}
+            </section>
           </section>
         {% endif %}
       </div>

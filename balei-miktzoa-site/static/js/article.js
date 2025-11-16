@@ -34,327 +34,82 @@
       list.setAttribute('role', 'list');
     });
   }
-  var chartRegistry = [];
-  var chartDefaultsApplied = false;
-  var CHART_HEIGHTS = {
-    xs: 180,
-    sm: 220,
-    md: 260,
-    lg: 320,
+  var qsa = function (sel, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(sel));
   };
-  var BRAND_COLORS = {
-    primary: '#8A1538',
-    dark: '#2E3A46',
-    muted: '#5C6B77',
-    soft: '#CADFD9',
-    mint: '#A7E2CF',
-    blush: '#F2CBD2',
-  };
-  var PIE_COLORS = [
-    BRAND_COLORS.primary,
-    BRAND_COLORS.dark,
-    '#0E6D73',
-    BRAND_COLORS.mint,
-    '#9AD1C8',
-    BRAND_COLORS.blush,
-    BRAND_COLORS.soft,
-  ];
-  var BAR_COLORS = [BRAND_COLORS.mint, BRAND_COLORS.soft];
-  function applyChartDefaults() {
-    if (chartDefaultsApplied || typeof window.Chart !== 'function') {
-      return;
-    }
-    chartDefaultsApplied = true;
-    if (window.Chart.defaults) {
-      window.Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif';
-      window.Chart.defaults.font.size = 14;
-      window.Chart.defaults.animation = false;
-      window.Chart.defaults.responsiveAnimationDuration = 0;
-      if (!window.Chart.defaults.plugins) {
-        window.Chart.defaults.plugins = {};
-      }
-      if (!window.Chart.defaults.plugins.tooltip) {
-        window.Chart.defaults.plugins.tooltip = {};
-      }
-      window.Chart.defaults.plugins.tooltip.rtl = true;
-      window.Chart.defaults.plugins.tooltip.bodyAlign = 'right';
-      window.Chart.defaults.plugins.tooltip.titleAlign = 'right';
-    }
-  }
-  function resolveChartType(value) {
-    var normalized = (value || 'bar').toLowerCase();
-    if (normalized === 'pie' || normalized === 'doughnut' || normalized === 'donut') {
-      return 'doughnut';
-    }
-    return 'bar';
-  }
-  function parseTableDataset(table) {
-    if (!table) {
-      return null;
-    }
-    var body = table.querySelector('tbody');
-    if (!body) {
-      return null;
-    }
-    var rows = body.querySelectorAll('tr');
-    if (!rows.length) {
-      return null;
-    }
-    var labels = [];
-    var values = [];
-    Array.prototype.forEach.call(rows, function (row) {
-      var cells = row.children;
-      if (!cells || cells.length < 2) {
-        return;
-      }
-      var label = cells[0].textContent ? cells[0].textContent.trim() : '';
-      var rawValue = cells[1].textContent ? cells[1].textContent.trim() : '';
-      if (!label || !rawValue) {
-        return;
-      }
-      var normalized = rawValue.replace(/[^0-9.,\-]/g, '');
-      if (!normalized) {
-        return;
-      }
-      if (normalized.indexOf(',') !== -1 && normalized.indexOf('.') === -1) {
-        normalized = normalized.replace(',', '.');
-      } else {
-        normalized = normalized.replace(/,/g, '');
-      }
-      var numeric = parseFloat(normalized);
-      if (!isNaN(numeric) && isFinite(numeric)) {
-        labels.push(label);
-        values.push(numeric);
-      }
-    });
-    if (!labels.length || !values.length) {
-      return null;
-    }
-    return { labels: labels, values: values };
-  }
-  function getSafeChartSize(value) {
-    var normalized = (value || 'sm').toLowerCase();
-    if (!CHART_HEIGHTS[normalized]) {
-      return 'sm';
-    }
-    return normalized;
-  }
-  function ensureChartCard(table, titleText) {
-    var card = table.previousElementSibling;
-    var createdCard = false;
-    while (card && card.nodeType === 3) {
-      card = card.previousSibling;
-    }
-    if (!card || !card.classList || !card.classList.contains('chart-card')) {
+  function mountChartFromTable(tbl) {
+    var typeAttr = (tbl.dataset.chart || '').toLowerCase();
+    var isPie = ['pie', 'donut'].indexOf(typeAttr) !== -1;
+    var isBar = typeAttr === 'bar' || typeAttr === 'bar-h';
+    var card = tbl.closest('.chart-card');
+    if (!card) {
       card = document.createElement('div');
       card.className = 'chart-card';
-      card.dir = document.documentElement.getAttribute('dir') || 'rtl';
-      table.parentNode.insertBefore(card, table);
-      createdCard = true;
+      tbl.parentNode.insertBefore(card, tbl);
+      card.appendChild(tbl);
     }
-    var maxWidth = parseInt(table.getAttribute('data-chart-maxw') || '', 10);
-    if (!isNaN(maxWidth) && maxWidth >= 320) {
-      card.style.maxWidth = maxWidth + 'px';
-    }
-    var heading = card.querySelector('h4');
-    if (titleText) {
-      if (!heading) {
-        heading = document.createElement('h4');
-        card.insertBefore(heading, card.firstChild);
-      }
-      heading.textContent = titleText;
-    } else if (heading) {
-      heading.parentNode.removeChild(heading);
-    }
-    var canvas = card.querySelector('canvas.chart-canvas');
-    var createdCanvas = false;
-    if (!canvas) {
-      canvas = document.createElement('canvas');
-      canvas.className = 'chart-canvas';
-      canvas.dir = document.documentElement.getAttribute('dir') || 'rtl';
-      card.appendChild(canvas);
-      createdCanvas = true;
-    }
-    var requestedSize = getSafeChartSize(table.getAttribute('data-chart-size'));
-    canvas.setAttribute('data-size', requestedSize);
-    canvas.style.height = (CHART_HEIGHTS[requestedSize] || CHART_HEIGHTS.sm) + 'px';
-    canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', titleText || table.getAttribute('aria-label') || 'תרשים נתונים');
-    return { card: card, canvas: canvas, createdCard: createdCard, createdCanvas: createdCanvas };
-  }
-  function storeChart(table, canvas, instance) {
-    var found = null;
-    for (var i = 0; i < chartRegistry.length; i += 1) {
-      if (chartRegistry[i].table === table) {
-        found = chartRegistry[i];
-        break;
-      }
-    }
-    if (found) {
-      found.canvas = canvas;
-      found.instance = instance;
-    } else {
-      chartRegistry.push({ table: table, canvas: canvas, instance: instance });
-    }
-  }
-  function buildChartOptions(isDoughnut) {
-    var legendDisplay = !!isDoughnut;
-    var options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      responsiveAnimationDuration: 0,
-      locale: 'he-IL',
-      interaction: { intersect: false, mode: 'nearest' },
-      plugins: {
-        legend: {
-          display: legendDisplay,
-          position: 'bottom',
-          labels: {
-            usePointStyle: true,
-            boxWidth: 8,
-            padding: 12,
-            color: BRAND_COLORS.dark,
-            textAlign: 'right',
-          },
-        },
-        title: { display: false },
-        tooltip: {
-          rtl: true,
-          bodyAlign: 'right',
-          titleAlign: 'right',
-          backgroundColor: BRAND_COLORS.dark,
-        },
-      },
-    };
-    if (!isDoughnut) {
-      options.indexAxis = 'y';
-      options.scales = {
-        x: {
-          beginAtZero: true,
-          grid: { display: false, drawBorder: false },
-          ticks: { color: BRAND_COLORS.muted, precision: 0 },
-        },
-        y: {
-          grid: { display: false, drawBorder: false },
-          ticks: { color: BRAND_COLORS.dark, autoSkip: false },
-        },
-      };
-    } else {
-      options.cutout = '60%';
-    }
-    return options;
-  }
-  function renderChartFromTable(table) {
-    if (table.dataset.chartProcessed === '1') {
-      return;
-    }
-    var dataset = parseTableDataset(table);
-    if (!dataset) {
-      return;
-    }
-    var type = resolveChartType(table.getAttribute('data-chart'));
-    var titleText = table.getAttribute('data-chart-title') || '';
-    var datasetLabel = table.getAttribute('data-dataset-label') || 'ערכים';
-    var elements = ensureChartCard(table, titleText);
-    var palette = type === 'doughnut' ? PIE_COLORS : BAR_COLORS;
-    var colors = dataset.labels.map(function (_, index) {
-      return palette[index % palette.length];
+    card.dataset.chartType = isPie ? 'pie' : isBar ? 'bar-h' : 'other';
+    var canvas = document.createElement('canvas');
+    canvas.className = 'chart-canvas';
+    card.appendChild(canvas);
+    var rows = qsa('tbody tr', tbl);
+    var labels = rows.map(function (r) {
+      return r.children[0].textContent.trim();
     });
-    var chartConfig = {
-      type: type,
+    var values = rows.map(function (r) {
+      var raw = r.children[1].textContent;
+      var normalized = String(raw).replace(/[^\d.]/g, '');
+      return parseFloat(normalized) || 0;
+    });
+    tbl.hidden = true;
+    var ctx = canvas.getContext('2d');
+    var cfg = {
+      type: isPie ? 'doughnut' : 'bar',
       data: {
-        labels: dataset.labels,
+        labels: labels,
         datasets: [
           {
-            label: datasetLabel,
-            data: dataset.values,
-            backgroundColor: colors,
+            label: tbl.dataset.chartTitle ? tbl.dataset.chartTitle : '',
+            data: values,
             borderWidth: 0,
-            borderRadius: type === 'doughnut' ? 0 : 12,
-            hoverBackgroundColor: type === 'doughnut' ? undefined : BRAND_COLORS.primary,
-            minBarLength: 3,
           },
         ],
       },
-      options: buildChartOptions(type === 'doughnut'),
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 12, usePointStyle: true, font: { size: 12 } },
+          },
+          title: tbl.dataset.chartTitle ? { display: true, text: tbl.dataset.chartTitle } : { display: false },
+        },
+        layout: { padding: { left: 6, right: 6, top: 0, bottom: 0 } },
+        scales: isPie
+          ? {}
+          : {
+              x: { ticks: { font: { size: 11 } }, grid: { display: false } },
+              y: { ticks: { font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.06)' } },
+            },
+        indexAxis: isBar ? 'y' : 'x',
+      },
     };
-    if (type !== 'doughnut') {
-      chartConfig.data.datasets[0].borderSkipped = false;
-    }
-    try {
-      var chart = new window.Chart(elements.canvas.getContext('2d'), chartConfig);
-      table.dataset.chartProcessed = '1';
-      table.classList.add('visually-hidden');
-      table.setAttribute('aria-hidden', 'true');
-      storeChart(table, elements.canvas, chart);
-    } catch (chartError) {
-      if (elements.createdCanvas && elements.canvas.parentNode) {
-        elements.canvas.parentNode.removeChild(elements.canvas);
-      }
-      if (elements.createdCard && elements.card.parentNode) {
-        elements.card.parentNode.removeChild(elements.card);
-      }
-      table.classList.remove('visually-hidden');
-      table.removeAttribute('aria-hidden');
-      if (window && window.console) {
-        console.warn('chart render failed', chartError);
-      }
-    }
+    var chart = new Chart(ctx, cfg);
+    var ro = new ResizeObserver(function () {
+      chart.resize();
+    });
+    ro.observe(card);
   }
   function initArticleCharts(root) {
-    if (typeof window.Chart !== 'function') {
+    if (typeof Chart !== 'function') {
       return;
     }
-    applyChartDefaults();
-    var scope = root || document;
-    var tables = scope.querySelectorAll('table[data-ui="datatable"][data-chart]');
-    if (!tables.length) {
-      return;
-    }
-    var buildOnce = function (table) {
-      renderChartFromTable(table);
-    };
-    if ('IntersectionObserver' in window) {
-      var observer = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (!entry.isIntersecting) {
-              return;
-            }
-            observer.unobserve(entry.target);
-            buildOnce(entry.target);
-          });
-        },
-        { rootMargin: '200px 0px' }
-      );
-      Array.prototype.forEach.call(tables, function (table) {
-        observer.observe(table);
-      });
-    } else {
-      Array.prototype.forEach.call(tables, buildOnce);
-    }
+    qsa('table[data-ui="datatable"][data-chart]', root || document).forEach(function (tbl) {
+      mountChartFromTable(tbl);
+    });
   }
-  var resizeTimer = null;
-  window.addEventListener(
-    'resize',
-    function () {
-      if (!chartRegistry.length) {
-        return;
-      }
-      if (resizeTimer) {
-        window.clearTimeout(resizeTimer);
-      }
-      resizeTimer = window.setTimeout(function () {
-        chartRegistry.forEach(function (entry) {
-          if (entry.instance && typeof entry.instance.resize === 'function') {
-            entry.instance.resize();
-          }
-        });
-      }, 180);
-    },
-    { passive: true }
-  );
   ready(function () {
     var root = document.querySelector('.bm-article-page') || document;
     var heroImage = document.querySelector('.article-hero img');

@@ -46,25 +46,6 @@
     }
     return '';
   }
-  function ensureChartCard(table) {
-    var card = table.closest('.chart-card');
-    if (card) {
-      card.classList.add('chart-card');
-      return card;
-    }
-    var parent = table.parentElement;
-    if (parent && !parent.classList.contains('charts-grid')) {
-      parent.classList.add('chart-card');
-      return parent;
-    }
-    card = document.createElement('div');
-    card.className = 'chart-card';
-    if (parent) {
-      parent.insertBefore(card, table);
-    }
-    card.appendChild(table);
-    return card;
-  }
   function extractTableDataset(table) {
     var rows = table.querySelectorAll('tbody tr');
     var labelIndex = parseInt(table.getAttribute('data-label-index'), 10);
@@ -103,10 +84,16 @@
     });
     return { labels: labels, values: values };
   }
-  function buildChartConfig(type, dataset, palette, title) {
+  function buildChartConfig(type, table, dataset, palette) {
     var colors = dataset.labels.map(function (_, index) {
       return palette[index % palette.length];
     });
+    var aspectAttr = table.getAttribute('data-aspect');
+    var aspect = parseFloat(aspectAttr);
+    if (!isFinite(aspect)) {
+      aspect = type === 'bar' ? 2.0 : 1.2;
+    }
+    var axis = (table.getAttribute('data-bar-axis') || 'y').toLowerCase() === 'x' ? 'x' : 'y';
     var config = {
       type: type === 'doughnut' ? 'doughnut' : type === 'bar' ? 'bar' : 'pie',
       data: {
@@ -116,14 +103,15 @@
             data: dataset.values,
             backgroundColor: colors,
             borderWidth: 0,
-            borderRadius: type === 'bar' ? 12 : 0,
+            borderRadius: type === 'bar' ? 6 : 0,
             hoverOffset: 6,
           },
         ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: aspect,
         locale: 'he-IL',
         layout: { padding: 8 },
         plugins: {
@@ -131,29 +119,24 @@
             position: 'bottom',
             labels: {
               usePointStyle: true,
-              boxWidth: 14,
+              boxWidth: 12,
+              padding: 12,
             },
           },
           tooltip: { rtl: true, titleAlign: 'right', bodyAlign: 'right' },
-          title: {
-            display: Boolean(title),
-            text: title,
-            align: 'start',
-            font: { weight: '600', size: 15 },
-            padding: { bottom: 10 },
-          },
         },
       },
     };
     if (config.type === 'bar') {
-      config.options.indexAxis = 'y';
+      config.options.indexAxis = axis;
       config.options.scales = {
         x: {
           grid: { display: false },
-          ticks: { precision: 0 },
+          ticks: { maxRotation: 0, autoSkip: true },
         },
         y: {
           grid: { display: false },
+          ticks: { autoSkip: true },
         },
       };
     }
@@ -199,19 +182,36 @@
       if (!dataset.labels.length || !dataset.values.length) {
         return;
       }
-      var card = ensureChartCard(table);
+      var card = document.createElement('div');
+      card.className = 'chart-card';
+      var title = table.getAttribute('data-chart-title') || table.getAttribute('aria-label') || '';
+      if (title) {
+        var heading = document.createElement('h4');
+        heading.textContent = title;
+        card.appendChild(heading);
+      }
+      var wrap = document.createElement('div');
+      wrap.className = 'chart-wrap';
       var canvas = document.createElement('canvas');
       canvas.dir = document.documentElement.getAttribute('dir') || 'rtl';
-      var title = table.getAttribute('data-chart-title') || '';
       canvas.setAttribute('role', 'img');
       canvas.setAttribute('aria-label', title || table.getAttribute('aria-label') || 'תרשים נתונים');
-      card.insertBefore(canvas, table);
+      wrap.appendChild(canvas);
+      card.appendChild(wrap);
+      table.insertAdjacentElement('beforebegin', card);
       table.classList.add('visually-hidden');
       table.dataset.chartProcessed = '1';
-      var config = buildChartConfig(type, dataset, palette, title);
+      var config = buildChartConfig(type, table, dataset, palette);
       try {
-        new window.Chart(canvas.getContext('2d'), config);
+        var chart = new window.Chart(canvas.getContext('2d'), config);
+        if (typeof window.ResizeObserver === 'function') {
+          var resizeObserver = new window.ResizeObserver(function () {
+            chart.resize();
+          });
+          resizeObserver.observe(wrap);
+        }
       } catch (chartError) {
+        card.remove();
         table.classList.remove('visually-hidden');
         table.dataset.chartProcessed = '0';
         if (window && window.console) {

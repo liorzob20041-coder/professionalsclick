@@ -711,7 +711,7 @@ table[data-ui="datatable"] thead th {
 /* charts layout */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
   gap: 1rem;
   margin: 1.25rem 0;
 }
@@ -719,21 +719,29 @@ table[data-ui="datatable"] thead th {
   background: var(--bm-article-surface, #fff);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  padding: 16px 18px 12px;
-  min-height: 280px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  padding: 14px 14px 10px;
 }
 .chart-card h3,
 .chart-card h4 {
-  font-size: 1.05rem;
-  margin: 0;
-  line-height: 1.4;
+  font-size: 0.98rem;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+.chart-wrap {
+  width: 100%;
+  max-height: 300px;
+  height: clamp(200px, 28vh, 300px);
+  position: relative;
 }
 .chart-card canvas {
-  width: 100%;
-  height: 240px;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+@media (max-width: 980px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .visually-hidden {
   position: absolute !important;

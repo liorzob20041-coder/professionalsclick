@@ -215,8 +215,6 @@
     }
     var tocContainer = document.getElementById('bm-article-toc');
     var tocList = document.getElementById('bm-article-toc-list');
-    var tocContent = tocContainer ? tocContainer.querySelector('.article-toc__content') : null;
-    var tocToggle = tocContainer ? tocContainer.querySelector('.article-toc__toggle') : null;
     if (!tocContainer || !tocList) {
       return;
     }
@@ -259,28 +257,6 @@
       tocList.appendChild(item);
     });
     tocContainer.dataset.empty = 'false';
-    function setTocExpanded(expanded) {
-      if (tocToggle) {
-        tocToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-      }
-      if (tocContent) {
-        tocContent.setAttribute('aria-hidden', expanded ? 'false' : 'true');
-      }
-      tocContainer.classList.toggle('is-open', !!expanded);
-    }
-    var desktopQuery = window.matchMedia('(min-width: 769px)');
-    setTocExpanded(desktopQuery.matches);
-    if (tocToggle) {
-      tocToggle.addEventListener('click', function () {
-        var isOpen = tocContainer.classList.contains('is-open');
-        setTocExpanded(!isOpen);
-      });
-      if (desktopQuery && desktopQuery.addEventListener) {
-        desktopQuery.addEventListener('change', function (event) {
-          setTocExpanded(event.matches);
-        });
-      }
-    }
     var links = Array.prototype.slice.call(tocList.querySelectorAll('a'));
     var activeId = headings[0].id;
     function setActive(id) {
@@ -339,23 +315,5 @@
       { passive: true }
     );
     updateActive();
-    var sidebarInner = document.querySelector('.bm-article-page__sidebar-inner');
-    if (sidebarInner) {
-      var guard = document.createElement('div');
-      guard.className = 'bm-article-page__sidebar-guard';
-      guard.style.position = 'absolute';
-      guard.style.top = '0';
-      guard.style.height = '1px';
-      guard.style.width = '1px';
-      sidebarInner.parentElement.insertBefore(guard, sidebarInner);
-      var stickyObserver = new IntersectionObserver(
-        function (entries) {
-          var entry = entries[0];
-          sidebarInner.classList.toggle('is-stuck', entry.intersectionRatio < 1);
-        },
-        { rootMargin: '-120px 0px 0px 0px', threshold: [1] }
-      );
-      stickyObserver.observe(guard);
-    }
   });
 })();

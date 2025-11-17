@@ -37,21 +37,95 @@
   var qsa = function (sel, root) {
     return Array.prototype.slice.call((root || document).querySelectorAll(sel));
   };
+  function upgradeChartGrids(root) {
+    qsa('.charts-grid', root || document).forEach(function (grid) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'article-charts';
+      wrapper.setAttribute('dir', 'rtl');
+      qsa(':scope > *', grid).forEach(function (child) {
+        if (!child) {
+          return;
+        }
+        var card = child.classList && child.classList.contains('chart-card') ? child : document.createElement('section');
+        if (!child.classList || !child.classList.contains('chart-card')) {
+          card.className = 'chart-card';
+          while (child.firstChild) {
+            card.appendChild(child.firstChild);
+          }
+        }
+        var table = card.querySelector('table[data-ui="datatable"][data-chart]');
+        if (table) {
+          var typeAttr = (table.dataset.chart || '').toLowerCase();
+          if (['pie', 'donut', 'doughnut'].indexOf(typeAttr) !== -1) {
+            card.setAttribute('data-shape', 'square');
+          }
+        }
+        wrapper.appendChild(card);
+      });
+      grid.replaceWith(wrapper);
+    });
+  }
+  var chartInstances = [];
+  var windowResizeBound = false;
+  function resizeAllCharts() {
+    chartInstances.forEach(function (chart) {
+      if (chart && chart.resize) {
+        chart.resize();
+      }
+    });
+  }
+  var chartResizeObserver = new ResizeObserver(function (entries) {
+    entries.forEach(function (entry) {
+      var chart = entry.target.__chartInstance;
+      if (chart && chart.resize) {
+        chart.resize();
+      }
+    });
+  });
+  var chartViewportObserver = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var chart = entry.target.__chartInstance;
+          if (chart && chart.resize) {
+            chart.resize();
+          }
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  function ensureChartCanvas(tbl) {
+    var wrapper = tbl.closest('.chart-canvas');
+    if (!wrapper) {
+      wrapper = document.createElement('div');
+      wrapper.className = 'chart-canvas';
+      tbl.parentNode.insertBefore(wrapper, tbl);
+      wrapper.appendChild(tbl);
+    }
+    return wrapper;
+  }
   function mountChartFromTable(tbl) {
     var typeAttr = (tbl.dataset.chart || '').toLowerCase();
-    var isPie = ['pie', 'donut'].indexOf(typeAttr) !== -1;
+    var isPie = ['pie', 'donut', 'doughnut'].indexOf(typeAttr) !== -1;
     var isBar = typeAttr === 'bar' || typeAttr === 'bar-h';
     var card = tbl.closest('.chart-card');
     if (!card) {
-      card = document.createElement('div');
+      card = document.createElement('section');
       card.className = 'chart-card';
       tbl.parentNode.insertBefore(card, tbl);
       card.appendChild(tbl);
     }
+    if (isPie) {
+      card.setAttribute('data-shape', 'square');
+    }
     card.dataset.chartType = isPie ? 'pie' : isBar ? 'bar-h' : 'other';
-    var canvas = document.createElement('canvas');
-    canvas.className = 'chart-canvas';
-    card.appendChild(canvas);
+    var canvasWrapper = ensureChartCanvas(tbl);
+    var canvas = canvasWrapper.querySelector('canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvasWrapper.appendChild(canvas);
+    }
     var rows = qsa('tbody tr', tbl);
     var labels = rows.map(function (r) {
       return r.children[0].textContent.trim();
@@ -97,10 +171,14 @@
       },
     };
     var chart = new Chart(ctx, cfg);
-    var ro = new ResizeObserver(function () {
-      chart.resize();
-    });
-    ro.observe(card);
+    canvasWrapper.__chartInstance = chart;
+    chartInstances.push(chart);
+    chartResizeObserver.observe(canvasWrapper);
+    chartViewportObserver.observe(canvasWrapper);
+    if (!windowResizeBound) {
+      windowResizeBound = true;
+      window.addEventListener('resize', resizeAllCharts);
+    }
   }
   function initArticleCharts(root) {
     if (typeof Chart !== 'function') {
@@ -112,6 +190,7 @@
   }
   ready(function () {
     var root = document.querySelector('.bm-article-page') || document;
+    upgradeChartGrids(root);
     var heroImage = document.querySelector('.article-hero img');
     var bodyImages = root.querySelectorAll('.article-body img');
     bodyImages.forEach(function (img) {
@@ -136,6 +215,8 @@
     }
     var tocContainer = document.getElementById('bm-article-toc');
     var tocList = document.getElementById('bm-article-toc-list');
+    var tocContent = tocContainer ? tocContainer.querySelector('.article-toc__content') : null;
+    var tocToggle = tocContainer ? tocContainer.querySelector('.article-toc__toggle') : null;
     if (!tocContainer || !tocList) {
       return;
     }
@@ -178,6 +259,28 @@
       tocList.appendChild(item);
     });
     tocContainer.dataset.empty = 'false';
+    function setTocExpanded(expanded) {
+      if (tocToggle) {
+        tocToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      }
+      if (tocContent) {
+        tocContent.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+      }
+      tocContainer.classList.toggle('is-open', !!expanded);
+    }
+    var desktopQuery = window.matchMedia('(min-width: 769px)');
+    setTocExpanded(desktopQuery.matches);
+    if (tocToggle) {
+      tocToggle.addEventListener('click', function () {
+        var isOpen = tocContainer.classList.contains('is-open');
+        setTocExpanded(!isOpen);
+      });
+      if (desktopQuery && desktopQuery.addEventListener) {
+        desktopQuery.addEventListener('change', function (event) {
+          setTocExpanded(event.matches);
+        });
+      }
+    }
     var links = Array.prototype.slice.call(tocList.querySelectorAll('a'));
     var activeId = headings[0].id;
     function setActive(id) {

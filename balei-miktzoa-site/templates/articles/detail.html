@@ -89,6 +89,28 @@
       {{ components.summary_cost_card(article.summary_cost) }}
     {% endif %}
     <div class="bm-article-page__layout">
+      <aside class="bm-article-page__sidebar">
+        <div class="bm-article-page__sidebar-inner">
+          <aside class="article-toc" id="bm-article-toc" data-empty="true">
+            <div class="article-toc__box">
+              <button class="article-toc__toggle" type="button" aria-expanded="false">
+                <span class="article-toc__toggle-label">במאמר זה</span>
+                <span class="article-toc__toggle-icon" aria-hidden="true">▾</span>
+              </button>
+              <div class="article-toc__content" aria-hidden="true">
+                <div class="article-toc__title">במאמר זה</div>
+                <ul class="article-toc__list" id="bm-article-toc-list"></ul>
+                <a class="article-toc__cta" href="#contact-electrician">מצא חשמלאי באזור שלך</a>
+              </div>
+            </div>
+          </aside>
+          {% if sidebar_items %}
+            {% for info in sidebar_items %}
+              {{ components.info_box(info) }}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </aside>
       <div class="bm-article-page__main" id="bm-article-main">
         {% if blocks %}
           {% set text_types = ['paragraph', 'list', 'heading'] %}
@@ -147,25 +169,10 @@
           {% if ns.open_text %}</section>{% endif %}
         {% elif article.body_html %}
           <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
-            <section class="charts-grid">
-              {{ article.body_html | safe }}
-            </section>
+            {{ article.body_html | safe }}
           </section>
         {% endif %}
       </div>
-      <aside class="bm-article-page__sidebar">
-        <div class="bm-article-page__sidebar-inner">
-          <div class="bm-article-page__toc" id="bm-article-toc" data-empty="true">
-            <h3 class="bm-article-page__toc-title">תוכן העניינים</h3>
-            <ul class="bm-article-page__toc-list" id="bm-article-toc-list"></ul>
-          </div>
-          {% if sidebar_items %}
-            {% for info in sidebar_items %}
-              {{ components.info_box(info) }}
-            {% endfor %}
-          {% endif %}
-        </div>
-      </aside>
     </div>
     {% if article.related %}
       <section class="bm-article-page__related">

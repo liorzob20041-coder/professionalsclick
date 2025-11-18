@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bm-article.css') }}">
 {% endblock %}
 {% block content %}
-<div class="bm-article-page">
+<div class="bm-article-page article-page">
   <div class="bm-article-page__container">
     {% set sidebar_items = sidebar_info | default([]) %}
     <section id="article-hero" class="article-hero">
@@ -89,18 +89,6 @@
     </section>
     <section class="article-section">
       <div class="article-layout article-layout--has-toc">
-        <aside class="article-layout__toc">
-          <nav class="article-toc" id="bm-article-toc" data-empty="true">
-            <div class="article-toc__title">במאמר זה</div>
-            <ul class="article-toc__list" id="bm-article-toc-list"></ul>
-            <a class="article-toc__cta" href="#contact-electrician">מצא חשמלאי באזור שלך</a>
-          </nav>
-          {% if sidebar_items %}
-            {% for info in sidebar_items %}
-              {{ components.info_box(info) }}
-            {% endfor %}
-          {% endif %}
-        </aside>
         <article class="article-layout__content">
           <div class="bm-article-page__main" id="bm-article-main">
           {% if article.summary_cost %}
@@ -168,6 +156,18 @@
           {% endif %}
           </div>
         </article>
+        <aside class="article-layout__toc">
+          <nav class="article-toc" id="bm-article-toc" data-empty="true">
+            <div class="article-toc__title">במאמר זה</div>
+            <ul class="article-toc__list" id="bm-article-toc-list"></ul>
+            <a class="article-toc__cta" href="#contact-electrician">מצא חשמלאי באזור שלך</a>
+          </nav>
+          {% if sidebar_items %}
+            {% for info in sidebar_items %}
+              {{ components.info_box(info) }}
+            {% endfor %}
+          {% endif %}
+        </aside>
       </div>
     </section>
     {% if article.related %}

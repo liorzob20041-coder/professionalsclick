@@ -51,15 +51,22 @@
 .bm-article-page__hero-content::after {
   content: none;
 }
-.article-hero {
+.article-hero-section {
+  width: 100%;
+}
+.article-hero-container {
+  display: grid;
+  gap: clamp(12px, 2.4vw, 20px);
+}
+.article-hero__media {
   position: relative;
   border-radius: 24px;
   overflow: hidden;
-  margin-block: clamp(8px, 2vw, 24px);
+  margin-block: clamp(12px, 2vw, 28px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   background: none;
 }
-.article-hero img {
+.article-hero__media img {
   display: block;
   width: 100%;
   height: clamp(240px, 48vh, 560px);
@@ -146,13 +153,14 @@
 .bm-article-page__sidebar-inner {
   display: contents;
 }
+.article-section {
+  padding-block: 24px 64px;
+}
 .article-layout {
-  position: relative;
   max-width: var(--page-width, 1120px);
   margin: 0 auto;
-  display: block;
-  direction: rtl;
   width: 100%;
+  direction: rtl;
 }
 .article-layout__main {
   max-width: 780px;
@@ -522,6 +530,9 @@
   max-height: none;
   overflow: visible;
 }
+.article-toc--floating {
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
 .article-toc__title {
   font-weight: 700;
   margin-bottom: 8px;
@@ -565,33 +576,35 @@
 }
 @media (min-width: 1024px) {
   .article-layout {
-    padding-inline-end: 320px;
+    display: grid;
+    grid-template-columns: minmax(0, 2.5fr) minmax(260px, 1fr);
+    column-gap: 32px;
+    align-items: flex-start;
   }
   .article-layout__main {
-    max-width: 760px;
+    max-width: 780px;
   }
-  .article-toc {
-    position: fixed;
+  .article-layout__aside {
+    position: relative;
+  }
+  .article-toc--floating {
+    position: sticky;
     top: 96px;
-    inset-inline-end: calc(50% - var(--page-width, 1120px) / 2 + 16px);
-    width: 280px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
+    inset-inline-start: auto;
+    z-index: 10;
   }
 }
 @media (max-width: 1023px) {
   .article-layout {
-    padding-inline-end: 0;
-  }
-  .article-layout__aside {
-    margin-top: 16px;
+    display: block;
   }
   .article-toc {
     position: static;
-    width: auto;
     max-height: none;
     overflow: visible;
-    margin-bottom: 16px;
+    margin-block: 16px;
   }
 }
 .bm-article-page__infobox {

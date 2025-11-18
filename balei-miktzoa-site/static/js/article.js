@@ -191,7 +191,7 @@
   ready(function () {
     var root = document.querySelector('.bm-article-page') || document;
     upgradeChartGrids(root);
-    var heroImage = document.querySelector('.article-hero img');
+    var heroImage = document.querySelector('.article-hero__media img');
     var bodyImages = root.querySelectorAll('.article-body img');
     bodyImages.forEach(function (img) {
       if (!heroImage || img !== heroImage) {
@@ -268,6 +268,7 @@
         link.classList.toggle('is-active', link.getAttribute('href') === '#' + id);
       });
     }
+    var hero = document.getElementById('article-hero');
     var visibility = new Map();
     var observer = new IntersectionObserver(
       function (entries) {
@@ -281,6 +282,26 @@
         threshold: [0, 0.25, 0.5, 0.75, 1],
       }
     );
+    function updateTocFloating() {
+      if (!tocContainer) {
+        return;
+      }
+      if (window.innerWidth < 1024) {
+        tocContainer.classList.remove('article-toc--floating');
+        return;
+      }
+      if (!hero) {
+        return;
+      }
+      var heroRect = hero.getBoundingClientRect();
+      var heroBottom = heroRect.bottom + window.scrollY;
+      var triggerPoint = heroBottom + 40;
+      if (window.scrollY > triggerPoint) {
+        tocContainer.classList.add('article-toc--floating');
+      } else {
+        tocContainer.classList.remove('article-toc--floating');
+      }
+    }
     function updateActive() {
       var bestId = '';
       var bestScore = 0;
@@ -307,13 +328,16 @@
     headings.forEach(function (heading) {
       observer.observe(heading);
     });
+    updateTocFloating();
     window.addEventListener(
       'scroll',
       function () {
+        updateTocFloating();
         window.requestAnimationFrame(updateActive);
       },
       { passive: true }
     );
+    window.addEventListener('resize', updateTocFloating);
     updateActive();
   });
 })();

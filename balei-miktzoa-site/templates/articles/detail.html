@@ -35,135 +35,140 @@
 <div class="bm-article-page">
   <div class="bm-article-page__container">
     {% set sidebar_items = sidebar_info | default([]) %}
-    <header class="bm-article-page__hero">
-      <div class="bm-article-page__hero-content">
-        <div class="bm-article-page__hero-copy">
-          {% if article.category %}
-            <span class="bm-article-page__pill">{{ article.category }}</span>
+    <section id="article-hero" class="article-hero-container">
+    <section id="article-hero" class="article-hero-section">
+      <header class="bm-article-page__hero">
+        <div class="bm-article-page__hero-content">
+          <div class="bm-article-page__hero-copy">
+            {% if article.category %}
+              <span class="bm-article-page__pill">{{ article.category }}</span>
+            {% endif %}
+            <h1 class="bm-article-page__title">{{ article.title }}</h1>
+            {% if article.subtitle %}
+              <p class="bm-article-page__subtitle">{{ article.subtitle }}</p>
+            {% endif %}
+            {% if article.meta %}
+              <div class="bm-article-page__meta">
+                {% if article.meta.published_at %}<span>{{ article.meta.published_at }}</span>{% endif %}
+                {% if article.meta.read_time %}<span>{{ article.meta.read_time }}</span>{% endif %}
+                {% if article.meta.updated_at %}<span>עודכן: {{ article.meta.updated_at }}</span>{% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+      {% set _hero_src = none %}
+      {% if article.hero_image_source is defined and article.hero_image_source %}
+        {% set _hero_src = article.hero_image_source %}
+      {% elif article.hero_image is defined and article.hero_image %}
+        {% set _hero_src = article.hero_image %}
+      {% elif meta is defined and meta.hero_image is defined and meta.hero_image %}
+        {% set _hero_src = meta.hero_image %}
+      {% elif meta is defined and meta.hero_image_file is defined and meta.hero_image_file %}
+        {% set _hero_src = '/static/' ~ meta.hero_image_file.lstrip('/') %}
+      {% endif %}
+      {% if _hero_src %}
+        {% if _hero_src.startswith('/static/') %}
+          {% set _hero_src = url_for('static', filename=_hero_src[8:]) %}
+        {% elif '://' not in _hero_src %}
+          {% set _hero_src = url_for('static', filename=_hero_src.lstrip('/')) %}
+        {% endif %}
+      {% endif %}
+      {% if not _hero_src %}
+        {% set _hero_src = url_for('static', filename='img/placeholders/article-hero.png') %}
+      {% endif %}
+      {% set _hero_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
+      <figure class="article-hero">
+        <img src="{{ _hero_src }}"
+             alt="{{ _hero_alt | default('', true) }}"
+             loading="eager"
+             decoding="async"
+             fetchpriority="high"
+             width="1600"
+             height="900">
+      </figure>
+    </section>
+    <section class="article-section">
+      <div class="article-layout">
+        <div class="article-layout__main bm-article-page__main" id="bm-article-main">
+          {% if article.summary_cost %}
+            {{ components.summary_cost_card(article.summary_cost) }}
           {% endif %}
-          <h1 class="bm-article-page__title">{{ article.title }}</h1>
-          {% if article.subtitle %}
-            <p class="bm-article-page__subtitle">{{ article.subtitle }}</p>
-          {% endif %}
-          {% if article.meta %}
-            <div class="bm-article-page__meta">
-              {% if article.meta.published_at %}<span>{{ article.meta.published_at }}</span>{% endif %}
-              {% if article.meta.read_time %}<span>{{ article.meta.read_time }}</span>{% endif %}
-              {% if article.meta.updated_at %}<span>עודכן: {{ article.meta.updated_at }}</span>{% endif %}
-            </div>
+          {% if blocks %}
+            {% set text_types = ['paragraph', 'list', 'heading'] %}
+            {% set ns = namespace(open_text=false, body_seen=false) %}
+            {% for block in blocks %}
+              {% if block.type in text_types %}
+                {% if not ns.open_text %}
+                  <section class="bm-article-page__section bm-article-page__body-text article-body" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
+                    {% set ns.open_text = True %}
+                    {% set ns.body_seen = True %}
+                  {% endif %}
+                {% if block.type == 'heading' %}
+                  {% set level = block.data.level if block.data.level in [2,3] else 2 %}
+                  {% if level == 3 %}
+                    <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
+                  {% else %}
+                  <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
+                  {% endif %}
+                {% elif block.type == 'list' %}
+                  <ul>
+                    {% for item in block.data.items %}
+                      {% if item %}<li>{{ item }}</li>{% endif %}
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <h2 id="{{ block.data.slug }}">{{ block.data.text }}</h2>
+                {% endif %}
+              {% else %}
+                {% if ns.open_text %}
+                  </section>
+                  {% set ns.open_text = False %}
+                {% endif %}
+                {% if block.type == 'data_table' %}
+                  {{ components.data_table(block.data) }}
+                {% elif block.type == 'pros_cons_grid' %}
+                  {{ components.pros_cons_grid(block.data) }}
+                {% elif block.type == 'warning' %}
+                  {{ components.warning_block(block.data) }}
+                {% elif block.type == 'tip' %}
+                  {{ components.tip_block(block.data) }}
+                {% elif block.type == 'checklist' %}
+                  {{ components.checklist_block(block.data) }}
+                {% elif block.type == 'process_steps' %}
+                  {{ components.process_steps(block.data) }}
+                {% elif block.type == 'questions' %}
+                  {{ components.questions_block(block.data) }}
+                {% elif block.type == 'comparison_table' %}
+                  {{ components.comparison_table(block.data) }}
+                {% elif block.type == 'summary_cost' %}
+                  {{ components.summary_cost_card(block.data) }}
+                {% elif block.type == 'raw_html' %}
+                  {{ block.data.html | safe }}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if ns.open_text %}</section>{% endif %}
+          {% elif article.body_html %}
+            <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
+              {{ article.body_html | safe }}
+            </section>
           {% endif %}
         </div>
+        <aside class="article-layout__aside">
+          <nav class="article-toc" id="bm-article-toc" data-empty="true">
+            <div class="article-toc__title">במאמר זה</div>
+            <ul class="article-toc__list" id="bm-article-toc-list"></ul>
+            <a class="article-toc__cta" href="#contact-electrician">מצא חשמלאי באזור שלך</a>
+          </nav>
+          {% if sidebar_items %}
+            {% for info in sidebar_items %}
+              {{ components.info_box(info) }}
+            {% endfor %}
+          {% endif %}
+        </aside>
       </div>
-    </header>
-    {% set _hero_src = none %}
-    {% if article.hero_image_source is defined and article.hero_image_source %}
-      {% set _hero_src = article.hero_image_source %}
-    {% elif article.hero_image is defined and article.hero_image %}
-      {% set _hero_src = article.hero_image %}
-    {% elif meta is defined and meta.hero_image is defined and meta.hero_image %}
-      {% set _hero_src = meta.hero_image %}
-    {% elif meta is defined and meta.hero_image_file is defined and meta.hero_image_file %}
-      {% set _hero_src = '/static/' ~ meta.hero_image_file.lstrip('/') %}
-    {% endif %}
-    {% if _hero_src %}
-      {% if _hero_src.startswith('/static/') %}
-        {% set _hero_src = url_for('static', filename=_hero_src[8:]) %}
-      {% elif '://' not in _hero_src %}
-        {% set _hero_src = url_for('static', filename=_hero_src.lstrip('/')) %}
-      {% endif %}
-    {% endif %}
-    {% if not _hero_src %}
-      {% set _hero_src = url_for('static', filename='img/placeholders/article-hero.png') %}
-    {% endif %}
-    {% set _hero_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
-    <figure class="article-hero">
-      <img src="{{ _hero_src }}"
-           alt="{{ _hero_alt | default('', true) }}"
-           loading="eager"
-           decoding="async"
-           fetchpriority="high"
-           width="1600"
-           height="900">
-    </figure>
-    {% if article.summary_cost %}
-      {{ components.summary_cost_card(article.summary_cost) }}
-    {% endif %}
-    <div class="bm-article-page__layout article-layout">
-      <div class="article-layout__main bm-article-page__main" id="bm-article-main">
-        {% if blocks %}
-          {% set text_types = ['paragraph', 'list', 'heading'] %}
-          {% set ns = namespace(open_text=false, body_seen=false) %}
-          {% for block in blocks %}
-            {% if block.type in text_types %}
-              {% if not ns.open_text %}
-                <section class="bm-article-page__section bm-article-page__body-text article-body" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
-                  {% set ns.open_text = True %}
-                  {% set ns.body_seen = True %}
-                {% endif %}
-              {% if block.type == 'heading' %}
-                {% set level = block.data.level if block.data.level in [2,3] else 2 %}
-                {% if level == 3 %}
-                  <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
-                {% else %}
-                <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
-                {% endif %}
-              {% elif block.type == 'list' %}
-                <ul>
-                  {% for item in block.data.items %}
-                    {% if item %}<li>{{ item }}</li>{% endif %}
-                  {% endfor %}
-                </ul>
-              {% else %}
-                <h2 id="{{ block.data.slug }}">{{ block.data.text }}</h2>
-              {% endif %}
-            {% else %}
-              {% if ns.open_text %}
-                </section>
-                {% set ns.open_text = False %}
-              {% endif %}
-              {% if block.type == 'data_table' %}
-                {{ components.data_table(block.data) }}
-              {% elif block.type == 'pros_cons_grid' %}
-                {{ components.pros_cons_grid(block.data) }}
-              {% elif block.type == 'warning' %}
-                {{ components.warning_block(block.data) }}
-              {% elif block.type == 'tip' %}
-                {{ components.tip_block(block.data) }}
-              {% elif block.type == 'checklist' %}
-                {{ components.checklist_block(block.data) }}
-              {% elif block.type == 'process_steps' %}
-                {{ components.process_steps(block.data) }}
-              {% elif block.type == 'questions' %}
-                {{ components.questions_block(block.data) }}
-              {% elif block.type == 'comparison_table' %}
-                {{ components.comparison_table(block.data) }}
-              {% elif block.type == 'summary_cost' %}
-                {{ components.summary_cost_card(block.data) }}
-              {% elif block.type == 'raw_html' %}
-                {{ block.data.html | safe }}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          {% if ns.open_text %}</section>{% endif %}
-        {% elif article.body_html %}
-          <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
-            {{ article.body_html | safe }}
-          </section>
-        {% endif %}
-      </div>
-      <aside class="article-layout__aside">
-        <nav class="article-toc" id="bm-article-toc" data-empty="true">
-          <div class="article-toc__title">במאמר זה</div>
-          <ul class="article-toc__list" id="bm-article-toc-list"></ul>
-          <a class="article-toc__cta" href="#contact-electrician">מצא חשמלאי באזור שלך</a>
-        </nav>
-        {% if sidebar_items %}
-          {% for info in sidebar_items %}
-            {{ components.info_box(info) }}
-          {% endfor %}
-        {% endif %}
-      </aside>
-    </div>
+    </section>
     {% if article.related %}
       <section class="bm-article-page__related">
         {% for item in article.related %}

@@ -87,9 +87,10 @@
              height="900">
       </figure>
     </section>
+    {% set has_toc = True %}
     <section class="article-section">
-      <div class="article-layout article-layout--has-toc">
-        <article class="article-layout__content">
+      <div class="article-page__grid{% if has_toc %} article-page__grid--has-toc{% endif %}">
+        <article class="article-page__content">
           <div class="bm-article-page__main" id="bm-article-main">
           {% if article.summary_cost %}
             {{ components.summary_cost_card(article.summary_cost) }}
@@ -156,7 +157,7 @@
           {% endif %}
           </div>
         </article>
-        <aside class="article-layout__toc">
+        <aside class="article-page__toc">
           <nav class="article-toc" id="bm-article-toc" data-empty="true">
             <div class="article-toc__title">במאמר זה</div>
             <ul class="article-toc__list" id="bm-article-toc-list"></ul>

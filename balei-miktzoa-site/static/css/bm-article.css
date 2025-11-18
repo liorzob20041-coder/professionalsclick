@@ -844,3 +844,19 @@ table[data-ui="datatable"] thead th {
     border-radius: var(--bm-article-radius-md);
   }
 }
+/* Ensure sticky TOC works reliably on article pages */
+.bm-article-page,
+.bm-article-page .bm-article-page__container,
+.bm-article-page .article-section,
+.bm-article-page .article-page__grid {
+  overflow: visible;
+}
+@media (min-width: 992px) {
+  .bm-article-page .article-page__toc {
+    position: sticky !important;
+    top: calc(var(--site-header-height, 72px) + 16px);
+    align-self: flex-start;
+    max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
+    overflow: auto;
+  }
+}

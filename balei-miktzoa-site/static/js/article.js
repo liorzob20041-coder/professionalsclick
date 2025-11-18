@@ -269,6 +269,8 @@
       });
     }
     var hero = document.getElementById('article-hero');
+    var heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 0;
+    var tocHasBeenShown = false;
     var visibility = new Map();
     var observer = new IntersectionObserver(
       function (entries) {
@@ -282,24 +284,27 @@
         threshold: [0, 0.25, 0.5, 0.75, 1],
       }
     );
-    function updateTocFloating() {
+    function updateTocVisibility() {
       if (!tocContainer) {
         return;
       }
       if (window.innerWidth < 1024) {
-        tocContainer.classList.remove('article-toc--floating');
+        tocContainer.classList.add('article-toc--visible');
         return;
       }
       if (!hero) {
+        tocContainer.classList.add('article-toc--visible');
+        tocHasBeenShown = true;
         return;
       }
-      var heroRect = hero.getBoundingClientRect();
-      var heroBottom = heroRect.bottom + window.scrollY;
-      var triggerPoint = heroBottom + 40;
-      if (window.scrollY > triggerPoint) {
-        tocContainer.classList.add('article-toc--floating');
-      } else {
-        tocContainer.classList.remove('article-toc--floating');
+      heroBottom = hero.offsetTop + hero.offsetHeight;
+      if (!tocHasBeenShown) {
+        tocContainer.classList.remove('article-toc--visible');
+      }
+      var triggerPoint = heroBottom ? heroBottom - 80 : 0;
+      if (!tocHasBeenShown && window.scrollY > triggerPoint) {
+        tocContainer.classList.add('article-toc--visible');
+        tocHasBeenShown = true;
       }
     }
     function updateActive() {
@@ -328,16 +333,19 @@
     headings.forEach(function (heading) {
       observer.observe(heading);
     });
-    updateTocFloating();
+    updateTocVisibility();
     window.addEventListener(
       'scroll',
       function () {
-        updateTocFloating();
+        updateTocVisibility();
         window.requestAnimationFrame(updateActive);
       },
       { passive: true }
     );
-    window.addEventListener('resize', updateTocFloating);
+    window.addEventListener('resize', function () {
+      heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 0;
+      updateTocVisibility();
+    });
     updateActive();
   });
 })();

@@ -820,7 +820,6 @@ table[data-ui="datatable"] thead th {
     border-radius: var(--bm-article-radius-md);
   }
 }
-/* Ensure sticky TOC works reliably on article pages */
 .bm-article-page,
 .bm-article-page .bm-article-page__container,
 .bm-article-page .article-section,
@@ -828,7 +827,12 @@ table[data-ui="datatable"] thead th {
   overflow: visible;
 }
 @media (min-width: 992px) {
+  /* The grid container becomes the positioning context for the "bottom pinned" state */
+  .bm-article-page .article-page__grid--has-toc {
+    position: relative;
+  }
   .bm-article-page .article-page__toc {
+    grid-area: toc;
     position: static;
     top: auto;
     align-self: flex-start;
@@ -845,17 +849,11 @@ table[data-ui="datatable"] thead th {
   }
   .bm-article-page .article-page__toc {
     grid-area: toc;
-    /* reset sticky props, we will use fixed when affixed */
     position: static;
-    max-height: none;
-    overflow: visible;
   }
-}
-@media (min-width: 992px) {
-  /* Default LTR behaviour: TOC affixed on the right */
-  html[dir="ltr"] .bm-article-page .article-page__toc--affixed {
-    position: fixed;
-    top: calc(var(--site-header-height, 72px) + 16px);
+  /* Shared width/side for both affixed and pinned-bottom states */
+  html[dir="ltr"] .bm-article-page .article-page__toc--affixed,
+  html[dir="ltr"] .bm-article-page .article-page__toc--pinned-bottom {
     right: max(16px, calc((100vw - 1140px) / 2));
     left: auto;
     width: min(320px, 30vw);
@@ -863,12 +861,8 @@ table[data-ui="datatable"] thead th {
     overflow: auto;
     z-index: var(--z-article-toc, 20);
   }
-}
-@media (min-width: 992px) {
-  /* RTL behaviour (Hebrew): affixed TOC on the opposite side */
-  html[dir="rtl"] .bm-article-page .article-page__toc--affixed {
-    position: fixed;
-    top: calc(var(--site-header-height, 72px) + 16px);
+  html[dir="rtl"] .bm-article-page .article-page__toc--affixed,
+  html[dir="rtl"] .bm-article-page .article-page__toc--pinned-bottom {
     left: max(16px, calc((100vw - 1140px) / 2));
     right: auto;
     width: min(320px, 30vw);
@@ -876,8 +870,19 @@ table[data-ui="datatable"] thead th {
     overflow: auto;
     z-index: var(--z-article-toc, 20);
   }
+  /* Affixed (scrolling in the middle of the article): fixed under the header */
+  .bm-article-page .article-page__toc--affixed {
+    position: fixed;
+    top: calc(var(--site-header-height, 72px) + 16px);
+  }
+  /* Pinned-bottom (when user reaches the end of the article): stick to bottom
+     of the grid container, *not* the viewport */
+  .bm-article-page .article-page__toc--pinned-bottom {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+  }
 }
-/* Mobile/tablet: normal flow, no fixed */
 @media (max-width: 991.98px) {
   .bm-article-page .article-page__grid--has-toc {
     grid-template-columns: minmax(0, 1fr);

@@ -577,30 +577,6 @@
   color: #fff;
   text-decoration: none;
 }
-@media (min-width: 992px) {
-  .article-page__grid--has-toc {
-    grid-template-columns: minmax(0, 1.8fr) minmax(260px, 320px);
-    grid-template-columns: minmax(0, 1.8fr) minmax(260px, 320px);
-    grid-template-areas: "content toc";
-  }
-  .article-page__toc {
-    position: sticky;
-    top: calc(var(--site-header-height, 72px) + 16px);
-    align-self: flex-start;
-    max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
-    overflow: auto;
-  }
-}
-@media (max-width: 991.98px) {
-  .article-page__grid--has-toc {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .article-page__toc {
-    position: static;
-    max-height: none;
-    overflow: visible;
-  }
-}
 .bm-article-page__infobox {
   border-radius: var(--bm-article-radius-md);
   background: rgba(255, 255, 255, 0.92);
@@ -853,10 +829,47 @@ table[data-ui="datatable"] thead th {
 }
 @media (min-width: 992px) {
   .bm-article-page .article-page__toc {
-    position: sticky !important;
-    top: calc(var(--site-header-height, 72px) + 16px);
+    position: static;
+    top: auto;
     align-self: flex-start;
+    max-height: none;
+    overflow: visible;
+  }
+}
+@media (min-width: 992px) {
+  /* Base: TOC is in the grid column but NOT sticky by default */
+  .bm-article-page .article-page__grid--has-toc {
+    grid-template-columns: minmax(0, 1.8fr) minmax(260px, 320px);
+    grid-template-areas: "content toc";
+    position: relative;
+  }
+  .bm-article-page .article-page__toc {
+    grid-area: toc;
+    /* reset sticky props, we will use fixed when affixed */
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  /* When affixed, behave like a fixed sidebar aligned with the right edge of the container */
+  .bm-article-page .article-page__toc--affixed {
+    position: fixed;
+    top: calc(var(--site-header-height, 72px) + 16px);
+    /* Align with the right edge of the .bm-article-page__container (1140px max width, centered) */
+    right: max(16px, calc((100vw - 1140px) / 2));
+    width: min(320px, 30vw);
     max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
     overflow: auto;
+    z-index: var(--z-article-toc, 20);
+  }
+}
+/* Mobile/tablet: normal flow, no fixed */
+@media (max-width: 991.98px) {
+  .bm-article-page .article-page__grid--has-toc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bm-article-page .article-page__toc {
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
 }

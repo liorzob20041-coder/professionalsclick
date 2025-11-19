@@ -197,5 +197,5 @@
 {% endblock %}
 {% block body_end_extra %}
   {{ super() }}
-  <!-- existing article markup -->
+  <script src="{{ url_for('static', filename='js/bm-article-toc.js') }}"></script>
 {% endblock %}

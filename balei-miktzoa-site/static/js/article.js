@@ -268,9 +268,6 @@
         link.classList.toggle('is-active', link.getAttribute('href') === '#' + id);
       });
     }
-    var hero = document.getElementById('article-hero');
-    var heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 0;
-    var tocHasBeenShown = false;
     var visibility = new Map();
     var observer = new IntersectionObserver(
       function (entries) {
@@ -288,24 +285,9 @@
       if (!tocContainer) {
         return;
       }
-      if (window.innerWidth < 1024) {
-        tocContainer.classList.add('article-toc--visible');
-        return;
-      }
-      if (!hero) {
-        tocContainer.classList.add('article-toc--visible');
-        tocHasBeenShown = true;
-        return;
-      }
-      heroBottom = hero.offsetTop + hero.offsetHeight;
-      if (!tocHasBeenShown) {
-        tocContainer.classList.remove('article-toc--visible');
-      }
-      var triggerPoint = heroBottom ? heroBottom - 80 : 0;
-      if (!tocHasBeenShown && window.scrollY > triggerPoint) {
-        tocContainer.classList.add('article-toc--visible');
-        tocHasBeenShown = true;
-      }
+      tocContainer.hidden = false;
+      tocContainer.dataset.empty = 'false';
+      tocContainer.classList.add('article-toc--visible');
     }
     function updateActive() {
       var bestId = '';
@@ -337,13 +319,11 @@
     window.addEventListener(
       'scroll',
       function () {
-        updateTocVisibility();
         window.requestAnimationFrame(updateActive);
       },
       { passive: true }
     );
     window.addEventListener('resize', function () {
-      heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 0;
       updateTocVisibility();
     });
     updateActive();

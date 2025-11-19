@@ -850,12 +850,27 @@ table[data-ui="datatable"] thead th {
     max-height: none;
     overflow: visible;
   }
-  /* When affixed, behave like a fixed sidebar aligned with the right edge of the container */
-  .bm-article-page .article-page__toc--affixed {
+}
+@media (min-width: 992px) {
+  /* Default LTR behaviour: TOC affixed on the right */
+  html[dir="ltr"] .bm-article-page .article-page__toc--affixed {
     position: fixed;
     top: calc(var(--site-header-height, 72px) + 16px);
-    /* Align with the right edge of the .bm-article-page__container (1140px max width, centered) */
     right: max(16px, calc((100vw - 1140px) / 2));
+    left: auto;
+    width: min(320px, 30vw);
+    max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
+    overflow: auto;
+    z-index: var(--z-article-toc, 20);
+  }
+}
+@media (min-width: 992px) {
+  /* RTL behaviour (Hebrew): affixed TOC on the opposite side */
+  html[dir="rtl"] .bm-article-page .article-page__toc--affixed {
+    position: fixed;
+    top: calc(var(--site-header-height, 72px) + 16px);
+    left: max(16px, calc((100vw - 1140px) / 2));
+    right: auto;
     width: min(320px, 30vw);
     max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
     overflow: auto;

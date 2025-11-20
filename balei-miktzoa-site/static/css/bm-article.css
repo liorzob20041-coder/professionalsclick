@@ -530,6 +530,17 @@
   transform: translateY(8px);
   pointer-events: none;
   transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  /* sticky sidebar on desktop */
+  position: sticky;
+  top: calc(var(--site-header-height, 72px) + 16px);
+  /* sticky sidebar on desktop, but without inner scroll */
+  height: auto;
+  overflow: visible;
+  /* sticky sidebar on desktop */
+  position: sticky;
+  top: calc(var(--site-header-height, 72px) + 16px);
+  max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
+  overflow-y: auto;
 }
 .article-toc--visible {
   opacity: 1;
@@ -828,44 +839,37 @@ table[data-ui="datatable"] thead th {
 }
 @media (min-width: 1100px) {
   .bm-article-page .article-page__grid--has-toc {
-    display: grid;
-    /* narrower TOC column on the side */
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
-    grid-template-areas: "content toc";
-    column-gap: clamp(28px, 3vw, 40px);
+    /* Desktop: flex row, content on the right, TOC on the left */
+    display: flex;
+    flex-direction: row;
     align-items: flex-start;
+    gap: clamp(28px, 3vw, 40px);
   }
   .bm-article-page .article-page__content {
-    grid-area: content;
+    flex: 1 1 auto;
+    width: 100%;
   }
   .bm-article-page .article-page__toc {
-    grid-area: toc;
+    flex: 0 0 240px;
+    max-width: 260px;
     align-self: flex-start;
     margin: 0;
-    /* make the whole sidebar sticky on desktop */
-    position: sticky;
-    position: static;
-    top: auto;
-    max-height: none;
-    overflow: visible;
   }
 }
 @media (max-width: 1099.98px) {
   .bm-article-page .article-page__grid--has-toc {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "toc"
-      "content";
+    /* Mobile / tablet: single column */
+    display: block;
   }
   .bm-article-page .article-page__toc {
     width: 100%;
-    /* no sticky behavior on smaller screens */
-    position: static;
-    max-height: none;
-    overflow: visible;
+    max-width: none;
   }
   .bm-article-page .article-toc {
+    /* no sticky behavior on smaller screens */
+    position: static;
     top: auto;
     max-height: none;
+    overflow: visible;
   }
 }

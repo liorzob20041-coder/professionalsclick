@@ -821,7 +821,7 @@ table[data-ui="datatable"] thead th {
 .bm-article-page .article-page__grid {
   overflow: visible;
 }
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   .article-page__grid--has-toc {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "content";
@@ -831,15 +831,14 @@ table[data-ui="datatable"] thead th {
     grid-area: content;
   }
   .article-page__toc {
+    position: static;
+  }
+  .article-page__toc .article-toc {
     position: fixed;
-    top: calc(var(--site-header-height, 72px) + 16px);
-    inset-inline-start: calc((100vw - min(1140px, 94vw)) / 2 + 8px);
+    inset-inline-end: calc((100vw - min(1140px, 94vw)) / 2 + 8px);
     width: 260px;
     z-index: 30;
     overflow: visible;
-  }
-  .article-page__toc .article-toc {
-    width: 100%;
     max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
     overflow-y: auto;
   }

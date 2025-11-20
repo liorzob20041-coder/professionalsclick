@@ -821,25 +821,43 @@ table[data-ui="datatable"] thead th {
 .bm-article-page .article-page__grid {
   overflow: visible;
 }
+/* === FINAL Article TOC layout – override previous attempts === */
+/* Base grid: single column (TOC above content) on narrow screens */
+.article-page__grid {
+  display: grid;
+  gap: 2rem;
+  align-items: flex-start;
+  direction: rtl;
+}
+/* On narrow screens the TOC sits above the content */
+.article-page__grid--has-toc {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "toc"
+    "content";
+}
+.article-page__toc {
+  grid-area: toc;
+  position: static; /* no sticky / fixed by default */
+}
+.article-page__content {
+  grid-area: content;
+}
+/* Desktop: TOC on the left, sticky while the article scrolls */
 @media (min-width: 1100px) {
   .article-page__grid--has-toc {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "content";
-    padding-inline-end: calc(260px + 24px);
-  }
-  .article-page__content {
-    grid-area: content;
+    grid-template-columns: minmax(260px, 280px) minmax(0, 1fr);
+    grid-template-areas: "toc content";
   }
   .article-page__toc {
-    position: static;
+    position: sticky;
+    top: calc(var(--site-header-height, 72px) + 16px);
+    align-self: flex-start;
   }
-  .article-page__toc .article-toc {
-    position: fixed;
-    inset-inline-end: calc((100vw - min(1140px, 94vw)) / 2 + 8px);
-    width: 260px;
-    z-index: 30;
-    overflow: visible;
-    max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
-    overflow-y: auto;
-  }
+}
+/* Make sure the nav itself is always visible and clickable */
+.article-toc {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }

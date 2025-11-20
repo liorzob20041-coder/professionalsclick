@@ -68,4 +68,50 @@
     }
   );
   headings.forEach((heading) => observer.observe(heading));
+  // --- Floating TOC behavior on desktop ---
+  const sidebarEl =
+    tocNav.closest('.bm-article-page__sidebar') ||
+    tocNav.closest('.article-page__toc') ||
+    tocNav.parentElement;
+  const mainEl = document.querySelector('.bm-article-page__main');
+  if (sidebarEl && mainEl) {
+    const rootDoc = document.documentElement;
+    const headerVar = getComputedStyle(rootDoc).getPropertyValue('--site-header-height');
+    const headerHeight = parseInt(headerVar, 10) || 72;
+    let startY = null;
+    function computeStartY() {
+      const rect = tocNav.getBoundingClientRect();
+      startY = window.scrollY + rect.top - headerHeight - 16;
+    }
+    function updateFloating() {
+      const viewportWidth = window.innerWidth || rootDoc.clientWidth;
+      // Disable on small screens
+      if (viewportWidth < 1100) {
+        tocNav.classList.remove('article-toc--fixed');
+        tocNav.style.width = '';
+        return;
+      }
+      if (startY === null) {
+        computeStartY();
+      }
+      const scrollY = window.scrollY || window.pageYOffset;
+      if (scrollY >= startY) {
+        // Enter fixed mode
+        const sidebarRect = sidebarEl.getBoundingClientRect();
+        tocNav.classList.add('article-toc--fixed');
+        tocNav.style.width = sidebarRect.width + 'px';
+      } else {
+        // Back to normal
+        tocNav.classList.remove('article-toc--fixed');
+        tocNav.style.width = '';
+      }
+    }
+    computeStartY();
+    updateFloating();
+    window.addEventListener('scroll', updateFloating, { passive: true });
+    window.addEventListener('resize', () => {
+      startY = null;
+      updateFloating();
+    });
+  }
 })();

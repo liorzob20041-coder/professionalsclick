@@ -531,7 +531,6 @@
   transition: opacity 0.18s ease-out, transform 0.18s ease-out;
   position: relative;
   top: auto;
-  height: auto;
   max-height: none;
   overflow: visible;
 }
@@ -828,21 +827,25 @@ table[data-ui="datatable"] thead th {
 }
 @media (min-width: 1100px) {
   .bm-article-page__layout {
+    /* 2 columns: right = content, left = sidebar */
     display: grid;
-    grid-template-columns: minmax(230px, 260px) minmax(0, 1fr);
+    direction: rtl;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
     column-gap: clamp(28px, 3vw, 40px);
     align-items: flex-start;
   }
+  .bm-article-page__main {
+    /* right column */
+    grid-column: 1;
+  }
   .bm-article-page__sidebar {
+    /* left column */
+    grid-column: 2;
     align-self: flex-start;
   }
   .bm-article-page__main {
     display: grid;
     gap: clamp(22px, 4vw, 36px);
-  }
-  .bm-article-page__sidebar-inner {
-    position: sticky;
-    top: calc(var(--site-header-height, 72px) + 20px);
   }
 }
 @media (max-width: 1099.98px) {
@@ -853,7 +856,20 @@ table[data-ui="datatable"] thead th {
     position: static;
     top: auto;
   }
+  .article-toc.article-toc--fixed {
+    position: static;
+    top: auto;
+  }
   .bm-article-page__sidebar {
     margin-bottom: 24px;
+  }
+}
+@media (min-width: 1100px) {
+  /* Floating state controlled by JS */
+  .article-toc.article-toc--fixed {
+    position: fixed;
+    top: calc(var(--site-header-height, 72px) + 16px);
+    /* width will be set by JS so it fits the sidebar */
+    z-index: 40;
   }
 }

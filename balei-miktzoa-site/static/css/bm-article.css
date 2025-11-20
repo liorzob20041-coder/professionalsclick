@@ -821,14 +821,20 @@ table[data-ui="datatable"] thead th {
 .bm-article-page .article-page__grid {
   overflow: visible;
 }
-@media (min-width: 1100px) {
+@media (min-width: 900px) {
   .article-page__grid--has-toc {
     grid-template-columns: minmax(0, 1fr) minmax(260px, 280px);
     grid-template-areas: "content toc";
   }
+  .article-page__content {
+    grid-area: content;
+  }
   .article-page__toc {
+    grid-area: toc;
+    align-self: flex-start;
+  }
+  .article-page__toc .article-toc {
     position: sticky;
     top: calc(var(--site-header-height, 72px) + 16px);
-    align-self: flex-start;
   }
 }

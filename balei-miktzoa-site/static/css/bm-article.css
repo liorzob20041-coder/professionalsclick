@@ -522,10 +522,9 @@
   padding: 16px 20px;
   font-size: 0.95rem;
   border: 1px solid var(--bm-article-border);
-  opacity: 0;
-  transform: translateY(8px);
-  pointer-events: none;
-  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
   position: relative;
   top: auto;
   max-height: none;
@@ -824,11 +823,12 @@ table[data-ui="datatable"] thead th {
 }
 @media (min-width: 1100px) {
   .article-page__grid--has-toc {
-    grid-template-columns: minmax(260px, 280px) minmax(0, 1fr);
-    grid-template-areas: "toc content";
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 280px);
+    grid-template-areas: "content toc";
   }
   .article-page__toc {
     position: sticky;
     top: calc(var(--site-header-height, 72px) + 16px);
+    align-self: flex-start;
   }
 }

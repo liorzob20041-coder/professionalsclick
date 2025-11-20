@@ -836,9 +836,7 @@ table[data-ui="datatable"] thead th {
   .bm-article-page .article-page__content {
     grid-area: content;
   }
-  .bm-article-page .article-page__toc,
-  .bm-article-page .article-page__toc--affixed,
-  .bm-article-page .article-page__toc--pinned-bottom {
+  .bm-article-page .article-page__toc {
     grid-area: toc;
     position: sticky;
     top: calc(var(--site-header-height, 72px) + 16px);
@@ -847,17 +845,12 @@ table[data-ui="datatable"] thead th {
     overflow: auto;
     margin: 0;
   }
-  .bm-article-page .article-page__toc--affixed,
-  .bm-article-page .article-page__toc--pinned-bottom {
-  }
 }
 @media (max-width: 991.98px) {
   .bm-article-page .article-page__grid--has-toc {
     grid-template-columns: minmax(0, 1fr);
   }
-  .bm-article-page .article-page__toc,
-  .bm-article-page .article-page__toc--affixed,
-  .bm-article-page .article-page__toc--pinned-bottom {
+  .bm-article-page .article-page__toc {
     position: static;
     width: 100%;
     max-height: none;

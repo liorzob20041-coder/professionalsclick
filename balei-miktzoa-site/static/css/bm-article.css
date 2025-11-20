@@ -832,9 +832,12 @@ table[data-ui="datatable"] thead th {
   .article-page__toc {
     grid-area: toc;
     align-self: flex-start;
+    overflow: visible;
   }
   .article-page__toc .article-toc {
     position: sticky;
     top: calc(var(--site-header-height, 72px) + 16px);
+    max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
+    overflow: auto;
   }
 }

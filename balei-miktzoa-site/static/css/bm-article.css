@@ -828,33 +828,27 @@ table[data-ui="datatable"] thead th {
 }
 @media (min-width: 992px) {
   .bm-article-page .article-page__grid--has-toc {
-    position: relative;
-    grid-template-columns: minmax(0, 1.8fr) minmax(260px, 320px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(260px, 320px);
     grid-template-areas: "content toc";
+    align-items: flex-start;
   }
-  .bm-article-page .article-page__toc {
-    grid-area: toc;
-    position: static;
+  .bm-article-page .article-page__content {
+    grid-area: content;
   }
-  /* Shared vertical sizing for both affixed and bottom-pinned */
+  .bm-article-page .article-page__toc,
   .bm-article-page .article-page__toc--affixed,
   .bm-article-page .article-page__toc--pinned-bottom {
+    grid-area: toc;
+    position: sticky;
+    top: calc(var(--site-header-height, 72px) + 16px);
+    align-self: flex-start;
     max-height: calc(100vh - var(--site-header-height, 72px) - 32px);
     overflow: auto;
-    z-index: var(--z-article-toc, 20);
+    margin: 0;
   }
-  /* Middle state – fixed under the header.
-     HORIZONTAL POSITION AND WIDTH WILL BE SET BY JS. */
-  .bm-article-page .article-page__toc--affixed {
-    position: fixed;
-    top: calc(var(--site-header-height, 72px) + 16px);
-  }
-  /* Final state – attached to bottom of the grid container.
-     HORIZONTAL POSITION AND WIDTH WILL BE SET BY JS. */
+  .bm-article-page .article-page__toc--affixed,
   .bm-article-page .article-page__toc--pinned-bottom {
-    position: absolute;
-    top: auto;
-    bottom: 0;
   }
 }
 @media (max-width: 991.98px) {

@@ -19,30 +19,13 @@
       baseFixedInline = baseAbsInline = baseWidth = null;
       return;
     }
-    // Only capture in "normal" state (no affix classes)
-    if (tocCol.classList.contains('article-page__toc--affixed') ||
-        tocCol.classList.contains('article-page__toc--pinned-bottom')) {
-      return;
-    }
-    const dir = (document.documentElement.getAttribute('dir') || 'ltr').toLowerCase();
-    const tocRect  = tocCol.getBoundingClientRect();
-    const gridRect = grid.getBoundingClientRect();
-    baseDir   = dir;
-    baseWidth = tocRect.width;
-    if (dir === 'rtl') {
-      // distance from RIGHT edges
-      baseFixedInline = window.innerWidth - tocRect.right;
-      baseAbsInline   = gridRect.right - tocRect.right;
-    } else {
-      // distance from LEFT edges
-      baseFixedInline = tocRect.left;
-      baseAbsInline   = tocRect.left - gridRect.left;
-    }
+    // Geometry capture retained for compatibility; no position overrides applied.
   }
   function resetInlineStyles() {
     tocCol.style.left  = '';
     tocCol.style.right = '';
     tocCol.style.width = '';
+    tocCol.style.top   = '';
   }
   function applyNormalLayout() {
     tocCol.classList.remove('article-page__toc--affixed',
@@ -50,36 +33,14 @@
     resetInlineStyles();
   }
   function applyAffixedLayout(offsetTop) {
-    if (baseWidth == null || baseFixedInline == null || !baseDir) {
-      captureBaseGeometry();
-    }
     tocCol.classList.remove('article-page__toc--pinned-bottom');
     tocCol.classList.add('article-page__toc--affixed');
-    tocCol.style.width = baseWidth + 'px';
-    tocCol.style.top   = offsetTop + 'px';
-    if (baseDir === 'rtl') {
-      tocCol.style.right = baseFixedInline + 'px';
-      tocCol.style.left  = 'auto';
-    } else {
-      tocCol.style.left  = baseFixedInline + 'px';
-      tocCol.style.right = 'auto';
-    }
+    resetInlineStyles();
   }
   function applyPinnedBottomLayout() {
-    if (baseWidth == null || baseAbsInline == null || !baseDir) {
-      captureBaseGeometry();
-    }
     tocCol.classList.remove('article-page__toc--affixed');
     tocCol.classList.add('article-page__toc--pinned-bottom');
-    tocCol.style.width = baseWidth + 'px';
-    // vertical: handled by CSS (bottom: 0)
-    if (baseDir === 'rtl') {
-      tocCol.style.right = baseAbsInline + 'px';
-      tocCol.style.left  = 'auto';
-    } else {
-      tocCol.style.left  = baseAbsInline + 'px';
-      tocCol.style.right = 'auto';
-    }
+    resetInlineStyles();
   }
   function updateAffix() {
     const vw = window.innerWidth || document.documentElement.clientWidth;

@@ -930,3 +930,25 @@ table[data-ui="datatable"] thead th {
   transform: none;
   pointer-events: auto;
 }
+/* Desktop RTL alignment: keep the article on the right with clear space for the TOC */
+@media (min-width: 1024px) {
+  .article-page__grid--has-toc {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    gap: clamp(24px, 3vw, 40px);
+  }
+  .article-page__content {
+    flex: 1 1 auto;
+    max-width: 820px;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+  }
+  .article-page__toc {
+    flex: 0 0 260px;
+  }
+  #bm-article-toc.article-toc {
+    width: 100%;
+    max-width: 260px;
+  }
+}

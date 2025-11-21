@@ -913,6 +913,16 @@ table[data-ui="datatable"] thead th {
     max-height: calc(100vh - var(--site-header-height, 72px) - 40px);
     overflow-y: auto;
   }
+  .bm-article-page__container {
+    /* push the whole article container to the RIGHT side */
+    margin-right: 0;
+    margin-left: auto;
+    /* keep the existing width constraint */
+    width: min(1140px, 94vw);
+    /* optional small breathing space on the right */
+    padding-right: 16px;
+    padding-left: 0;
+  }
 }
 /* Always keep the TOC visible and clickable */
 .article-toc {

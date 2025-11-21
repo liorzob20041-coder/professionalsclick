@@ -861,3 +861,62 @@ table[data-ui="datatable"] thead th {
   transform: none;
   pointer-events: auto;
 }
+/* === FINAL: floating TOC overlay on desktop (left side) === */
+/* Base: keep current grid behaviour on small screens */
+.article-page__grid {
+  display: grid;
+  gap: 2rem;
+  align-items: flex-start;
+  direction: rtl;
+}
+.article-page__grid--has-toc {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "toc"
+    "content";
+}
+.article-page__toc {
+  grid-area: toc;
+  position: static; /* normal flow on mobile */
+}
+.article-page__content {
+  grid-area: content;
+}
+/* Desktop overlay: TOC is fixed, article is a single column */
+@media (min-width: 1100px) {
+  /* Article becomes one main column */
+  .article-page__grid--has-toc {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "content";
+  }
+  .article-page__content {
+    grid-area: content;
+  }
+  .article-page__toc {
+    /* take the aside out of any previous sticky/fixed rules */
+    position: static !important;
+  }
+  /* The nav itself becomes the fixed overlay on the LEFT side */
+  #bm-article-toc.article-toc {
+    position: fixed;
+    top: calc(var(--site-header-height, 72px) + 24px);
+    /* align near the left side of the centered article container */
+    left: max(
+      16px,
+      calc((100vw - min(1140px, 94vw)) / 2 - 280px)
+    );
+    width: 260px;
+    z-index: 40;
+  }
+  /* Safety: TOC content scrolls inside itself if it’s too tall */
+  #bm-article-toc.article-toc {
+    max-height: calc(100vh - var(--site-header-height, 72px) - 40px);
+    overflow-y: auto;
+  }
+}
+/* Always keep the TOC visible and clickable */
+.article-toc {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}

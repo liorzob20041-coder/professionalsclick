@@ -919,9 +919,9 @@ table[data-ui="datatable"] thead th {
     margin-left: auto;
     /* keep the existing width constraint */
     width: min(1140px, 94vw);
-    /* optional small breathing space on the right */
-    padding-right: 16px;
-    padding-left: 0;
+    /* align the content to the viewport’s right edge while the TOC sits on the left */
+    padding-right: 0;
+    padding-left: 16px;
   }
 }
 /* Always keep the TOC visible and clickable */

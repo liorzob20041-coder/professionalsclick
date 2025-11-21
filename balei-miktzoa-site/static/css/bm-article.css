@@ -882,27 +882,29 @@ table[data-ui="datatable"] thead th {
 .article-page__content {
   grid-area: content;
 }
-/* Desktop overlay: TOC is fixed on the RIGHT, content column first */
+/* Desktop overlay: TOC is fixed on the LEFT, content column first */
 @media (min-width: 1100px) {
   .article-page__grid--has-toc {
+    /* LEFT: TOC (260–280px), RIGHT: content */
     grid-template-columns: minmax(260px, 280px) minmax(0, 1fr);
     grid-template-areas: "toc content";
   }
   .article-page__toc {
     grid-area: toc;
-    position: static !important; /* the column exists, the nav inside is fixed */
+    position: static !important; /* column exists; the nav inside is fixed */
     min-height: 1px;
   }
   .article-page__content {
     grid-area: content;
   }
 
-  /* The nav itself becomes the fixed overlay on the RIGHT side */
+  /* The nav itself becomes the fixed overlay on the LEFT side */
   #bm-article-toc.article-toc {
     position: fixed;
     top: calc(var(--site-header-height, 72px) + 24px);
-    right: calc((100vw - min(1140px, 94vw)) / 2 + 8px);
-    left: auto;
+    /* align INSIDE the left column of the centered container */
+    left: calc((100vw - min(1140px, 94vw)) / 2 + 8px);
+    right: auto;
     width: 260px;
     z-index: 40;
   }

@@ -836,7 +836,7 @@ table[data-ui="datatable"] thead th {
   }
   .bm-article-layout {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     align-items: flex-start;
     justify-content: center;
     gap: 2.5rem;

@@ -88,17 +88,8 @@
       </figure>
     </section>
     <section class="bm-article-page__section article-section">
-      <div class="article-page__grid article-page__grid--has-toc">
-        <aside class="article-page__toc">
-          <nav id="bm-article-toc" class="article-toc" data-empty="true">
-            <div class="article-toc__title">במאמר זה</div>
-            <ul id="bm-article-toc-list" class="article-toc__list"></ul>
-            <a href="#bm-cta-electrician" class="article-toc__cta">
-              מצא חשמלאי באזור שלך
-            </a>
-          </nav>
-        </aside>
-        <div class="article-page__content" id="bm-article-main">
+      <div class="bm-article-layout">
+        <article class="article-page__content bm-article-main" id="bm-article-main">
           <div class="bm-article-page__section">
             {% if article.summary_cost %}
               {{ components.summary_cost_card(article.summary_cost) }}
@@ -190,7 +181,16 @@
               {% endif %}
             </section>
           {% endif %}
-        </div>
+        </article>
+        <aside class="article-page__toc bm-article-toc">
+          <nav id="bm-article-toc" class="article-toc" data-empty="true">
+            <div class="article-toc__title">במאמר זה</div>
+            <ul id="bm-article-toc-list" class="article-toc__list"></ul>
+            <a href="#bm-cta-electrician" class="article-toc__cta">
+              מצא חשמלאי באזור שלך
+            </a>
+          </nav>
+        </aside>
       </div>
     </section>
   </div>

@@ -154,21 +154,20 @@
 .article-section {
   padding-block: 24px 64px;
 }
-.article-page__grid {
+.bm-article-layout {
   display: grid;
   gap: clamp(22px, 4vw, 32px);
   align-items: flex-start;
   direction: rtl;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "toc"
-    "content";
+  width: min(1180px, 96vw);
+  margin-inline: auto;
 }
-.article-page__toc {
-  grid-area: toc;
-}
-.article-page__content {
+.bm-article-main {
   grid-area: content;
+}
+.bm-article-toc {
+  grid-area: toc;
+  position: static;
 }
 .bm-article-page__section {
   background: transparent;
@@ -827,79 +826,38 @@ table[data-ui="datatable"] thead th {
 }
 .bm-article-page,
 .bm-article-page .bm-article-page__container,
-.bm-article-page .article-section,
-.bm-article-page .article-page__grid {
+.bm-article-page .article-section {
   overflow: visible;
-}
-.article-page__grid {
-  display: grid;
-  gap: 2rem;
-  align-items: flex-start;
-  direction: rtl;
-}
-.article-page__grid--has-toc {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "toc"
-    "content";
-}
-.article-page__toc {
-  grid-area: toc;
-  position: static;
-}
-.article-page__content {
-  grid-area: content;
 }
 @media (min-width: 1024px) {
   .bm-article-page__container {
     width: min(1180px, 96vw);
     margin-inline: auto;
   }
-  .article-page__grid--has-toc {
+  .bm-article-layout {
     display: flex;
     flex-direction: row-reverse;
     align-items: flex-start;
     justify-content: center;
-    gap: clamp(32px, 3vw, 44px);
+    gap: 2.5rem;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
   }
-  .article-page__content {
+  .bm-article-main {
     flex: 1 1 auto;
-    max-width: 780px;
-    margin: 0;
+    max-width: 760px;
+    order: 1;
   }
-  .article-page__toc {
-    flex: 0 0 clamp(260px, 26vw, 300px);
-  }
-}
-@media (max-width: 1199px) {
-  #bm-article-toc.article-toc {
-    position: static;
-    inset-inline-start: auto;
-    width: 100%;
-    max-width: none;
-  }
-  .bm-article-page,
-  .bm-article-page__container {
-    padding-inline-start: 0;
-  }
-}
-@media (min-width: 1200px) {
-  #bm-article-toc.article-toc {
-    position: fixed;
-    top: 110px;
-    inset-inline-start: 40px;
-    z-index: 40;
-    width: 260px;
-    max-width: 260px;
+  .bm-article-toc {
+    flex: 0 0 260px;
+    position: sticky;
+    top: 120px;
+    overflow: visible;
+    max-height: none;
     background: transparent;
     box-shadow: none;
     border: none;
-    overflow: visible;
-    max-height: none;
-    margin: 0;
-  }
-  .bm-article-page,
-  .bm-article-page__container {
-    padding-inline-start: 320px;
+    order: 2;
   }
 }

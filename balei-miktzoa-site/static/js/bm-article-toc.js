@@ -99,4 +99,41 @@
     updateTocTop();
   }
   initFloatingTocPosition();
+  function initArticleTocTopbar() {
+    var sidebarToc = document.querySelector('.article-toc');
+    var topbar = document.querySelector('.bm-article-toc-topbar');
+    if (!sidebarToc || !topbar) return;
+    var sourceList = sidebarToc.querySelector('ol, ul');
+    if (sourceList) {
+      var listTag = sourceList.tagName.toLowerCase();
+      topbar.innerHTML = "\n        <div class=\"bm-article-toc-topbar-inner\">\n          <div class=\"bm-article-toc-topbar-title\">במאמר זה</div>\n          <" + listTag + " class=\"bm-article-toc-topbar-list\">\n            " + sourceList.innerHTML + "\n          </" + listTag + ">\n        </div>\n      ";
+    }
+    var desktopMinWidth = 1024;
+    var tocTriggerY = null;
+    function updateTrigger() {
+      var rect = sidebarToc.getBoundingClientRect();
+      tocTriggerY = window.scrollY + rect.top;
+    }
+    function onScroll() {
+      if (window.innerWidth < desktopMinWidth || tocTriggerY === null) {
+        topbar.classList.remove('is-active');
+        return;
+      }
+      var offset = 80;
+      var scrollY = window.scrollY;
+      if (scrollY + offset >= tocTriggerY) {
+        topbar.classList.add('is-active');
+      } else {
+        topbar.classList.remove('is-active');
+      }
+    }
+    updateTrigger();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function() {
+      updateTrigger();
+      onScroll();
+    });
+    onScroll();
+  }
+  initArticleTocTopbar();
 })();

@@ -147,12 +147,12 @@
                 {% elif block.type == 'raw_html' %}
                   {{ block.data.html | safe }}
                 {% endif %}
+              {% endif %}
             {% endfor %}
             {% if ns.open_text %}</section>{% endif %}
           {% elif article.body_html %}
             <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
               {{ article.body_html | safe }}
-              {% endif %}
             </section>
           {% endif %}
           {% if sidebar_items %}

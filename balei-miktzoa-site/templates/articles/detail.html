@@ -90,106 +90,106 @@
   </section>
   <section class="bm-article-section">
     <div class="bm-article-layout">
-      <main class="article-page__content bm-article-main" id="bm-article-main">
-          <div class="bm-article-page__section">
-            {% if article.summary_cost %}
-              {{ components.summary_cost_card(article.summary_cost) }}
-            {% endif %}
-            {% if blocks %}
-              {% set text_types = ['paragraph', 'list', 'heading'] %}
-              {% set ns = namespace(open_text=false, body_seen=false) %}
-              {% for block in blocks %}
-                {% if block.type in text_types %}
-                  {% if not ns.open_text %}
-                    <section class="bm-article-page__section bm-article-page__body-text article-body" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
-                      {% set ns.open_text = True %}
-                      {% set ns.body_seen = True %}
-                    {% endif %}
-                  {% if block.type == 'heading' %}
-                    {% set level = block.data.level if block.data.level in [2,3] else 2 %}
-                    {% if level == 3 %}
-                      <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
-                    {% else %}
-                      <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
-                    {% endif %}
-                  {% elif block.type == 'list' %}
-                    <ul>
-                      {% for item in block.data.items %}
-                        {% if item %}<li>{{ item }}</li>{% endif %}
-                      {% endfor %}
-                    </ul>
-                  {% else %}
-                    <h2 id="{{ block.data.slug }}">{{ block.data.text }}</h2>
-                  {% endif %}
-                {% else %}
-                  {% if ns.open_text %}
-                    </section>
-                    {% set ns.open_text = False %}
-                  {% endif %}
-                  {% if block.type == 'data_table' %}
-                    {{ components.data_table(block.data) }}
-                  {% elif block.type == 'pros_cons_grid' %}
-                    {{ components.pros_cons_grid(block.data) }}
-                  {% elif block.type == 'warning' %}
-                    {{ components.warning_block(block.data) }}
-                  {% elif block.type == 'tip' %}
-                    {{ components.tip_block(block.data) }}
-                  {% elif block.type == 'checklist' %}
-                    {{ components.checklist_block(block.data) }}
-                  {% elif block.type == 'process_steps' %}
-                    {{ components.process_steps(block.data) }}
-                  {% elif block.type == 'questions' %}
-                    {{ components.questions_block(block.data) }}
-                  {% elif block.type == 'comparison_table' %}
-                    {{ components.comparison_table(block.data) }}
-                  {% elif block.type == 'summary_cost' %}
-                    {{ components.summary_cost_card(block.data) }}
-                  {% elif block.type == 'raw_html' %}
-                    {{ block.data.html | safe }}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-              {% if ns.open_text %}</section>{% endif %}
-            {% elif article.body_html %}
-              <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
-                {{ article.body_html | safe }}
-              </section>
-            {% endif %}
-            {% if sidebar_items %}
-              {% for info in sidebar_items %}
-                {{ components.info_box(info) }}
-              {% endfor %}
-            {% endif %}
-          </div>
-          {% if article.related %}
-            <section class="bm-article-page__related">
-              {% for item in article.related %}
-                {% if item.url and item.title %}
-                  <a class="bm-article-page__related-item" href="{{ item.url }}">
-                    <h4>{{ item.title }}</h4>
-                    {% if item.description %}<p>{{ item.description }}</p>{% endif %}
-                  </a>
-                {% endif %}
-              {% endfor %}
-            </section>
+      <main class="bm-article-main" id="bm-article-main">
+        <div class="bm-article-page__section">
+          {% if article.summary_cost %}
+            {{ components.summary_cost_card(article.summary_cost) }}
           {% endif %}
-          {% if article.cta %}
-            <section class="bm-article-page__cta" id="bm-cta-electrician">
-              {% if article.cta.title %}<h3>{{ article.cta.title }}</h3>{% endif %}
-              {% if article.cta.text %}<p>{{ article.cta.text }}</p>{% endif %}
-              {% if article.cta.action_url and article.cta.action_text %}
-                <a href="{{ article.cta.action_url }}">{{ article.cta.action_text }}</a>
+          {% if blocks %}
+            {% set text_types = ['paragraph', 'list', 'heading'] %}
+            {% set ns = namespace(open_text=false, body_seen=false) %}
+            {% for block in blocks %}
+              {% if block.type in text_types %}
+                {% if not ns.open_text %}
+                  <section class="bm-article-page__section bm-article-page__body-text article-body" {% if not ns.body_seen %}id="bm-article-body"{% endif %}>
+                    {% set ns.open_text = True %}
+                    {% set ns.body_seen = True %}
+                  {% endif %}
+                {% if block.type == 'heading' %}
+                  {% set level = block.data.level if block.data.level in [2,3] else 2 %}
+                  {% if level == 3 %}
+                    <h3 id="{{ block.data.slug }}">{{ block.data.text }}</h3>
+                  {% else %}
+                    <p>{{ block.data.text | e | replace('\n', '<br>') | safe }}</p>
+                  {% endif %}
+                {% elif block.type == 'list' %}
+                  <ul>
+                    {% for item in block.data.items %}
+                      {% if item %}<li>{{ item }}</li>{% endif %}
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <h2 id="{{ block.data.slug }}">{{ block.data.text }}</h2>
+                {% endif %}
+              {% else %}
+                {% if ns.open_text %}
+                  </section>
+                  {% set ns.open_text = False %}
+                {% endif %}
+                {% if block.type == 'data_table' %}
+                  {{ components.data_table(block.data) }}
+                {% elif block.type == 'pros_cons_grid' %}
+                  {{ components.pros_cons_grid(block.data) }}
+                {% elif block.type == 'warning' %}
+                  {{ components.warning_block(block.data) }}
+                {% elif block.type == 'tip' %}
+                  {{ components.tip_block(block.data) }}
+                {% elif block.type == 'checklist' %}
+                  {{ components.checklist_block(block.data) }}
+                {% elif block.type == 'process_steps' %}
+                  {{ components.process_steps(block.data) }}
+                {% elif block.type == 'questions' %}
+                  {{ components.questions_block(block.data) }}
+                {% elif block.type == 'comparison_table' %}
+                  {{ components.comparison_table(block.data) }}
+                {% elif block.type == 'summary_cost' %}
+                  {{ components.summary_cost_card(block.data) }}
+                {% elif block.type == 'raw_html' %}
+                  {{ block.data.html | safe }}
+                {% endif %}
+            {% endfor %}
+            {% if ns.open_text %}</section>{% endif %}
+          {% elif article.body_html %}
+            <section class="bm-article-page__section bm-article-page__body-text article-body" id="bm-article-body">
+              {{ article.body_html | safe }}
               {% endif %}
             </section>
           {% endif %}
-        </main>
-        <aside id="bm-article-toc" class="bm-article-toc" data-empty="true">
-          <h2 class="bm-article-toc-title">במאמר זה</h2>
-          <ol id="bm-article-toc-list" class="bm-article-toc-list"></ol>
-          <a href="#bm-cta-electrician" class="bm-article-toc-cta">
-            מצא חשמלאי באזור שלך
-          </a>
-        </aside>
+          {% if sidebar_items %}
+            {% for info in sidebar_items %}
+              {{ components.info_box(info) }}
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% if article.related %}
+          <section class="bm-article-page__related">
+            {% for item in article.related %}
+              {% if item.url and item.title %}
+                <a class="bm-article-page__related-item" href="{{ item.url }}">
+                  <h4>{{ item.title }}</h4>
+                  {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                </a>
+              {% endif %}
+            {% endfor %}
+          </section>
+        {% endif %}
+        {% if article.cta %}
+          <section class="bm-article-page__cta" id="bm-cta-electrician">
+            {% if article.cta.title %}<h3>{{ article.cta.title }}</h3>{% endif %}
+            {% if article.cta.text %}<p>{{ article.cta.text }}</p>{% endif %}
+            {% if article.cta.action_url and article.cta.action_text %}
+              <a href="{{ article.cta.action_url }}">{{ article.cta.action_text }}</a>
+            {% endif %}
+          </section>
+        {% endif %}
+      </main>
+      <aside class="bm-article-toc" id="bm-article-toc" data-empty="true">
+        <h2 class="bm-article-toc-title">במאמר זה</h2>
+        <ol id="bm-article-toc-list" class="bm-article-toc-list"></ol>
+        <a href="#bm-cta-electrician" class="bm-article-toc-cta">
+          מצא חשמלאי באזור שלך
+        </a>
+      </aside>
     </div>
   </section>
 </div>

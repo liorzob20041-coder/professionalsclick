@@ -152,23 +152,21 @@
   display: block;
 }
 .bm-article-section {
-  padding-block: 3rem 4rem;
+  padding-block: 24px 64px;
+  padding-inline: 0;
 }
 .bm-article-layout {
-  max-width: 1160px;
+  direction: rtl;
+  max-width: 1180px;
   margin-inline: auto;
   padding-inline: 1.5rem;
   width: 100%;
 }
 .bm-article-main {
-  grid-area: content;
+  width: 100%;
 }
 .bm-article-toc {
-  grid-area: toc;
-  position: static;
-  display: grid;
-  gap: 14px;
-  align-content: start;
+  display: none;
 }
 .bm-article-page__section {
   background: transparent;
@@ -522,6 +520,9 @@
   padding: clamp(18px, 2vw, 24px);
   font-size: var(--bm-article-small-size);
   border: none;
+  display: grid;
+  gap: 14px;
+  align-content: start;
 }
 .article-toc {
   background: transparent;
@@ -840,28 +841,41 @@ table[data-ui="datatable"] thead th {
     border-radius: var(--bm-article-radius-md);
   }
 }
-.bm-article-page,
-.bm-article-page .bm-article-page__container,
-.bm-article-page .article-section {
+.bm-article-page {
+  overflow: visible;
+}
+.bm-article-page__container {
+  overflow: visible;
+}
+.article-section {
+  /* overflow intentionally unset to avoid breaking sticky positioning */
+}
+.bm-article-layout {
   overflow: visible;
 }
 @media (min-width: 1024px) {
   .bm-article-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    column-gap: 2.5rem;
+    grid-template-columns: 1fr 280px;
+    gap: 2.5rem;
     align-items: flex-start;
     direction: rtl;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
   }
   .bm-article-main {
     min-width: 0;
+    width: 100%;
+    max-width: 100%;
   }
   .bm-article-toc {
-    position: -webkit-sticky;
+    display: block;
     position: sticky;
-    top: 120px;
-    overflow: visible;
-    max-height: none;
+    top: 24px;
+    align-self: start;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
     background: transparent;
     box-shadow: none;
     border: none;

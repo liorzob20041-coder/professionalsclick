@@ -1,59 +1,92 @@
-(function() {
-  const tocNav = document.getElementById('bm-article-toc');
-  const tocList = document.getElementById('bm-article-toc-list');
-  const articleRoot = document.getElementById('bm-article-main');
-  if (!tocNav || !tocList || !articleRoot) return;
-  const headings = Array.from(articleRoot.querySelectorAll('h2[id], h3[id]'));
-  if (!headings.length) {
-    tocNav.dataset.empty = 'true';
+(function () {
+  'use strict';
+  var toc = document.getElementById('bm-article-toc');
+  var list = document.getElementById('bm-article-toc-list');
+  var article = document.getElementById('bm-article-main');
+  if (!toc || !list || !article) {
     return;
   }
-  tocNav.dataset.empty = 'false';
-  const linkById = new Map();
-  const listFragment = document.createDocumentFragment();
-  headings.forEach((heading) => {
-    const li = document.createElement('li');
-    const anchor = document.createElement('a');
-    anchor.href = `#${heading.id}`;
-    anchor.textContent = heading.textContent;
-    li.appendChild(anchor);
-    listFragment.appendChild(li);
-    linkById.set(heading.id, anchor);
+  var headings = Array.prototype.slice.call(article.querySelectorAll('h2, h3')).filter(function (node) {
+    return node && node.textContent && node.textContent.trim().length;
   });
-  tocList.innerHTML = '';
-  tocList.appendChild(listFragment);
-  tocNav.classList.add('article-toc--visible');
-  let currentActiveId = null;
-  const visibleHeadings = new Map();
-  function setActiveLink(id) {
-    if (id === currentActiveId) return;
-    linkById.forEach((link) => link.classList.remove('is-active'));
-    const activeLink = linkById.get(id);
-    if (activeLink) {
-      activeLink.classList.add('is-active');
-      currentActiveId = id;
-    }
+  if (!headings.length) {
+    toc.dataset.empty = 'true';
+    return;
   }
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const id = entry.target.id;
-        if (entry.isIntersecting) {
-          visibleHeadings.set(id, entry.boundingClientRect.top);
-        } else {
-          visibleHeadings.delete(id);
+  toc.dataset.empty = 'false';
+  var slugCounts = Object.create(null);
+  function slugify(text) {
+    var slug = (text || '').trim().toLowerCase();
+    slug = slug.replace(/["'`~!@#$%^&*()+=\[\]{}|\\/:;<>,.?]/g, '');
+    slug = slug.replace(/\s+/g, '-');
+    slug = slug.replace(/-+/g, '-');
+    slug = slug.replace(/^-|-$/g, '');
+    return slug || 'section';
+  }
+  headings.forEach(function (heading) {
+    var text = heading.textContent.trim();
+    var id = heading.getAttribute('id');
+    if (!id) {
+      id = slugify(text);
+    }
+    if (slugCounts[id]) {
+      slugCounts[id] += 1;
+      id = id + '-' + slugCounts[id];
+    } else {
+      slugCounts[id] = 1;
+    }
+    heading.id = id;
+    var item = document.createElement('li');
+    var link = document.createElement('a');
+    link.href = '#' + id;
+    link.textContent = text;
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      var target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', '#' + id);
+      }
+    });
+    item.appendChild(link);
+    list.appendChild(item);
+  });
+  var links = Array.prototype.slice.call(list.querySelectorAll('a'));
+  var visibleScores = new Map();
+  function setActive(id) {
+    links.forEach(function (link) {
+      var match = link.getAttribute('href') === '#' + id;
+      link.classList.toggle('is-active', match);
+    });
+  }
+  if (headings.length) {
+    setActive(headings[0].id);
+  }
+  var observer = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        var id = entry.target.id;
+        var score = entry.isIntersecting ? entry.intersectionRatio : 0;
+        visibleScores.set(id, score);
+      });
+      var bestId = '';
+      var bestScore = 0;
+      visibleScores.forEach(function (score, id) {
+        if (score > bestScore) {
+          bestScore = score;
+          bestId = id;
         }
       });
-      if (visibleHeadings.size) {
-        const [nextId] = Array.from(visibleHeadings.entries())
-          .sort((a, b) => a[1] - b[1])[0];
-        setActiveLink(nextId);
+      if (!bestId && headings.length) {
+        bestId = headings[0].id;
+      }
+      if (bestId) {
+        setActive(bestId);
       }
     },
-    {
-      rootMargin: '-10% 0px -70% 0px',
-      threshold: [0, 0.1, 1],
-    }
+    { rootMargin: '-50% 0px -40% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
   );
-  headings.forEach((heading) => observer.observe(heading));
+  headings.forEach(function (heading) {
+    observer.observe(heading);
+  });
 })();

@@ -39,7 +39,9 @@
       <header class="bm-article-page__hero">
         <div class="bm-article-page__hero-content">
           <div class="bm-article-page__hero-copy">
-            {% if article.category %}
+            {% if category_label %}
+              <span class="bm-article-page__pill">{{ category_label }}</span>
+            {% elif article.category %}
               <span class="bm-article-page__pill">{{ article.category }}</span>
             {% endif %}
             <h1 class="bm-article-page__title">{{ article.title }}</h1>
@@ -88,10 +90,10 @@
       </figure>
     </div>
   </section>
-  <section class="bm-article-section">
+  <section class="bm-article-page__section article-section">
     <div class="bm-article-layout">
       <main class="bm-article-main" id="bm-article-main">
-        <div class="bm-article-page__section">
+        <section class="bm-article-page__section">
           {% if article.summary_cost %}
             {{ components.summary_cost_card(article.summary_cost) }}
           {% endif %}
@@ -160,7 +162,7 @@
               {{ components.info_box(info) }}
             {% endfor %}
           {% endif %}
-        </div>
+        </section>
         {% if article.related %}
           <section class="bm-article-page__related">
             {% for item in article.related %}
@@ -184,11 +186,13 @@
         {% endif %}
       </main>
       <aside class="bm-article-toc" id="bm-article-toc" data-empty="true">
-        <h2 class="bm-article-toc-title">במאמר זה</h2>
-        <ol id="bm-article-toc-list" class="bm-article-toc-list"></ol>
-        <a href="#bm-cta-electrician" class="bm-article-toc-cta">
-          מצא חשמלאי באזור שלך
-        </a>
+        <nav class="article-toc">
+          <div class="article-toc__title">במאמר זה</div>
+          <ul id="bm-article-toc-list" class="article-toc__list"></ul>
+          <a href="#bm-cta-electrician" class="article-toc__cta">
+            מצא חשמלאי באזור שלך
+          </a>
+        </nav>
       </aside>
     </div>
   </section>

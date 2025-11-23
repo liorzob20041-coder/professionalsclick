@@ -1,7 +1,7 @@
 (function() {
   const tocNav = document.getElementById('bm-article-toc');
   const tocList = document.getElementById('bm-article-toc-list');
-  const articleRoot = document.getElementById('bm-article-main') || document.getElementById('bm-article-body');
+  const articleRoot = document.getElementById('bm-article-main');
   if (!tocNav || !tocList || !articleRoot) return;
   const headings = Array.from(articleRoot.querySelectorAll('h2[id], h3[id]'));
   if (!headings.length) {
@@ -45,21 +45,9 @@
         }
       });
       if (visibleHeadings.size) {
-        const [nextId] = Array.from(visibleHeadings.entries()).sort((a, b) => a[1] - b[1])[0];
+        const [nextId] = Array.from(visibleHeadings.entries())
+          .sort((a, b) => a[1] - b[1])[0];
         setActiveLink(nextId);
-        return;
-      }
-      let closestId = null;
-      let closestDistance = Infinity;
-      headings.forEach((heading) => {
-        const distance = Math.abs(heading.getBoundingClientRect().top);
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestId = heading.id;
-        }
-      });
-      if (closestId) {
-        setActiveLink(closestId);
       }
     },
     {

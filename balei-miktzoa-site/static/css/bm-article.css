@@ -857,7 +857,8 @@ table[data-ui="datatable"] thead th {
   overflow: visible;
 }
 .article-section {
-  /* overflow intentionally unset to avoid breaking sticky positioning */
+  /* Must be visible so position: sticky on the TOC works correctly */
+  overflow: visible;
 }
 .bm-article-layout {
   overflow: visible;

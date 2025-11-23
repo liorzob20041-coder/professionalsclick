@@ -33,9 +33,9 @@
 {% endblock %}
 {% block content %}
 <div class="bm-article-page article-page">
-  <div class="bm-article-page__container">
-    {% set sidebar_items = sidebar_info | default([]) %}
-    <section id="article-hero" class="article-hero">
+  {% set sidebar_items = sidebar_info | default([]) %}
+  <section id="article-hero" class="article-hero">
+    <div class="bm-article-page__container">
       <header class="bm-article-page__hero">
         <div class="bm-article-page__hero-content">
           <div class="bm-article-page__hero-copy">
@@ -86,10 +86,11 @@
              width="1600"
              height="900">
       </figure>
-    </section>
-    <section class="bm-article-page__section article-section">
-      <div class="bm-article-layout">
-        <article class="article-page__content bm-article-main" id="bm-article-main">
+    </div>
+  </section>
+  <section class="bm-article-section">
+    <div class="bm-article-layout">
+      <main class="article-page__content bm-article-main" id="bm-article-main">
           <div class="bm-article-page__section">
             {% if article.summary_cost %}
               {{ components.summary_cost_card(article.summary_cost) }}
@@ -181,19 +182,16 @@
               {% endif %}
             </section>
           {% endif %}
-        </article>
-        <aside class="article-page__toc bm-article-toc">
-          <nav id="bm-article-toc" class="article-toc" data-empty="true">
-            <div class="article-toc__title">במאמר זה</div>
-            <ul id="bm-article-toc-list" class="article-toc__list"></ul>
-            <a href="#bm-cta-electrician" class="article-toc__cta">
-              מצא חשמלאי באזור שלך
-            </a>
-          </nav>
+        </main>
+        <aside id="bm-article-toc" class="bm-article-toc" data-empty="true">
+          <h2 class="bm-article-toc-title">במאמר זה</h2>
+          <ol id="bm-article-toc-list" class="bm-article-toc-list"></ol>
+          <a href="#bm-cta-electrician" class="bm-article-toc-cta">
+            מצא חשמלאי באזור שלך
+          </a>
         </aside>
-      </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </div>
 {% endblock %}
 {% block body_end_extra %}

@@ -2875,11 +2875,9 @@ def _render_article_detail(lang: str, slug: str):
         "body_html": body_html,
     }
     canonical_url = _build_canonical(lang, article_slug)
-    template_name = 'articles/detail.html'
-    if slug == "how-to-choose-electrician" and lang == "he":
-        template_name = 'articles/detail_electrician_sticky.html'
+
     return render_template(
-        template_name,
+        'articles/detail.html',
         article=article,
         related_articles=related_articles,
         hero_image_absolute=hero_image_absolute,

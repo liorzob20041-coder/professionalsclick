@@ -1,19 +1,23 @@
 (function () {
   'use strict';
-  var toc = document.getElementById('bm-article-toc');
-  var list = document.getElementById('bm-article-toc-list');
-  var article = document.getElementById('bm-article-main');
-  if (!toc || !list || !article) {
+  var tocNav = document.getElementById('bm-article-toc');
+  var tocList = document.getElementById('bm-article-toc-list');
+  var articleRoot = document.getElementById('bm-article-main');
+  if (!tocNav || !tocList || !articleRoot) {
     return;
   }
-  var headings = Array.prototype.slice.call(article.querySelectorAll('h2, h3')).filter(function (node) {
+  var headings = Array.prototype.slice.call(articleRoot.querySelectorAll('h2, h3')).filter(function (node) {
     return node && node.textContent && node.textContent.trim().length;
   });
   if (!headings.length) {
-    toc.dataset.empty = 'true';
+    tocNav.dataset.empty = 'true';
+    tocNav.style.display = 'none';
     return;
   }
-  toc.dataset.empty = 'false';
+  tocNav.dataset.empty = 'false';
+  tocNav.style.display = '';
+  tocNav.classList.add('article-toc--visible');
+  tocList.innerHTML = '';
   var slugCounts = Object.create(null);
   function slugify(text) {
     var slug = (text || '').trim().toLowerCase();
@@ -49,9 +53,9 @@
       }
     });
     item.appendChild(link);
-    list.appendChild(item);
+    tocList.appendChild(item);
   });
-  var links = Array.prototype.slice.call(list.querySelectorAll('a'));
+  var links = Array.prototype.slice.call(tocList.querySelectorAll('a'));
   var visibleScores = new Map();
   function setActive(id) {
     links.forEach(function (link) {

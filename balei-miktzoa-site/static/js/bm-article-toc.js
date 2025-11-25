@@ -1,25 +1,21 @@
 (function () {
   'use strict';
   document.addEventListener('DOMContentLoaded', function () {
-    var articleRoot = document.getElementById('bm-article-main');
+    var main = document.getElementById('bm-article-main');
     var tocNav = document.getElementById('bm-article-toc');
     var tocList = document.getElementById('bm-article-toc-list');
-    if (!articleRoot || !tocNav || !tocList) {
+    if (!main || !tocNav || !tocList) {
       return;
     }
     var headings = Array.prototype.slice
-      .call(articleRoot.querySelectorAll('h2, h3'))
+      .call(main.querySelectorAll('h2, h3'))
       .filter(function (heading) {
         return heading && heading.textContent && heading.textContent.trim().length;
       });
     if (!headings.length) {
-      tocNav.dataset.empty = 'true';
       tocNav.style.display = 'none';
       return;
     }
-    tocNav.dataset.empty = 'false';
-    tocNav.style.display = '';
-    tocList.innerHTML = '';
     var linkById = new Map();
     var slugify = function (text) {
       return text
@@ -32,7 +28,7 @@
     };
     headings.forEach(function (heading, index) {
       if (!heading.id) {
-        var slug = slugify(heading.textContent || '');
+        var slug = slugify(heading.textContent || 'section-' + (index + 1));
         var baseId = slug || 'section-' + (index + 1);
         var uniqueId = baseId;
         var counter = 1;
@@ -93,7 +89,7 @@
       {
         root: null,
         rootMargin: '-50% 0px -40% 0px',
-        threshold: [0, 0.3, 0.6, 1],
+        threshold: [0, 0.25, 0.5, 0.75, 1],
       }
     );
     headings.forEach(function (heading) {

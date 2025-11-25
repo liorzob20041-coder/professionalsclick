@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>דמו TOC Sticky</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      margin: 0;
+      padding: 0 20px 60px;
+      background: #ffffff;
+      color: #222;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .toc-demo-page {
+      max-width: 1180px;
+      margin: 40px auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 260px;
+      gap: 32px;
+    }
+
+    .toc-demo-main {
+      min-width: 0;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .toc-demo-main h1 {
+      font-size: 32px;
+      margin: 0 0 22px;
+      color: #111;
+    }
+
+    .toc-demo-main h2 {
+      font-size: 22px;
+      margin: 32px 0 12px;
+      color: #8B1538;
+    }
+
+    .toc-demo-main h3 {
+      font-size: 18px;
+      margin: 18px 0 10px;
+      color: #4e0e22;
+    }
+
+    .toc-demo-main p {
+      margin: 0 0 14px;
+    }
+
+    .toc-demo-sidebar {
+      position: sticky;
+      top: 24px;
+      align-self: flex-start;
+    }
+
+    .toc-demo-toc {
+      border-radius: 16px;
+      padding: 16px 18px;
+      background: #f9f5f7;
+      border: 1px solid rgba(139, 21, 56, 0.18);
+      font-size: 14px;
+    }
+
+    .toc-demo-toc-title {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #8B1538;
+    }
+
+    .toc-demo-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc-demo-toc-list li {
+      line-height: 1.5;
+    }
+
+    .toc-demo-toc-list a {
+      text-decoration: none;
+      color: #444;
+      padding: 4px 2px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 120ms ease, background 120ms ease;
+    }
+
+    .toc-demo-toc-list a:hover {
+      color: #8B1538;
+      background: rgba(139, 21, 56, 0.06);
+    }
+
+    .toc-demo-toc-list a.is-active {
+      font-weight: 600;
+      color: #8B1538;
+    }
+
+    @media (max-width: 900px) {
+      .toc-demo-page {
+        grid-template-columns: 1fr;
+      }
+
+      .toc-demo-sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body dir="rtl">
+  <div class="toc-demo-page">
+    <main class="toc-demo-main">
+      <h1>דף דמו – תוכן עניינים Sticky</h1>
+
+      <h2>בדיקת רישיון בתוקף</h2>
+      <p>לפני שמתחילים עבודה חשוב לוודא שהרישיון של בעל המקצוע בתוקף. אפשר להתקשר לאיגוד המקצועי או להשתמש במאגרי מידע מקוונים כדי לאשר את הפרטים. בדיקה מוקדמת חוסכת כאבי ראש בהמשך.</p>
+
+      <h3>איך לבדוק מספר רישיון</h3>
+      <p>רישום של מספר הרישיון מופיע בדרך כלל על גבי כרטיס הביקור או באתר האינטרנט של הספק. העתק את המספר, היכנס לאתר הממשלתי המתאים וחפש אותו. אם התוצאה תקינה, שמור צילום מסך או PDF לתיעוד.</p>
+
+      <h3>מה עושים כשאין תוצאה</h3>
+      <p>אם החיפוש מחזיר שאין תוצאה, לא בהכרח שמדובר בבעיה. ייתכן שהמספר הוזן באופן שגוי או שהמאגר לא מעודכן. נסה ליצור קשר עם הספק ובקש אישור רשמי. במקרים של ספק, שקול לעבוד עם בעל מקצוע אחר.</p>
+
+      <h2>תמחור שקוף וכתב אחריות</h2>
+      <p>הסכמה על מחיר ועל מסגרת אחריות מראש מונעת ויכוחים מיותרים. בקש הצעת מחיר כתובה שמפרטת את היקף העבודה, זמני אספקה וחומרים. ודא שקיים סעיף אחריות שמכסה תקלות לאורך זמן.</p>
+
+      <h3>מה לכלול בהצעת המחיר</h3>
+      <p>הצעת מחיר טובה תכלול פירוט חומרים, שעות עבודה, מועדי תשלום והצעת חלופות אם המחיר משתנה. חשוב לוודא שגם סעיף ביטולים קיים, כדי להגן עליך במקרה שהפרויקט מתעכב או משתנה.</p>
+
+      <h3>אחריות וביטוח</h3>
+      <p>כדאי לשאול אם לבעל המקצוע יש ביטוח אחריות מקצועית והאם האחריות חלה על כל חלקי העבודה. בקש לראות מסמכים תומכים. אחריות ברורה משדרת מקצועיות ומקטינה סיכונים.</p>
+
+      <h2>תקשורת ותיאום ציפיות</h2>
+      <p>כדי לוודא שהעבודה מתבצעת לפי התוכנית, כדאי לפתוח ערוץ תקשורת ברור. סכם מראש כיצד מתקשרים — טלפון, אימייל או קבוצת וואטסאפ — ומהם זמני המענה המצופים. תיעוד החלטות מרכזיות יסייע בעתיד.</p>
+
+      <h3>קביעת שלבי ביניים</h3>
+      <p>לוחות זמנים ברורים מסייעים לעקוב אחר התקדמות העבודה. קבע אבני דרך ותאריכים לביקורת. אם יש שינוי בהיקף או בלוח זמנים, עדכן את המסמכים הכתובים והצעת המחיר בהתאם.</p>
+
+      <h3>טיפים לניהול ציפיות</h3>
+      <p>הקשב לחששות של בעל המקצוע והסבר את הצרכים שלך. שקיפות מלאה לגבי מגבלות תקציב או זמן מאפשרת למצוא פתרונות יצירתיים. זכרו שכל שינוי משמעותי דורש אישור בכתב.</p>
+
+      <h2>בחירת חומרים ואספקה</h2>
+      <p>חומרים איכותיים משפיעים ישירות על התוצאה הסופית. בצע השוואת מחירים בין ספקים שונים, ואל תחשוש לבקש דוגמאות או תעודות תקן. לעיתים כדאי להשקיע מעט יותר כדי לקבל עמידות טובה לאורך זמן.</p>
+
+      <h3>בדיקת זמינות מלאי</h3>
+      <p>לפני הזמנה גדולה, בדוק זמינות מלאי כדי להימנע מעיכובים. אפשר לבקש מהספק לאשר שהכמות תישמר עבורך עד מועד האספקה ולבקש מספר הזמנה או אישור בכתב.</p>
+
+      <h3>התאמת החומר לאקלים</h3>
+      <p>בישראל יש תנאי אקלים משתנים, ולכן חשוב לבחור חומרי גלם שמתאימים לחום, ללחות או לקור. בדוק המלצות יצרן לגבי טמפרטורות עבודה ואחסון כדי להבטיח שהמוצר יעמוד בהוראות.</p>
+
+      <h2>בדיקות איכות בסיום העבודה</h2>
+      <p>לפני שמסיימים, בצעו בדיקות איכות יסודיות. עברו עם בעל המקצוע על כל סעיף שסוכם, ובדקו שהציוד מנוקה והשטח מוכן לשימוש. אל תתביישו לבקש תיקונים קטנים או לחדד הוראות שימוש.</p>
+
+      <h3>רשימת בדיקה מומלצת</h3>
+      <p>הכינו מראש צ'ק-ליסט קצר עם כל השלבים והפריטים שיש לוודא: חיבורים, סימונים, ניקיון, בדיקות פונקציונליות ואחריות. סמנו כל סעיף רק לאחר שבוצע לשביעות רצונכם.</p>
+
+      <h3>סיכום והעברת אחריות</h3>
+      <p>בסיום העבודה בקשו הדרכה קצרה על שימוש ותחזוקה. ודאו שכל מסמכי האחריות והחשבוניות התקבלו. סיכום ברור של הצעדים הבאים יעזור לכם לשמור על התוצאה לאורך זמן.</p>
+
+      <h2>שאלות נפוצות ומסקנות</h2>
+      <p>לסיום, כדאי לשמור תיעוד של השאלות שחזרו בתהליך. כך תוכלו ללמוד ולשפר את העבודה מול בעלי מקצוע בעתיד. כל הסעיפים בדף הדמו הזה נועדו להמחיש כיצד TOC סטיקי יכול לסייע בניווט.</p>
+
+      <h3>למי מתאים הדף הזה</h3>
+      <p>הדמו יכול לשמש מעצבים ומפתחים שרוצים לבחון התנהגות של תוכן עניינים צף ללא תלות במערכת קיימת. פשוט שמרו את הקובץ ופתחו אותו בדפדפן, גם ללא שרת.</p>
+
+      <h3>עוד רעיונות לשיפור</h3>
+      <p>ניתן להוסיף ספירת מילים, כפתורי "חזרה לראש העמוד" או התאמות נגישות נוספות כמו קיצורי מקלדת. מטרת הדף היא להיות בסיס נקי להתנסות.</p>
+    </main>
+
+    <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
+      <nav class="toc-demo-toc">
+        <h2 class="toc-demo-toc-title">במאמר זה</h2>
+        <ul class="toc-demo-toc-list"></ul>
+      </nav>
+    </aside>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const main = document.querySelector('.toc-demo-main');
+      const tocList = document.querySelector('.toc-demo-toc-list');
+
+      if (!main || !tocList) {
+        return;
+      }
+
+      const headings = Array.from(main.querySelectorAll('h2, h3'));
+      if (!headings.length) {
+        return;
+      }
+
+      const linkById = new Map();
+
+      const slugify = (text) => {
+        return text
+          .toString()
+          .trim()
+          .toLowerCase()
+          .replace(/[^\p{L}\p{N}\s-]/gu, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+      };
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          const slug = slugify(heading.textContent || `section-${index + 1}`);
+          const baseId = slug || `section-${index + 1}`;
+          let uniqueId = baseId;
+          let counter = 1;
+
+          while (document.getElementById(uniqueId)) {
+            uniqueId = `${baseId}-${counter++}`;
+          }
+
+          heading.id = uniqueId;
+        }
+
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent || heading.id;
+
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          const target = document.getElementById(heading.id);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+
+        li.appendChild(link);
+        tocList.appendChild(li);
+        linkById.set(heading.id, link);
+      });
+
+      let activeId = null;
+
+      const setActive = (id) => {
+        if (id === activeId) {
+          return;
+        }
+
+        if (activeId && linkById.has(activeId)) {
+          linkById.get(activeId).classList.remove('is-active');
+        }
+
+        if (id && linkById.has(id)) {
+          linkById.get(id).classList.add('is-active');
+          activeId = id;
+        } else {
+          activeId = null;
+        }
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        let bestId = activeId;
+        let bestScore = Number.POSITIVE_INFINITY;
+        const viewportCenter = window.innerHeight / 2;
+
+        entries.forEach((entry) => {
+          const rect = entry.boundingClientRect;
+          const center = rect.top + rect.height / 2;
+          const distance = Math.abs(center - viewportCenter);
+
+          if (entry.isIntersecting && distance < bestScore) {
+            bestScore = distance;
+            bestId = entry.target.id;
+          }
+        });
+
+        if (!entries.some((entry) => entry.isIntersecting)) {
+          return;
+        }
+
+        setActive(bestId);
+      }, {
+        root: null,
+        rootMargin: '-50% 0px -40% 0px',
+        threshold: [0, 0.3, 0.6, 1],
+      });
+
+      headings.forEach((heading) => observer.observe(heading));
+    });
+  </script>
+</body>
+</html>

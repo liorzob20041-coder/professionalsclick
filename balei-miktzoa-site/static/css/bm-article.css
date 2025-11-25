@@ -166,6 +166,7 @@
   direction: rtl;
   width: min(1180px, 96vw);
   margin-inline: auto;
+  padding-inline: 1.5rem;
   overflow: visible;
 }
 .bm-article-main {
@@ -174,18 +175,11 @@
   overflow: visible;
 }
 .bm-article-toc {
-  display: block;
   position: sticky;
   top: 24px;
-  height: auto;
-  overflow: visible;
-  background: transparent;
-  border: none;
-  padding: clamp(18px, 2vw, 24px);
-  font-size: calc(var(--bm-article-small-size) * 0.9);
-  border-radius: var(--bm-article-radius-lg);
-  box-shadow: none;
   align-self: flex-start;
+  display: block;
+  overflow: visible;
 }
 .bm-article-page__section {
   background: transparent;
@@ -269,16 +263,11 @@
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
 .article-toc {
-  background: transparent;
-  border-radius: var(--bm-article-radius-lg);
-  box-shadow: none;
-  padding: clamp(18px, 2vw, 24px);
-  font-size: calc(var(--bm-article-small-size) * 0.9);
-  border: none;
-  display: grid;
-  gap: 8px;
-  align-content: start;
-  overflow: visible;
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: #f9f5f7;
+  border: 1px solid rgba(139, 21, 56, 0.18);
+  font-size: var(--bm-article-small-size);
 }
 .article-toc__title,
 .bm-article-toc-title {
@@ -310,7 +299,6 @@
 .article-toc__list a:hover,
 .bm-article-toc-list a:hover {
   color: var(--bm-article-brand);
-  background: rgba(139, 21, 56, 0.08);
 }
 .article-toc__list a.is-active,
 .bm-article-toc-list a.is-active {
@@ -351,8 +339,8 @@
   }
   .bm-article-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    gap: 2.5rem;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 32px;
     align-items: flex-start;
     direction: rtl;
     max-width: 1180px;
@@ -370,9 +358,6 @@
     position: sticky;
     top: 24px;
     align-self: flex-start;
-    background: transparent;
-    box-shadow: none;
-    border: none;
     max-height: none;
     overflow: visible;
   }

@@ -102,10 +102,9 @@
   padding-block: 24px 64px;
 }
 .bm-article-layout {
-  max-width: 1180px;
+  width: min(1180px, 96vw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
   gap: 32px;
   align-items: flex-start;
 }
@@ -182,6 +181,11 @@
   position: sticky;
   top: 24px;
   align-self: flex-start;
+}
+@media (min-width: 1024px) {
+  .bm-article-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
 }
 .article-toc {
   border-radius: 16px;

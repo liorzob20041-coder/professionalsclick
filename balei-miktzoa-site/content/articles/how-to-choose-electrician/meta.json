@@ -5,18 +5,18 @@
   "status": "published",
   "popular": true,
   "hero_image": "/static/articles/electrician-spotlight.jpg",
-  "reading_minutes": 4,
+  "reading_minutes": 6,
   "he": {
-    "title": "איך לבחור חשמלאי",
-    "description": "דברים חשובים לבדיקה לפני שמזמינים חשמלאי."
+    "title": "החשמל קפץ? כך תאתרו את התקלה לפני הזמנת חשמלאי",
+    "description": "מדריך שלב-אחר-שלב לאיתור תקלה בלוח החשמל ולזיהוי מתי להזמין חשמלאי מוסמך."
   },
   "en": {
-    "title": "How to choose a licensed electrician",
-    "description": "Essential safety checks and questions to ask before you hire an electrician."
+    "title": "Power outage at home? How to diagnose the fault before calling an electrician",
+    "description": "Step-by-step checklist for restoring power safely and knowing when to call a licensed electrician."
   },
   "ru": {
-    "title": "Как выбрать лицензированного электрика",
-    "description": "Какие проверки и вопросы помогут убедиться в профессионализме электрика до заказа работ."
+    "title": "Отключилось электричество? Как найти причину до вызова электрика",
+    "description": "Пошаговый план безопасной проверки щита и понимания, когда нужно вызвать лицензированного электрика."
   },
   "tags": ["חשמל", "בטיחות"]
 }

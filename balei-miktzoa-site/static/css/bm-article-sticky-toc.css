@@ -1,0 +1,143 @@
+/* Sticky TOC styling scoped to electrician article */
+
+/* חשוב: לא לחסום את ה-sticky עם overflow */
+.bm-article-page.bm-article-sticky .article-section,
+.bm-article-page.bm-article-sticky .bm-article-layout {
+  overflow: visible !important;
+}
+
+.bm-article-page.bm-article-sticky {
+  --bm-article-sticky-brand: var(--bm-article-brand, #8b1538);
+  --bm-article-sticky-surface: var(--bm-article-surface, #fff);
+  --bm-article-sticky-border: var(--bm-article-border, rgba(139, 21, 56, 0.18));
+  --bm-article-sticky-muted: var(--bm-article-muted, rgba(30, 26, 29, 0.72));
+}
+
+.bm-article-page.bm-article-sticky .bm-article-layout {
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 32px;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-main {
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-main h1 {
+  font-size: clamp(30px, 4vw, 36px);
+  margin: 0 0 22px;
+  color: #111;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-main h2 {
+  font-size: clamp(22px, 3vw, 28px);
+  margin: 32px 0 12px;
+  color: var(--bm-article-sticky-brand);
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-main h3 {
+  font-size: clamp(18px, 2.4vw, 22px);
+  margin: 18px 0 10px;
+  color: color-mix(in srgb, var(--bm-article-sticky-brand) 80%, #1f1f1f 20%);
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-main p {
+  margin: 0 0 14px;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-main ul,
+.bm-article-page.bm-article-sticky .bm-article-sticky-main ol {
+  margin: 0 0 16px 0;
+  padding-inline-start: 20px;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-main li {
+  margin: 6px 0;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-aside,
+.bm-article-page.bm-article-sticky .bm-article-sticky-warning,
+.bm-article-page.bm-article-sticky .bm-article-sticky-tip {
+  border-radius: var(--bm-article-radius-sm, 12px);
+  padding: 12px 14px;
+  margin: 14px 0;
+  background: #f9f5f7;
+  border: 1px solid rgba(139, 21, 56, 0.14);
+  color: #361324;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-warning {
+  background: #fff6f6;
+  border-color: #f5c2c7;
+  color: #7c1c23;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-tip {
+  background: #f4f8ff;
+  border-color: #c2d9ff;
+  color: #0f3057;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-sidebar {
+  position: sticky;
+  top: 24px;
+  align-self: flex-start;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc {
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: #f9f5f7;
+  border: 1px solid var(--bm-article-sticky-border);
+  font-size: 14px;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--bm-article-sticky-brand);
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc-list li {
+  line-height: 1.5;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc-list a {
+  text-decoration: none;
+  color: #444;
+  padding: 4px 2px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc-list a:hover {
+  color: var(--bm-article-sticky-brand);
+  background: rgba(139, 21, 56, 0.06);
+}
+
+.bm-article-page.bm-article-sticky .bm-article-sticky-toc-list a.is-active {
+  font-weight: 600;
+  color: var(--bm-article-sticky-brand);
+}
+
+@media (max-width: 1023px) {
+  .bm-article-page.bm-article-sticky .bm-article-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bm-article-page.bm-article-sticky .bm-article-sticky-sidebar {
+    display: none;
+  }
+}

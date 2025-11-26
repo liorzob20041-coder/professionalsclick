@@ -228,45 +228,15 @@
       <h2 class="articles-title">{{ _('homepage.articles.title') }}</h2>
       <p class="articles-intro">{{ _('homepage.articles.subtitle') }}</p>
     </header>
-    {% set fallback_articles = [
-      {
-        'slug': 'mold-damp-guide',
-        'category': 'moisture',
-        'tag_label': _('homepage.tags.moisture'),
-        'hero_image_file': None,
-        'placeholder': _('homepage.articles.mold_damp.placeholder'),
-        'title': _('homepage.articles.mold_damp.title'),
-        'excerpt': _('homepage.articles.mold_damp.excerpt')
-      },
-      {
-        'slug': 'how-to-choose-electrician',
-        'category': 'electricity',
-        'tag_label': _('articles_index.category.electricity'),
-        'hero_image_file': 'articles/electrician-spotlight.jpg',
-        'hero_alt': _('homepage.articles.electric.alt'),
-        'hero_image_width': 2400,
-        'hero_image_height': 1350,
-        'title': 'החשמל קפץ? כך תאתרו את התקלה לפני הזמנת חשמלאי',
-        'excerpt': 'שלבים בטוחים להחזרת החשמל ואיך לדעת מתי לקרוא לחשמלאי מוסמך'
-      },
-      {
-        'slug': 'plumbing-quote-checklist',
-        'category': 'plumbing',
-        'tag_label': _('articles_index.category.plumbing'),
-        'hero_image_file': 'articles/plumber-spotlight.jpg',
-        'hero_alt': _('homepage.articles.plumber.alt'),
-        'hero_image_width': 640,
-        'hero_image_height': 466,
-        'title': _('homepage.articles.plumber.title'),
-        'excerpt': _('homepage.articles.plumber.excerpt')
-      }
-    ] %}
-    {% set dynamic_articles = featured_articles | default([]) %}
-    {% set articles = dynamic_articles if dynamic_articles else fallback_articles %}
+    {% set articles = featured_articles | default([]) %}
     <div class="articles-masonry" role="list">
-      {% for article in articles %}
-        {% include 'articles/partials/article-card.html' with context %}
-      {% endfor %}
+      {% if articles %}
+        {% for article in articles %}
+          {% include 'articles/partials/article-card.html' with context %}
+        {% endfor %}
+      {% else %}
+        <p class="bm-home-articles-empty">מאמרים חדשים יעלו לכאן בקרוב.</p>
+      {% endif %}
     </div>
     <div class="articles-actions">
       <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="articles-more-btn">

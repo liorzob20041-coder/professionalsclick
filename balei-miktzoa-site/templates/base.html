@@ -1462,11 +1462,7 @@ runWhenIdle(function(){
   });
 });
 </script>
-
   {% block scripts %}
-  <!-- Charts vendor (one-time) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script defer src="{{ url_for('static', filename='js/article.js') }}?v=chart1"></script>
   {% endblock %}
   <!-- ===== ADDED: מדידת רוחב כפתור השפה למרווחים שווים ===== -->
   <script>

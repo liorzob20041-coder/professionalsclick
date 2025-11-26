@@ -2699,194 +2699,21 @@ def _build_canonical(lang_code: str, slug: str) -> str:
 def _render_article_detail(lang: str, slug: str):
     g.current_lang = lang
     try:
-        meta, lang_data, body_template = load_article(slug, lang)
+        meta, lang_data, _body_template = load_article(slug, lang)
     except FileNotFoundError:
-        abort(404)
-
-    body_html = render_template_string(body_template, meta=meta, lang_data=lang_data)
-    he_meta = meta.get("he")
-    if not isinstance(he_meta, dict):
-        he_meta = {}
-        meta["he"] = he_meta
-    has_shortcode_syntax = bool(re.search(r"\[[A-Za-z0-9_]+", body_template))
-    blocks: list[dict[str, Any]] = []
-    sidebar_info: list[dict[str, Any]] = []
-
-    raw_info_box = he_meta.get("info_box")
-    if isinstance(raw_info_box, dict):
-        cleaned_items: list[dict[str, str]] = []
-        for row in raw_info_box.get("items", []):
-            if not isinstance(row, dict):
-                continue
-            label = row.get("label")
-            value = row.get("value")
-            if not label or not value:
-                continue
-            label_str = str(label).strip()
-            value_str = str(value).strip()
-            if label_str and value_str:
-                cleaned_items.append({"label": label_str, "value": value_str})
-        if cleaned_items:
-            he_meta["info_box"] = {
-                "title": str(raw_info_box.get("title", "")).strip() or None,
-                "items": cleaned_items,
-            }
-        else:
-            he_meta.pop("info_box", None)
-    elif "info_box" in he_meta:
-        he_meta.pop("info_box")
-
-    raw_toc = he_meta.get("toc")
-    if isinstance(raw_toc, list):
-        cleaned_toc: list[dict[str, str]] = []
-        for entry in raw_toc:
-            if not isinstance(entry, dict):
-                continue
-            anchor_id = entry.get("id")
-            title = entry.get("title")
-            if not anchor_id or not title:
-                continue
-            anchor_id_str = str(anchor_id).strip()
-            title_str = str(title).strip()
-            if anchor_id_str and title_str:
-                cleaned_toc.append({"id": anchor_id_str, "title": title_str})
-        if cleaned_toc:
-            he_meta["toc"] = cleaned_toc
-        else:
-            he_meta.pop("toc", None)
-    elif "toc" in he_meta:
-        he_meta.pop("toc")
-
-    raw_highlights = he_meta.get("highlights")
-    if isinstance(raw_highlights, list):
-        cleaned_highlights = [str(item).strip() for item in raw_highlights if isinstance(item, (str, int, float)) and str(item).strip()]
-        if cleaned_highlights:
-            he_meta["highlights"] = cleaned_highlights
-        else:
-            he_meta.pop("highlights", None)
-    elif "highlights" in he_meta:
-        he_meta.pop("highlights")
-
-    raw_summary = he_meta.get("summary_card")
-    if isinstance(raw_summary, dict):
-        summary_label = raw_summary.get("label")
-        summary_value = raw_summary.get("value")
-        badges = raw_summary.get("badges")
-        cleaned_badges: list[str] = []
-        if isinstance(badges, list):
-            for badge in badges:
-                if not isinstance(badge, (str, int, float)):
-                    continue
-                badge_str = str(badge).strip()
-                if badge_str:
-                    cleaned_badges.append(badge_str)
-        summary_card: Dict[str, Any] = {}
-        if isinstance(summary_label, (str, int, float)) and str(summary_label).strip():
-            summary_card["label"] = str(summary_label).strip()
-        if isinstance(summary_value, (str, int, float)) and str(summary_value).strip():
-            summary_card["value"] = str(summary_value).strip()
-        if cleaned_badges:
-            summary_card["badges"] = cleaned_badges
-        if summary_card:
-            he_meta["summary_card"] = summary_card
-        else:
-            he_meta.pop("summary_card", None)
-    elif "summary_card" in he_meta:
-        he_meta.pop("summary_card")
-    raw_hero_image = meta.get("hero_image") or meta.get("hero_image_file")
-    hero_image_absolute = None
-    if raw_hero_image:
-        if isinstance(raw_hero_image, str) and raw_hero_image.startswith("/static/"):
-            static_path = raw_hero_image[len("/static/"):]
-            hero_image_absolute = url_for('static', filename=static_path, _external=True)
-        elif isinstance(raw_hero_image, str) and raw_hero_image.startswith("http"):
-            hero_image_absolute = raw_hero_image
-        elif isinstance(raw_hero_image, str):
-            hero_image_absolute = urljoin(request.url_root, raw_hero_image.lstrip("/"))
-
-    article_slug = meta.get("slug") or slug
-    related_articles = get_related_articles(article_slug, meta.get("category"), lang=lang, limit=3)
-    if has_shortcode_syntax or "<" not in body_template:
-        raw_blocks = parse_shortcodes(body_template)
-        for block in raw_blocks:
-            if block.get("type") == "info_box":
-                data = block.get("data") or {}
-                if isinstance(data, dict) and data:
-                    sidebar_info.append(data)
-                continue
-            blocks.append(block)
-    else:
-        sidebar_info = []
-
-    info_box_meta = he_meta.get("info_box")
-    if isinstance(info_box_meta, dict) and info_box_meta.get("items"):
-        if info_box_meta not in sidebar_info:
-            sidebar_info.append(info_box_meta)
-
-    read_time_value = lang_data.get("read_time") or meta.get("read_time")
-    reading_minutes = meta.get("reading_minutes")
-    if not read_time_value and isinstance(reading_minutes, (int, float)):
-        minutes = int(reading_minutes)
-        if lang == "en":
-            read_time_value = f"{minutes} min read"
-        elif lang == "ru":
-            read_time_value = f"{minutes} мин. чтения"
-        else:
-            read_time_value = f"{minutes} דקות קריאה"
-    elif not read_time_value and isinstance(reading_minutes, str) and reading_minutes.strip():
-        read_time_value = reading_minutes.strip()
-
-    article_meta = {
-        "published_at": meta.get("published_at") or meta.get("date"),
-        "read_time": read_time_value,
-        "updated_at": meta.get("updated_at") or lang_data.get("updated_at"),
-    }
-
-    hero_image = raw_hero_image
-    hero_alt = (
-        lang_data.get("hero_alt")
-        or meta.get("hero_alt")
-        or he_meta.get("hero_alt")
-        or lang_data.get("title")
+        meta, lang_data = {}, {}
+    he_meta = meta.get("he") if isinstance(meta.get("he"), dict) else {}
+    title = (
+        (lang_data.get("title") if isinstance(lang_data, dict) else None)
         or meta.get("title")
+        or he_meta.get("title")
+        or (slug.replace("-", " ") if slug else None)
     )
-    hero_placeholder = url_for("static", filename="img/placeholders/article-hero.png")
-    hero_image_source = hero_image_absolute or hero_placeholder
-    if not hero_image_absolute and isinstance(hero_image, str):
-        if hero_image.startswith("/static/"):
-            hero_image_source = url_for("static", filename=hero_image[len("/static/"):])
-        elif hero_image.startswith("http"):
-            hero_image_source = hero_image
-        else:
-            hero_image_source = urljoin(request.url_root, hero_image.lstrip("/"))
-    article = {
-        "slug": article_slug,
-        "title": lang_data.get("title") or meta.get("title") or he_meta.get("title"),
-        "subtitle": lang_data.get("subtitle") or meta.get("subtitle") or he_meta.get("subtitle"),
-        "category": meta.get("category") or he_meta.get("category"),
-        "meta": {k: v for k, v in article_meta.items() if v},
-        "hero_image": hero_image,
-        "hero_image_source": hero_image_source,
-        "hero_alt": hero_alt,
-        "summary_cost": he_meta.get("summary_card") or meta.get("summary_card"),
-        "related": related_articles,
-        "cta": he_meta.get("cta") or meta.get("cta"),
-        "lang_data": lang_data,
-        "body_html": body_html,
-    }
-    canonical_url = _build_canonical(lang, article_slug)
-    template_name = (
-        'articles/detail_electrician_sticky.html'
-        if article_slug == 'how-to-choose-electrician'
-        else 'articles/detail.html'
-    )
+    article = {"slug": slug, "title": title}
+    canonical_url = _build_canonical(lang, slug)
     return render_template(
-        template_name,
+        'articles/detail.html',
         article=article,
-        related_articles=related_articles,
-        hero_image_absolute=hero_image_absolute,
-        blocks=blocks,
-        sidebar_info=sidebar_info,
         meta=meta,
         lang_data=lang_data,
         lang_code=lang,

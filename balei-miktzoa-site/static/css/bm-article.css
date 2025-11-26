@@ -104,15 +104,22 @@
 .bm-article-layout {
   width: min(1180px, 96vw);
   margin: 0 auto;
+}
+.bm-article-page.bm-article-sticky .bm-article-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
   gap: 32px;
   align-items: flex-start;
 }
-.bm-article-main {
+.bm-article-main,
+.bm-article-sticky-main {
   min-width: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.8;
   font-size: 16px;
+}
+.bm-article-sticky-main {
+  min-width: 0;
 }
 .bm-article-page__body-text {
   font-size: var(--bm-article-text-size);
@@ -177,37 +184,34 @@
   transform: translateY(-2px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
-.bm-article-toc {
+.bm-article-sticky-sidebar {
   position: sticky;
-  top: 24px;
+  top: 96px;
   align-self: flex-start;
 }
-@media (min-width: 1024px) {
-  .bm-article-layout {
-    grid-template-columns: minmax(0, 1fr) 260px;
-  }
-}
-.article-toc {
+.bm-article-sticky-toc {
   border-radius: 16px;
   padding: 16px 18px;
   background: #f9f5f7;
   border: 1px solid rgba(139, 21, 56, 0.18);
   font-size: 14px;
+  display: grid;
+  gap: 12px;
 }
-.article-toc__title {
-  margin: 0 0 10px;
+.bm-article-sticky-toc-title {
+  margin: 0;
   font-size: 16px;
   font-weight: 700;
   color: #8b1538;
 }
-.article-toc__list {
+.bm-article-sticky-toc-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   gap: 6px;
 }
-.article-toc__list a {
+.bm-article-sticky-toc-list a {
   text-decoration: none;
   color: #444;
   padding: 4px 2px;
@@ -216,14 +220,10 @@
   align-items: center;
   gap: 6px;
 }
-.article-toc__list a:hover {
+.bm-article-sticky-toc-list a:hover {
   color: #8b1538;
 }
-.article-toc__list a.is-active {
-  font-weight: 600;
-  color: #8b1538;
-}
-.article-toc__cta {
+.bm-article-sticky-toc-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -233,15 +233,6 @@
   border-radius: var(--bm-article-radius-sm);
   text-decoration: none;
   font-weight: 600;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-.article-toc__cta:hover {
-  background: rgba(139, 21, 56, 0.18);
-  transform: translateY(-1px);
-}
-.article-toc__cta:hover {
-  background: rgba(139, 21, 56, 0.18);
-  transform: translateY(-1px);
 }
 .article-body img {
   max-width: 100%;
@@ -253,10 +244,10 @@
 }
 
 @media (max-width: 1023px) {
-  .bm-article-layout {
+  .bm-article-page.bm-article-sticky .bm-article-layout {
     grid-template-columns: 1fr;
   }
-  .bm-article-toc {
+  .bm-article-page.bm-article-sticky .bm-article-sticky-sidebar {
     display: none;
   }
 }

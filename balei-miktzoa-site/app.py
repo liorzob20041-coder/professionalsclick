@@ -2699,9 +2699,10 @@ def _build_canonical(lang_code: str, slug: str) -> str:
 def _render_article_detail(lang: str, slug: str):
     g.current_lang = lang
     try:
-        meta, lang_data, _body_template = load_article(slug, lang)
+        meta, lang_data, body_html = load_article(slug, lang)
     except FileNotFoundError:
         meta, lang_data = {}, {}
+        body_html = ""
     he_meta = meta.get("he") if isinstance(meta.get("he"), dict) else {}
     title = (
         (lang_data.get("title") if isinstance(lang_data, dict) else None)
@@ -2716,6 +2717,7 @@ def _render_article_detail(lang: str, slug: str):
         article=article,
         meta=meta,
         lang_data=lang_data,
+        body_html=body_html,
         lang_code=lang,
         canonical_url=canonical_url,
     )

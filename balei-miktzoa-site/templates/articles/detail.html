@@ -7,8 +7,26 @@
 {% block content %}
 <section class="bm-article-page">
   <div class="bm-article-layout-simple">
-    <h1 class="bm-article-title">{{ (article.title if article is defined else None) or "כותרת המאמר" }}</h1>
-    <p class="bm-article-placeholder">תוכן המאמר יתווסף בקרוב.</p>
+    <aside class="toc">
+      <h2>במאמר זה</h2>
+      <ul>
+        <li><a href="#signs">סימנים שמצביעים על תקלה</a></li>
+        <li><a href="#slow-drain">ניקוז איטי</a></li>
+        <li><a href="#bad-smell">ריח רע מהביוב</a></li>
+        <li><a href="#urgent">מתי זה דחוף?</a></li>
+        <li><a href="#leak">נזילה גלויה או נסתרת</a></li>
+        <li><a href="#pressure">לחץ מים נמוך</a></li>
+        <li><a href="#call">מתי לקרוא לאינסטלטור?</a></li>
+      </ul>
+    </aside>
+    <main class="bm-article-body" dir="rtl">
+      {% if body_html %}
+        {{ body_html | safe }}
+      {% else %}
+        <h1 class="bm-article-title">{{ (article.title if article is defined else None) or "כותרת המאמר" }}</h1>
+        <p class="bm-article-placeholder">תוכן המאמר יתווסף בקרוב.</p>
+      {% endif %}
+    </main>
   </div>
 </section>
 {% endblock %}

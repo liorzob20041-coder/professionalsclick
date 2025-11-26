@@ -29,11 +29,11 @@
   {% if not category_label %}
     {% set category_label = category_map.get(lang_code) or category_map.get('he') or meta.get('category_he') or meta.get('category') %}
   {% endif %}
+  {% set sticky_toc = meta.get('sticky_toc') %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bm-article.css') }}">
 {% endblock %}
 {% block content %}
-{% set body_has_sticky_sidebar = article.body_html is string and 'bm-article-sticky-sidebar' in article.body_html %}
-<div class="bm-article-page article-page{% if body_has_sticky_sidebar %} bm-article-sticky{% endif %}">
+<div class="bm-article-page article-page{% if sticky_toc %} bm-article-sticky{% endif %}">
   {% set sidebar_items = sidebar_info | default([]) %}
   <section id="article-hero" class="article-hero">
     <div class="bm-article-page__container">
@@ -91,10 +91,10 @@
       </figure>
     </div>
   </section>
-  <section class="bm-article-page__section article-section">
-    {% if body_has_sticky_sidebar %}
-      {{ article.body_html | safe }}
-    {% else %}
+  {% if sticky_toc %}
+    {{ article.body_html | safe }}
+  {% else %}
+    <section class="bm-article-page__section article-section">
       <div class="bm-article-layout">
         <main class="bm-article-main" id="bm-article-main">
           {% if article.summary_cost %}
@@ -188,8 +188,8 @@
           {% endif %}
         </main>
       </div>
-    {% endif %}
-  </section>
+    </section>
+  {% endif %}
 </div>
 {% endblock %}
 {% block body_end_extra %}

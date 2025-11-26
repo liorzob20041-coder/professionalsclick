@@ -6,6 +6,7 @@
   "popular": true,
   "hero_image": "/static/articles/plumber-spotlight.jpg",
   "reading_minutes": 4,
+  "sticky_toc": true,
   "he": {
     "title": "צ'קליסט להצעת מחיר לאינסטלטור",
     "description": "מה צריך לוודא לפני שסוגרים הצעת מחיר עם אינסטלטור."

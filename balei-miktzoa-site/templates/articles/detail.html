@@ -6,25 +6,31 @@
 {% endblock %}
 {% block content %}
 <section class="bm-article-page">
-  <div class="bm-article-layout-simple">
-    <aside class="toc">
-      <h2>במאמר זה</h2>
-      <ul>
-        <li><a href="#signs">סימנים שמצביעים על תקלה</a></li>
-        <li><a href="#slow-drain">ניקוז איטי</a></li>
-        <li><a href="#bad-smell">ריח רע מהביוב</a></li>
-        <li><a href="#urgent">מתי זה דחוף?</a></li>
-        <li><a href="#leak">נזילה גלויה או נסתרת</a></li>
-        <li><a href="#pressure">לחץ מים נמוך</a></li>
-        <li><a href="#call">מתי לקרוא לאינסטלטור?</a></li>
-      </ul>
-    </aside>
-    <main class="bm-article-body" dir="rtl">
-      {% if body_html %}
-        {{ body_html | safe }}
+  <div class="bm-article-layout-simple{% if not toc_items %} no-toc{% endif %}">
+    {% if toc_items %}
+      <aside class="toc">
+        <h2>במאמר זה</h2>
+        <ul>
+          {% for item in toc_items %}
+            <li>
+              {% if item.anchor %}
+                <a href="#{{ item.anchor }}">{{ item.title }}</a>
+              {% else %}
+                {{ item.title }}
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </aside>
+    {% endif %}
+    <main class="bm-article-main" dir="rtl">
+      {% if article_body_html %}
+        <div class="bm-article-body">
+          {{ article_body_html | safe }}
+        </div>
       {% else %}
         <h1 class="bm-article-title">{{ (article.title if article is defined else None) or "כותרת המאמר" }}</h1>
-        <p class="bm-article-placeholder">תוכן המאמר יתווסף בקרוב.</p>
+        <p class="bm-article-placeholder">תוכן המאמר עדיין לא זמין.</p>
       {% endif %}
     </main>
   </div>

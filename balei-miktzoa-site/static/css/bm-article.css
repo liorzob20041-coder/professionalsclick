@@ -33,6 +33,9 @@
     gap: 24px;
   }
 }
+.bm-article-layout-simple.no-toc {
+  grid-template-columns: minmax(0, 1fr);
+}
 .bm-article-title {
   font-size: var(--bm-article-headline-size);
   margin: 0;

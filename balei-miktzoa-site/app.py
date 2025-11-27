@@ -47,7 +47,7 @@ from services.json_store import atomic_write_json
 from services.translation import translate as translate_text
 from services.video_utils import get_local_video_metadata, normalize_video_file
 
-from articles_content import load_article, load_articles_list, get_related_articles
+from articles_content import load_articles_list, get_related_articles
 from app.articles import articles_bp
 
 
@@ -2696,28 +2696,81 @@ def _build_canonical(lang_code: str, slug: str) -> str:
         except Exception:
             return request.url
 
-def _render_article_detail(lang: str, slug: str):
-    g.current_lang = lang
-    try:
-        meta, lang_data, body_html = load_article(slug, lang)
-    except FileNotFoundError:
-        meta, lang_data = {}, {}
-        body_html = ""
+def _load_article_from_disk(slug: str, lang: str) -> tuple[dict, str]:
+    """Load article meta and body HTML directly from the content directory."""
+
+    base_dir = Path(__file__).resolve().parent
+    article_dir = base_dir / "content" / "articles" / slug
+
+    meta_path = article_dir / "meta.json"
+    meta: dict[str, Any] = {}
+    if meta_path.exists():
+        with meta_path.open(encoding="utf-8") as f:
+            meta = json.load(f)
+
+    # Load article body HTML from disk with simple fallbacks
+    body_html = ""
+    body_candidates = []
+    if lang:
+        body_candidates.append(article_dir / f"body.{lang}.html")
+    if lang != "he":
+        body_candidates.append(article_dir / "body.he.html")
+    body_candidates.append(article_dir / "body.html")
+
+    for body_path in body_candidates:
+        if body_path.exists():
+            body_html = body_path.read_text(encoding="utf-8")
+            break
+
+    return meta, body_html
+
+
+def _extract_title(meta: dict, lang: str, slug: str) -> str | None:
+    """Pick a reasonable article title from meta fallbacks."""
+
+    lang_meta = meta.get(lang) if isinstance(meta.get(lang), dict) else {}
     he_meta = meta.get("he") if isinstance(meta.get("he"), dict) else {}
-    title = (
-        (lang_data.get("title") if isinstance(lang_data, dict) else None)
+    return (
+        lang_meta.get("title")
         or meta.get("title")
         or he_meta.get("title")
         or (slug.replace("-", " ") if slug else None)
     )
+def _build_toc_items(meta: dict, body_html: str) -> list[dict[str, str | None]]:
+    """Create TOC entries, pairing meta titles with heading IDs when available."""
+
+    toc_entries = meta.get("toc") if isinstance(meta.get("toc"), list) else []
+    heading_ids = re.findall(r"<h[1-6][^>]*id=\"([^\"]+)\"", body_html or "", flags=re.IGNORECASE)
+
+    items: list[dict[str, str | None]] = []
+    for idx, entry in enumerate(toc_entries):
+        title = entry.get("title") if isinstance(entry, dict) else str(entry)
+        anchor = None
+        if isinstance(entry, dict):
+            anchor = entry.get("id") or entry.get("anchor")
+        if anchor is None and idx < len(heading_ids):
+            anchor = heading_ids[idx]
+        items.append({"title": title, "anchor": anchor})
+    return items
+
+
+def _render_article_detail(lang: str, slug: str):
+    g.current_lang = lang
+    try:
+        meta, body_html = _load_article_from_disk(slug, lang)
+    except FileNotFoundError:
+        meta, body_html = {}, ""
+
+    title = _extract_title(meta, lang, slug)
     article = {"slug": slug, "title": title}
     canonical_url = _build_canonical(lang, slug)
+    toc_items = _build_toc_items(meta, body_html)
     return render_template(
         'articles/detail.html',
         article=article,
         meta=meta,
-        lang_data=lang_data,
-        body_html=body_html,
+        toc_items=toc_items,
+        article_body_html=body_html,
         lang_code=lang,
         canonical_url=canonical_url,
     )

@@ -416,6 +416,7 @@ def _resolve_translation_path(*components: str) -> str | None:
 # בסיס הפרויקט: התיקייה שבה נמצא קובץ זה
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = str(BASE_DIR / 'static')
+ARTICLES_CONTENT_DIR = BASE_DIR / "content" / "articles"
 STATIC_DIR_ABS = os.path.abspath(STATIC_DIR)
 
 try:
@@ -2695,12 +2696,24 @@ def _build_canonical(lang_code: str, slug: str) -> str:
             )
         except Exception:
             return request.url
+        
+def load_article_body(slug: str, lang: str) -> str | None:
+    """
+    Load the raw HTML body for a given article slug and language.
+    Expected path pattern:
+    content/articles/<slug>/body.<lang>.html
+    e.g. plumber-need-help -> content/articles/plumber-need-help/body.he.html
+    """
 
+    body_path = ARTICLES_CONTENT_DIR / slug / f"body.{lang}.html"
+    if not body_path.exists():
+        return None
+    return body_path.read_text(encoding="utf-8")
+          
 def _load_article_from_disk(slug: str, lang: str) -> tuple[dict, str]:
     """Load article meta and body HTML directly from the content directory."""
 
-    base_dir = Path(__file__).resolve().parent
-    article_dir = base_dir / "content" / "articles" / slug
+    article_dir = ARTICLES_CONTENT_DIR / slug
 
     meta_path = article_dir / "meta.json"
     meta: dict[str, Any] = {}
@@ -2708,21 +2721,17 @@ def _load_article_from_disk(slug: str, lang: str) -> tuple[dict, str]:
         with meta_path.open(encoding="utf-8") as f:
             meta = json.load(f)
 
-    # Load article body HTML from disk with simple fallbacks
-    body_html = ""
-    body_candidates = []
-    if lang:
-        body_candidates.append(article_dir / f"body.{lang}.html")
-    if lang != "he":
-        body_candidates.append(article_dir / "body.he.html")
-    body_candidates.append(article_dir / "body.html")
+    body_html = load_article_body(slug, lang)
+    if body_html is None and lang != "he":
+        body_html = load_article_body(slug, "he")
+    if body_html is None:
+        fallback_path = article_dir / "body.html"
+        if fallback_path.exists():
+            body_html = fallback_path.read_text(encoding="utf-8")
 
-    for body_path in body_candidates:
-        if body_path.exists():
-            body_html = body_path.read_text(encoding="utf-8")
-            break
+    print(f"[DEBUG] Loaded article body for {slug} ({lang}), length={len(body_html) if body_html else 0}")
 
-    return meta, body_html
+    return meta, body_html or ""
 
 
 def _extract_title(meta: dict, lang: str, slug: str) -> str | None:

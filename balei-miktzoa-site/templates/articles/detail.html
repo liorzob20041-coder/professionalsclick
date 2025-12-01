@@ -23,14 +23,11 @@
         </ul>
       </aside>
     {% endif %}
-    <main class="bm-article-main" dir="rtl">
+    <main class="bm-article-main">
       {% if article_body_html %}
-        <div class="bm-article-body">
-          {{ article_body_html | safe }}
-        </div>
+        {{ article_body_html | safe }}
       {% else %}
-        <h1 class="bm-article-title">{{ (article.title if article is defined else None) or "כותרת המאמר" }}</h1>
-        <p class="bm-article-placeholder">תוכן המאמר עדיין לא זמין.</p>
+        <p>תוכן המאמר עדיין לא זמין.</p>
       {% endif %}
     </main>
   </div>

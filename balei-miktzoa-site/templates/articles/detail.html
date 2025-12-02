@@ -6,30 +6,38 @@
 {% endblock %}
 {% block content %}
 <section class="bm-article-page">
-  <div class="bm-article-layout-simple{% if not toc_items %} no-toc{% endif %}">
-    {% if toc_items %}
-      <aside class="toc">
-        <h2>במאמר זה</h2>
-        <ul>
-          {% for item in toc_items %}
-            <li>
-              {% if item.anchor %}
-                <a href="#{{ item.anchor }}">{{ item.title }}</a>
-              {% else %}
-                {{ item.title }}
-              {% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-      </aside>
-    {% endif %}
-    <main class="bm-article-main">
-      {% if article_body_html %}
-        {{ article_body_html | safe }}
-      {% else %}
-        <p>תוכן המאמר עדיין לא זמין.</p>
+  <div class="bm-article-hero">
+    <div class="bm-article-hero__meta">
+      {% if article and article.category %}
+        <span class="bm-article-hero__pill">{{ article.category }}</span>
       {% endif %}
-    </main>
+    </div>
+    <h1 class="bm-article-title">{{ (article.title if article is defined else None) or "כותרת המאמר" }}</h1>
+    {% if article and article.subtitle %}
+      <p class="bm-article-subtitle">{{ article.subtitle }}</p>
+    {% endif %}
   </div>
+  <section class="bm-article-section">
+    <div class="bm-article-layout">
+      <main class="article-page__content bm-article-main" id="bm-article-main">
+        <div class="bm-article-page__section">
+          {% if article_body_html %}
+            {{ article_body_html | safe }}
+          {% else %}
+            <p>תוכן המאמר עדיין לא זמין.</p>
+          {% endif %}
+        </div>
+      </main>
+      <aside id="bm-article-toc" class="bm-article-toc" data-empty="true">
+        <h2 class="bm-article-toc-title">במאמר זה</h2>
+        <ul class="bm-article-toc-list"></ul>
+      </aside>
+    </div>
+  </section>
 </section>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/bm-article-toc.js') }}"></script>
 {% endblock %}

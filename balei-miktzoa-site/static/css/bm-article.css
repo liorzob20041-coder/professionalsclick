@@ -1,207 +1,136 @@
-.bm-article-page {
-  --bm-article-brand: #8b1538;
-  --bm-article-surface: #fff;
-  --bm-article-muted: rgba(30, 26, 29, 0.72);
-  --bm-article-font-base: 'Rubik', 'Assistant', 'Heebo', sans-serif;
-  --bm-article-headline-size: clamp(34px, 4vw, 48px);
-  --bm-article-subhead-size: clamp(20px, 2.6vw, 26px);
-  --bm-article-text-size: clamp(17px, 1.8vw, 19px);
+/* בסיס טיפוגרפי וגדלים */
+.bm-article-section {
+  font-family: 'Rubik', 'Assistant', 'Heebo', sans-serif;
   color: #1a1523;
   font-family: var(--bm-article-font-base);
   background-color: var(--bm-article-surface);
   padding-block: 48px;
-  direction: rtl;
 }
-.bm-article-page * {
-  box-sizing: border-box;
+.bm-article-section,
+.bm-article-page-shell,
+.bm-article-layout {
+  overflow: visible;
 }
 .bm-article-hero {
-  width: min(1200px, 96vw);
+  width: min(1180px, 96vw);
   margin: 0 auto 28px;
-  display: grid;
-  gap: 10px;
   text-align: right;
 }
 
-.bm-article-hero__meta {
-  display: flex;
-  justify-content: flex-start;
-  gap: 12px;
+.bm-article-hero-inner {
+  display: grid;
+  gap: 10px;
 }
 
-.bm-article-hero__pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(139, 21, 56, 0.12);
-  color: var(--bm-article-brand);
-  font-weight: 700;
-  font-size: 0.95rem;
+.bm-article-title {
+  font-size: clamp(34px, 4vw, 48px);
+  margin: 0;
+  line-height: 1.2;
+  color: #1a1523;
 }
 
 .bm-article-subtitle {
   margin: 0;
-  color: var(--bm-article-muted);
+  color: rgba(30, 26, 29, 0.72);
   font-size: clamp(18px, 2.2vw, 22px);
   line-height: 1.6;
 }
 
-.bm-article-section {
-  width: min(1200px, 96vw);
-  margin: 0 auto;
+/* מעטפת המאמר */
+.bm-article-page-shell {
+  max-width: 1180px;
+  margin: 0 auto 80px;
+  padding: 0 20px 60px;
 }
 
 .bm-article-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  column-gap: 32px;
+  align-items: flex-start;
 }
 
-@media (min-width: 1024px) {
-  .bm-article-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 1.1fr);
-    column-gap: 32px;
-    align-items: flex-start;
-    direction: rtl;
-  }
-}
+/* בגלל RTL – המאמר בעמודה הימנית, ה-TOC בשמאלית */
 .bm-article-main {
-  order: 1;
+  order: 2;
+  min-width: 0;
+  line-height: 1.8;
+  font-size: 16px;
 }
 
-.bm-article-toc {
-  order: 2;
+.bm-article-main h1,
+.bm-article-main h2,
+.bm-article-main h3 {
+  margin-top: 0;
+  text-align: right;
+}
+
+.bm-article-toc-sidebar {
+  order: 1;
   position: sticky;
   top: 120px;
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-  border-radius: 20px;
-  padding: 16px 20px;
-  background: var(--bm-article-surface);
-  box-shadow: var(--bm-article-shadow, 0 12px 30px rgba(0, 0, 0, 0.08));
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  align-self: flex-start;
+}
+
+/* כרטיס של ה-TOC */
+.bm-article-toc {
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: #f9f5f7;
+  border: 1px solid rgba(139, 21, 56, 0.18);
+  font-size: 14px;
+  box-shadow: 0 22px 60px rgba(139, 21, 56, 0.16);
   direction: rtl;
   text-align: right;
 }
 
 .bm-article-toc-title {
-  margin: 0 0 12px;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #1a1523;
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #8B1538;
 }
 
 .bm-article-toc-list {
-  margin: 0;
-  padding: 0;
-  list-style: disc;
-  list-style-position: inside;
-  display: grid;
-  gap: 10px;
-}
-
-.bm-article-toc-subitem {
-  margin-inline-start: 12px;
-  list-style-type: circle;
-}
-
-.bm-article-toc-list a {
-  color: #1f2937;
-  text-decoration: none;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.bm-article-toc-list a:hover,
-.bm-article-toc-list a:focus-visible {
-  color: var(--bm-article-brand);
-  text-decoration: underline;
-}
-
-.bm-article-toc[data-empty="true"] {
-  display: none;
-}
-
-@media (max-width: 1023px) {
-  .bm-article-toc {
-    position: static;
-    max-height: none;
-    margin-bottom: 24px;
-    order: -1;
-  }
-}
-.bm-article-title {
-  font-size: var(--bm-article-headline-size);
-  margin: 0;
-  line-height: 1.2;
-  color: #1a1523;
-}
-.bm-article-placeholder {
-  font-size: var(--bm-article-text-size);
-  margin: 0;
-  line-height: 1.7;
-  color: var(--bm-article-muted);
-}
-.bm-article-body {
-  display: grid;
-  gap: 12px;
-  font-size: var(--bm-article-text-size);
-  line-height: 1.7;
-}
-.bm-article-body h1 {
-  font-size: var(--bm-article-headline-size);
-  margin: 0 0 6px;
-  line-height: 1.2;
-}
-.bm-article-body h2 {
-  font-size: var(--bm-article-subhead-size);
-  margin: 18px 0 4px;
-  line-height: 1.4;
-}
-.bm-article-body h3 {
-  font-size: 18px;
-  margin: 12px 0 2px;
-  line-height: 1.4;
-}
-.bm-article-body p {
-  margin: 0;
-}
-.bm-article-body ul,
-.bm-article-body ol {
-  margin: 0;
-  padding-inline-start: 1.2em;
-  display: grid;
-  gap: 8px;
-}
-.toc {
-  position: sticky;
-  top: 80px;
-  max-width: 260px;
-  background: #f7f4f6;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  padding: 16px;
-  height: fit-content;
-}
-.toc h2 {
-  margin: 0 0 12px;
-  font-size: 18px;
-  font-weight: 700;
-}
-.toc ul {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  gap: 6px;
 }
-.toc li {
-  margin-bottom: 8px;
+
+.bm-article-toc-list li {
+  line-height: 1.5;
 }
-.toc a {
+
+.bm-article-toc-list a {
   text-decoration: none;
   color: #444;
+  padding: 4px 2px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 120ms ease, background 120ms ease;
 }
-.toc a:hover {
-  color: var(--bm-article-brand, #8b1538);
+
+.bm-article-toc-list a:hover {
+  color: #8B1538;
+  background: rgba(139, 21, 56, 0.06);
+}
+
+.bm-article-toc-list a.is-active {
+  font-weight: 600;
+  color: #8B1538;
+}
+
+/* מובייל – בלי סיידבר */
+@media (max-width: 900px) {
+  .bm-article-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bm-article-toc-sidebar {
+    display: none;
+  }
 }

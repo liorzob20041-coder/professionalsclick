@@ -5,39 +5,37 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bm-article.css') }}">
 {% endblock %}
 {% block content %}
-<section class="bm-article-page">
-  <div class="bm-article-hero">
-    <div class="bm-article-hero__meta">
-      {% if article and article.category %}
-        <span class="bm-article-hero__pill">{{ article.category }}</span>
+<section class="bm-article-section" dir="rtl">
+  <header class="bm-article-hero">
+    <div class="bm-article-hero-inner">
+      <h1 class="bm-article-title">
+        {{ (article.title if article is defined else None) or "כותרת המאמר" }}
+      </h1>
+      {% set subtitle = (article.subtitle if article and article.subtitle) or (meta.subtitle if meta and meta.subtitle) %}
+      {% if subtitle %}
+        <p class="bm-article-subtitle">{{ subtitle }}</p>
       {% endif %}
     </div>
-    <h1 class="bm-article-title">{{ (article.title if article is defined else None) or "כותרת המאמר" }}</h1>
-    {% if article and article.subtitle %}
-      <p class="bm-article-subtitle">{{ article.subtitle }}</p>
-    {% endif %}
-  </div>
-  <section class="bm-article-section">
-    <div class="bm-article-layout">
-      <main class="article-page__content bm-article-main" id="bm-article-main">
-        <div class="bm-article-page__section">
-          {% if article_body_html %}
-            {{ article_body_html | safe }}
-          {% else %}
-            <p>תוכן המאמר עדיין לא זמין.</p>
-          {% endif %}
-        </div>
-      </main>
-      <aside id="bm-article-toc" class="bm-article-toc" data-empty="true">
-        <h2 class="bm-article-toc-title">במאמר זה</h2>
-        <ul class="bm-article-toc-list"></ul>
-      </aside>
-    </div>
-  </section>
-</section>
-{% endblock %}
+  </header>
 
-{% block scripts %}
-  {{ super() }}
-  <script src="{{ url_for('static', filename='js/bm-article-toc.js') }}"></script>
+  <div class="bm-article-page-shell">
+    <div class="bm-article-layout">
+      <aside class="bm-article-toc-sidebar" aria-label="תוכן עניינים">
+        <nav class="bm-article-toc">
+          <h2 class="bm-article-toc-title">במאמר זה</h2>
+          <ul class="bm-article-toc-list"></ul>
+        </nav>
+      </aside>
+      <main id="bm-article-main" class="bm-article-main">
+        {% if article_body_html %}
+          {{ article_body_html | safe }}
+        {% else %}
+          <p>תוכן המאמר עדיין לא זמין.</p>
+        {% endif %}
+      </main>
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/bm-article-toc.js') }}"></script>
 {% endblock %}

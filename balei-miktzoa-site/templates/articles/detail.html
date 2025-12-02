@@ -1,56 +1,50 @@
 {% extends "base.html" %}
 {% block title %}{{ (article.title if article is defined else None) or "כותרת המאמר" }} | בעלי מקצוע בקליק{% endblock %}
 {% block content %}
+<section class="bm-article-hero">
+  {# future hero content goes here, can be empty for now #}
+</section>
+
+<div class="bm-article-page" dir="rtl">
+  <div class="bm-article-layout">
+    <main id="bm-article-main" class="bm-article-main">
+      {{ article_body | safe }}
+    </main>
+
+    <aside class="bm-article-toc" aria-label="תוכן עניינים">
+      <nav class="bm-article-toc-card">
+        <h2 class="bm-article-toc-title">במאמר זה</h2>
+        <ul class="bm-article-toc-list"></ul>
+      </nav>
+    </aside>
+  </div>
+</div>
+
 <style>
-  :root {
-    color-scheme: light;
+  .bm-article-page {
+    max-width: 1180px;
+    margin: 40px auto 80px;
+    padding: 0 20px 60px;
   }
 
-  /* keep this simple, do not mix with old bm-article CSS */
-  .toc-demo-page {
-    max-width: 1180px;
-    margin: 40px auto;
-    padding: 0 20px 60px;
+  .bm-article-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 260px;
-    gap: 32px;
+    column-gap: 32px;
+    align-items: flex-start;
   }
 
-  .toc-demo-main {
+  .bm-article-main {
     min-width: 0;
     line-height: 1.8;
     font-size: 16px;
   }
 
-  .toc-demo-main h1 {
-    font-size: 32px;
-    margin: 0 0 22px;
-    color: #111;
+  .bm-article-toc {
+    position: relative;
   }
 
-  .toc-demo-main h2 {
-    font-size: 22px;
-    margin: 32px 0 12px;
-    color: #8B1538;
-  }
-
-  .toc-demo-main h3 {
-    font-size: 18px;
-    margin: 18px 0 10px;
-    color: #4e0e22;
-  }
-
-  .toc-demo-main p {
-    margin: 0 0 14px;
-  }
-
-  .toc-demo-sidebar {
-    position: sticky;
-    top: 24px;
-    align-self: flex-start;
-  }
-
-  .toc-demo-toc {
+  .bm-article-toc-card {
     border-radius: 16px;
     padding: 16px 18px;
     background: #f9f5f7;
@@ -58,14 +52,14 @@
     font-size: 14px;
   }
 
-  .toc-demo-toc-title {
+  .bm-article-toc-title {
     margin: 0 0 10px;
     font-size: 16px;
     font-weight: 700;
     color: #8B1538;
   }
 
-  .toc-demo-toc-list {
+  .bm-article-toc-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -73,11 +67,7 @@
     gap: 6px;
   }
 
-  .toc-demo-toc-list li {
-    line-height: 1.5;
-  }
-
-  .toc-demo-toc-list a {
+  .bm-article-toc-list a {
     text-decoration: none;
     color: #444;
     padding: 4px 2px;
@@ -88,54 +78,33 @@
     transition: color 120ms ease, background 120ms ease;
   }
 
-  .toc-demo-toc-list a:hover {
+  .bm-article-toc-list a:hover {
     color: #8B1538;
     background: rgba(139, 21, 56, 0.06);
   }
 
-  .toc-demo-toc-list a.is-active {
-    font-weight: 600;
-    color: #8B1538;
-  }
-
   @media (max-width: 900px) {
-    .toc-demo-page {
+    .bm-article-layout {
       grid-template-columns: 1fr;
     }
 
-    .toc-demo-sidebar {
+    .bm-article-toc {
       display: none;
     }
   }
 </style>
-<div class="toc-demo-page" dir="rtl">
-  <main class="toc-demo-main" id="bm-article-main">
-    {{ article_body | safe }}
-  </main>
-
-  <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
-    <nav class="toc-demo-toc">
-      <h2 class="toc-demo-toc-title">במאמר זה</h2>
-      <ul class="toc-demo-toc-list"></ul>
-    </nav>
-  </aside>
-</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const main = document.querySelector('#bm-article-main');
-    const tocList = document.querySelector('.toc-demo-toc-list');
+    const toc = document.querySelector('.bm-article-toc');
+    const tocList = document.querySelector('.bm-article-toc-list');
 
-    if (!main || !tocList) {
+    if (!main || !toc || !tocList) {
       return;
     }
 
     const headings = Array.from(main.querySelectorAll('h2, h3'));
-    if (!headings.length) {
-      return;
-    }
-
-    const linkById = new Map();
 
     const slugify = (text) => {
       return text
@@ -165,65 +134,42 @@
       const link = document.createElement('a');
       link.href = `#${heading.id}`;
       link.textContent = heading.textContent || heading.id;
-
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        const target = document.getElementById(heading.id);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
       li.appendChild(link);
       tocList.appendChild(li);
-      linkById.set(heading.id, link);
     });
+    const hero = document.querySelector('.bm-article-hero');
+    const header = document.querySelector('.bm-site-header, header.site-header, .main-header');
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    let heroBottom;
+    if (hero) {
+      const heroRect = hero.getBoundingClientRect();
+      heroBottom = heroRect.bottom + window.scrollY;
+    } else {
+      heroBottom = 250;
+    }
 
-    let activeId = null;
+    const tocRect = toc.getBoundingClientRect();
+    const initialLeft = tocRect.left;
+    const initialWidth = tocRect.width;
 
-    const setActive = (id) => {
-      if (id === activeId) {
-        return;
-      }
+    function onScroll() {
+      const y = window.scrollY;
 
-      if (activeId && linkById.has(activeId)) {
-        linkById.get(activeId).classList.remove('is-active');
-      }
-
-      if (id && linkById.has(id)) {
-        linkById.get(id).classList.add('is-active');
-        activeId = id;
+      if (y + headerHeight < heroBottom) {
+        toc.style.position = 'relative';
+        toc.style.top = '';
+        toc.style.left = '';
+        toc.style.width = '';
       } else {
-        activeId = null;
+        toc.style.position = 'fixed';
+        toc.style.top = `${headerHeight + 24}px`;
+        toc.style.left = `${initialLeft}px`;
+        toc.style.width = `${initialWidth}px`;
+        toc.style.visibility = 'visible';
       }
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      let bestId = activeId;
-      let bestScore = Number.POSITIVE_INFINITY;
-      const viewportCenter = window.innerHeight / 2;
-
-      entries.forEach((entry) => {
-        const rect = entry.boundingClientRect;
-        const center = rect.top + rect.height / 2;
-        const distance = Math.abs(center - viewportCenter);
-
-        if (entry.isIntersecting && distance < bestScore) {
-          bestScore = distance;
-          bestId = entry.target.id;
-        }
-      });
-
-      if (!entries.some((entry) => entry.isIntersecting)) {
-        return;
-      }
-
-      setActive(bestId);
-    }, {
-      root: null,
-      rootMargin: '-50% 0px -40% 0px',
-      threshold: [0, 0.3, 0.6, 1],
-    });
-    headings.forEach((heading) => observer.observe(heading));
+    }
+    window.addEventListener('scroll', onScroll);
+    onScroll();
   });
 </script>
 {% endblock %}

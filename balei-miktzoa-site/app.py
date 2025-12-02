@@ -2712,27 +2712,26 @@ def load_article_body(slug: str, lang: str) -> str | None:
           
 def _load_article_from_disk(slug: str, lang: str) -> tuple[dict, str]:
     """Load article meta and body HTML directly from the content directory."""
-
+    article_dir = ARTICLES_CONTENT_DIR / slug
+    meta: dict[str, object] = {}
+    body_html: str | None = None
     try:
         meta, lang_data, body_html = load_article(slug, lang)
         if isinstance(lang_data, dict):
             meta.setdefault(lang, lang_data)
     except FileNotFoundError:
-        article_dir = ARTICLES_CONTENT_DIR / slug
         meta_path = article_dir / "meta.json"
-        meta = {}
         if meta_path.exists():
             with meta_path.open(encoding="utf-8") as f:
                 meta = json.load(f)
+    if not body_html:
         body_html = load_article_body(slug, lang)
-        if body_html is None and lang != "he":
-            body_html = load_article_body(slug, "he")
-        if body_html is None:
-            fallback_path = article_dir / "body.html"
-            if fallback_path.exists():
-                body_html = fallback_path.read_text(encoding="utf-8")
-
-    print(f"[DEBUG] Loaded article body for {slug} ({lang}), length={len(body_html) if body_html else 0}")
+    if body_html is None and lang != "he":
+        body_html = load_article_body(slug, "he")
+    if body_html is None:
+        fallback_path = article_dir / "body.html"
+        if fallback_path.exists():
+            body_html = fallback_path.read_text(encoding="utf-8")
 
     return meta, body_html or ""
 

@@ -2783,6 +2783,7 @@ def _render_article_detail(lang: str, slug: str):
         meta=meta,
         toc_items=toc_items,
         article_body_html=body_html,
+        article_body=body_html,
         lang_code=lang,
         canonical_url=canonical_url,
     )

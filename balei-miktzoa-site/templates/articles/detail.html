@@ -1,20 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ (article.title if article is defined else None) or "כותרת המאמר" }} | בעלי מקצוע בקליק{% endblock %}
 {% block content %}
-  {% set article_body = article_body_html or '' %}
-  <style>
+<style>
   :root {
     color-scheme: light;
   }
 
-  body {
-    /* in base.html body may already have padding/margins; leave it, this is here just in case */
-    margin: 0;
-    background: #ffffff;
-    color: #222;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
-
+  /* keep this simple, do not mix with old bm-article CSS */
   .toc-demo-page {
     max-width: 1180px;
     margin: 40px auto;
@@ -115,126 +107,122 @@
       display: none;
     }
   }
-  </style>
+</style>
+<div class="toc-demo-page" dir="rtl">
+  <main class="toc-demo-main" id="bm-article-main">
+    {{ article_body | safe }}
+  </main>
 
-  <div class="toc-demo-page" dir="rtl">
-    <main class="toc-demo-main" id="bm-article-main">
-      {{ article_body | safe }}
-    </main>
+  <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
+    <nav class="toc-demo-toc">
+      <h2 class="toc-demo-toc-title">במאמר זה</h2>
+      <ul class="toc-demo-toc-list"></ul>
+    </nav>
+  </aside>
+</div>
 
-    <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
-      <nav class="toc-demo-toc">
-        <h2 class="toc-demo-toc-title">במאמר זה</h2>
-        <ul class="toc-demo-toc-list"></ul>
-      </nav>
-    </aside>
-  </div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const main = document.querySelector('#bm-article-main');
+    const tocList = document.querySelector('.toc-demo-toc-list');
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const main = document.querySelector('#bm-article-main');
-      const tocList = document.querySelector('.toc-demo-toc-list');
+    if (!main || !tocList) {
+      return;
+    }
 
-      if (!main || !tocList) {
-        return;
+    const headings = Array.from(main.querySelectorAll('h2, h3'));
+    if (!headings.length) {
+      return;
+    }
+
+    const linkById = new Map();
+
+    const slugify = (text) => {
+      return text
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    };
+
+    headings.forEach((heading, index) => {
+      if (!heading.id) {
+        const slug = slugify(heading.textContent || `section-${index + 1}`);
+        const baseId = slug || `section-${index + 1}`;
+        let uniqueId = baseId;
+        let counter = 1;
+
+        while (document.getElementById(uniqueId)) {
+          uniqueId = `${baseId}-${counter++}`;
+        }
+
+        heading.id = uniqueId;
       }
 
-      const headings = Array.from(main.querySelectorAll('h2, h3'));
-      if (!headings.length) {
-        return;
-      }
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = `#${heading.id}`;
+      link.textContent = heading.textContent || heading.id;
 
-      const linkById = new Map();
-
-      const slugify = (text) => {
-        return text
-          .toString()
-          .trim()
-          .toLowerCase()
-          .replace(/[^\p{L}\p{N}\s-]/gu, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-');
-      };
-
-      headings.forEach((heading, index) => {
-        if (!heading.id) {
-          const slug = slugify(heading.textContent || `section-${index + 1}`);
-          const baseId = slug || `section-${index + 1}`;
-          let uniqueId = baseId;
-          let counter = 1;
-
-          while (document.getElementById(uniqueId)) {
-            uniqueId = `${baseId}-${counter++}`;
-          }
-
-          heading.id = uniqueId;
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const target = document.getElementById(heading.id);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-
-        const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = `#${heading.id}`;
-        link.textContent = heading.textContent || heading.id;
-
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          const target = document.getElementById(heading.id);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        });
-
-        li.appendChild(link);
-        tocList.appendChild(li);
-        linkById.set(heading.id, link);
       });
-
-      let activeId = null;
-
-      const setActive = (id) => {
-        if (id === activeId) {
-          return;
-        }
-
-        if (activeId && linkById.has(activeId)) {
-          linkById.get(activeId).classList.remove('is-active');
-        }
-
-        if (id && linkById.has(id)) {
-          linkById.get(id).classList.add('is-active');
-          activeId = id;
-        } else {
-          activeId = null;
-        }
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        let bestId = activeId;
-        let bestScore = Number.POSITIVE_INFINITY;
-        const viewportCenter = window.innerHeight / 2;
-
-        entries.forEach((entry) => {
-          const rect = entry.boundingClientRect;
-          const center = rect.top + rect.height / 2;
-          const distance = Math.abs(center - viewportCenter);
-
-          if (entry.isIntersecting && distance < bestScore) {
-            bestScore = distance;
-            bestId = entry.target.id;
-          }
-        });
-
-        if (!entries.some((entry) => entry.isIntersecting)) {
-          return;
-        }
-
-        setActive(bestId);
-      }, {
-        root: null,
-        rootMargin: '-50% 0px -40% 0px',
-        threshold: [0, 0.3, 0.6, 1],
-      });
-
-      headings.forEach((heading) => observer.observe(heading));
+      li.appendChild(link);
+      tocList.appendChild(li);
+      linkById.set(heading.id, link);
     });
-  </script>
+
+    let activeId = null;
+
+    const setActive = (id) => {
+      if (id === activeId) {
+        return;
+      }
+
+      if (activeId && linkById.has(activeId)) {
+        linkById.get(activeId).classList.remove('is-active');
+      }
+
+      if (id && linkById.has(id)) {
+        linkById.get(id).classList.add('is-active');
+        activeId = id;
+      } else {
+        activeId = null;
+      }
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      let bestId = activeId;
+      let bestScore = Number.POSITIVE_INFINITY;
+      const viewportCenter = window.innerHeight / 2;
+
+      entries.forEach((entry) => {
+        const rect = entry.boundingClientRect;
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - viewportCenter);
+
+        if (entry.isIntersecting && distance < bestScore) {
+          bestScore = distance;
+          bestId = entry.target.id;
+        }
+      });
+
+      if (!entries.some((entry) => entry.isIntersecting)) {
+        return;
+      }
+
+      setActive(bestId);
+    }, {
+      root: null,
+      rootMargin: '-50% 0px -40% 0px',
+      threshold: [0, 0.3, 0.6, 1],
+    });
+  });
+</script>
 {% endblock %}

@@ -335,41 +335,6 @@
   font-weight: 600;
   font-size: 0.85rem;
 }
-.bm-article-page .bm-article-toc {
-  background: var(--bm-surface);
-  border-radius: var(--bm-radius-md);
-  border: 1px solid var(--bm-border);
-  padding: 22px 24px;
-  box-shadow: 0 16px 32px rgba(17, 24, 39, 0.1);
-  display: grid;
-  gap: 12px;
-  text-align: right;
-}
-
-.bm-article-page .bm-article-toc-title {
-  margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #111827;
-}
-.bm-article-page .bm-article-toc-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-}
-.bm-article-page .bm-article-toc-list a {
-  color: #1f2937;
-  text-decoration: none;
-  font-weight: 600;
-  line-height: 1.4;
-}
-.bm-article-page .bm-article-toc-list a:hover,
-.bm-article-page .bm-article-toc-list a:focus-visible {
-  color: var(--bm-color-primary);
-  text-decoration: underline;
-}
 
 .bm-article-page .bm-article-warning,
 .bm-article-page .bm-article-tip,

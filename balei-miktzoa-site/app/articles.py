@@ -127,3 +127,8 @@ Badges: מרכז, דרום, צפון
         blocks=main_blocks,
         sidebar_info=sidebar_info,
     )
+
+
+@articles_bp.route("/plumber-toc-demo/")
+def plumber_toc_demo() -> str:
+    return render_template("articles/plumber_toc_demo.html")

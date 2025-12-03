@@ -103,14 +103,21 @@ def load_articles_list(lang: str) -> List[Dict[str, Any]]:
         lang_data = _extract_lang_data(meta, lang)
         derived_category = meta.get("category") or (category if category != "articles" else None)
         _ensure_he_meta(meta)
+
+        hero_image = meta.get("hero_image") or meta.get("hero_image_source")
+        if not hero_image:
+            hero_file = meta.get("hero_image_file")
+            if hero_file:
+                hero_image = f"/static/{str(hero_file).lstrip('/')}"
+
         article_data: Dict[str, Any] = {
             "slug": slug,
             "date": meta.get("date"),
             "category": derived_category,
             "featured": bool(meta.get("featured", False)),
             "popular": bool(meta.get("popular", False)),
-            "hero_image": meta.get("hero_image"),
-            "hero_image_file": meta.get("hero_image_file"),
+            "hero_image": hero_image,
+            "hero_image_file": meta.get("hero_image_file") or meta.get("hero_image_source"),
             "hero_image_width": meta.get("hero_image_width"),
             "hero_image_height": meta.get("hero_image_height"),
             "hero_alt": meta.get("hero_alt"),

@@ -4,272 +4,69 @@
 
 {% block extra_head %}
   {{ super() }}
-  <style>
-    :root {
-      color-scheme: light;
-      --toc-offset-from-header: 110px; /* distance from top of viewport so the TOC sits below the fixed header */
-    }
-
-    body {
-      margin: 0;
-      padding: 0 20px 60px;
-      background: #ffffff;
-      color: #222;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    /*
-     * Override global overflow rules from the base bundle.
-     * Some site-wide CSS sets the scrolling container on html/body,
-     * which disables position: sticky on this standalone demo.
-     */
-    html,
-    body,
-    #main-content {
-      overflow: visible !important;
-    }
-    .toc-demo-page {
-      max-width: 1180px;
-      margin: 40px auto;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 260px;
-      gap: 32px;
-    }
-
-    .toc-demo-main {
-      min-width: 0;
-      line-height: 1.8;
-      font-size: 16px;
-    }
-
-    .toc-demo-main h1 {
-      font-size: 32px;
-      margin: 0 0 22px;
-      color: #111;
-    }
-
-    .toc-demo-main h2 {
-      font-size: 22px;
-      margin: 32px 0 12px;
-      color: #8B1538;
-    }
-
-    .toc-demo-main h3 {
-      font-size: 18px;
-      margin: 18px 0 10px;
-      color: #4e0e22;
-    }
-
-    .toc-demo-main p {
-      margin: 0 0 14px;
-    }
-
-    .toc-demo-sidebar {
-      position: sticky;
-      top: var(--toc-offset-from-header);
-      align-self: flex-start;
-    }
-
-    .toc-demo-toc {
-      border-radius: 16px;
-      padding: 16px 18px;
-      background: #f9f5f7;
-      border: 1px solid rgba(139, 21, 56, 0.18);
-      font-size: 14px;
-    }
-
-    .toc-demo-toc-title {
-      margin: 0 0 10px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #8B1538;
-    }
-
-    .toc-demo-toc-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 6px;
-    }
-
-    .toc-demo-toc-list li {
-      line-height: 1.5;
-    }
-
-    .toc-demo-toc-list a {
-      text-decoration: none;
-      color: #444;
-      padding: 4px 2px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 120ms ease, background 120ms ease;
-    }
-
-    .toc-demo-toc-list a:hover {
-      color: #8B1538;
-      background: rgba(139, 21, 56, 0.06);
-    }
-
-    .toc-demo-toc-list a.is-active {
-      font-weight: 600;
-      color: #8B1538;
-    }
-
-    @media (max-width: 900px) {
-      .toc-demo-page {
-        grid-template-columns: 1fr;
-      }
-
-      .toc-demo-sidebar {
-        display: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/article-detail.css') }}">
 {% endblock %}
 
 {% block content %}
-  <div class="toc-demo-page" dir="rtl">
-    <main class="toc-demo-main">
-      <h1>איך לדעת אם צריך אינסטלטור?</h1>
-      <p>לפעמים סימנים קטנים בבית מרמזים שיש בעיית אינסטלציה. הנה מדריך מהיר שיעזור להבין מתי אפשר לטפל לבד ומתי חייבים איש מקצוע.</p>
+  {% set hero_path = url_for('static', filename='articles/plumber-spotlight.jpg') %}
+  <div class="bm-article-page" dir="rtl" data-toc-container>
+    <div class="bm-article-inner">
+      <section class="bm-article-hero">
+        <div class="bm-article-hero-top">
+          <div class="bm-article-crumbs">
+            <a class="bm-article-breadcrumb" href="{{ url_for('articles_index', lang='he') }}">כל המאמרים</a>
+            <span class="bm-article-meta-sep">/</span>
+            <span class="bm-article-category-pill">אינסטלציה</span>
+          </div>
+          <div class="bm-article-meta">
+            <span class="bm-article-meta-item">3 דקות קריאה</span>
+          </div>
+        </div>
+        <div class="bm-article-hero-text">
+          <h1 class="bm-article-title">איך לדעת אם צריך אינסטלטור?</h1>
+          <p class="bm-article-subtitle">סימנים קטנים שמסגירים בעיה בצנרת והחלטה מהירה מתי מזמינים בעל מקצוע.</p>
+        </div>
+        <figure class="bm-article-hero-media">
+          <img src="{{ hero_path }}" alt="אינסטלטור בודק צינור במקלחת" loading="lazy" decoding="async">
+        </figure>
+      </section>
 
-      <h2 id="signs">סימנים שמצביעים על תקלה</h2>
-      <p>יש כמה סימנים בולטים שאסור להתעלם מהם.</p>
+      <div class="bm-article-layout has-sidebar">
+        <aside class="bm-article-sidebar" aria-label="תוכן עניינים" data-toc-sidebar>
+          <nav class="bm-article-toc">
+            <h2 class="bm-article-toc-title">במאמר זה</h2>
+            <ul class="bm-article-toc-list" data-toc-list></ul>
+          </nav>
+        </aside>
 
-      <h3 id="slow-drain">ניקוז איטי</h3>
-      <p>אם המים יורדים לאט בכיור או במקלחת – זו אינדיקציה ראשונית לסתימה.</p>
+        <main class="bm-article-main" data-article-main>
+          <h2 id="signs">סימנים שמצביעים על תקלה</h2>
+          <p>יש כמה סימנים בולטים שאסור להתעלם מהם.</p>
 
-      <h3 id="bad-smell">ריח רע מהביוב</h3>
-      <p>ריח חריף מגיע מהביוב? ייתכן שיש סתימה עמוקה יותר או בעיית אטימה.</p>
+          <h3 id="slow-drain">ניקוז איטי</h3>
+          <p>אם המים יורדים לאט בכיור או במקלחת – זו אינדיקציה ראשונית לסתימה.</p>
 
-      <h2 id="urgent">מתי זה דחוף?</h2>
-      <p>יש מצבים שבהם אסור לחכות.</p>
+          <h3 id="bad-smell">ריח רע מהביוב</h3>
+          <p>ריח חריף מגיע מהביוב? ייתכן שיש סתימה עמוקה יותר או בעיית אטימה.</p>
 
-      <h3 id="leak">נזילה גלויה או נסתרת</h3>
-      <p>מים על הרצפה, קיר רטוב או סימני עובש – חייבים טיפול מיידי.</p>
+          <h2 id="urgent">מתי זה דחוף?</h2>
+          <p>יש מצבים שבהם אסור לחכות.</p>
 
-      <h3 id="pressure">לחץ מים נמוך מאוד</h3>
-      <p>אם אין סתימה אך הלחץ ירד בצורה קיצונית – ייתכן שיש סדק בצינור.</p>
+          <h3 id="leak">נזילה גלויה או נסתרת</h3>
+          <p>מים על הרצפה, קיר רטוב או סימני עובש – חייבים טיפול מיידי.</p>
 
-      <h2 id="call">מתי לקרוא לאינסטלטור?</h2>
-      <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך יבדוק את המערכת וייתן פתרון מקצועי.</p>
-    </main>
+          <h3 id="pressure">לחץ מים נמוך מאוד</h3>
+          <p>אם אין סתימה אך הלחץ ירד בצורה קיצונית – ייתכן שיש סדק בצינור.</p>
 
-    <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
-      <nav class="toc-demo-toc">
-        <h2 class="toc-demo-toc-title">במאמר זה</h2>
-        <ul class="toc-demo-toc-list"></ul>
-      </nav>
-    </aside>
+          <h2 id="call">מתי לקרוא לאינסטלטור?</h2>
+          <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך שיבדוק את המערכת וייתן פתרון מקצועי.</p>
+        </main>
+      </div>
+    </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const main = document.querySelector('.toc-demo-main');
-      const tocList = document.querySelector('.toc-demo-toc-list');
-
-      if (!main || !tocList) {
-        return;
-      }
-
-      const headings = Array.from(main.querySelectorAll('h2, h3'));
-      if (!headings.length) {
-        return;
-      }
-
-      const linkById = new Map();
-
-      const slugify = (text) => {
-        return text
-          .toString()
-          .trim()
-          .toLowerCase()
-          .replace(/[^\p{L}\p{N}\s-]/gu, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-');
-      };
-
-      headings.forEach((heading, index) => {
-        if (!heading.id) {
-          const slug = slugify(heading.textContent || `section-${index + 1}`);
-          const baseId = slug || `section-${index + 1}`;
-          let uniqueId = baseId;
-          let counter = 1;
-
-          while (document.getElementById(uniqueId)) {
-            uniqueId = `${baseId}-${counter++}`;
-          }
-
-          heading.id = uniqueId;
-        }
-
-        const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = `#${heading.id}`;
-        link.textContent = heading.textContent || heading.id;
-
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          const target = document.getElementById(heading.id);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        });
-
-        li.appendChild(link);
-        tocList.appendChild(li);
-        linkById.set(heading.id, link);
-      });
-
-      let activeId = null;
-
-      const setActive = (id) => {
-        if (id === activeId) {
-          return;
-        }
-
-        if (activeId && linkById.has(activeId)) {
-          linkById.get(activeId).classList.remove('is-active');
-        }
-
-        if (id && linkById.has(id)) {
-          linkById.get(id).classList.add('is-active');
-          activeId = id;
-        } else {
-          activeId = null;
-        }
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        let bestId = activeId;
-        let bestScore = Number.POSITIVE_INFINITY;
-        const viewportCenter = window.innerHeight / 2;
-
-        entries.forEach((entry) => {
-          const rect = entry.boundingClientRect;
-          const center = rect.top + rect.height / 2;
-          const distance = Math.abs(center - viewportCenter);
-
-          if (entry.isIntersecting && distance < bestScore) {
-            bestScore = distance;
-            bestId = entry.target.id;
-          }
-        });
-
-        if (!entries.some((entry) => entry.isIntersecting)) {
-          return;
-        }
-
-        setActive(bestId);
-      }, {
-        root: null,
-        rootMargin: '-50% 0px -40% 0px',
-        threshold: [0, 0.3, 0.6, 1],
-      });
-
-      headings.forEach((heading) => observer.observe(heading));
-    });
-  </script>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/bm-article-toc.js') }}"></script>
 {% endblock %}

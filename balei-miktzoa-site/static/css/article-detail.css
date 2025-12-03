@@ -1,0 +1,127 @@
+:root {
+  color-scheme: light;
+  --toc-offset-from-header: 110px;
+}
+
+html,
+body,
+#main-content {
+  overflow: visible !important;
+}
+
+.bm-article-page {
+  background: #ffffff;
+}
+
+.bm-article-hero-text {
+  display: grid;
+  gap: 8px;
+}
+
+.bm-article-crumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.bm-article-layout {
+  grid-template-columns: 1fr;
+}
+
+.bm-article-layout.has-sidebar {
+  grid-template-columns: 1fr;
+}
+
+.bm-article-toc {
+  position: sticky;
+  top: var(--toc-offset-from-header);
+  align-self: flex-start;
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: #f9f5f7;
+  border: 1px solid rgba(139, 21, 56, 0.18);
+  font-size: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.bm-article-toc-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #8B1538;
+}
+
+.bm-article-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.bm-article-toc-list li {
+  line-height: 1.5;
+}
+
+.bm-article-toc-list a {
+  text-decoration: none;
+  color: #444;
+  padding: 4px 2px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.bm-article-toc-list a:hover {
+  color: #8B1538;
+  background: rgba(139, 21, 56, 0.06);
+}
+
+.bm-article-toc-list a.is-active {
+  font-weight: 600;
+  color: #8B1538;
+}
+
+@media (min-width: 992px) {
+  .bm-article-layout.has-sidebar {
+    grid-template-columns: minmax(0, 3fr) minmax(240px, 1.1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .bm-article-sidebar {
+    display: none;
+  }
+}
+
+.bm-article-main {
+  min-width: 0;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.bm-article-main h1,
+.bm-article-main h2,
+.bm-article-main h3 {
+  color: #111827;
+}
+
+.bm-article-main h2 {
+  margin-top: 32px;
+  margin-bottom: 12px;
+  color: #8B1538;
+}
+
+.bm-article-main h3 {
+  margin-top: 18px;
+  margin-bottom: 10px;
+  color: #4e0e22;
+}
+
+.bm-article-main p {
+  margin: 0 0 14px;
+}

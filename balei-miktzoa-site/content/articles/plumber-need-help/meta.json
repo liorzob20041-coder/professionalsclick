@@ -1,8 +1,13 @@
 {
   "slug": "plumber-need-help",
-  "title": "איך לדעת אם צריך אינסטלטור?",
-  "category": "Plumbing",
-  "hero_image_source": "/img/default-hero.jpg",
+  "category": "plumbing",
+  "date": "2025-01-01",
+  "hero_image": "/static/articles/plumber-spotlight.jpg",
+  "hero_alt": "אינסטלטור עם פנס בודק צינור", 
   "read_time": "3 דקות קריאה",
-  "published_at": "2025-01-01"
+  "he": {
+    "title": "איך לדעת אם צריך אינסטלטור?",
+    "description": "סימנים שמגלים בעיות בצנרת ואיך לדעת מתי לקרוא לאיש מקצוע אמין.",
+    "excerpt": "ניקוז איטי, ריח חריף או לחץ מים נמוך? כך תבינו אם הגיע הזמן להזמין אינסטלטור."
+  }
 }

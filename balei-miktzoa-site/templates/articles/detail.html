@@ -1,13 +1,82 @@
 {% extends "base.html" %}
 {% block title %}{{ (article.title if article is defined else None) or "כותרת המאמר" }} | בעלי מקצוע בקליק{% endblock %}
+{% block extra_head %}
+  {{ super() }}
+  {% if canonical_url %}
+    <link rel="canonical" href="{{ canonical_url }}">
+  {% endif %}
+  <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/article-detail.css') }}">
+{% endblock %}
 {% block content %}
+  {% set hero_path = meta.hero_image if meta is defined else None %}
+  {% if not hero_path and meta is defined and meta.hero_image_file %}
+    {% set hero_path = '/static/' ~ meta.hero_image_file.lstrip('/') %}
+  {% endif %}
+  {% if not hero_path and meta is defined and meta.hero_image_source %}
+    {% set hero_path = meta.hero_image_source %}
+  {% endif %}
+  {% if not hero_path and article is defined and article.hero_image %}
+    {% set hero_path = article.hero_image %}
+  {% endif %}
+  {% if not hero_path %}
+    {% set hero_path = url_for('static', filename='img/placeholders/article-hero.png') %}
+  {% endif %}
+  {% set hero_alt = (meta.hero_alt if meta is defined else None) or (article.hero_alt if article is defined else None) or (article.title if article is defined else "תמונת מאמר") %}
+  {% set subtitle = None %}
+  {% if meta is defined %}
+    {% set subtitle = meta.get('subtitle') or meta.get('description') or meta.get('excerpt') %}
+    {% if not subtitle and meta.get('he') %}
+      {% set subtitle = meta['he'].get('description') or meta['he'].get('excerpt') %}
+    {% endif %}
+  {% endif %}
+  {% set read_time = meta.read_time if meta is defined else None %}
+  {% if not read_time and meta is defined %}
+    {% set read_time = meta.get('reading_minutes') %}
+  {% endif %}
+  <div class="bm-article-page" dir="rtl" data-toc-container>
+    <div class="bm-article-inner">
+      <section class="bm-article-hero">
+        <div class="bm-article-hero-top">
+          <div class="bm-article-crumbs">
+            <a class="bm-article-breadcrumb" href="{{ url_for('articles_index', lang=g.current_lang) }}">כל המאמרים</a>
+            {% if meta is defined and meta.category %}
+              <span class="bm-article-meta-sep">/</span>
+              <span class="bm-article-category-pill">{{ meta.category }}</span>
+            {% endif %}
+          </div>
+          {% if read_time %}
+            <div class="bm-article-meta">
+              <span class="bm-article-meta-item">{{ read_time }}</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="bm-article-hero-text">
+          <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
+          {% if subtitle %}
+            <p class="bm-article-subtitle">{{ subtitle }}</p>
+          {% endif %}
+        </div>
+        <figure class="bm-article-hero-media">
+          <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async">
+        </figure>
+      </section>
 
-<div class="bm-article-page" dir="rtl">
-  <div class="bm-article-inner">
-    <article class="bm-article-body">
-      {{ article_body | safe }}
-    </article>
+      <div class="bm-article-layout has-sidebar">
+        <aside class="bm-article-sidebar" aria-label="תוכן עניינים" data-toc-sidebar>
+          <nav class="bm-article-toc">
+            <h2 class="bm-article-toc-title">במאמר זה</h2>
+            <ul class="bm-article-toc-list" data-toc-list></ul>
+          </nav>
+        </aside>
+        <main class="bm-article-main" data-article-main>
+          {{ (article_body_html or article_body) | safe }}
+        </main>
+      </div>
+    </div>
   </div>
-</div>
-
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/bm-article-toc.js') }}"></script>
 {% endblock %}

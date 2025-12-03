@@ -2771,7 +2771,12 @@ def _render_article_detail(lang: str, slug: str):
         meta, body_html = _load_article_from_disk(slug, lang)
     except FileNotFoundError:
         meta, body_html = {}, ""
-
+    hero_source = meta.get("hero_image_source")
+    hero_file = meta.get("hero_image_file")
+    if hero_source and not meta.get("hero_image"):
+        meta["hero_image"] = hero_source
+    if hero_file and not meta.get("hero_image"):
+        meta["hero_image"] = f"/static/{str(hero_file).lstrip('/')}"
     title = _extract_title(meta, lang, slug)
     article = {"slug": slug, "title": title}
     canonical_url = _build_canonical(lang, slug)

@@ -16,7 +16,16 @@
       color: #222;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-
+    /*
+     * Override global overflow rules from the base bundle.
+     * Some site-wide CSS sets the scrolling container on html/body,
+     * which disables position: sticky on this standalone demo.
+     */
+    html,
+    body,
+    #main-content {
+      overflow: visible !important;
+    }
     .toc-demo-page {
       max-width: 1180px;
       margin: 40px auto;

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="he">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>איך לדעת אם צריך אינסטלטור? – דמו TOC Sticky</title>
+{% extends "base.html" %}
+
+{% block title %}איך לדעת אם צריך אינסטלטור? – דמו TOC Sticky{% endblock %}
+
+{% block extra_head %}
+  {{ super() }}
   <style>
     :root {
       color-scheme: light;
@@ -117,9 +117,10 @@
       }
     }
   </style>
-</head>
-<body dir="rtl">
-  <div class="toc-demo-page">
+{% endblock %}
+
+{% block content %}
+  <div class="toc-demo-page" dir="rtl">
     <main class="toc-demo-main">
       <h1>איך לדעת אם צריך אינסטלטור?</h1>
       <p>לפעמים סימנים קטנים בבית מרמזים שיש בעיית אינסטלציה. הנה מדריך מהיר שיעזור להבין מתי אפשר לטפל לבד ומתי חייבים איש מקצוע.</p>
@@ -143,7 +144,7 @@
       <p>אם אין סתימה אך הלחץ ירד בצורה קיצונית – ייתכן שיש סדק בצינור.</p>
 
       <h2 id="call">מתי לקרוא לאינסטלטור?</h2>
-      <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך שיבדוק את המערכת וייתן פתרון מקצועי.</p>
+      <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך יבדוק את המערכת וייתן פתרון מקצועי.</p>
     </main>
 
     <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
@@ -261,5 +262,4 @@
       headings.forEach((heading) => observer.observe(heading));
     });
   </script>
-</body>
-</html>
+{% endblock %}

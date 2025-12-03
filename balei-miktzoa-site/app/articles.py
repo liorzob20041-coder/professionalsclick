@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from flask import Blueprint, render_template, url_for
 from app.utils.article_parser import parse_shortcodes
-articles_bp = Blueprint("articles", __name__, url_prefix="/articles")
+articles_bp = Blueprint("articles", __name__, url_prefix="/he/articles")
 @articles_bp.route("/demo")
 def demo_article() -> str:
     hero_image = url_for("static", filename="photo2.jpg")

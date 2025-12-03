@@ -7,6 +7,7 @@
   <style>
     :root {
       color-scheme: light;
+      --toc-offset-from-header: 110px; /* distance from top of viewport so the TOC sits below the fixed header */
     }
 
     body {
@@ -64,7 +65,7 @@
 
     .toc-demo-sidebar {
       position: sticky;
-      top: 24px;
+      top: var(--toc-offset-from-header);
       align-self: flex-start;
     }
 

@@ -140,6 +140,8 @@
     const hero = document.querySelector('.bm-article-hero');
     const header = document.querySelector('.bm-site-header, header.site-header, .main-header');
     const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const HERO_OFFSET_PX = 40;   // extra spacing under the header
+    const MIN_FIXED_TOP_PX = 120; // minimum top value so the card is never cut off
     let heroBottom;
     if (hero) {
       const heroRect = hero.getBoundingClientRect();
@@ -162,7 +164,15 @@
         toc.style.width = '';
       } else {
         toc.style.position = 'fixed';
-        toc.style.top = `${headerHeight + 24}px`;
+        // Calculate a comfortable vertical offset:
+        // 1) base on header height + some padding
+        // 2) but never less than MIN_FIXED_TOP_PX
+        const fixedTop = Math.max(
+          MIN_FIXED_TOP_PX,
+          (headerHeight || 0) + HERO_OFFSET_PX
+        );
+
+        toc.style.top = `${fixedTop}px`;
         toc.style.left = `${initialLeft}px`;
         toc.style.width = `${initialWidth}px`;
         toc.style.visibility = 'visible';

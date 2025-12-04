@@ -22,7 +22,10 @@
       return;
     }
 
-    const headings = Array.from(main.querySelectorAll('h2, h3'));
+    const MAX_ITEMS = 6;
+
+    const allHeadings = Array.from(main.querySelectorAll('h2'));
+    const headings = allHeadings.slice(0, MAX_ITEMS);
     if (!headings.length) {
       return;
     }
@@ -48,9 +51,6 @@
       const link = document.createElement('a');
       link.href = `#${heading.id}`;
       link.textContent = heading.textContent || heading.id;
-      if (heading.tagName.toLowerCase() === 'h3') {
-        link.style.paddingInlineStart = '14px';
-      }
 
       link.addEventListener('click', (event) => {
         event.preventDefault();

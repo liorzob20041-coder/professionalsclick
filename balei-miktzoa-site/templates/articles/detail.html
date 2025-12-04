@@ -63,8 +63,82 @@
       </section>
 
       <div class="toc-demo-page" data-toc-container>
-        <main class="toc-demo-main" id="bm-article-main">
-          {{ (article_body_html or article_body) | safe }}
+        <main class="toc-demo-main bm-article-main" id="bm-article-main">
+          <section class="bm-article-intro">
+            <p class="bm-article-kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
+            <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
+            <p class="bm-article-subtitle">
+              {{ subtitle or "תקציר קצר שמסביר על מה המאמר ולמה זה חשוב." }}
+            </p>
+          </section>
+
+          <section class="bm-article-insights-grid">
+            <article class="bm-article-insight-card">
+              <h2 class="bm-article-insight-title">טווח מחירים ממוצע</h2>
+              <p class="bm-article-insight-value">{{ (meta.price_range if meta is defined and meta.price_range else '₪350 – ₪850') }}</p>
+              <p class="bm-article-insight-note">{{ (meta.price_note if meta is defined and meta.price_note else 'תלוי במורכבות העבודה ובשעות הקריאה.') }}</p>
+            </article>
+
+            <article class="bm-article-insight-card">
+              <h2 class="bm-article-insight-title">משך עבודה</h2>
+              <p class="bm-article-insight-value">{{ (meta.duration if meta is defined and meta.duration else '30–90 דקות') }}</p>
+              <p class="bm-article-insight-note">{{ (meta.duration_note if meta is defined and meta.duration_note else 'ברוב המקרים אפשר לפתור בביקור אחד.') }}</p>
+            </article>
+
+            <article class="bm-article-insight-card">
+              <h2 class="bm-article-insight-title">רמת דחיפות</h2>
+              <p class="bm-article-insight-pill bm-article-insight-pill--high">{{ (meta.urgency if meta is defined and meta.urgency else 'גבוהה') }}</p>
+              <p class="bm-article-insight-note">{{ (meta.urgency_note if meta is defined and meta.urgency_note else 'אם יש הצפה או ריח חריף – לא מחכים.') }}</p>
+            </article>
+          </section>
+
+          <section class="bm-article-cost-graph" aria-label="פירוט טווחי מחירים">
+            <header class="bm-article-cost-graph__header">
+              <h2 class="bm-article-section-title">פירוט טווחי מחירים</h2>
+              <p class="bm-article-section-subtitle">
+                המחירים לדירה סטנדרטית, ללא עבודות שיקום מורכבות.
+              </p>
+            </header>
+
+            <div class="bm-article-cost-graph__legend">
+              <span class="bm-article-cost-legend-item">
+                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--low"></span>
+                ביקור בסיסי
+              </span>
+              <span class="bm-article-cost-legend-item">
+                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--mid"></span>
+                טיפול בינוני
+              </span>
+              <span class="bm-article-cost-legend-item">
+                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--high"></span>
+                עבודה מורכבת / חירום
+              </span>
+            </div>
+
+            <div class="bm-article-cost-graph__rows">
+              <div class="bm-article-cost-row">
+                <div class="bm-article-cost-label">ביקור רגיל ביום חול</div>
+                <div class="bm-article-cost-bars">
+                  <div class="bm-article-cost-bar bm-article-cost-bar--low" style="--bm-bar-width: 22%;"><span>₪250</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--mid" style="--bm-bar-width: 45%;"><span>₪450</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--high" style="--bm-bar-width: 68%;"><span>₪700</span></div>
+                </div>
+              </div>
+
+              <div class="bm-article-cost-row">
+                <div class="bm-article-cost-label">קריאה דחופה בערב / סופ״ש</div>
+                <div class="bm-article-cost-bars">
+                  <div class="bm-article-cost-bar bm-article-cost-bar--low" style="--bm-bar-width: 35%;"><span>₪350</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--mid" style="--bm-bar-width: 60%;"><span>₪600</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--high" style="--bm-bar-width: 80%;"><span>₪850+</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <article class="bm-article-body">
+            {{ (article_body_html or article_body) | safe }}
+          </article>
         </main>
         <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
           <nav class="toc-demo-toc" id="bm-article-toc" data-empty="true">

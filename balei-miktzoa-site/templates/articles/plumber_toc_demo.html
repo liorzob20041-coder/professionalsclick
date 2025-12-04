@@ -33,27 +33,101 @@
       </section>
 
       <div class="toc-demo-page" data-toc-container>
-        <main class="toc-demo-main" id="bm-article-main">
-          <h2 id="signs">סימנים שמצביעים על תקלה</h2>
-          <p>יש כמה סימנים בולטים שאסור להתעלם מהם.</p>
+        <main class="toc-demo-main bm-article-main" id="bm-article-main">
+          <section class="bm-article-intro">
+            <p class="bm-article-kicker">אינסטלציה · מדריך מהיר</p>
+            <h1 class="bm-article-title">איך לדעת אם צריך אינסטלטור?</h1>
+            <p class="bm-article-subtitle">
+              סימנים קטנים שמסגירים בעיה בצנרת והחלטה מהירה מתי מזמינים בעל מקצוע.
+            </p>
+          </section>
 
-          <h3 id="slow-drain">ניקוז איטי</h3>
-          <p>אם המים יורדים לאט בכיור או במקלחת – זו אינדיקציה ראשונית לסתימה.</p>
+          <section class="bm-article-insights-grid">
+            <article class="bm-article-insight-card">
+              <h2 class="bm-article-insight-title">טווח מחירים ממוצע</h2>
+              <p class="bm-article-insight-value">₪350 – ₪850</p>
+              <p class="bm-article-insight-note">תלוי במורכבות הסתימה ובשעות העבודה.</p>
+            </article>
 
-          <h3 id="bad-smell">ריח רע מהביוב</h3>
-          <p>ריח חריף מגיע מהביוב? ייתכן שיש סתימה עמוקה יותר או בעיית אטימה.</p>
+            <article class="bm-article-insight-card">
+              <h2 class="bm-article-insight-title">משך עבודה</h2>
+              <p class="bm-article-insight-value">30–90 דקות</p>
+              <p class="bm-article-insight-note">ברוב המקרים אפשר לפתור בביקור אחד.</p>
+            </article>
 
-          <h2 id="urgent">מתי זה דחוף?</h2>
-          <p>יש מצבים שבהם אסור לחכות.</p>
+            <article class="bm-article-insight-card">
+              <h2 class="bm-article-insight-title">רמת דחיפות</h2>
+              <p class="bm-article-insight-pill bm-article-insight-pill--high">גבוהה</p>
+              <p class="bm-article-insight-note">אם יש הצפה או ריח חריף – לא מחכים.</p>
+            </article>
+          </section>
 
-          <h3 id="leak">נזילה גלויה או נסתרת</h3>
-          <p>מים על הרצפה, קיר רטוב או סימני עובש – חייבים טיפול מיידי.</p>
+          <section class="bm-article-cost-graph" aria-label="פירוט טווחי מחירים">
+            <header class="bm-article-cost-graph__header">
+              <h2 class="bm-article-section-title">פירוט טווחי מחירים</h2>
+              <p class="bm-article-section-subtitle">
+                המחירים לדירה סטנדרטית, ללא עבודות שיקום מורכבות.
+              </p>
+            </header>
 
-          <h3 id="pressure">לחץ מים נמוך מאוד</h3>
-          <p>אם אין סתימה אך הלחץ ירד בצורה קיצונית – ייתכן שיש סדק בצינור.</p>
+           <div class="bm-article-cost-graph__legend">
+              <span class="bm-article-cost-legend-item">
+                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--low"></span>
+                ביקור בסיסי
+              </span>
+              <span class="bm-article-cost-legend-item">
+                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--mid"></span>
+                סתימה בינונית
+              </span>
+              <span class="bm-article-cost-legend-item">
+                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--high"></span>
+                סתימה מורכבת / חירום
+              </span>
+            </div>
 
-          <h2 id="call">מתי לקרוא לאינסטלטור?</h2>
-          <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך שיבדוק את המערכת וייתן פתרון מקצועי.</p>
+            <div class="bm-article-cost-graph__rows">
+              <div class="bm-article-cost-row">
+                <div class="bm-article-cost-label">ביקור רגיל ביום חול</div>
+                <div class="bm-article-cost-bars">
+                  <div class="bm-article-cost-bar bm-article-cost-bar--low" style="--bm-bar-width: 22%;"><span>₪250</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--mid" style="--bm-bar-width: 45%;"><span>₪450</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--high" style="--bm-bar-width: 68%;"><span>₪700</span></div>
+                </div>
+              </div>
+
+              <div class="bm-article-cost-row">
+                <div class="bm-article-cost-label">קריאה דחופה בערב / סופ״ש</div>
+                <div class="bm-article-cost-bars">
+                  <div class="bm-article-cost-bar bm-article-cost-bar--low" style="--bm-bar-width: 35%;"><span>₪350</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--mid" style="--bm-bar-width: 60%;"><span>₪600</span></div>
+                  <div class="bm-article-cost-bar bm-article-cost-bar--high" style="--bm-bar-width: 80%;"><span>₪850+</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <article class="bm-article-body">
+            <h2 id="signs">סימנים שמצביעים על תקלה</h2>
+            <p>יש כמה סימנים בולטים שאסור להתעלם מהם.</p>
+
+            <h3 id="slow-drain">ניקוז איטי</h3>
+            <p>אם המים יורדים לאט בכיור או במקלחת – זו אינדיקציה ראשונית לסתימה.</p>
+
+            <h3 id="bad-smell">ריח רע מהביוב</h3>
+            <p>ריח חריף מגיע מהביוב? ייתכן שיש סתימה עמוקה יותר או בעיית אטימה.</p>
+
+            <h2 id="urgent">מתי זה דחוף?</h2>
+            <p>יש מצבים שבהם אסור לחכות.</p>
+
+            <h3 id="leak">נזילה גלויה או נסתרת</h3>
+            <p>מים על הרצפה, קיר רטוב או סימני עובש – חייבים טיפול מיידי.</p>
+
+            <h3 id="pressure">לחץ מים נמוך מאוד</h3>
+            <p>אם אין סתימה אך הלחץ ירד בצורה קיצונית – ייתכן שיש סדק בצינור.</p>
+
+            <h2 id="call">מתי לקרוא לאינסטלטור?</h2>
+            <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך שיבדוק את המערכת וייתן פתרון מקצועי.</p>
+          </article>
         </main>
         <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
           <nav class="toc-demo-toc" id="bm-article-toc" data-empty="true">

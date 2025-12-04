@@ -10,8 +10,13 @@
   };
 
   const buildTocForContainer = (container) => {
-    const main = container.querySelector('[data-article-main]') || container.querySelector('.toc-demo-main');
-    const tocList = container.querySelector('[data-toc-list]') || container.querySelector('.toc-demo-toc-list');
+    const main =
+      container.querySelector('#bm-article-main') ||
+      container.querySelector('.toc-demo-main') ||
+      container.querySelector('[data-article-main]');
+    const tocList =
+      container.querySelector('.toc-demo-toc-list') ||
+      container.querySelector('[data-toc-list]');
 
     if (!main || !tocList) {
       return;

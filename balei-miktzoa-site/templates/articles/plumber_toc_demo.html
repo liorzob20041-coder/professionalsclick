@@ -10,7 +10,7 @@
 
 {% block content %}
   {% set hero_path = url_for('static', filename='articles/plumber-spotlight.jpg') %}
-  <div class="bm-article-page" dir="rtl" data-toc-container>
+  <div class="bm-article-page" dir="rtl">
     <div class="bm-article-inner">
       <section class="bm-article-hero">
         <div class="bm-article-hero-top">
@@ -32,15 +32,8 @@
         </figure>
       </section>
 
-      <div class="bm-article-layout has-sidebar">
-        <aside class="bm-article-sidebar" aria-label="תוכן עניינים" data-toc-sidebar>
-          <nav class="bm-article-toc">
-            <h2 class="bm-article-toc-title">במאמר זה</h2>
-            <ul class="bm-article-toc-list" data-toc-list></ul>
-          </nav>
-        </aside>
-
-        <main class="bm-article-main" data-article-main>
+      <div class="toc-demo-page" data-toc-container>
+        <main class="toc-demo-main" id="bm-article-main">
           <h2 id="signs">סימנים שמצביעים על תקלה</h2>
           <p>יש כמה סימנים בולטים שאסור להתעלם מהם.</p>
 
@@ -62,6 +55,12 @@
           <h2 id="call">מתי לקרוא לאינסטלטור?</h2>
           <p>כאשר התקלה חוזרת, מחמירה או מערבת נזילה – אל תנסו לתקן לבד. עדיף להזמין אינסטלטור מוסמך שיבדוק את המערכת וייתן פתרון מקצועי.</p>
         </main>
+        <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
+          <nav class="toc-demo-toc" id="bm-article-toc" data-empty="true">
+            <h2 class="toc-demo-toc-title">במאמר זה</h2>
+            <ul class="toc-demo-toc-list"></ul>
+          </nav>
+        </aside>
       </div>
     </div>
   </div>

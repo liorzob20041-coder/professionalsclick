@@ -261,6 +261,7 @@
       </section>
     {% endif %}
     {% if articles %}
+      {# Electricity includes guides like electric-power-tripped #}
       {% set ordered_categories = ['electricity', 'plumbing', 'moisture', 'renovation'] %}
       {% set extra_categories = categories | reject('in', ordered_categories) | list %}
       {% set general_articles = grouped_articles.get('general') %}

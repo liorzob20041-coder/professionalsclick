@@ -1,7 +1,7 @@
 """Demo article blueprint and view for the article experience."""
 from __future__ import annotations
 from typing import Any
-from flask import Blueprint, render_template, url_for
+from flask import Blueprint, redirect, render_template, url_for
 from app.utils.article_parser import parse_shortcodes
 articles_bp = Blueprint("articles", __name__, url_prefix="/he/articles")
 @articles_bp.route("/demo")
@@ -132,3 +132,10 @@ Badges: מרכז, דרום, צפון
 @articles_bp.route("/plumber-toc-demo/")
 def plumber_toc_demo() -> str:
     return render_template("articles/plumber_toc_demo.html")
+
+
+@articles_bp.route("/electric-power-tripped-preview/")
+def electric_power_tripped_preview() -> str:
+    """Quick preview redirect for the electric power tripped article."""
+
+    return redirect(url_for("article_detail", lang="he", slug="electric-power-tripped"))

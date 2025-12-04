@@ -6,6 +6,7 @@
   {{ super() }}
   <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
   <link rel="stylesheet" href="{{ static_rel('css/article-detail.css') }}">
+  <link rel="stylesheet" href="{{ static_rel('css/bm-article-blocks.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -41,7 +42,26 @@
               סימנים קטנים שמסגירים בעיה בצנרת והחלטה מהירה מתי מזמינים בעל מקצוע.
             </p>
           </section>
-
+          <section class="bm-block bm-block-summary" aria-labelledby="plumber-summary-title">
+            <h2 class="bm-block-summary__title" id="plumber-summary-title">תקציר מהיר – סתימה בכיור</h2>
+            <div class="bm-block-summary__grid">
+              <div class="bm-block-summary__item">
+                <div class="bm-block-summary__label">טווח מחירים</div>
+                <div class="bm-block-summary__value">₪350–₪850</div>
+                <p class="bm-block-summary__note">כולל ביקור ואבחון בסיסי.</p>
+              </div>
+              <div class="bm-block-summary__item">
+                <div class="bm-block-summary__label">משך עבודה</div>
+                <div class="bm-block-summary__value">30–90 דקות</div>
+                <p class="bm-block-summary__note">ברוב המקרים בביקור אחד.</p>
+              </div>
+              <div class="bm-block-summary__item">
+                <div class="bm-block-summary__label">דחיפות</div>
+                <span class="bm-pill bm-pill--high">גבוהה</span>
+                <p class="bm-block-summary__note">אם יש הצפה – לא מחכים.</p>
+              </div>
+            </div>
+          </section>
           <section class="bm-article-insights-grid">
             <article class="bm-article-insight-card">
               <h2 class="bm-article-insight-title">טווח מחירים ממוצע</h2>
@@ -105,7 +125,47 @@
               </div>
             </div>
           </section>
+          <section class="bm-block bm-block-table">
+            <h2 class="bm-block-title">דוגמאות למחירים</h2>
+            <p class="bm-block-subtitle">המחירים לדירה סטנדרטית ללא בעיות חריגות.</p>
+            <div class="bm-table-wrapper">
+              <table class="bm-article-table">
+                <thead>
+                  <tr>
+                    <th scope="col">סוג עבודה</th>
+                    <th scope="col">טווח מחיר</th>
+                    <th scope="col">מה כלול?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>פתיחת סתימה בכיור</td>
+                    <td>₪350–₪550</td>
+                    <td>ביקור, פתיחה עם ספירלה, בדיקת זרימה.</td>
+                  </tr>
+                  <tr>
+                    <td>סתימה עמוקה בקו ראשי</td>
+                    <td>₪650–₪950</td>
+                    <td>עבודה מורכבת, גישה לצנרת, ניקוי יסודי.</td>
+                  </tr>
+                  <tr>
+                    <td>איתור נזילה עם מצלמה</td>
+                    <td>₪750–₪1,200</td>
+                    <td>סקר תרמי, דו"ח קצר והמלצה להמשך טיפול.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
+          <section class="bm-block bm-block-checklist">
+            <h2 class="bm-block-title">צ׳ק-ליסט לפני שמזמינים אינסטלטור</h2>
+            <ul class="bm-checklist">
+              <li>בדקו אם הסתימה רק בכיור אחד או בכל הבית.</li>
+              <li>נסו לשטוף עם מים חמים (בלי כימיקלים חזקים).</li>
+              <li>צלמו את האזור הבעייתי לשליחה לבעל המקצוע.</li>
+            </ul>
+          </section>
           <article class="bm-article-body">
             <h2 id="signs">סימנים שמצביעים על תקלה</h2>
             <p>יש כמה סימנים בולטים שאסור להתעלם מהם.</p>

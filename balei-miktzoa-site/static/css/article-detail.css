@@ -92,6 +92,44 @@ body,
   color: #4b5563;
   background: linear-gradient(180deg, #ffffff 0%, #f9f5f7 100%);
 }
+.article-hero {
+  margin: 24px auto 8px;
+  display: block;
+  max-width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+}
+
+.article-hero img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: clamp(260px, 50vw, 440px);
+  object-fit: cover;
+}
+
+.article-hero figcaption {
+  margin: 0;
+  padding: 10px 14px 12px;
+  font-size: 0.95rem;
+  color: #4b5563;
+  background: linear-gradient(180deg, #ffffff 0%, #f9f5f7 100%);
+}
+
+@media (max-width: 640px) {
+  .article-hero {
+    margin: 18px auto 6px;
+    border-radius: 18px;
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
+  }
+
+  .article-hero img {
+    max-height: 320px;
+  }
+}
 /* Sticky TOC layout */
 .toc-demo-page {
   max-width: 1280px;

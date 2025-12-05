@@ -52,6 +52,18 @@
             </div>
           {% endif %}
         </div>
+        <div class="bm-article-emergency" role="note">
+          <div class="bm-article-emergency__message">
+            <span class="bm-article-emergency__icon" aria-hidden="true">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </span>
+            <div>
+              <p class="bm-article-emergency__text">מצב חירום? ריח שרוף חזק או ניצוצות בלוח החשמל?</p>
+              <p class="bm-article-emergency__note">עוצרים מיד ומזמינים חשמלאי חירום מוסמך.</p>
+            </div>
+          </div>
+          <a class="bm-cta-primary" href="{{ url_for('request_professional', lang=g.current_lang) }}">מצא חשמלאי חירום</a>
+        </div>
         <div class="bm-article-hero-text">
           <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
           {% if subtitle %}

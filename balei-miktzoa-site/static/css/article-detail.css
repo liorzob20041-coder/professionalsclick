@@ -39,6 +39,7 @@ body,
   min-width: 0;
   line-height: 1.8;
   font-size: 16px;
+  color: #1E1A1D;
 }
 
 .toc-demo-main h1 {
@@ -50,38 +51,42 @@ body,
 .toc-demo-main h2 {
   font-size: 22px;
   margin: 32px 0 12px;
-  color: #8B1538;
+  color: #1E1A1D;
 }
 
 .toc-demo-main h3 {
   font-size: 18px;
   margin: 18px 0 10px;
-  color: #4e0e22;
+  color: #1E1A1D;
 }
 
 .toc-demo-main p {
   margin: 0 0 14px;
+  color: #1E1A1D;
 }
 
 .toc-demo-sidebar {
   position: sticky;
-  top: calc(var(--bm-header-height, 72px) + 24px);
+  top: calc(var(--topbar-height, 64px) + 24px);
   align-self: flex-start;
+  max-height: min(520px, calc(100vh - 160px));
+  overflow: hidden;
 }
 
 .toc-demo-toc {
-  border-radius: 16px;
-  padding: 16px 18px;
-  background: #f9f5f7;
-  border: 1px solid rgba(139, 21, 56, 0.18);
+  border-radius: 24px;
+  padding: 18px 18px 16px;
+  background: var(--bm-article-surface, #ffffff);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   font-size: 14px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
 }
 
 .toc-demo-toc-title {
   margin: 0 0 10px;
   font-size: 16px;
   font-weight: 700;
-  color: #8B1538;
+  color: #1E1A1D;
 }
 
 .toc-demo-toc-list {
@@ -90,6 +95,8 @@ body,
   padding: 0;
   display: grid;
   gap: 6px;
+  max-height: calc(100% - 3.2rem);
+  overflow-y: auto;
 }
 
 .toc-demo-toc-list li {
@@ -98,23 +105,39 @@ body,
 
 .toc-demo-toc-list a {
   text-decoration: none;
-  color: #444;
-  padding: 4px 2px;
-  border-radius: 8px;
+  color: #1E1A1D;
+  padding: 6px 2px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   transition: color 120ms ease, background 120ms ease;
+  position: relative;
 }
 
 .toc-demo-toc-list a:hover {
-  color: #8B1538;
-  background: rgba(139, 21, 56, 0.06);
+  color: var(--bm-article-brand, #8B1538);
+  background: rgba(15, 23, 42, 0.04);
 }
 
 .toc-demo-toc-list a.is-active {
   font-weight: 600;
-  color: #8B1538;
+  color: var(--bm-article-brand, #8B1538);
+}
+
+.toc-demo-toc-list a::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(30, 26, 29, 0.3);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.06);
+}
+
+.toc-demo-toc-list a.is-active::before {
+  background: var(--bm-article-brand, #8B1538);
+  box-shadow: 0 0 0 2px rgba(139, 21, 56, 0.14);
 }
 
 @media (max-width: 900px) {
@@ -124,6 +147,8 @@ body,
 
 
   .toc-demo-sidebar {
-    display: none;
+    position: static;
+    max-height: none;
+    order: 2;
   }
 }

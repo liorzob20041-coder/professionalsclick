@@ -57,32 +57,46 @@
             <span class="bm-article-emergency__icon" aria-hidden="true">
               <i class="fa-solid fa-triangle-exclamation"></i>
             </span>
-            <div>
-              <p class="bm-article-emergency__text">מצב חירום? ריח שרוף חזק או ניצוצות בלוח החשמל?</p>
-              <p class="bm-article-emergency__note">עוצרים מיד ומזמינים חשמלאי חירום מוסמך.</p>
+            <p class="bm-article-emergency__text">מצב חירום? ריח שרוף חזק או ניצוצות בלוח החשמל? עוצרים מיד ומזמינים חשמלאי חירום מוסמך.</p>
+          </div>
+          <a class="bm-cta-primary bm-cta-primary--hero" href="{{ url_for('request_professional', lang=g.current_lang) }}">
+            <i class="fa-solid fa-phone"></i>
+            מצא חשמלאי חירום
+          </a>
+        </div>
+        <div class="bm-article-hero-grid">
+          <div class="bm-article-hero-text">
+            <div class="bm-article-hero-meta">
+              {% if meta is defined and meta.category %}
+                <span class="bm-article-category-pill">{{ meta.category }}</span>
+              {% endif %}
+              {% if read_time %}
+                <span class="bm-article-meta-chip">{{ read_time }}</span>
+              {% endif %}
+            </div>
+            <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
+            {% if subtitle %}
+              <p class="bm-article-subtitle">{{ subtitle }}</p>
+            {% endif %}
+            <div class="bm-article-hero-actions">
+              <a class="bm-cta-primary bm-cta-primary--hero" href="{{ url_for('request_professional', lang=g.current_lang) }}">
+                <i class="fa-solid fa-phone"></i>
+                מציאת חשמלאי עכשיו
+              </a>
             </div>
           </div>
-          <a class="bm-cta-primary" href="{{ url_for('request_professional', lang=g.current_lang) }}">מצא חשמלאי חירום</a>
+          <figure class="bm-article-hero-media">
+            <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async">
+          </figure>
         </div>
-        <div class="bm-article-hero-text">
-          <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
-          {% if subtitle %}
-            <p class="bm-article-subtitle">{{ subtitle }}</p>
-          {% endif %}
-        </div>
-        <figure class="bm-article-hero-media">
-          <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async">
-        </figure>
       </section>
 
       <div class="toc-demo-page" data-toc-container>
         <main class="toc-demo-main bm-article-main" id="bm-article-main">
           <section class="bm-article-intro">
             <p class="bm-article-kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
-            <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
-            <p class="bm-article-subtitle">
-              {{ subtitle or "תקציר קצר שמסביר על מה המאמר ולמה זה חשוב." }}
-            </p>
+            <h2 class="bm-article-intro-heading">מה תמצאו במדריך</h2>
+            <p class="bm-article-subtitle">{{ subtitle or "תקציר קצר שמסביר על מה המאמר ולמה זה חשוב." }}</p>
           </section>
 
           <section class="bm-article-insights-grid">

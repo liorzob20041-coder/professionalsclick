@@ -733,13 +733,15 @@ html[dir="ltr"] .articles-archive .article-card__more:focus-visible .fa-arrow-le
   text-decoration: none;
   color: inherit;
   height: 100%;
+  flex-direction: column;
 }
 .bm-article-card-thumb {
-  flex: 0 0 32%;
-  max-width: 32%;
-  min-height: 110px;
+  width: 100%;
   position: relative;
   background: #f1f5f9;
+  height: clamp(210px, 32vw, 250px);
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
 }
 .bm-article-card-thumb img {
   width: 100%;
@@ -792,13 +794,8 @@ html[dir="ltr"] .articles-archive .article-card__more:focus-visible .fa-arrow-le
   }
 }
 @media (min-width: 768px) {
-  .bm-article-card-link {
-    flex-direction: column;
-  }
   .bm-article-card-thumb {
-    flex: none;
-    max-width: 100%;
-    height: 170px;
+    height: 240px;
   }
   .bm-article-card-content {
     padding: 12px 14px 14px;

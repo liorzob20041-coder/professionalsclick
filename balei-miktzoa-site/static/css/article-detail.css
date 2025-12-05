@@ -70,7 +70,28 @@ body,
   max-height: 360px;
   object-fit: cover;
 }
+.bm-article-hero-figure {
+  margin: 18px 0 28px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+}
 
+.bm-article-hero-img {
+  width: 100%;
+  display: block;
+  max-height: 430px;
+  object-fit: cover;
+}
+
+.bm-article-hero-figure figcaption {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  color: #4b5563;
+  background: linear-gradient(180deg, #ffffff 0%, #f9f5f7 100%);
+}
 /* Sticky TOC layout */
 .toc-demo-page {
   max-width: 1280px;
@@ -257,7 +278,14 @@ body,
   .bm-article-hero-media img {
     max-height: 260px;
   }
+  .bm-article-hero-figure {
+    margin: 14px 0 22px;
+    border-radius: 16px;
+  }
 
+  .bm-article-hero-img {
+    max-height: 320px;
+  }
   .toc-demo-main {
     font-size: 15px;
     line-height: 1.65;

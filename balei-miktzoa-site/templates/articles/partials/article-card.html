@@ -34,6 +34,10 @@
 {% elif not hero_path and article.img_file is defined and article.img_file %}
   {% set hero_path = '/static/' ~ article.img_file.lstrip('/') %}
 {% endif %}
+{% if article.slug == 'electric-power-tripped' %}
+  {% set hero_path = '/static/articles/yellow_helmet_electrician.jpg' %}
+  {% set hero_alt = 'חשמלאי עם קסדה צהובה בודק לוח חשמל' %}
+{% endif %}
 {% set use_proxy = False %}
 {% set proxy_filename = None %}
 {% if hero_path %}

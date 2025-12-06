@@ -56,67 +56,18 @@ body,
   flex-wrap: wrap;
 }
 
-.bm-article-hero-media {
-  margin: 0;
-  border-radius: 20px;
-  overflow: hidden;
-  background: #f4f4f5;
-  box-shadow: 0 16px 36px rgba(17, 24, 39, 0.12);
-}
-
-.bm-article-hero-media img {
-  width: 100%;
-  display: block;
-  max-height: 360px;
-  object-fit: cover;
-}
-.bm-article-hero-figure {
-  margin: 18px 0 28px;
-  border-radius: 20px;
-  overflow: hidden;
-  background: #ffffff;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
-}
-
-.bm-article-hero-img {
-  width: 100%;
-  display: block;
-  max-height: 430px;
-  object-fit: cover;
-}
-
-.bm-article-hero-figure figcaption {
-  margin: 0;
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  color: #4b5563;
-  background: linear-gradient(180deg, #ffffff 0%, #f9f5f7 100%);
-}
 .article-hero {
-  margin: 24px auto 8px;
-  display: block;
-  max-width: 100%;
-  border-radius: 20px;
+  margin: 24px auto 32px;
+  max-width: 960px;
+  border-radius: 28px;
   overflow: hidden;
-  background: #ffffff;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
 }
 
-.article-hero img {
+.article-hero__image {
   display: block;
   width: 100%;
-  max-width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: clamp(260px, 50vw, 440px);
-  object-fit: cover;
-}
-
-.article-hero figcaption {
-  margin: 0;
-  padding: 10px 14px 12px;
-  font-size: 0.95rem;
-  color: #4b5563;
-  background: linear-gradient(180deg, #ffffff 0%, #f9f5f7 100%);
+  height: auto;
 }
 
 @media (max-width: 640px) {
@@ -124,10 +75,6 @@ body,
     margin: 18px auto 6px;
     border-radius: 18px;
     box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
-  }
-
-  .article-hero img {
-    max-height: 320px;
   }
 }
 /* Sticky TOC layout */
@@ -312,18 +259,7 @@ body,
   .bm-article-hero-grid {
     grid-template-columns: 1fr;
   }
-
-  .bm-article-hero-media img {
-    max-height: 260px;
-  }
-  .bm-article-hero-figure {
-    margin: 14px 0 22px;
-    border-radius: 16px;
-  }
-
-  .bm-article-hero-img {
-    max-height: 320px;
-  }
+  
   .toc-demo-main {
     font-size: 15px;
     line-height: 1.65;

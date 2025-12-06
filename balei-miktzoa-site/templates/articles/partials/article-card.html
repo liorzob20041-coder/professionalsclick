@@ -2,6 +2,10 @@
 {% set detail_url = url_for_lang('article_detail', lang=lang_code, slug=article.slug) %}
 {% set card_tag = article.category or '' %}
 {% set tag_label = article.category_label if article.category_label is defined else '' %}
+{% set hero_image = article.hero_image or article.hero_image_url %}
+{% if not hero_image and article.slug == 'electric-power-tripped' %}
+    {% set hero_image = 'images/articles/electric-power-tripped/yellow_shirt_electrician.jpg' %}
+{% endif %}
 {% if not tag_label %}
   {% set tag_label = article.tag_label if article.tag_label is defined else '' %}
 {% endif %}
@@ -24,59 +28,18 @@
 {% if not excerpt %}
   {% set excerpt = article.description if article.description is defined else None %}
 {% endif %}
-{% set placeholder = article.placeholder if article.placeholder is defined and article.placeholder else article.title %}
-{% set hero_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
-{% set hero_width = article.hero_image_width if article.hero_image_width is defined and article.hero_image_width else (article.img_width if article.img_width is defined and article.img_width else 640) %}
-{% set hero_height = article.hero_image_height if article.hero_image_height is defined and article.hero_image_height else (article.img_height if article.img_height is defined and article.img_height else 466) %}
-{% set hero_path = article.hero_image if article.hero_image is defined and article.hero_image else None %}
-{% if not hero_path and article.hero_image_file is defined and article.hero_image_file %}
-  {% set hero_path = '/static/' ~ article.hero_image_file.lstrip('/') %}
-{% elif not hero_path and article.img_file is defined and article.img_file %}
-  {% set hero_path = '/static/' ~ article.img_file.lstrip('/') %}
-{% endif %}
-{% if article.slug == 'electric-power-tripped' %}
-  {% set hero_path = url_for('static', filename='images/articles/electric-power-tripped/yellow_helmet_electrician.jpg') %}
-  {% set hero_alt = 'חשמלאי עם קסדה צהובה בודק לוח חשמל' %}
-{% endif %}
-{% set use_proxy = False %}
-{% set proxy_filename = None %}
-{% if hero_path %}
-  {% if hero_path.startswith('http://') or hero_path.startswith('https://') %}
-    {% set use_proxy = False %}
-  {% else %}
-    {% set filename = hero_path %}
-    {% if filename.startswith('/static/') %}
-      {% set filename = filename[8:] %}
-    {% elif filename.startswith('static/') %}
-      {% set filename = filename[7:] %}
-    {% endif %}
-    {% set proxy_filename = filename %}
-    {% set use_proxy = proxy_filename is not none and proxy_filename != '' %}
-  {% endif %}
-{% endif %}
 <article class="bm-article-card a-card" data-category="{{ card_tag }}">
   <a href="{{ detail_url }}" class="bm-article-card-link">
-    <div class="bm-article-card-thumb article-card__image-wrapper a-thumb{% if not hero_path %} is-placeholder{% endif %}">
-      {% if hero_path and use_proxy %}
-        {% set fallback_w = 640 if hero_width <= 640 else 960 %}
-        <picture>
-          <img src="{{ url_for('img_proxy', filename=proxy_filename, w=fallback_w, q=78, fit='cover', format='jpeg', v=BUILD) }}"
-               srcset="{{ url_for('img_proxy', filename=proxy_filename, w=360, q=78, fit='cover', format='jpeg', v=BUILD) }} 360w,
-                       {{ url_for('img_proxy', filename=proxy_filename, w=480, q=78, fit='cover', format='jpeg', v=BUILD) }} 480w,
-                       {{ url_for('img_proxy', filename=proxy_filename, w=640, q=78, fit='cover', format='jpeg', v=BUILD) }} 640w,
-                       {{ url_for('img_proxy', filename=proxy_filename, w=768, q=78, fit='cover', format='jpeg', v=BUILD) }} 768w,
-                       {{ url_for('img_proxy', filename=proxy_filename, w=960, q=78, fit='cover', format='jpeg', v=BUILD) }} 960w"
-               sizes="(min-width:1100px) 30vw, (min-width:768px) 45vw, 88vw"
-               width="{{ hero_width }}" height="{{ hero_height }}"
-               loading="lazy" decoding="async"
-               alt="{{ hero_alt }}">
-        </picture>
-      {% elif hero_path %}
-        <img src="{{ hero_path }}" alt="{{ hero_alt }}" loading="lazy" decoding="async" width="{{ hero_width }}" height="{{ hero_height }}">
-      {% else %}
-        <span class="bm-article-card-thumb-placeholder a-thumb__placeholder article-thumb__placeholder">{{ placeholder }}</span>
-      {% endif %}
-    </div>
+    {% if hero_image %}
+      <div class="article-card__image-wrapper">
+        <img
+          src="{{ url_for('static', filename=hero_image) }}"
+          alt="{{ article.title }}"
+          loading="lazy"
+          class="article-card__image"
+        >
+      </div>
+    {% endif %}
     <div class="bm-article-card-content a-body">
       {% if tag_label %}
         <div class="bm-article-card-tag a-tag">{{ tag_label }}</div>

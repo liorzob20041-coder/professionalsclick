@@ -348,14 +348,17 @@
 .bm-callout {
   border-radius: 20px;
   padding: 1.2rem 1.4rem;
+  padding-inline-start: 2.9rem;
   border: 1px solid rgba(15, 23, 42, 0.06);
   background: #f9fafb;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   gap: 0.9rem;
   align-items: flex-start;
   margin: 1.5rem 0;
   position: relative;
+  direction: rtl;
+  text-align: right;
 }
 
 .bm-callout::before {
@@ -365,7 +368,9 @@
   font-size: 1.2rem;
   color: var(--bm-article-brand, #8B1538);
   line-height: 1;
-  margin-top: 0.1rem;
+  position: absolute;
+  inset-inline-start: 1.1rem;
+  inset-block-start: 1rem;
 }
 
 .bm-callout h3 {
@@ -373,6 +378,12 @@
   font-size: 1rem;
   font-weight: 600;
   color: #1E1A1D;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  padding-inline-start: 0.2rem;
 }
 
 .bm-callout p,

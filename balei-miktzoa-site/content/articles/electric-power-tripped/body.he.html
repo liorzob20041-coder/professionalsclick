@@ -1,14 +1,3 @@
-<section class="bm-article-intro">
-  <p class="bm-article-kicker">חשמל · מדריך מהיר</p>
-  <h1 class="bm-article-title">
-    החשמל קפץ ואין חשמל בבית – מה עושים לפני שקוראים לחשמלאי?
-  </h1>
-  <p class="bm-article-subtitle">
-    האורות כבו, המקרר שתק והבית בחושך. לפני שמזמינים חשמלאי, אפשר לבצע כמה
-    בדיקות בסיסיות שיחזירו את החשמל – וכל זה תוך שמירה מלאה על בטיחות.
-    המדריך הזה יעשה סדר: מה מותר לעשות לבד, מה אסור, ומתי חייבים איש מקצוע.
-  </p>
-</section>
 <section class="bm-block bm-block-summary bm-block-summary--electric">
   <h2 class="bm-block-summary__title">
     תקציר מהיר – מה עושים כשקופץ החשמל?
@@ -39,15 +28,6 @@
   </div>
 </section>
 
-<div class="bm-callout bm-callout--warning">
-  <h3>אזהרה חשובה</h3>
-  <p>
-    לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים
-    ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו –
-    רק על ידי חשמלאי מוסמך.
-  </p>
-</div>
-
 <h2 id="immediate-actions">
   מה עושים מיד כשקפץ החשמל?
 </h2>
@@ -76,7 +56,7 @@
 
 <figure class="bm-article-inline-image bm-article-inline-image--right">
   <img
-    src="{{ url_for('static', filename='img/articles/electric/electric-panel-closeup.jpg') }}"
+    src="/static/img/articles/electric/electric-panel-closeup.jpg"
     alt="לוח חשמל ביתי עם ממסר פחת ומפסקים מסודרים"
     loading="lazy"
   >
@@ -181,26 +161,38 @@
   תקלות נפוצות והסימנים המסוכנים
 </h2>
 
-<section class="bm-block bm-block-bars-vertical">
+<section class="article-risk-bars">
   <p>
     באופן גס, אפשר לחלק את רוב המקרים לכמה סוגים עיקריים:
   </p>
-  <div class="bm-bars-vertical">
-    <div class="bm-bar-vertical">
-      <div class="bm-bar-vertical__fill" style="--bm-bar-height: 65%;"></div>
-      <span class="bm-bar-vertical__label">מכשיר תקול</span>
+  <div class="article-risk-bars__list">
+    <div class="article-risk-bar">
+      <div class="article-risk-bar__label">מכשיר תקול</div>
+      <div class="article-risk-bar__meter" style="--fill: 68%;">
+        <span class="article-risk-bar__fill"></span>
+        <span class="article-risk-bar__value">68%</span>
+      </div>
     </div>
-    <div class="bm-bar-vertical">
-      <div class="bm-bar-vertical__fill" style="--bm-bar-height: 50%;"></div>
-      <span class="bm-bar-vertical__label">עומס יתר במעגל</span>
+    <div class="article-risk-bar">
+      <div class="article-risk-bar__label">עומס יתר במעגל</div>
+      <div class="article-risk-bar__meter" style="--fill: 52%;">
+        <span class="article-risk-bar__fill"></span>
+        <span class="article-risk-bar__value">52%</span>
+      </div>
     </div>
-    <div class="bm-bar-vertical">
-      <div class="bm-bar-vertical__fill" style="--bm-bar-height: 35%;"></div>
-      <span class="bm-bar-vertical__label">רטיבות וזליגה</span>
+    <div class="article-risk-bar">
+      <div class="article-risk-bar__label">רטיבות וזליגה</div>
+      <div class="article-risk-bar__meter" style="--fill: 38%;">
+        <span class="article-risk-bar__fill"></span>
+        <span class="article-risk-bar__value">38%</span>
+      </div>
     </div>
-    <div class="bm-bar-vertical">
-      <div class="bm-bar-vertical__fill" style="--bm-bar-height: 25%;"></div>
-      <span class="bm-bar-vertical__label">תקלת לוח/חיווט</span>
+    <div class="article-risk-bar">
+      <div class="article-risk-bar__label">תקלת לוח/חיווט</div>
+      <div class="article-risk-bar__meter" style="--fill: 28%;">
+        <span class="article-risk-bar__fill"></span>
+        <span class="article-risk-bar__value">28%</span>
+      </div>
     </div>
   </div>
 </section>
@@ -248,37 +240,77 @@
 <section class="bm-block bm-block-table">
   <p>
     אחרי שעשיתם את הבדיקות הבסיסיות, חשוב להבין מתי לא ממשיכים לבד ומזמינים
-    חשמלאי – ומה סדר גודל העלויות בביקור טיפוסי.
+    חשמלאי – ומה הדחיפות בכל מצב.
   </p>
   <div class="bm-table-wrapper">
     <table class="bm-article-table">
       <thead>
         <tr>
-          <th>סיטואציה</th>
-          <th>מה עושים?</th>
-          <th>טווח מחיר משוער</th>
+          <th>מצב</th>
+          <th>פעולה מומלצת</th>
+          <th>דחיפות</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>קפיצה חד־פעמית, חזרה לשגרה</td>
-          <td>לא חייב חשמלאי, אבל אם זה חוזר – לקרוא לבדיקה.</td>
-          <td>ללא עלות, רק מעקב.</td>
+          <td>ממשיכים לעקוב בלבד, לא חובה ביקור.</td>
+          <td><span class="article-chip article-chip--low">נמוכה</span></td>
         </tr>
         <tr>
           <td>מכשיר אחד שגורם לקפיצה</td>
-          <td>לא משתמשים במכשיר עד תיקון/החלפה.</td>
-          <td>תלוי במכשיר – לא ביקור חשמלאי.</td>
+          <td>מוציאים מהשקע עד לתיקון או החלפה.</td>
+          <td><span class="article-chip article-chip--mid">בינונית</span></td>
         </tr>
         <tr>
           <td>קפיצות חוזרות בלי סיבה ברורה</td>
           <td>מזמינים חשמלאי לבדיקה ואיתור תקלה במעגל/בלוח.</td>
-          <td>ביקור חשמלאי ביום חול: כ־₪250–₪350.</td>
+          <td><span class="article-chip article-chip--high">גבוהה</span></td>
         </tr>
         <tr>
           <td>ריח שרוף, חריכה, ניצוצות</td>
           <td>מנתקים מיד את המפסק הראשי ומזמינים חירום.</td>
-          <td>ביקור חירום ערב/סופ״ש: לרוב ₪300–₪500 ומעלה.</td>
+          <td><span class="article-chip article-chip--urgent">דחוף עכשיו</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="bm-block bm-block-table">
+  <h3>מחירים ועלויות</h3>
+  <p>
+    הערכות למחירי ביקור חשמלאי עבור תקלות נפוצות. המחירים מושפעים משעת הקריאה ומהאם מדובר בחירום.
+  </p>
+  <div class="bm-table-wrapper">
+    <table class="bm-article-table article-price-table">
+      <thead>
+        <tr>
+          <th>שירות</th>
+          <th>מה כלול</th>
+          <th>טווח מחיר</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ביקור רגיל ביום חול</td>
+          <td>בדיקה בלוח, איתור מעגל בעייתי ואיפוס בטוח.</td>
+          <td>₪250–₪350</td>
+        </tr>
+        <tr>
+          <td>קריאה דחופה בערב/סופ״ש</td>
+          <td>הגעה מהירה, טיפול ראשוני ובדיקת בטיחות.</td>
+          <td>₪400–₪650</td>
+        </tr>
+        <tr>
+          <td>תיקון מעגל/שקע תקול</td>
+          <td>תיקון נקודתי במעגל או החלפת שקע/מאמ"ט.</td>
+          <td>₪450–₪750</td>
+        </tr>
+        <tr>
+          <td>אבחון רטיבות וחיווט</td>
+          <td>בדיקת רטיבות, חיזוק חיבורים וייבוש נקודתי.</td>
+          <td>₪550–₪900</td>
         </tr>
       </tbody>
     </table>
@@ -296,7 +328,7 @@
 
 <figure class="bm-article-inline-image bm-article-inline-image--full">
   <img
-    src="{{ url_for('static', filename='img/articles/electric/electrician-working-panel.jpg') }}"
+    src="/static/img/articles/electric/electrician-working-panel.jpg"
     alt="חשמלאי מוסמך עובד על לוח חשמל ביתי"
     loading="lazy"
   >
@@ -304,3 +336,19 @@
     ברגע שיש חשד לסכנה – נותנים לחשמלאי מוסמך לעשות את העבודה.
   </figcaption>
 </figure>
+
+<h2 id="faq">שאלות נפוצות</h2>
+<section class="article-faq">
+  <details>
+    <summary>למה הפחת קופץ רק כשיורד גשם?</summary>
+    <p>במקרים רבים רטיבות חדרה לשקע חיצוני או לקופסת חיבורים. המתינו לייבוש מלא, אבל תכננו ביקור חשמלאי לבדיקה כדי לוודא שאין זליגות מסוכנות.</p>
+  </details>
+  <details>
+    <summary>האם מותר להרים פחת שוב ושוב?</summary>
+    <p>אם הפחת קופץ יותר מפעם אחת ברצף – עוצרים. הרמות חוזרות עלולות להחמיר תקלה קיימת, ובמצבי ריח שרוף או סימני חריכה יש לנתק את המפסק הראשי ולהזמין חירום.</p>
+  </details>
+  <details>
+    <summary>מה לבדוק לפני שהחשמלאי מגיע?</summary>
+    <p>השאירו את המפסקים במצבם הנוכחי, רשמו מה היה דולק כשקפץ החשמל ופנו את הגישה ללוח. אם צילמתם את הלוח מיד אחרי הקפיצה זה יעזור לאבחון.</p>
+  </details>
+</section>

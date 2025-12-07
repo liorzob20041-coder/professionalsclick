@@ -47,7 +47,12 @@ from services.json_store import atomic_write_json
 from services.translation import translate as translate_text
 from services.video_utils import get_local_video_metadata, normalize_video_file
 
-from articles_content import load_articles_list, get_related_articles, load_article
+from articles_content import (
+    load_articles_list,
+    get_related_articles,
+    load_article,
+    normalize_article_media,
+)
 from app.articles import articles_bp
 
 
@@ -2732,7 +2737,8 @@ def _load_article_from_disk(slug: str, lang: str) -> tuple[dict, str]:
         fallback_path = article_dir / "body.html"
         if fallback_path.exists():
             body_html = fallback_path.read_text(encoding="utf-8")
-
+    if meta:
+        normalize_article_media(meta)
     return meta, body_html or ""
 
 
@@ -2771,12 +2777,6 @@ def _render_article_detail(lang: str, slug: str):
         meta, body_html = _load_article_from_disk(slug, lang)
     except FileNotFoundError:
         meta, body_html = {}, ""
-    hero_source = meta.get("hero_image_source")
-    hero_file = meta.get("hero_image_file")
-    if hero_source and not meta.get("hero_image"):
-        meta["hero_image"] = hero_source
-    if hero_file and not meta.get("hero_image"):
-        meta["hero_image"] = f"/static/{str(hero_file).lstrip('/')}"
     title = _extract_title(meta, lang, slug)
     article = {"slug": slug, "title": title}
     canonical_url = _build_canonical(lang, slug)

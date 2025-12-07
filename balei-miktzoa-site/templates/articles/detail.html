@@ -1,3 +1,8 @@
+{#
+  Article detail page: RTL Figma-aligned layout with hero-first flow, alert/info/CTA blocks,
+  and simplified content structure. Hero and card images come from article meta (hero_image/card_image),
+  and sticky TOC behavior stays powered by static/js/bm-article-toc.js.
+#}
 {% extends "base.html" %}
 {% block title %}{{ (article.title if article is defined else None) or "כותרת המאמר" }} | בעלי מקצוע בקליק{% endblock %}
 {% block extra_head %}
@@ -10,10 +15,7 @@
   <link rel="stylesheet" href="{{ static_rel('css/bm-article-blocks.css') }}">
 {% endblock %}
 {% block content %}
-  {% set hero_image = article.hero_image or article.hero_image_url %}
-  {% if not hero_image and article.slug == 'electric-power-tripped' %}
-    {% set hero_image = 'images/articles/electric-power-tripped/yellow_helmet_electrician.jpg' %}
-  {% endif %}
+  {% set hero_image = article.hero_image or article.hero_image_url or (meta.hero_image if meta is defined else None) %}
   {% set subtitle = None %}
   {% if meta is defined %}
     {% set subtitle = meta.get('subtitle') or meta.get('description') or meta.get('excerpt') %}
@@ -25,10 +27,11 @@
   {% if not read_time and meta is defined %}
     {% set read_time = meta.get('reading_minutes') %}
   {% endif %}
+  {% set danger_text = "לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו – רק על ידי חשמלאי מוסמך." %}
   <div class="bm-article-page" dir="rtl">
     <div class="bm-article-inner">
-      <section class="bm-article-hero">
-        <div class="bm-article-hero-top">
+      <header class="article-header">
+        <div class="article-meta-row">
           <div class="bm-article-crumbs">
             <a class="bm-article-breadcrumb" href="{{ url_for('articles_index', lang=g.current_lang) }}">כל המאמרים</a>
             {% if meta is defined and meta.category %}
@@ -42,133 +45,89 @@
             </div>
           {% endif %}
         </div>
-        <div class="bm-article-emergency" role="note">
-          <div class="bm-article-emergency__message">
-            <span class="bm-article-emergency__icon" aria-hidden="true">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-            </span>
-            <p class="bm-article-emergency__text">מצב חירום? ריח שרוף חזק או ניצוצות בלוח החשמל? עוצרים מיד ומזמינים חשמלאי חירום מוסמך.</p>
-          </div>
-          <a class="bm-cta-primary bm-cta-primary--hero" href="{{ url_for('request_professional', lang=g.current_lang) }}">
-            <i class="fa-solid fa-phone"></i>
-            מצא חשמלאי חירום
-          </a>
-        </div>
-        <div class="bm-article-hero-grid">
-          <div class="bm-article-hero-text">
-            <div class="bm-article-hero-meta">
-              {% if meta is defined and meta.category %}
-                <span class="bm-article-category-pill">{{ meta.category }}</span>
-              {% endif %}
-              {% if read_time %}
-                <span class="bm-article-meta-chip">{{ read_time }}</span>
-              {% endif %}
-            </div>
-            <h1 class="bm-article-title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
-            {% if subtitle %}
-              <p class="bm-article-subtitle">{{ subtitle }}</p>
-            {% endif %}
-            <div class="bm-article-hero-actions">
-              <a class="bm-cta-primary bm-cta-primary--hero" href="{{ url_for('request_professional', lang=g.current_lang) }}">
-                <i class="fa-solid fa-phone"></i>
-                מציאת חשמלאי עכשיו
-              </a>
-            </div>
-          </div>
-        </div>
         {% if hero_image %}
           <figure class="article-hero">
             <img
               src="{{ url_for('static', filename=hero_image) }}"
               alt="{{ article.title }}"
               class="article-hero__image"
+              loading="lazy"
             >
           </figure>
         {% endif %}
+      </header>
+
+      <section class="article-alert" role="note">
+        <div class="article-alert__icon" aria-hidden="true">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="article-alert__text">
+          <strong>סכנת חיים:</strong>
+          <span>{{ danger_text }}</span>
+        </div>
       </section>
 
-      <div class="toc-demo-page" data-toc-container>
-        <main class="toc-demo-main bm-article-main" id="bm-article-main">
-          <section class="bm-article-intro">
-            <p class="bm-article-kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
-            <h2 class="bm-article-intro-heading">מה תמצאו במדריך</h2>
-            <p class="bm-article-subtitle">{{ subtitle or "תקציר קצר שמסביר על מה המאמר ולמה זה חשוב." }}</p>
-          </section>
+      <section class="article-info-strip">
+        <div class="article-info-item">
+          <div class="article-info-item__icon" aria-hidden="true">
+            <i class="fa-regular fa-clock"></i>
+          </div>
+          <div class="article-info-item__body">
+            <p class="article-info-item__label">זמן טיפול</p>
+            <p class="article-info-item__value">{{ (meta.duration if meta is defined and meta.duration else '30–90 דקות') }}</p>
+          </div>
+        </div>
+        <div class="article-info-item">
+          <div class="article-info-item__icon" aria-hidden="true">
+            <i class="fa-solid fa-coins"></i>
+          </div>
+          <div class="article-info-item__body">
+            <p class="article-info-item__label">עלות ממוצעת</p>
+            <p class="article-info-item__value">{{ (meta.price_range if meta is defined and meta.price_range else '₪250–850') }}</p>
+          </div>
+        </div>
+        <div class="article-info-item">
+          <div class="article-info-item__icon" aria-hidden="true">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div class="article-info-item__body">
+            <p class="article-info-item__label">דחיפות</p>
+            <span class="article-info-item__chip">{{ (meta.urgency if meta is defined and meta.urgency else 'גבוהה') }}</span>
+          </div>
+        </div>
+      </section>
 
-          <section class="bm-article-insights-grid">
-            <article class="bm-article-insight-card">
-              <h2 class="bm-article-insight-title">טווח מחירים ממוצע</h2>
-              <p class="bm-article-insight-value">{{ (meta.price_range if meta is defined and meta.price_range else '₪350 – ₪850') }}</p>
-              <p class="bm-article-insight-note">{{ (meta.price_note if meta is defined and meta.price_note else 'תלוי במורכבות העבודה ובשעות הקריאה.') }}</p>
-            </article>
+      <section class="article-cta-card">
+        <div class="article-cta-card__copy">
+          <p class="article-cta-card__eyebrow">צריכים עזרה מיידית?</p>
+          <h2 class="article-cta-card__title">צריכים חשמלאי מוסמך?</h2>
+          <p class="article-cta-card__text">מילוי קצר של פרטים וקבלו חשמלאי מוסמך עם זמינות גבוהה באזור שלכם.</p>
+        </div>
+        <a class="bm-cta-primary bm-cta-primary--hero" href="{{ url_for('request_professional', lang=g.current_lang) }}">
+          <i class="fa-solid fa-phone"></i>
+          מצאו חשמלאי עכשיו
+        </a>
+      </section>
 
-            <article class="bm-article-insight-card">
-              <h2 class="bm-article-insight-title">משך עבודה</h2>
-              <p class="bm-article-insight-value">{{ (meta.duration if meta is defined and meta.duration else '30–90 דקות') }}</p>
-              <p class="bm-article-insight-note">{{ (meta.duration_note if meta is defined and meta.duration_note else 'ברוב המקרים אפשר לפתור בביקור אחד.') }}</p>
-            </article>
-
-            <article class="bm-article-insight-card">
-              <h2 class="bm-article-insight-title">רמת דחיפות</h2>
-              <p class="bm-article-insight-pill bm-article-insight-pill--high">{{ (meta.urgency if meta is defined and meta.urgency else 'גבוהה') }}</p>
-              <p class="bm-article-insight-note">{{ (meta.urgency_note if meta is defined and meta.urgency_note else 'אם יש הצפה או ריח חריף – לא מחכים.') }}</p>
-            </article>
-          </section>
-
-          <section class="bm-article-cost-graph" aria-label="פירוט טווחי מחירים">
-            <header class="bm-article-cost-graph__header">
-              <h2 class="bm-article-section-title">פירוט טווחי מחירים</h2>
-              <p class="bm-article-section-subtitle">
-                המחירים לדירה סטנדרטית, ללא עבודות שיקום מורכבות.
-              </p>
-            </header>
-
-            <div class="bm-article-cost-graph__legend">
-              <span class="bm-article-cost-legend-item">
-                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--low"></span>
-                ביקור בסיסי
-              </span>
-              <span class="bm-article-cost-legend-item">
-                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--mid"></span>
-                טיפול בינוני
-              </span>
-              <span class="bm-article-cost-legend-item">
-                <span class="bm-article-cost-legend-swatch bm-article-cost-legend-swatch--high"></span>
-                עבודה מורכבת / חירום
-              </span>
-            </div>
-
-            <div class="bm-article-cost-graph__rows">
-              <div class="bm-article-cost-row">
-                <div class="bm-article-cost-label">ביקור רגיל ביום חול</div>
-                <div class="bm-article-cost-bars">
-                  <div class="bm-article-cost-bar bm-article-cost-bar--low" style="--bm-bar-width: 22%;"><span>₪250</span></div>
-                  <div class="bm-article-cost-bar bm-article-cost-bar--mid" style="--bm-bar-width: 45%;"><span>₪450</span></div>
-                  <div class="bm-article-cost-bar bm-article-cost-bar--high" style="--bm-bar-width: 68%;"><span>₪700</span></div>
-                </div>
-              </div>
-
-              <div class="bm-article-cost-row">
-                <div class="bm-article-cost-label">קריאה דחופה בערב / סופ״ש</div>
-                <div class="bm-article-cost-bars">
-                  <div class="bm-article-cost-bar bm-article-cost-bar--low" style="--bm-bar-width: 35%;"><span>₪350</span></div>
-                  <div class="bm-article-cost-bar bm-article-cost-bar--mid" style="--bm-bar-width: 60%;"><span>₪600</span></div>
-                  <div class="bm-article-cost-bar bm-article-cost-bar--high" style="--bm-bar-width: 80%;"><span>₪850+</span></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <article class="bm-article-body">
-            {{ (article_body_html or article_body) | safe }}
-          </article>
-        </main>
+      <div class="toc-demo-page article-layout" data-toc-container>
         <aside class="toc-demo-sidebar" aria-label="תוכן עניינים">
           <nav class="toc-demo-toc" id="bm-article-toc" data-empty="true">
             <h2 class="toc-demo-toc-title">במאמר זה</h2>
             <ul class="toc-demo-toc-list"></ul>
           </nav>
         </aside>
+        <main class="toc-demo-main bm-article-main" id="bm-article-main">
+          <header class="article-heading">
+            <p class="article-heading__kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
+            <h1 class="article-heading__title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
+            {% if subtitle %}
+              <p class="article-heading__subtitle">{{ subtitle }}</p>
+            {% endif %}
+          </header>
+          <article class="bm-article-body">
+            {{ (article_body_html or article_body) | safe }}
+          </article>
+        </main>
       </div>
     </div>
   </div>

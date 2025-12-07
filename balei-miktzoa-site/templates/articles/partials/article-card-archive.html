@@ -8,7 +8,10 @@
 {% set hero_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
 {% set hero_width = article.hero_image_width if article.hero_image_width is defined and article.hero_image_width else (article.img_width if article.img_width is defined and article.img_width else 640) %}
 {% set hero_height = article.hero_image_height if article.hero_image_height is defined and article.hero_image_height else (article.img_height if article.img_height is defined and article.img_height else 466) %}
-{% set hero_path = article.hero_image if article.hero_image is defined and article.hero_image else None %}
+{% set hero_path = article.card_image if article.card_image is defined and article.card_image else None %}
+{% if not hero_path and article.hero_image is defined and article.hero_image %}
+  {% set hero_path = article.hero_image %}
+{% endif %}
 {% if not hero_path and article.hero_image_file is defined and article.hero_image_file %}
   {% set hero_path = '/static/' ~ article.hero_image_file.lstrip('/') %}
 {% elif not hero_path and article.img_file is defined and article.img_file %}

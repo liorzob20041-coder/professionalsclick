@@ -2,6 +2,41 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+def _normalize_static_path(path: Optional[str]) -> Optional[str]:
+    """Return a static-relative path (no leading "/static/")."""
+
+    if not path:
+        return None
+
+    cleaned = str(path)
+    if cleaned.startswith("/static/"):
+        cleaned = cleaned[len("/static/") :]
+    elif cleaned.startswith("static/"):
+        cleaned = cleaned[len("static/") :]
+
+    return cleaned.lstrip("/") or None
+
+
+def normalize_article_media(meta: Dict[str, Any]) -> Dict[str, Any]:
+    """Ensure hero and card images use a single, normalized source of truth."""
+
+    hero_image = meta.get("hero_image") or meta.get("hero_image_source")
+    hero_file = meta.get("hero_image_file")
+    if hero_file and not hero_image:
+        hero_image = hero_file
+
+    hero_image = _normalize_static_path(hero_image)
+
+    card_image = meta.get("card_image") or meta.get("card_image_source")
+    if not card_image:
+        card_image = hero_image
+
+    meta["hero_image"] = hero_image
+    meta["card_image"] = _normalize_static_path(card_image)
+
+    return meta
+
+
 def _ensure_he_meta(meta: Dict[str, Any]) -> Dict[str, Any]:
     """Return the Hebrew meta dictionary, ensuring it is a mapping."""
     he_meta = meta.get("he")
@@ -78,6 +113,7 @@ def load_article(slug: str, lang: str) -> Tuple[Dict[str, Any], Dict[str, Any], 
             if derived_category:
                 meta["category"] = derived_category
         _ensure_he_meta(meta)
+        normalize_article_media(meta)
         lang_data = _extract_lang_data(meta, lang)
         body_path = _resolve_body_path(article_dir, slug, lang)
         body_html = ""
@@ -104,19 +140,15 @@ def load_articles_list(lang: str) -> List[Dict[str, Any]]:
         derived_category = meta.get("category") or (category if category != "articles" else None)
         _ensure_he_meta(meta)
 
-        hero_image = meta.get("hero_image") or meta.get("hero_image_source")
-        if not hero_image:
-            hero_file = meta.get("hero_image_file")
-            if hero_file:
-                hero_image = f"/static/{str(hero_file).lstrip('/')}"
-
+        normalize_article_media(meta)
         article_data: Dict[str, Any] = {
             "slug": slug,
             "date": meta.get("date"),
             "category": derived_category,
             "featured": bool(meta.get("featured", False)),
             "popular": bool(meta.get("popular", False)),
-            "hero_image": hero_image,
+            "hero_image": meta.get("hero_image"),
+            "card_image": meta.get("card_image"),
             "hero_image_file": meta.get("hero_image_file") or meta.get("hero_image_source"),
             "hero_image_width": meta.get("hero_image_width"),
             "hero_image_height": meta.get("hero_image_height"),

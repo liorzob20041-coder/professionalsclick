@@ -3,9 +3,7 @@
 {% set card_tag = article.category or '' %}
 {% set tag_label = article.category_label if article.category_label is defined else '' %}
 {% set hero_image = article.hero_image or article.hero_image_url %}
-{% if not hero_image and article.slug == 'electric-power-tripped' %}
-    {% set hero_image = 'images/articles/electric-power-tripped/yellow_shirt_electrician.jpg' %}
-{% endif %}
+{% set card_image = article.card_image or article.card_image_url or hero_image %}
 {% if not tag_label %}
   {% set tag_label = article.tag_label if article.tag_label is defined else '' %}
 {% endif %}
@@ -30,10 +28,10 @@
 {% endif %}
 <article class="bm-article-card a-card" data-category="{{ card_tag }}">
   <a href="{{ detail_url }}" class="bm-article-card-link">
-    {% if hero_image %}
+    {% if card_image %}
       <div class="article-card__image-wrapper">
         <img
-          src="{{ url_for('static', filename=hero_image) }}"
+          src="{{ url_for('static', filename=card_image) }}"
           alt="{{ article.title }}"
           loading="lazy"
           class="article-card__image"

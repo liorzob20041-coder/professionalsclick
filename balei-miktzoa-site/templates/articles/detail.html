@@ -30,39 +30,39 @@
   {% set danger_text = "לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו – רק על ידי חשמלאי מוסמך." %}
   <div class="bm-article-page" dir="rtl">
     <div class="bm-article-inner">
-        <div class="article-hero-header article-card">
-          <p class="article-heading__kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
-          <h1 class="article-heading__title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
-          {% if subtitle %}
-            <p class="article-heading__subtitle">{{ subtitle }}</p>
-          {% endif %}
-        </div>
-      <header class="article-header">
-        <div class="article-meta-row">
-          <div class="bm-article-crumbs">
-            <a class="bm-article-breadcrumb" href="{{ url_for('articles_index', lang=g.current_lang) }}">כל המאמרים</a>
-            {% if meta is defined and meta.category %}
-              <span class="bm-article-meta-sep">/</span>
-              <span class="bm-article-category-pill">{{ meta.category }}</span>
+      <section class="article-hero">
+        <div class="article-hero__inner">
+          <div class="article-hero__content">
+            <div class="article-hero__breadcrumbs">
+              <a class="bm-article-breadcrumb" href="{{ url_for('articles_index', lang=g.current_lang) }}">כל המאמרים</a>
+              {% if meta is defined and meta.category %}
+                <span class="bm-article-meta-sep">/</span>
+                <span class="bm-article-category-pill">{{ meta.category }}</span>
+              {% endif %}
+              {% if read_time %}
+                <span class="article-hero__meta-chip">
+                  <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                  {{ read_time }}
+                </span>
+              {% endif %}
+            </div>
+            <h1 class="article-hero__title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
+            {% if subtitle %}
+              <p class="article-hero__subtitle">{{ subtitle }}</p>
             {% endif %}
           </div>
-          {% if read_time %}
-            <div class="bm-article-meta">
-              <span class="bm-article-meta-item">{{ read_time }}</span>
-            </div>
+          {% if hero_image %}
+            <figure class="article-hero__media">
+              <img
+                src="{{ url_for('static', filename=hero_image) }}"
+                alt="{{ article.title }}"
+                class="article-hero__image"
+                loading="lazy"
+              >
+            </figure>
           {% endif %}
         </div>
-        {% if hero_image %}
-          <figure class="article-hero">
-            <img
-              src="{{ url_for('static', filename=hero_image) }}"
-              alt="{{ article.title }}"
-              class="article-hero__image"
-              loading="lazy"
-            >
-          </figure>
-        {% endif %}
-      </header>
+      </section>
 
       <section class="article-alert article-card article-card--danger" role="note">
         <div class="article-alert__icon" aria-hidden="true">

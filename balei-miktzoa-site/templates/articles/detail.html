@@ -30,6 +30,13 @@
   {% set danger_text = "לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו – רק על ידי חשמלאי מוסמך." %}
   <div class="bm-article-page" dir="rtl">
     <div class="bm-article-inner">
+        <div class="article-hero-header article-card">
+          <p class="article-heading__kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
+          <h1 class="article-heading__title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
+          {% if subtitle %}
+            <p class="article-heading__subtitle">{{ subtitle }}</p>
+          {% endif %}
+        </div>
       <header class="article-header">
         <div class="article-meta-row">
           <div class="bm-article-crumbs">
@@ -57,7 +64,7 @@
         {% endif %}
       </header>
 
-      <section class="article-alert" role="note">
+      <section class="article-alert article-card article-card--danger" role="note">
         <div class="article-alert__icon" aria-hidden="true">
           <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
@@ -97,7 +104,7 @@
         </div>
       </section>
 
-      <section class="article-cta-card">
+      <section class="article-cta-card article-card article-card--cta">
         <div class="article-cta-card__copy">
           <p class="article-cta-card__eyebrow">צריכים עזרה מיידית?</p>
           <h2 class="article-cta-card__title">צריכים חשמלאי מוסמך?</h2>
@@ -117,13 +124,6 @@
           </nav>
         </aside>
         <main class="toc-demo-main bm-article-main" id="bm-article-main">
-          <header class="article-heading">
-            <p class="article-heading__kicker">{{ (meta.category if meta is defined and meta.category else 'מדריך מומחים') }}</p>
-            <h1 class="article-heading__title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
-            {% if subtitle %}
-              <p class="article-heading__subtitle">{{ subtitle }}</p>
-            {% endif %}
-          </header>
           <article class="bm-article-body">
             {{ (article_body_html or article_body) | safe }}
           </article>

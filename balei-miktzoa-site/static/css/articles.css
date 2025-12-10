@@ -799,8 +799,3 @@ html[dir="ltr"] .articles-archive .article-card__more:focus-visible .fa-arrow-le
 .bm-article-card-content {
   padding: 12px 14px 14px;
 }
-@media (max-width: 640px) {
-  .article-card__image-wrapper {
-    aspect-ratio: 4 / 3;
-  }
-}

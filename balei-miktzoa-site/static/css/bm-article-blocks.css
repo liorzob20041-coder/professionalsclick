@@ -348,7 +348,8 @@
 .bm-callout {
   border-radius: 20px;
   padding: 1.2rem 1.4rem;
-  padding-inline-start: 2.9rem;
+  padding-inline-end: 3rem;
+  padding-inline-start: 1.4rem;
   border: 1px solid rgba(15, 23, 42, 0.06);
   background: #f9fafb;
   display: grid;

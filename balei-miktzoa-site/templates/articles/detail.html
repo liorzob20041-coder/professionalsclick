@@ -27,29 +27,39 @@
   {% if not read_time and meta is defined %}
     {% set read_time = meta.get('reading_minutes') %}
   {% endif %}
+  {% set hero_caption = None %}
+  {% if meta is defined %}
+    {% set hero_caption = meta.get('hero_caption') or meta.get('image_caption') %}
+  {% endif %}
   {% set danger_text = "לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו – רק על ידי חשמלאי מוסמך." %}
   <div class="bm-article-page" dir="rtl">
     <div class="bm-article-inner">
       <section class="article-hero">
         <div class="article-hero__inner">
           <div class="article-hero__content">
-            <div class="article-hero__breadcrumbs">
+            <div class="article-hero__breadcrumb">
               <a class="bm-article-breadcrumb" href="{{ url_for('articles_index', lang=g.current_lang) }}">כל המאמרים</a>
               {% if meta is defined and meta.category %}
-                <span class="bm-article-meta-sep">/</span>
-                <span class="bm-article-category-pill">{{ meta.category }}</span>
+                <span class="bm-article-meta-sep">•</span>
+                <span class="article-hero__crumb">{{ meta.category }}</span>
               {% endif %}
               {% if read_time %}
-                <span class="article-hero__meta-chip">
-                  <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                  {{ read_time }}
-                </span>
+                <span class="bm-article-meta-sep">•</span>
+                <span class="article-hero__crumb">{{ read_time }} דקות קריאה</span>
               {% endif %}
             </div>
             <h1 class="article-hero__title">{{ (article.title if article is defined else 'כותרת המאמר') }}</h1>
             {% if subtitle %}
               <p class="article-hero__subtitle">{{ subtitle }}</p>
             {% endif %}
+            <div class="article-hero__chips">
+              <span class="article-hero__chip">
+                זמן ביצוע: {{ (meta.duration if meta is defined and meta.duration else '30–90 דקות') }}
+              </span>
+              <span class="article-hero__chip">
+                טווח מחיר: {{ (meta.price_range if meta is defined and meta.price_range else '₪250–850') }}
+              </span>
+            </div>
           </div>
           {% if hero_image %}
             <figure class="article-hero__media">
@@ -59,6 +69,9 @@
                 class="article-hero__image"
                 loading="lazy"
               >
+              {% if hero_caption %}
+                <figcaption class="article-hero__badge">{{ hero_caption }}</figcaption>
+              {% endif %}
             </figure>
           {% endif %}
         </div>

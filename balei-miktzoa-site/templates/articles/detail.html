@@ -28,8 +28,17 @@
     {% set read_time = meta.get('reading_minutes') %}
   {% endif %}
   {% set hero_caption = None %}
+  {% set hero_alt = None %}
+  {% set hero_width = None %}
+  {% set hero_height = None %}
   {% if meta is defined %}
     {% set hero_caption = meta.get('hero_caption') or meta.get('image_caption') %}
+    {% set hero_alt = meta.get('hero_alt') %}
+    {% set hero_width = meta.get('hero_image_width') %}
+    {% set hero_height = meta.get('hero_image_height') %}
+  {% endif %}
+  {% if not hero_alt %}
+    {% set hero_alt = (article.title if article is defined else 'תמונת מאמר') %}
   {% endif %}
   {% set danger_text = "לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו – רק על ידי חשמלאי מוסמך." %}
   <div class="bm-article-page" dir="rtl">
@@ -65,9 +74,10 @@
             <figure class="article-hero__media">
               <img
                 src="{{ url_for('static', filename=hero_image) }}"
-                alt="{{ article.title }}"
+                alt="{{ hero_alt }}"
                 class="article-hero__image"
                 loading="lazy"
+                alt="{{ hero_alt }}"
               >
               {% if hero_caption %}
                 <figcaption class="article-hero__badge">{{ hero_caption }}</figcaption>
@@ -77,7 +87,7 @@
         </div>
       </section>
 
-      <section class="article-alert article-card article-card--danger" role="note">
+      <section class="article-alert article-card article-card--danger bm-box bm-box--danger" role="note">
         <div class="article-alert__icon" aria-hidden="true">
           <i class="fa-solid fa-triangle-exclamation"></i>
         </div>

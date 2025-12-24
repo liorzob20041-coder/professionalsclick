@@ -164,8 +164,19 @@
 .bm-table-wrapper {
   overflow-x: auto;
   border-radius: 14px;
-  border: 1px solid rgba(139, 21, 56, 0.08);
+  border: 1px solid rgba(139, 21, 56, 0.12);
   background: #ffffff;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 21, 56, 0.35) transparent;
+}
+
+.bm-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.bm-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(139, 21, 56, 0.35);
+  border-radius: 999px;
 }
 
 .bm-article-table {
@@ -177,20 +188,24 @@
 
 .bm-article-table th,
 .bm-article-table td {
-  padding: 10px 12px;
+  padding: 12px 14px;
   text-align: right;
   border-bottom: 1px solid rgba(17, 24, 39, 0.06);
 }
 
 .bm-article-table thead th {
-  background: #fdf7f9;
-  color: #8b1538;
+  background: #f9eef2;
+  color: #6f0f2f;
   font-weight: 700;
   font-size: 13px;
 }
 
 .bm-article-table tbody tr:nth-child(odd) {
   background: rgba(139, 21, 56, 0.02);
+}
+
+.bm-article-table tbody tr:hover {
+  background: rgba(139, 21, 56, 0.06);
 }
 
 /* Pros / Cons */
@@ -344,13 +359,14 @@
   line-height: 1.55;
 }
 
-/* Callouts */
+/* Unified info boxes */
+.bm-box,
 .bm-callout {
   border-radius: 20px;
   padding: 1.2rem 1.4rem;
   padding-inline-end: 3rem;
   padding-inline-start: 1.4rem;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.08);
   background: #f9fafb;
   display: grid;
   grid-template-columns: 1fr;
@@ -360,25 +376,30 @@
   position: relative;
   direction: rtl;
   text-align: right;
+  color: var(--bm-box-text, rgba(36, 27, 33, 0.85));
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  --bm-box-icon: "\f05a";
 }
 
+.bm-box::before,
 .bm-callout::before {
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  content: var(--bm-callout-icon, "\f05a");
+  content: var(--bm-box-icon, "\f05a");
   font-size: 1.2rem;
-  color: var(--bm-article-brand, #8B1538);
+  color: var(--bm-box-icon-color, var(--bm-article-brand, #8B1538));
   line-height: 1;
   position: absolute;
   inset-inline-start: 1.1rem;
   inset-block-start: 1rem;
 }
 
+.bm-box h3,
 .bm-callout h3 {
   margin: 0 0 0.35rem;
   font-size: 1rem;
-  font-weight: 600;
-  color: #1E1A1D;
+  font-weight: 700;
+  color: var(--bm-box-title, #1E1A1D);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -387,35 +408,53 @@
   padding-inline-start: 0.2rem;
 }
 
+.bm-box p,
+.bm-box ul,
 .bm-callout p,
 .bm-callout ul {
   margin: 0;
-  color: var(--bm-article-muted, rgba(36, 27, 33, 0.8));
+  color: inherit;
   line-height: 1.6;
   padding: 0;
 }
 
+.bm-box ul,
 .bm-callout ul {
   list-style: disc;
   padding-inline-start: 1.2rem;
 }
 
+.bm-box--danger,
 .bm-callout--warning {
   background: #FFF5F5;
-  border-color: rgba(220, 38, 38, 0.18);
-  --bm-callout-icon: "\f071";
+  border-color: rgba(220, 38, 38, 0.2);
+  color: #7f1d1d;
+  --bm-box-icon: "\f071";
+  --bm-box-icon-color: #b91c1c;
 }
 
+.bm-box--tip,
 .bm-callout--tip {
   background: #F2FBF4;
   border-color: rgba(22, 163, 74, 0.18);
-  --bm-callout-icon: "\f0e7";
+  --bm-box-icon: "\f0e7";
+  --bm-box-icon-color: #15803d;
 }
 
+.bm-box--note,
 .bm-callout--question {
   background: #F4F4FF;
   border-color: rgba(79, 70, 229, 0.16);
-  --bm-callout-icon: "\f059";
+  --bm-box-icon: "\f059";
+  --bm-box-icon-color: #4338ca;
+}
+
+.article-alert.bm-box {
+  display: flex;
+}
+
+.article-alert.bm-box::before {
+  content: none;
 }
 
 /* Vertical bars */

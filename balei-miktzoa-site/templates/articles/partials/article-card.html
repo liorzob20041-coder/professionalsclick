@@ -4,6 +4,7 @@
 {% set tag_label = article.category_label if article.category_label is defined else '' %}
 {% set hero_image = article.hero_image or article.hero_image_url %}
 {% set card_image = article.card_image or article.card_image_url or hero_image %}
+{% set card_alt = article.hero_alt if article.hero_alt is defined and article.hero_alt else article.title %}
 {% if not tag_label %}
   {% set tag_label = article.tag_label if article.tag_label is defined else '' %}
 {% endif %}
@@ -32,7 +33,7 @@
       <div class="article-card__image-wrapper">
         <img
           src="{{ url_for('static', filename=card_image) }}"
-          alt="{{ article.title }}"
+          alt="{{ card_alt }}"
           loading="lazy"
           class="article-card__image"
         >

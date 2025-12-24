@@ -30,12 +30,12 @@
 <article class="bm-article-card a-card" data-category="{{ card_tag }}">
   <a href="{{ detail_url }}" class="bm-article-card-link">
     {% if card_image %}
-      <div class="article-card__image-wrapper">
+      <div class="article-card__image-wrapper bm-article-card__media">
         <img
           src="{{ url_for('static', filename=card_image) }}"
           alt="{{ card_alt }}"
           loading="lazy"
-          class="article-card__image"
+          class="article-card__image bm-article-card__img"
         >
       </div>
     {% endif %}

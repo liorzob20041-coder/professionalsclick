@@ -122,7 +122,8 @@ body,
   overflow: hidden;
   background: #f1f5f9;
   box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 16 / 10;
+  max-height: 520px;
 }
 
 .article-hero__image {
@@ -158,6 +159,7 @@ body,
   .article-hero__media {
     max-width: 100%;
     width: 100%;
+    max-height: 420px;
   }
 }
 @media (max-width: 720px) {
@@ -174,6 +176,7 @@ body,
 
   .article-hero__media {
     border-radius: 16px;
+    max-height: 300px;
   }
 }
 .article-alert {

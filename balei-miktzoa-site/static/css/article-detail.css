@@ -461,7 +461,9 @@ body,
 
 .article-risk-bar {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 1fr minmax(180px, 520px) auto;
+  gap: 12px;
+  align-items: center;
   padding: 12px 14px;
   border-radius: 14px;
   border: 1px solid rgba(15, 23, 42, 0.06);
@@ -477,7 +479,7 @@ body,
   position: relative;
   background: #e2e8f0;
   border-radius: 999px;
-  height: 14px;
+  height: 12px;
   overflow: hidden;
 }
 
@@ -490,13 +492,37 @@ body,
 }
 
 .article-risk-bar__value {
-  position: absolute;
-  inset-inline-end: 10px;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
+  min-width: 52px;
+  padding: 6px 10px;
+  text-align: center;
   font-weight: 800;
-  font-size: 12px;
-  color: #ffffff;
+  font-size: 13px;
+  color: #111827;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  border-radius: 999px;
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 720px) {
+  .article-risk-bar {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label value"
+      "bar bar";
+  }
+
+  .article-risk-bar__label {
+    grid-area: label;
+  }
+
+  .article-risk-bar__meter {
+    grid-area: bar;
+  }
+
+  .article-risk-bar__value {
+    grid-area: value;
+  }
 }
 
 .article-chip {

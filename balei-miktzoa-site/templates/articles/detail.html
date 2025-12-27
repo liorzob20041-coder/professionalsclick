@@ -14,6 +14,60 @@
   <link rel="stylesheet" href="{{ static_rel('css/article-detail.css') }}">
   <link rel="stylesheet" href="{{ static_rel('css/bm-article-blocks.css') }}">
 {% endblock %}
+{% block head_fallbacks %}
+  {% set hero_image = None %}
+  {% set hero_alt = None %}
+  {% if meta is defined %}
+    {% set hero_image = meta.get('hero_image') or meta.get('hero_image_url') or meta.get('hero_image_source') %}
+    {% set hero_alt = meta.get('hero_alt') %}
+  {% endif %}
+  {% if not hero_alt %}
+    {% set hero_alt = (article.title if article is defined else 'תמונת מאמר') %}
+  {% endif %}
+  {% set meta_description = None %}
+  {% if meta is defined %}
+    {% set meta_description = meta.get('description') %}
+    {% if not meta_description and meta.get('he') %}
+      {% set meta_description = meta['he'].get('description') or meta['he'].get('excerpt') %}
+    {% endif %}
+    {% if not meta_description %}
+      {% set meta_description = meta.get('excerpt') %}
+    {% endif %}
+  {% endif %}
+  {% set meta_description = meta_description or (article.title if article is defined else None) or "בעלי מקצוע בקליק" %}
+  {% set og_image = None %}
+  {% if hero_image %}
+    {% set og_image = static_url(hero_image) %}
+  {% endif %}
+  {% if not og_image %}
+    {% set og_image = static_url('og/home-' ~ (g.current_lang or 'he') ~ '.jpg') %}
+  {% endif %}
+  <link rel="canonical" href="{{ canonical_url | default(request.url, true) }}">
+  <link rel="alternate" hreflang="he" href="{{ url_for_lang(lang='he', _external=True) }}">
+  <link rel="alternate" hreflang="en" href="{{ url_for_lang(lang='en', _external=True) }}">
+  <link rel="alternate" hreflang="ru" href="{{ url_for_lang(lang='ru', _external=True) }}">
+  <link rel="alternate" hreflang="x-default" href="{{ url_for_lang(lang='he', _external=True) }}">
+
+  <meta name="description" content="{{ meta_description }}">
+  <meta name="robots" content="{{ 'noindex, nofollow' if noindex else 'index, follow' }}">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="בעלי מקצוע בקליק">
+  <meta property="og:title" content="{{ (article.title if article is defined else 'כותרת המאמר') }}">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:image:alt" content="{{ hero_alt }}">
+  <meta property="og:url" content="{{ canonical_url | default(request.url, true) }}">
+  <meta property="og:locale" content="{{ og_locale }}">
+  <meta property="og:locale:alternate" content="he_IL">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="ru_RU">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ (article.title if article is defined else 'כותרת המאמר') }}">
+  <meta name="twitter:description" content="{{ meta_description }}">
+  <meta name="twitter:image" content="{{ og_image }}">
+{% endblock %}
 {% block content %}
   {% set hero_image = article.hero_image or article.hero_image_url or (meta.hero_image if meta is defined else None) %}
   {% set subtitle = None %}

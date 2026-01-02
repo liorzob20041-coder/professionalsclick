@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="{{ static_rel('articles/article-base.css') }}">
   <link rel="stylesheet" href="{{ static_rel('css/article-detail.css') }}">
   <link rel="stylesheet" href="{{ static_rel('css/bm-article-blocks.css') }}">
+  {% if meta is defined and meta.slug == 'upgrade-electric-panel' %}
+    <link rel="stylesheet" href="{{ static_rel('css/articles/upgrade-electric-panel.css') }}">
+  {% endif %}
 {% endblock %}
 {% block head_fallbacks %}
   {% set hero_image = None %}
@@ -95,7 +98,7 @@
     {% set hero_alt = (article.title if article is defined else 'תמונת מאמר') %}
   {% endif %}
   {% set danger_text = "לעולם אל תפתחו את לוח החשמל מעבר לכיסוי הקדמי, אל תגעו בחוטים חשופים ואל תעקפו ממסר פחת או מפסק שקופץ שוב ושוב. כל עבודה בלוח עצמו – רק על ידי חשמלאי מוסמך." %}
-  <div class="bm-article-page" dir="rtl">
+  <div class="bm-article-page" dir="rtl"{% if meta is defined and meta.slug == 'upgrade-electric-panel' %} data-article="upgrade-electric-panel"{% endif %}>
     <div class="bm-article-inner">
       <section class="article-hero">
         <div class="article-hero__inner">

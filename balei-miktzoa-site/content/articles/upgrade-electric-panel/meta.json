@@ -2,14 +2,14 @@
   "slug": "upgrade-electric-panel",
   "category": "electricity",
   "date": "2025-03-10",
-  "hero_image": "articles/electrician-spotlight.jpg",
-  "card_image": "articles/yellow_shirt_electrician.jpg",
-  "hero_alt": "חשמלאי עובד על לוח חשמל ביתי מואר",
+  "hero_image": "img/articles/electric/electrician-working-on-electrical-panel.jpg",
+  "card_image": "img/articles/electric/electrician-working-on-electrical-panel.jpg",
+  "hero_alt": "חשמלאי עובד על לוח חשמל ומבצע בדיקה",
   "read_time": "8 דקות קריאה",
   "he": {
-    "title": "מתי צריך לשדרג לוח חשמל חדש? סימנים, מחירים וצ'קליסט",
-    "description": "הפקק קופץ? לוח ישן? כך תזהו מתי חייבים להחליף לוח חשמל, כמה זה עולה, ומה אסור לעשות לבד.",
-    "excerpt": "מדריך מעשי לזיהוי סימנים לשדרוג לוח חשמל, הבנת הדחיפות והחלטה בין תיקון נקודתי להחלפה מלאה."
+    "title": "החלפת לוח חשמל: מתי צריך לשדרג, סימנים, מחירים וצ'קליסט",
+    "description": "מדריך מעשי להחלפת לוח חשמל: סימנים לדחיפות, בדיקת בזק, טווחי מחירים וצ'קליסט לפני הזמנת חשמלאי.",
+    "excerpt": "סימנים ללוח לא מתאים, השוואה בין שדרוג להחלפה מלאה, ומה לבדוק לפני שמזמינים חשמלאי מוסמך."
   },
   "tags": ["חשמל", "בטיחות", "שדרוג", "לוח חשמל"]
 }

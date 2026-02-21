@@ -201,7 +201,7 @@
 {% set popular_title = popular_title_map.get(g.current_lang, popular_title_map['he']) %}
 {% set popular_subtitle = popular_subtitle_map.get(g.current_lang, popular_subtitle_map['he']) %}
 <section class="articles-archive articles-index-page" aria-label="{{ _('articles_index.aria_label') }}" data-articles-root data-selected-category="{{ selected_category }}">
-  <div class="container">
+  <div class="container container--wide">
     <header class="articles-hero" dir="rtl">
       <span class="articles-hero__kicker">{{ t('homepage.articles.kicker', 'home') }}</span>
       <h1 class="articles-hero__title">{{ hero_title }}</h1>

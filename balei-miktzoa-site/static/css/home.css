@@ -144,7 +144,19 @@ textarea:focus {
 .section-wrap {
   max-width: 1100px;
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: var(--container-pad, 20px);
+}
+
+.container.container--wide,
+.section-wrap.container--wide {
+  max-width: 1280px;
+}
+
+@media (width >= 1280px) {
+  .container.container--wide,
+  .section-wrap.container--wide {
+    max-width: 1440px;
+  }
 }
 
 /* ׳³ֲ³׳’ג‚¬ֳ·׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³ײ³ג€”׳³ֲ³ײ²ֲ¨׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³ײ³ג€” ׳³ֲ³ײ²ֲ§׳³ֲ³ײ»ֲ׳³ֲ³ײ²ֲ¢׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ²ֲ */
@@ -177,7 +189,8 @@ main > section h3::after {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  max-width: 1100px;
+  width: min(100% - 2 * var(--container-pad, 20px), 100%);
+  max-width: 1280px;
   margin: 20px auto 0;
   padding: 30px 20px;
   background: #fff;
@@ -645,6 +658,19 @@ html[dir="ltr"] .input-group:has(#field)::before {
     background-size: var(--icon-size) var(--icon-size);
     padding-right: calc(var(--icon-space) + var(--pad)) !important;
     padding-left: var(--pad) !important;
+  }
+}
+
+
+@media (width >= 1280px) {
+  .hero-split {
+    max-width: 1440px;
+    gap: 32px;
+  }
+
+  .hero-panel {
+    max-width: 920px;
+    margin-inline: auto;
   }
 }
 
@@ -1256,8 +1282,14 @@ html[dir="rtl"] .niche-rail {
 .home-articles .container {
   position: relative;
   z-index: 1;
-  max-width: min(1140px, 92vw);
+  max-width: min(1240px, calc(100vw - 2 * var(--container-pad, 20px)));
   margin: 0 auto;
+}
+
+@media (width >= 1280px) {
+  .home-articles .container.container--wide {
+    max-width: min(1440px, calc(100vw - 2 * var(--container-pad, 24px)));
+  }
 }
 
 .articles-head {
@@ -1541,9 +1573,15 @@ html[dir="ltr"] .a-card:hover .a-more i {
 
 /* -------------------- Videos grid -------------------- */
 .videos-showcase {
-  padding: 26px 20px;
-  max-width: 1100px;
+  padding: 26px var(--container-pad, 20px);
+  max-width: 1280px;
   margin: 0 auto;
+}
+
+@media (width >= 1280px) {
+  .videos-showcase {
+    max-width: 1440px;
+  }
 }
 
 .videos-showcase h2 {

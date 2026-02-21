@@ -2055,6 +2055,20 @@ body.home-pattern main > section:not(.hero-split) {
   margin: 16px auto;
 }
 
+@media (width >= 1440px) {
+  /* DEBUG MARKER - REMOVE LATER */
+  body.home .hero-split,
+  body.home-pattern .hero-split {
+    border: 8px solid #f00;
+  }
+
+  body.home main,
+  body.home-pattern main {
+    outline: 4px dashed #f00;
+    outline-offset: 4px;
+  }
+}
+
 /* -------------------- Utilities -------------------- */
 .is-muted {
   color: var(--muted);
@@ -2281,7 +2295,6 @@ body.home-pattern main > section:not(.hero-split) {
     border-radius: 0 !important;
   }
 }
-
 
 
 

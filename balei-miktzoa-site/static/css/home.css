@@ -172,6 +172,14 @@ main > section h3::after {
 }
 
 /* -------------------- HERO -------------------- */
+.home-top-red-line {
+  width: min(1100px, calc(100% - 40px));
+  height: 6px;
+  margin: 10px auto 0;
+  border-radius: 999px;
+  background: #d90429;
+}
+
 .hero-split {
   display: flex;
   align-items: center;
@@ -2281,7 +2289,6 @@ body.home-pattern main > section:not(.hero-split) {
     border-radius: 0 !important;
   }
 }
-
 
 
 

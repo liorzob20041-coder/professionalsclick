@@ -15,10 +15,20 @@
   background: linear-gradient(180deg, #f7f2f4 0%, #ffffff 90%);
 }
 .articles-archive .container {
-  max-width: min(1180px, 94vw);
+  max-width: min(1180px, calc(100vw - 2 * var(--container-pad, 20px)));
   margin: 0 auto;
   display: grid;
   gap: clamp(28px, 4vw, 48px);
+}
+
+.articles-archive .container.container--wide {
+  max-width: min(1320px, calc(100vw - 2 * var(--container-pad, 20px)));
+}
+
+@media (min-width: 1536px) {
+  .articles-archive .container.container--wide {
+    max-width: min(1480px, calc(100vw - 2 * var(--container-pad, 24px)));
+  }
 }
 
 .articles-archive .reveal {

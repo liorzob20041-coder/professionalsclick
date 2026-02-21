@@ -176,7 +176,7 @@
 
 <!-- WHY/FEATURES -->
 <section class="features" id="features" aria-label="למה לבחור בנו">
-  <div class="container">
+  <div class="container container--wide">
     <h2>{{ _('homepage.why_us_title') }}</h2>
     <div class="feature-boxes">
       <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i> {{ _('homepage.features.1') }}</div>
@@ -189,7 +189,7 @@
 
 <!-- POPULAR FIELDS -->
 <section class="niche-rail-wrap" id="niches" aria-label="{{ _('homepage.popular_fields_title') }}">
-  <div class="container">
+  <div class="container container--wide">
     <h2>{{ _('homepage.popular_fields_title') }}</h2>
     <nav class="niche-rail" aria-label="{{ _('homepage.popular_fields_title') }}">
       <button class="niche-pill" type="button"
@@ -222,7 +222,7 @@
 
 <!-- ARTICLES -->
 <section class="home-articles mag" id="articles" aria-label="{{ _('homepage.articles.title') }}">
-  <div class="container">
+  <div class="container container--wide">
     <header class="articles-head">
       <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
       <h2 class="articles-title">{{ _('homepage.articles.title') }}</h2>
@@ -262,7 +262,7 @@
 <!-- FEATURED PROS -->
 {% if featured_workers and featured_workers|length %}
 <section class="featured-pros" aria-label="בעלי מקצוע מובילים לידכם">
-  <div class="container">
+  <div class="container container--wide">
     <h2>{{ _('homepage.top_pros_title') }}</h2>
     <div class="pros-grid">
       {% for w in featured_workers[:8] %}
@@ -285,7 +285,7 @@
 <!-- VIDEO RAIL -->
 {% if featured_videos and featured_videos|length %}
 <section class="video-rail" id="videos" aria-label="סרטוני עבודה של בעלי מקצוע">
-  <div class="container">
+  <div class="container container--wide">
     <h2>{{ _('homepage.videos_title') }}</h2>
     <div class="rail">
       {% for v in featured_videos[:12] %}
@@ -301,7 +301,7 @@
 
 <!-- HOW IT WORKS -->
 <section id="how" class="how-it-works" aria-label="איך זה עובד">
-  <div class="container">
+  <div class="container container--wide">
     <h2>{{ _('homepage.how_title') }}</h2>
     <ol class="steps">
       <li>
@@ -331,7 +331,7 @@
 
 <!-- FAQ -->
 <section class="faq" id="faq" aria-label="שאלות נפוצות">
-  <div class="container">
+  <div class="container container--wide">
     <h2>{{ _('homepage.faq_title') }}</h2>
     <div class="faq-list">
       <details><summary>{{ _('homepage.faq.q1') }}</summary><p>{{ _('homepage.faq.a1') }}</p></details>

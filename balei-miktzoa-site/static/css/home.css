@@ -2055,6 +2055,63 @@ body.home-pattern main > section:not(.hero-split) {
   margin: 16px auto;
 }
 
+/* DESKTOP 1440+ FULLNESS */
+@media (width >= 1440px) {
+  .container,
+  .section-wrap {
+    max-width: 1480px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 3vw, 40px);
+  }
+
+  .hero-split {
+    position: relative;
+    max-width: min(1320px, calc(100% - (2 * clamp(16px, 3vw, 40px))));
+    margin-inline: auto;
+    isolation: isolate;
+  }
+
+  .hero-split::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset-block: -34px;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, rgb(138 21 56 / 5%) 0%, rgb(138 21 56 / 1.5%) 55%, rgb(138 21 56 / 0%) 100%);
+    pointer-events: none;
+  }
+
+  .niche-rail {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    padding: 10px 2px 0;
+    row-gap: 14px;
+    mask-image: none;
+    -webkit-mask-image: none;
+    scroll-snap-type: none;
+  }
+
+  .niche-pill {
+    flex: 0 0 clamp(176px, 14vw, 210px);
+    min-width: clamp(176px, 14vw, 210px);
+    max-width: clamp(176px, 14vw, 210px);
+    min-height: 120px;
+    padding: 12px 10px;
+  }
+
+  .np-ico {
+    width: 50px;
+    height: 50px;
+  }
+
+  .np-ico i {
+    font-size: 22px;
+  }
+}
+
 /* -------------------- Utilities -------------------- */
 .is-muted {
   color: var(--muted);

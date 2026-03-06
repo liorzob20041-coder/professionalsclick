@@ -40,3 +40,7 @@ balei-miktzoa-site/build/
 
 # App data (לא קוד)
 balei-miktzoa-site/data/analytics/
+
+# local generated image cache
+/balei-miktzoa-site/data/img-cache/
+

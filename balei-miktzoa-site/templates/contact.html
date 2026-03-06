@@ -1,5 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{ _('page_contact_title') }}{% endblock %}
+{% set _contact_title = _('page_contact_title') %}
+{% set _contact_heading = _('page_contact_heading') %}
+{% set _contact_subtext = _('page_contact_subtext') %}
+{% block title %}{{ _contact_title if _contact_title != 'page_contact_title' else 'צור קשר' }}{% endblock %}
 
 {% block extra_head %}
   {{ super() }}
@@ -11,8 +14,8 @@
   {% include 'navbar.html' %}
 
   <div class="contact-page">
-    <h1 class="contact-heading">{{ _('page_contact_heading') }}</h1>
-    <p class="contact-subtext">{{ _('page_contact_subtext') }}</p>
+    <h1 class="contact-heading">{{ _contact_heading if _contact_heading != 'page_contact_heading' else 'דברו איתנו' }}</h1>
+    <p class="contact-subtext">{{ _contact_subtext if _contact_subtext != 'page_contact_subtext' else 'השאירו פרטים ונחזור אליכם בהקדם.' }}</p>
 
     <div class="contact-container">
       {# הודעת סטטוס ללקוח (מוסתרת כברירת מחדל) #}

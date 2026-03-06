@@ -6,5 +6,7 @@
   "contact_message": "Сообщение",
   "contact_name": "Полное имя",
   "contact_or_whatsapp": "Или отправьте нам сообщение в WhatsApp",
-  "contact_send": "Отправить"
+  "contact_send": "Отправить",
+  "homepage.whatsapp_help": "Нужна помощь? Напишите в WhatsApp",
+  "homepage.whatsapp_messages.1": "Здравствуйте! Чем можем помочь?"
 }

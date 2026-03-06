@@ -2879,6 +2879,20 @@ def send_message(lang):
         email = (request.form.get('email') or '').strip()
         message = (request.form.get('message') or '').strip()
 
+        dev_fast_submit_used = False
+        if current_app.config.get('DEBUG'):
+            if not name:
+                name = '(dev)'
+                dev_fast_submit_used = True
+            if not email:
+                email = 'dev@example.com'
+                dev_fast_submit_used = True
+            if not message:
+                message = '(dev test)'
+                dev_fast_submit_used = True
+        if dev_fast_submit_used:
+            _hardening_log('dev_fast_submit_bypass', route='send_message', lead_id=lead_id, outcome='applied')
+
         _hardening_log('lead_saved', route='send_message', lead_id=lead_id, outcome='saved')
 
         # בניית הודעה

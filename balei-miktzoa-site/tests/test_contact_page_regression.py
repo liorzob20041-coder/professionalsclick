@@ -26,3 +26,4 @@ def test_contact_page_renders_submit_and_not_raw_translation_key():
     body = response.get_data(as_text=True)
     assert '<button type="submit">' in body
     assert 'page_contact_heading' not in body
+    assert 'homepage.whatsapp_help' not in body

@@ -6,5 +6,7 @@
   "contact_message": "Message",
   "contact_name": "Full Name",
   "contact_or_whatsapp": "Or message us on WhatsApp",
-  "contact_send": "Send"
+  "contact_send": "Send",
+  "homepage.whatsapp_help": "Need help? Chat on WhatsApp",
+  "homepage.whatsapp_messages.1": "Hi! How can we help?"
 }

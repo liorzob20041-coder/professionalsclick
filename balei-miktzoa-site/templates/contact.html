@@ -21,7 +21,7 @@
       {# הודעת סטטוס ללקוח (מוסתרת כברירת מחדל) #}
       <p class="clientStatus" style="display:none"></p>
 
-      <form class="contact-form" method="post" action="{{ url_for('send_message', lang=g.current_lang) }}">
+      <form class="contact-form" method="post" action="{{ url_for('send_message', lang=g.current_lang) }}" data-dev-bypass="{{ "1" if config.DEBUG else "0" }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <input type="text" name="name" placeholder="{{ _('contact_name') }}" required>
@@ -83,7 +83,8 @@
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    if (!form.reportValidity()) return;
+    const devBypass = form.dataset.devBypass === '1';
+    if (!devBypass && !form.reportValidity()) return;
 
     const prev = btn.textContent;
     btn.disabled = true;

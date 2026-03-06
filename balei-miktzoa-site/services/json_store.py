@@ -10,6 +10,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable, TypeVar
 
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - non-posix fallback
+    fcntl = None
+
 T = TypeVar("T")
 
 _LOCKS: dict[str, threading.Lock] = {}
@@ -35,7 +40,7 @@ def _ensure_parent_dir(path: Path) -> None:
 
 @contextmanager
 def atomic_write_json(path: Path, default_factory: Callable[[], T] | None = None):
-    """Read-modify-write JSON atomically with an in-process lock."""
+    """Read-modify-write JSON atomically with in-process + cross-process locks."""
 
     if default_factory is None:
         default_factory = dict  # type: ignore[assignment]
@@ -44,8 +49,14 @@ def atomic_write_json(path: Path, default_factory: Callable[[], T] | None = None
     _ensure_parent_dir(path)
     sample = default_factory()
     lock = _get_lock(path)
+    lock_file = path.with_suffix(path.suffix + ".lock")
+    lock_handle = None
     lock.acquire()
     try:
+        lock_handle = lock_file.open("a+", encoding="utf-8")
+        if fcntl is not None:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+
         data: T
         if path.exists():
             try:
@@ -80,4 +91,8 @@ def atomic_write_json(path: Path, default_factory: Callable[[], T] | None = None
             except OSError:
                 pass
     finally:
+        if lock_handle is not None:
+            if fcntl is not None:
+                fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
+            lock_handle.close()
         lock.release()

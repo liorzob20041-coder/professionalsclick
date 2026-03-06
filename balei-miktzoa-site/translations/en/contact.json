@@ -1,7 +1,12 @@
 {
+  "page_contact_title": "Contact | Professionals in a Click",
+  "page_contact_heading": "Contact Us",
+  "page_contact_subtext": "Leave your details and we will get back to you shortly.",
   "contact_email": "Email",
   "contact_message": "Message",
   "contact_name": "Full Name",
   "contact_or_whatsapp": "Or message us on WhatsApp",
-  "contact_send": "Send"
+  "contact_send": "Send",
+  "homepage.whatsapp_help": "Need help? Chat on WhatsApp",
+  "homepage.whatsapp_messages.1": "Hi! How can we help?"
 }

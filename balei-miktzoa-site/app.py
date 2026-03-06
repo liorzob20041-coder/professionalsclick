@@ -28,6 +28,9 @@ from PIL import Image, ImageOps
 import requests
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, CSRFError, generate_csrf
+from flask_limiter import Limiter
+from flask_limiter.errors import RateLimitExceeded
+from flask_limiter.util import get_remote_address
 
 try:
     from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -2024,6 +2027,12 @@ mimetypes.add_type('image/jpeg', '.jpeg')
 mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('image/gif', '.gif')
 Compress(app)
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri=os.environ.get("RATELIMIT_STORAGE_URI", "memory://"),
+)
 # === DEV OVERRIDES (שחרור קאש + לוגים) ===
 import sys, logging
 
@@ -2049,6 +2058,18 @@ if not _root.handlers:
 @app.before_request
 def _log_req():
     app.logger.info('%s %s', request.method, request.full_path or request.path)
+
+
+def _hardening_log(event: str, **fields):
+    payload = {"event": event, **fields}
+    app.logger.info("HARDENING %s", json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str))
+
+
+def _request_is_ajax_json() -> bool:
+    return (
+        'application/json' in (request.headers.get('Accept') or '')
+        or request.headers.get('X-Requested-With', '').lower() in ('xmlhttprequest', 'fetch')
+    )
 
 # דגל דיבאג לטעינת תבניות (אופציונלי)
 app.config['EXPLAIN_TEMPLATE_LOADING'] = False
@@ -2840,33 +2861,52 @@ def accessibility_fallback():
 
 # ודא שבתחילת הקובץ יש: import ssl import time import smtplib
 @app.route('/<lang>/send-message', methods=['POST'])
+@limiter.limit("5 per minute;20 per hour")
 def send_message(lang):
-    is_ajax = (request.headers.get('X-Requested-With', '').lower() in ('fetch', 'xmlhttprequest'))
+    is_ajax = _request_is_ajax_json()
+    lead_id = str(uuid.uuid4())
     try:
         # --- HONEYPOT ---
         if (request.form.get('website') or '').strip():
+            _hardening_log('lead_rejected_honeypot', route='send_message', lead_id=lead_id, outcome='blocked')
             if is_ajax:
                 return jsonify({"ok": False, "error": "honeypot"}), 400
             flash('הייתה בעיה בשליחת ההודעה.', 'error')
             return redirect(url_for('contact', lang=lang))
 
         # נתונים
-        name    = (request.form.get('name')    or '').strip()
-        email   = (request.form.get('email')   or '').strip()
+        name = (request.form.get('name') or '').strip()
+        email = (request.form.get('email') or '').strip()
         message = (request.form.get('message') or '').strip()
+
+        dev_fast_submit_used = False
+        if current_app.config.get('DEBUG'):
+            if not name:
+                name = '(dev)'
+                dev_fast_submit_used = True
+            if not email:
+                email = 'dev@example.com'
+                dev_fast_submit_used = True
+            if not message:
+                message = '(dev test)'
+                dev_fast_submit_used = True
+        if dev_fast_submit_used:
+            _hardening_log('dev_fast_submit_bypass', route='send_message', lead_id=lead_id, outcome='applied')
+
+        _hardening_log('lead_saved', route='send_message', lead_id=lead_id, outcome='saved')
 
         # בניית הודעה
         msg = MIMEMultipart()
         msg['From'] = EMAIL_ADDRESS
         msg['To'] = EMAIL_ADDRESS
-        msg['Subject'] = f'New message from {name}'
+        msg['Subject'] = f'New message from {name} [lead_id={lead_id}]'
         if email:
             msg['Reply-To'] = email
-        body = f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
+        body = f"Lead ID: {lead_id}\nName: {name}\nEmail: {email}\nMessage:\n{message}"
         msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
         # ==== שליחה ברקע במרוץ 465/587: המהיר מנצח ====
-        def _bg_send_race(m):
+        def _bg_send_race(m, current_lead_id):
             stop = threading.Event()
             ctx = ssl.create_default_context()
             try:
@@ -2878,59 +2918,62 @@ def send_message(lang):
             def via_465():
                 try:
                     t0 = time.perf_counter()
-                    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ctx, timeout=5, local_hostname='localhost') as s:
-                        if stop.is_set(): return
-                        s.ehlo('localhost')
-                        s.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-                        if stop.is_set(): return
-                        s.send_message(m)
-                        print(f"MAIL OK via 465 in {int((time.perf_counter()-t0)*1000)}ms")
+                    _hardening_log('email_attempt_started', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_465', outcome='started')
+                    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ctx, timeout=5, local_hostname='localhost') as smtp_client:
+                        if stop.is_set():
+                            return
+                        smtp_client.ehlo('localhost')
+                        smtp_client.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                        if stop.is_set():
+                            return
+                        smtp_client.send_message(m)
                         stop.set()
-                except Exception as e:
-                    print("SMTP 465 failed:", repr(e))
+                        _hardening_log('email_attempt_finished', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_465', outcome='success', latency_ms=int((time.perf_counter()-t0)*1000))
+                except Exception as exc:
+                    _hardening_log('email_attempt_finished', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_465', outcome='failed', error=repr(exc))
 
             def via_587():
                 try:
                     t0 = time.perf_counter()
-                    with smtplib.SMTP('smtp.gmail.com', 587, timeout=6, local_hostname='localhost') as s:
-                        if stop.is_set(): return
-                        s.ehlo('localhost')
-                        s.starttls(context=ctx)
-                        s.ehlo('localhost')
-                        s.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-                        if stop.is_set(): return
-                        s.send_message(m)
-                        print(f"MAIL OK via 587 in {int((time.perf_counter()-t0)*1000)}ms")
+                    _hardening_log('email_attempt_started', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_587', outcome='started')
+                    with smtplib.SMTP('smtp.gmail.com', 587, timeout=6, local_hostname='localhost') as smtp_client:
+                        if stop.is_set():
+                            return
+                        smtp_client.ehlo('localhost')
+                        smtp_client.starttls(context=ctx)
+                        smtp_client.ehlo('localhost')
+                        smtp_client.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                        if stop.is_set():
+                            return
+                        smtp_client.send_message(m)
                         stop.set()
-                except Exception as e:
-                    print("SMTP 587 failed:", repr(e))
+                        _hardening_log('email_attempt_finished', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_587', outcome='success', latency_ms=int((time.perf_counter()-t0)*1000))
+                except Exception as exc:
+                    _hardening_log('email_attempt_finished', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_587', outcome='failed', error=repr(exc))
 
             t1 = threading.Thread(target=via_465, daemon=True)
             t2 = threading.Thread(target=via_587, daemon=True)
-            t1.start(); t2.start()
+            t1.start()
+            t2.start()
 
             # Watchdog: אם אף ערוץ לא הצליח עד 10 שניות – כותבים ללוג
             def watchdog():
                 if not stop.wait(10):
-                    try:
-                        logp = os.path.join(DATA_FOLDER, 'email_errors.log')
-                        with open(logp, 'a', encoding='utf-8') as f:
-                            f.write(f"{datetime.now().isoformat()}Z\tboth_smtp_failed_or_slow\n")
-                    except Exception:
-                        pass
+                    _hardening_log('email_attempt_finished', route='send_message', lead_id=current_lead_id, smtp_channel='gmail_race', outcome='timeout_or_failed')
+
             threading.Thread(target=watchdog, daemon=True).start()
 
-        threading.Thread(target=_bg_send_race, args=(msg,), daemon=True).start()
+        threading.Thread(target=_bg_send_race, args=(msg, lead_id), daemon=True).start()
         # ==== סוף מרוץ ====
 
         if is_ajax:
-            return jsonify({"ok": True, "message": "ההודעה נקלטה – נשלח ברקע."}), 200
+            return jsonify({"ok": True, "lead_id": lead_id, "message": "הפנייה התקבלה בהצלחה. נחזור אליך בהקדם."}), 200
 
-        flash('ההודעה התקבלה, נטפל בה מיד. תודה!', 'success')
+        flash('הפנייה התקבלה בהצלחה. נחזור אליך בהקדם.', 'success')
         return redirect(url_for('contact', lang=lang))
 
-    except Exception as e:
-        print('MAIL SETUP ERROR:', repr(e))
+    except Exception as exc:
+        _hardening_log('lead_processing_failed', route='send_message', lead_id=lead_id, outcome='error', error=repr(exc))
         if is_ajax:
             return jsonify({"ok": False, "error": "server"}), 500
         flash('הייתה בעיה בשליחת ההודעה.', 'error')
@@ -2958,20 +3001,14 @@ def admin_logout_beacon():
 # בקשת בעל מקצוע
 # ------------------------------
 @app.route('/<lang>/request', methods=['GET', 'POST'])
+@limiter.limit("10 per minute;60 per hour", methods=["POST"])
 def request_professional(lang):
     # --- דרישת קישור הזמנה ---
     invite_key = current_app.config.get("INVITE_KEY")
     if current_app.config.get("ENV") != "production" and not invite_key:
         invite_key = "dev-invite"
     supplied_key = (request.args.get('key') or request.form.get('key') or '').strip()
-    wants_json = False
-
-
-    if request.method == 'POST':
-        wants_json = (
-            'application/json' in (request.headers.get('Accept') or '')
-            or request.headers.get('X-Requested-With', '').lower() in ('xmlhttprequest', 'fetch')
-        )
+    wants_json = request.method == 'POST' and _request_is_ajax_json()
 
     invite_valid = bool(invite_key and supplied_key == invite_key)
 
@@ -3222,11 +3259,13 @@ def request_professional(lang):
         if sub_services_text:
             new_request["sub_services_notes"] = sub_services_text
         _normalize_pending_item(new_request)
+        lead_id = _request_id_for_item(new_request)
 
         with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
             pending_list.append(new_request)
 
-        add_message('success', 'הבקשה נשלחה בהצלחה! תודה רבה.')
+        _hardening_log('lead_saved', route='request_professional', lead_id=lead_id, outcome='saved')
+        add_message('success', 'הבקשה התקבלה בהצלחה! תודה רבה.')
         payload = {"ok": True, "messages": form_messages}
 
         if wants_json:
@@ -4362,6 +4401,7 @@ def admin_update_review(req_id):
         flash('בקשה לא נמצאה', 'error')
         return redirect(url_for('admin'))
 
+    _hardening_log('admin_update_review', route='admin_update_review', lead_id=req_id, outcome='updated', actor=session.get('is_admin', False), review_status=new_status)
     flash('הסטטוס עודכן בהצלחה.', 'success')
     return redirect(url_for('admin_request_detail', req_id=req_id))
 
@@ -4738,6 +4778,7 @@ def approve_professional(index):
         except Exception:
             pass
 
+    _hardening_log('admin_approve', route='approve_professional', lead_id=_request_id_for_item(item), outcome='approved', actor=session.get('is_admin', False), worker_id=new_worker_id)
     flash(f"בעל המקצוע {item.get('company_name') or item.get('name')} אושר בהצלחה!")
 
     return redirect(url_for('admin'))
@@ -4746,9 +4787,13 @@ def approve_professional(index):
 
 @app.route('/delete_pending/<int:index>', methods=['POST'])
 def delete_pending(index):
+    deleted_id = ''
     with atomic_write_json(Path(PENDING_FILE), default_factory=list) as pending_list:
         if 0 <= index < len(pending_list):
-            pending_list.pop(index)
+            item = pending_list.pop(index)
+            deleted_id = _request_id_for_item(item)
+    if deleted_id:
+        _hardening_log('admin_delete_pending', route='delete_pending', lead_id=deleted_id, outcome='deleted', actor=session.get('is_admin', False))
     return redirect(url_for('admin'))
 
 
@@ -5560,6 +5605,7 @@ def analysis_all_time():
 
 
 @app.route('/admin/analysis/login', methods=['GET', 'POST'], endpoint='admin_login')
+@limiter.limit("5 per minute;30 per hour", methods=["POST"])
 def admin_login():
     fallback_url = url_for('analysis_index')
     raw_next = request.form.get('next') if request.method == 'POST' else request.args.get('next')
@@ -5576,9 +5622,10 @@ def admin_login():
         if ok:
             session.permanent = True          # ← הוסף שורה זו
             session['is_admin'] = True
+            _hardening_log('admin_login', route='admin_login', outcome='success', ip=get_remote_address())
             return redirect(next_url)
 
-
+        _hardening_log('admin_login', route='admin_login', outcome='invalid_password', ip=get_remote_address())
         flash('סיסמה שגויה', 'error')
 
     return render_template('analysis/login.html', next=next_url)
@@ -5753,6 +5800,22 @@ def favicon_route():
 # ------------------------------
 # Error handlers
 # ------------------------------
+@app.errorhandler(RateLimitExceeded)
+def handle_rate_limit(e):
+    _hardening_log('rate_limited', route=request.path, outcome='blocked', ip=get_remote_address())
+    message = 'בוצעו יותר מדי ניסיונות בזמן קצר. נסו שוב בעוד כמה דקות.'
+    if _request_is_ajax_json():
+        return jsonify({"ok": False, "error": "rate_limit", "message": message}), 429
+
+    flash(message, 'error')
+    fallback = request.referrer or url_for('home', lang=getattr(g, 'current_lang', 'he'))
+    safe_target = sanitize_local_redirect(
+        fallback,
+        fallback=url_for('home', lang=getattr(g, 'current_lang', 'he')),
+    )
+    return redirect(safe_target), 429
+
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template("404.html"), 404  # ✅ מחזיר סטטוס נכון

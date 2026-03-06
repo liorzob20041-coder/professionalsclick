@@ -1,7 +1,12 @@
 {
+  "page_contact_title": "Контакты | Специалисты в один клик",
+  "page_contact_heading": "Свяжитесь с нами",
+  "page_contact_subtext": "Оставьте данные, и мы скоро с вами свяжемся.",
   "contact_email": "Электронная почта",
   "contact_message": "Сообщение",
   "contact_name": "Полное имя",
   "contact_or_whatsapp": "Или отправьте нам сообщение в WhatsApp",
-  "contact_send": "Отправить"
+  "contact_send": "Отправить",
+  "homepage.whatsapp_help": "Нужна помощь? Напишите в WhatsApp",
+  "homepage.whatsapp_messages.1": "Здравствуйте! Чем можем помочь?"
 }

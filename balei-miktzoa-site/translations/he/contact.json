@@ -1,7 +1,12 @@
 {
+  "page_contact_title": "צור קשר | בעלי מקצוע בקליק",
+  "page_contact_heading": "דברו איתנו",
+  "page_contact_subtext": "השאירו פרטים ונחזור אליכם בהקדם.",
   "contact_email": "אימייל",
   "contact_message": "הודעה",
   "contact_name": "שם מלא",
   "contact_or_whatsapp": "או שלחו לנו הודעה בוואטסאפ",
-  "contact_send": "שלח"
+  "contact_send": "שלח",
+  "homepage.whatsapp_help": "צריכים עזרה? דברו איתנו בוואטסאפ",
+  "homepage.whatsapp_messages.1": "שלום! איך אפשר לעזור?"
 }

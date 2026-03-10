@@ -5,11 +5,26 @@ import sys
 from pathlib import Path
 
 
-def _load_app_module():
+_ENV_UNSET = object()
+
+
+def _load_app_module(*, admin_password_hash=_ENV_UNSET, admin_password_plain=_ENV_UNSET):
     root = Path(__file__).resolve().parents[1]
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     os.environ.setdefault("INVITE_KEY", "test-invite")
+
+    if admin_password_hash is not _ENV_UNSET:
+        if admin_password_hash is None:
+            os.environ.pop("ADMIN_PASSWORD_HASH", None)
+        else:
+            os.environ["ADMIN_PASSWORD_HASH"] = admin_password_hash
+
+    if admin_password_plain is not _ENV_UNSET:
+        if admin_password_plain is None:
+            os.environ.pop("ADMIN_PASSWORD_PLAIN", None)
+        else:
+            os.environ["ADMIN_PASSWORD_PLAIN"] = admin_password_plain
     spec = importlib.util.spec_from_file_location("balei_app", root / "app.py")
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
@@ -136,9 +151,7 @@ def test_admin_login_page_renders_expected_ui():
 
 
 def test_admin_login_success_redirects_and_establishes_session():
-    os.environ.pop("ADMIN_PASSWORD_HASH", None)
-    os.environ["ADMIN_PASSWORD_PLAIN"] = "correct-password"
-    module = _load_app_module()
+    module = _load_app_module(admin_password_hash=None, admin_password_plain="correct-password")
     module.app.config["TESTING"] = True
     module.app.config["WTF_CSRF_ENABLED"] = False
     client = module.app.test_client()
@@ -155,9 +168,7 @@ def test_admin_login_success_redirects_and_establishes_session():
 
 
 def test_admin_login_wrong_password_stays_unauthenticated_with_error():
-    os.environ.pop("ADMIN_PASSWORD_HASH", None)
-    os.environ["ADMIN_PASSWORD_PLAIN"] = "correct-password"
-    module = _load_app_module()
+    module = _load_app_module(admin_password_hash=None, admin_password_plain="correct-password")
     module.app.config["TESTING"] = True
     module.app.config["WTF_CSRF_ENABLED"] = False
     client = module.app.test_client()

@@ -2067,7 +2067,9 @@ def _hardening_log(event: str, **fields):
 
 def _request_is_ajax_json() -> bool:
     return (
-        'application/json' in (request.headers.get('Accept') or '')
+        request.is_json
+        or 'application/json' in (request.headers.get('Content-Type') or '')
+        or 'application/json' in (request.headers.get('Accept') or '')
         or request.headers.get('X-Requested-With', '').lower() in ('xmlhttprequest', 'fetch')
     )
 
@@ -5806,6 +5808,13 @@ def handle_rate_limit(e):
     message = 'בוצעו יותר מדי ניסיונות בזמן קצר. נסו שוב בעוד כמה דקות.'
     if _request_is_ajax_json():
         return jsonify({"ok": False, "error": "rate_limit", "message": message}), 429
+
+    if request.endpoint == 'admin_login' or (request.path or '').startswith('/admin/analysis/login'):
+        flash(message, 'error')
+        fallback_url = url_for('analysis_index')
+        raw_next = request.form.get('next') if request.method == 'POST' else request.args.get('next')
+        next_url = sanitize_local_redirect(raw_next, fallback=fallback_url)
+        return render_template('analysis/login.html', next=next_url), 429
 
     flash(message, 'error')
     fallback = request.referrer or url_for('home', lang=getattr(g, 'current_lang', 'he'))

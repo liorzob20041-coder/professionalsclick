@@ -23,6 +23,17 @@ def _extract_csrf_token(html: str) -> str:
     return match.group(1)
 
 
+def _login_as_admin(client, password: str, next_url: str = "/admin/analysis/dashboard"):
+    login_page = client.get(f"/admin/analysis/login?next={next_url}")
+    assert login_page.status_code == 200
+    csrf_token = _extract_csrf_token(login_page.get_data(as_text=True))
+    return client.post(
+        "/admin/analysis/login",
+        data={"password": password, "csrf_token": csrf_token, "next": next_url},
+        follow_redirects=False,
+    )
+
+
 def test_contact_page_renders_submit_and_not_raw_translation_key():
     module = _load_app_module()
     client = module.app.test_client()
@@ -107,3 +118,65 @@ def test_admin_login_rate_limit_returns_json_for_ajax_requests():
         "error": "rate_limit",
         "message": "בוצעו יותר מדי ניסיונות בזמן קצר. נסו שוב בעוד כמה דקות.",
     }
+
+
+def test_admin_login_page_renders_expected_ui():
+    module = _load_app_module()
+    module.app.config["TESTING"] = True
+    client = module.app.test_client()
+
+    response = client.get("/admin/analysis/login")
+    assert response.status_code == 200
+
+    body = response.get_data(as_text=True)
+    assert "התחברות לאזור ניהול" in body
+    assert 'name="password"' in body
+    assert "type=\"hidden\" name=\"csrf_token\"" in body
+    assert "התחברות" in body
+
+
+def test_admin_login_success_redirects_and_establishes_session():
+    os.environ.pop("ADMIN_PASSWORD_HASH", None)
+    os.environ["ADMIN_PASSWORD_PLAIN"] = "correct-password"
+    module = _load_app_module()
+    module.app.config["TESTING"] = True
+    module.app.config["WTF_CSRF_ENABLED"] = False
+    client = module.app.test_client()
+
+    login = _login_as_admin(client, "correct-password")
+    assert login.status_code == 302
+    assert login.headers["Location"].endswith("/admin/analysis/dashboard")
+
+    with client.session_transaction() as sess:
+        assert sess.get("is_admin") is True
+
+    protected = client.get("/admin/analysis/dashboard")
+    assert protected.status_code == 200
+
+
+def test_admin_login_wrong_password_stays_unauthenticated_with_error():
+    os.environ.pop("ADMIN_PASSWORD_HASH", None)
+    os.environ["ADMIN_PASSWORD_PLAIN"] = "correct-password"
+    module = _load_app_module()
+    module.app.config["TESTING"] = True
+    module.app.config["WTF_CSRF_ENABLED"] = False
+    client = module.app.test_client()
+
+    login = _login_as_admin(client, "wrong-password")
+    assert login.status_code == 200
+    body = login.get_data(as_text=True)
+    assert "סיסמה שגויה" in body
+
+    with client.session_transaction() as sess:
+        assert not sess.get("is_admin")
+
+
+def test_protected_admin_route_redirects_when_unauthenticated():
+    module = _load_app_module()
+    module.app.config["TESTING"] = True
+    client = module.app.test_client()
+
+    response = client.get("/admin/analysis/dashboard", follow_redirects=False)
+    assert response.status_code == 302
+    assert "/admin/analysis/login" in response.headers["Location"]
+    assert "next=/admin/analysis/dashboard" in response.headers["Location"]

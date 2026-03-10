@@ -152,6 +152,8 @@ def test_admin_login_page_renders_expected_ui():
 
 def test_admin_login_success_redirects_and_establishes_session():
     module = _load_app_module(admin_password_hash=None, admin_password_plain="correct-password")
+    module.ADMIN_PASSWORD_HASH = ""
+    os.environ["ADMIN_PASSWORD_PLAIN"] = "correct-password"
     module.app.config["TESTING"] = True
     module.app.config["WTF_CSRF_ENABLED"] = False
     client = module.app.test_client()
@@ -169,6 +171,8 @@ def test_admin_login_success_redirects_and_establishes_session():
 
 def test_admin_login_wrong_password_stays_unauthenticated_with_error():
     module = _load_app_module(admin_password_hash=None, admin_password_plain="correct-password")
+    module.ADMIN_PASSWORD_HASH = ""
+    os.environ["ADMIN_PASSWORD_PLAIN"] = "correct-password"
     module.app.config["TESTING"] = True
     module.app.config["WTF_CSRF_ENABLED"] = False
     client = module.app.test_client()

@@ -15,13 +15,15 @@
 
   <div class="contact-page">
     <h1 class="contact-heading">{{ _contact_heading if _contact_heading != 'page_contact_heading' else 'דברו איתנו' }}</h1>
-    <p class="contact-subtext">{{ _contact_subtext if _contact_subtext != 'page_contact_subtext' else 'השאירו פרטים ונחזור אליכם בהקדם.' }}</p>
+    <p class="contact-subtext">{{ _contact_subtext if _contact_subtext != 'page_contact_subtext' else 'ספרו לנו בקצרה מה אתם צריכים ונחזור אליכם עם מענה מקצועי ומהיר.' }}</p>
 
     <div class="contact-container">
       {# הודעת סטטוס ללקוח (מוסתרת כברירת מחדל) #}
       <p class="clientStatus" style="display:none"></p>
 
-      <form class="contact-form" method="post" action="{{ url_for('send_message', lang=g.current_lang) }}" data-dev-bypass="{{ "1" if config.DEBUG else "0" }}">
+      <form class="contact-form" method="post" action="{{ url_for('send_message', lang=g.current_lang) }}" data-dev-bypass="{{ "1" if config.DEBUG else "0" }}" aria-label="טופס יצירת קשר">
+        <h2 class="contact-form__title">השאירו פרטים</h2>
+        <p class="contact-form__lead">נחזור אליכם בהקדם עם הכוונה לבעל מקצוע מתאים.</p>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <input type="text" name="name" placeholder="{{ _('contact_name') }}" required>
@@ -40,6 +42,7 @@
       </form>
 
       <div class="contact-info">
+        <h2 class="contact-info__title">זמינים גם בוואטסאפ</h2>
         <p>{{ _('contact_or_whatsapp') }}</p>
         <a href="https://wa.me/972502255368?text={{ _('homepage.whatsapp_messages.1') | urlencode }}" target="_blank" class="whatsapp-float">
           <div class="whatsapp-label">{{ _('homepage.whatsapp_help') }}</div>

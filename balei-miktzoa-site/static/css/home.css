@@ -374,12 +374,15 @@ html[dir="ltr"] .check-item {
 .hero-cta .hs-field {
   position: relative;
   min-width: 0;
+  display: grid;
+  grid-template-rows: var(--hero-input-h) auto;
+  align-items: start;
 }
 
 .hero-panel .hs-icon,
 .hero-cta .hs-icon {
   position: absolute;
-  top: 50%;
+  top: calc(var(--hero-input-h) / 2);
   transform: translateY(-50%);
   font-size: 14px;
   opacity: 0.9;
@@ -451,6 +454,15 @@ html[dir="ltr"] .hero-cta .hs-field input {
   padding-right: 26px;
   padding-left: 10px;
   text-align: left;
+}
+
+
+.hero-panel .hs-field .input-error,
+.hero-cta .hs-field .input-error {
+  margin-top: 4px;
+  min-height: 1em;
+  line-height: 1.2;
+  font-size: 12px;
 }
 
 .hero-panel .hs-btn,

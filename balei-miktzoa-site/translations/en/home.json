@@ -106,5 +106,15 @@
   "homepage.articles.all_articles": "View all articles",
   "homepage.articles.electric.alt": "Illustration of a licensed electrician with professional tools",
   "homepage.articles.plumber.alt": "Illustration of a plumber inspecting pipes with a wrench",
-  "homepage.articles.renovation.alt": "Illustration of a renovation contractor with plans and tools"
+  "homepage.articles.renovation.alt": "Illustration of a renovation contractor with plans and tools",
+  "homepage.hero_headline": "Find a trusted professional — in one click",
+  "homepage.hero_subheadline": "Watch real work videos, get an instant estimate, and filter by language — so you can choose with confidence.",
+  "homepage.hero_checklist.1": "Real work videos — before you book",
+  "homepage.hero_checklist.2": "Instant price estimator by job type",
+  "homepage.hero_checklist.languages_label": "Filter by language",
+  "homepage.hero_checklist.4": "Verified reviews only",
+  "homepage.search_error_choose_area": "Please choose an area to search.",
+  "homepage.search_error_choose_field": "Please choose a field to search.",
+  "homepage.faq.q4": "Can I contact you if I don't find the right match?",
+  "homepage.faq.a4": "Yes. Send us a message via the form or WhatsApp and we will help you get matched."
 }

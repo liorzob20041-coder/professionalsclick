@@ -106,5 +106,15 @@
   "homepage.articles.all_articles": "לכל המאמרים",
   "homepage.articles.electric.alt": "איור של חשמלאי מקצועי עם ציוד עבודה",
   "homepage.articles.plumber.alt": "איור של אינסטלטור בודק צנרת עם מפתח שוודי",
-  "homepage.articles.renovation.alt": "איור של קבלן שיפוצים עם תוכניות וכלי עבודה"
+  "homepage.articles.renovation.alt": "איור של קבלן שיפוצים עם תוכניות וכלי עבודה",
+  "homepage.hero_headline": "מוצאים בעל מקצוע אמין — בקליק",
+  "homepage.hero_subheadline": "צפו בסרטוני עבודה אמיתיים, קבלו מחיר מיידי במחשבון, וסננו לפי שפה — כדי לבחור נכון ובביטחון.",
+  "homepage.hero_checklist.1": "סרטוני עבודה אמיתיים — לפני שמזמינים",
+  "homepage.hero_checklist.2": "מחשבון מחיר מיידי לפי סוג העבודה",
+  "homepage.hero_checklist.languages_label": "סינון לפי שפה",
+  "homepage.hero_checklist.4": "ביקורות מאומתות בלבד",
+  "homepage.search_error_choose_area": "נא לבחור אזור לחיפוש.",
+  "homepage.search_error_choose_field": "נא לבחור תחום לחיפוש.",
+  "homepage.faq.q4": "האם אפשר לפנות אליכם אם לא מצאתי התאמה?",
+  "homepage.faq.a4": "בהחלט. אפשר לשלוח הודעה דרך הטופס או ב־WhatsApp ואנחנו נעזור בהתאמה."
 }

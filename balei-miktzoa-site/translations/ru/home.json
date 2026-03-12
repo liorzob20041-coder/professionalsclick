@@ -106,5 +106,15 @@
   "homepage.articles.all_articles": "Все статьи",
   "homepage.articles.electric.alt": "Иллюстрация лицензированного электрика с инструментами",
   "homepage.articles.plumber.alt": "Иллюстрация сантехника, проверяющего трубы с разводным ключом",
-  "homepage.articles.renovation.alt": "Иллюстрация подрядчика по ремонту с планами и инструментами"
+  "homepage.articles.renovation.alt": "Иллюстрация подрядчика по ремонту с планами и инструментами",
+  "homepage.hero_headline": "Найдите надежного мастера — в один клик",
+  "homepage.hero_subheadline": "Смотрите реальные видео работ, получайте мгновенную оценку цены и фильтруйте по языку — чтобы выбирать уверенно.",
+  "homepage.hero_checklist.1": "Реальные видео работ — до заказа",
+  "homepage.hero_checklist.2": "Мгновенный расчет цены по типу работ",
+  "homepage.hero_checklist.languages_label": "Фильтр по языку",
+  "homepage.hero_checklist.4": "Только проверенные отзывы",
+  "homepage.search_error_choose_area": "Пожалуйста, выберите район для поиска.",
+  "homepage.search_error_choose_field": "Пожалуйста, выберите сферу для поиска.",
+  "homepage.faq.q4": "Можно ли обратиться к вам, если я не нашел подходящего мастера?",
+  "homepage.faq.a4": "Да. Напишите нам через форму или WhatsApp, и мы поможем с подбором."
 }

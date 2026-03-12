@@ -74,13 +74,10 @@
   <!-- LEFT: copy + quick actions + checklist -->
   <div class="hero-info">
     <!-- שונה: כותרת צדדית -->
-    <h1>מוצאים בעל מקצוע אמין — בקליק</h1>
+    <h1>{{ _('homepage.hero_headline') }}</h1>
 
     <!-- שונה: טקסט משנה -->
-    <p class="hero-lead">
-      צפו ב<strong>סרטוני עבודה אמיתיים</strong> של העובדים, קבלו <strong>מחיר מיידי</strong> במחשבון,
-      וסננו לפי שפה — כדי לבחור נכון ובביטחון.
-    </p>
+    <p class="hero-lead">{{ _('homepage.hero_subheadline') }}</p>
 
 
     <nav class="home-quick-inline" aria-label="פעולות מהירות">
@@ -99,16 +96,16 @@
     <ul class="hero-checklist" role="list" aria-label="יתרונות השירות">
       <li class="check-item">
         <span class="check-ico" aria-hidden="true">✓</span>
-        סרטוני עבודה אמיתיים — לפני שמזמינים
+        {{ _('homepage.hero_checklist.1') }}
       </li>
       <li class="check-item">
         <span class="check-ico" aria-hidden="true">✓</span>
-        מחשבון מחיר מיידי לפי סוג העבודה
+        {{ _('homepage.hero_checklist.2') }}
       </li>
         <li class="check-item check-langs">
           <span class="check-ico" aria-hidden="true">✓</span>
           <span class="lang-wrap">
-            <span class="lang-label">סינון לפי שפה</span>
+            <span class="lang-label">{{ _('homepage.hero_checklist.languages_label') }}</span>
             <span class="lang-line">
               <span class="lang-chunk"><bdi lang="he">עברית</bdi></span>
               <span class="lang-chunk"><span class="lang-sep" aria-hidden="true"> / </span><bdi lang="en">English</bdi></span>
@@ -120,7 +117,7 @@
 
       <li class="check-item">
         <span class="check-ico" aria-hidden="true">✓</span>
-        ביקורות מאומתות בלבד
+        {{ _('homepage.hero_checklist.4') }}
       </li>
     </ul>
   </div>
@@ -145,13 +142,15 @@
           <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
           <div class="hs-field">
             <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span>
-            <input id="field" name="field" list="fields" placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}">
+            <input id="field" name="field" list="fields" placeholder="{{ _('homepage.choose_field_placeholder') }}" aria-label="{{ _('homepage.choose_field') }}" aria-describedby="field-error" required>
+            <span id="field-error" class="input-error" aria-live="polite"></span>
           </div>
 
           <label class="sr-only" for="area">{{ _('homepage.choose_area') }}</label>
           <div class="hs-field">
             <span class="hs-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
-            <input id="area" name="area" list="areas" placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}">
+            <input id="area" name="area" list="areas" placeholder="{{ _('homepage.choose_area_placeholder') }}" aria-label="{{ _('homepage.choose_area') }}" aria-describedby="area-error" required>
+            <span id="area-error" class="input-error" aria-live="polite"></span>
           </div>
 
           <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
@@ -423,13 +422,16 @@
         var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
         var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
         var msgs = {
-          he: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
-          en: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" },
-          ru: { area: "{{ _('homepage.choose_area') }}", field: "{{ _('homepage.choose_field') }}" }
+          he: { area: "{{ _('homepage.search_error_choose_area') }}", field: "{{ _('homepage.search_error_choose_field') }}" },
+          en: { area: "{{ _('homepage.search_error_choose_area') }}", field: "{{ _('homepage.search_error_choose_field') }}" },
+          ru: { area: "{{ _('homepage.search_error_choose_area') }}", field: "{{ _('homepage.search_error_choose_field') }}" }
         };
+        if (!msgs[lang]) lang = 'he';
         var hasError = false;
-        if (!areaValue)  { if (areaError)  areaError.textContent  = msgs[lang].area;  hasError = true; }
-        if (!fieldValue) { if (fieldError) fieldError.textContent = msgs[lang].field; hasError = true; }
+        if (areaInput) areaInput.setAttribute('aria-invalid', 'false');
+        if (fieldInput) fieldInput.setAttribute('aria-invalid', 'false');
+        if (!areaValue)  { if (areaError)  areaError.textContent  = msgs[lang].area; if (areaInput) areaInput.setAttribute('aria-invalid', 'true'); hasError = true; }
+        if (!fieldValue) { if (fieldError) fieldError.textContent = msgs[lang].field; if (fieldInput) fieldInput.setAttribute('aria-invalid', 'true'); hasError = true; }
         if (hasError) return false;
         var areaSlug  = convertToSlug(areaValue);
         var fieldSlug = convertToSlug(fieldValue);

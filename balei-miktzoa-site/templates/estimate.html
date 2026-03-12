@@ -1101,11 +1101,20 @@
           const minLabel = t('ui.result_min') || fallback['ui.result_min'];
           const maxLabel = t('ui.result_max') || fallback['ui.result_max'];
           const spreadLabel = t('ui.result_spread') || fallback['ui.result_spread'];
-          breakdown.innerHTML = `
-            <div class="est-resultcard__stat"><dt>${minLabel}</dt><dd>${formatCurrencyValue(minValue)}</dd></div>
-            <div class="est-resultcard__stat"><dt>${maxLabel}</dt><dd>${formatCurrencyValue(maxValue)}</dd></div>
-            <div class="est-resultcard__stat"><dt>${spreadLabel}</dt><dd>${formatCurrencyValue(spread)}</dd></div>
-          `;
+          const appendBreakdownStat = (labelText, valueText) => {
+            const stat = document.createElement('div');
+            stat.className = 'est-resultcard__stat';
+            const dt = document.createElement('dt');
+            dt.textContent = labelText || '';
+            const dd = document.createElement('dd');
+            dd.textContent = valueText || '';
+            stat.appendChild(dt);
+            stat.appendChild(dd);
+            breakdown.appendChild(stat);
+          };
+          appendBreakdownStat(minLabel, formatCurrencyValue(minValue));
+          appendBreakdownStat(maxLabel, formatCurrencyValue(maxValue));
+          appendBreakdownStat(spreadLabel, formatCurrencyValue(spread));
           wrap.appendChild(breakdown);
         }
         const noteText = result.result_note || state.resultNote || t('ui.result_note');

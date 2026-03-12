@@ -2,14 +2,21 @@
 .contact-page {
   --contact-primary: #7a1f3d;
   --contact-primary-dark: #631935;
+  --contact-primary-soft: #9b3a5d;
   --contact-bg-soft: #fff7fa;
-  --contact-border: rgb(122 31 61 / 16%);
+  --contact-border: rgb(122 31 61 / 20%);
   --contact-ink: #1f2937;
   --contact-muted: #596175;
 
-  width: min(920px, 100%);
-  margin: clamp(42px, 8vw, 84px) auto;
-  padding: clamp(16px, 4vw, 30px);
+  width: min(980px, 100%);
+  margin: clamp(30px, 6vw, 64px) auto;
+  padding: clamp(16px, 4vw, 30px) clamp(16px, 3.6vw, 30px) clamp(24px, 4.8vw, 44px);
+  border-radius: 30px;
+  background:
+    radial-gradient(135% 120% at 0% 0%, rgb(122 31 61 / 12%) 0%, transparent 56%),
+    linear-gradient(180deg, #fff 0%, #fff9fb 52%, #fff 100%);
+  border: 1px solid rgb(122 31 61 / 10%);
+  box-shadow: 0 24px 64px rgb(122 31 61 / 9%);
 }
 
 .contact-heading {
@@ -19,21 +26,23 @@
   color: var(--contact-primary);
   font-weight: 800;
   text-align: center;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .contact-subtext {
-  margin: 12px auto 0;
+  margin: 14px auto 0;
   max-width: 62ch;
   font-size: clamp(1rem, 2vw, 1.18rem);
-  line-height: 1.7;
+  line-height: 1.72;
   color: var(--contact-muted);
   text-align: center;
 }
 
 .contact-container {
-  margin-top: clamp(22px, 4vw, 34px);
+  margin-top: clamp(18px, 3.2vw, 26px);
   display: grid;
-  gap: clamp(14px, 3.2vw, 24px);
+  gap: clamp(14px, 2.6vw, 22px);
   grid-template-columns: 1fr;
 }
 
@@ -63,8 +72,8 @@
   background: linear-gradient(180deg, #fff 0%, var(--contact-bg-soft) 100%);
   border: 1px solid var(--contact-border);
   border-radius: 22px;
-  box-shadow: 0 18px 48px rgb(16 24 40 / 9%);
-  padding: clamp(16px, 3.5vw, 28px);
+  box-shadow: 0 20px 54px rgb(16 24 40 / 11%);
+  padding: clamp(18px, 3.2vw, 30px);
 }
 
 .contact-form input,
@@ -129,40 +138,51 @@
 
 .contact-info {
   border: 1px solid var(--contact-border);
-  border-radius: 18px;
-  background: #fff;
-  padding: 14px 16px;
+  border-radius: 22px;
+  background: linear-gradient(165deg, #fff 0%, #fff6f9 60%, #fff2f7 100%);
+  padding: clamp(16px, 2.8vw, 24px);
   display: grid;
-  gap: 12px;
-  justify-items: center;
-  text-align: center;
+  gap: 14px;
+  justify-items: stretch;
+  text-align: right;
+  box-shadow: 0 18px 48px rgb(122 31 61 / 14%);
 }
 
 .contact-info p {
   margin: 0;
   color: var(--contact-muted);
-  font-size: 0.97rem;
+  font-size: 0.98rem;
+  line-height: 1.68;
 }
 
 .whatsapp-float {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  border-radius: 999px;
-  padding: 8px 14px;
-  background: #f2fff7;
-  border: 1px solid rgb(18 140 80 / 26%);
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: #f2fff8;
+  border: 1px solid rgb(18 140 80 / 28%);
+  box-shadow: 0 10px 24px rgb(18 140 80 / 16%);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgb(18 140 80 / 20%);
 }
 
 .whatsapp-label {
   color: #127a47;
   font-weight: 700;
+  font-size: 0.96rem;
 }
 
 @media (width >= 900px) {
   .contact-container {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 1.65fr) minmax(270px, 1fr);
     align-items: start;
   }
 

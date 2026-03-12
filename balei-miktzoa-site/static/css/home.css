@@ -341,6 +341,13 @@ html[dir="ltr"] .check-item {
   text-shadow: 0 2px 6px rgb(0 0 0 / 50%);
 }
 
+.hero-search-note {
+  margin: 2px 0 4px;
+  color: rgb(255 255 255 / 90%);
+  font-size: 0.93rem;
+  line-height: 1.4;
+}
+
 .hero-panel .hero-title + .hero-search {
   margin-top: 10px;
   position: relative;
@@ -859,6 +866,17 @@ html[dir="ltr"] .input-group:has(#field)::before {
 .hq-pill:focus-visible {
   outline: 3px solid rgb(138 21 56 / 35%);
   outline-offset: 2px;
+}
+
+.hq-pill--muted {
+  border-color: #d1d5db;
+  background: #fff;
+  color: #334155;
+  font-weight: 700;
+}
+
+.hq-pill--muted:hover {
+  border-color: #9ca3af;
 }
 
 /* -------------------- Value strip -------------------- */

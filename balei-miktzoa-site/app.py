@@ -3369,6 +3369,64 @@ def show_workers(lang, field, area):
     current_hour = now.hour
     days_map_he = {'שני': 0, 'שלישי': 1, 'רביעי': 2, 'חמישי': 3, 'שישי': 4, 'שבת': 5, 'ראשון': 6}
 
+    day_names = {
+        'he': ['שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת', 'ראשון'],
+        'en': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        'ru': ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье'],
+    }
+
+    def _safe_int(v, default=0):
+        try:
+            return int(float(v))
+        except (TypeError, ValueError):
+            return default
+
+    def _next_opening(work_blocks):
+        candidates = []
+        for block in (work_blocks or []):
+            start = _safe_int(block.get('start_hour'), 0)
+            end = _safe_int(block.get('end_hour'), 0)
+            if end <= start:
+                continue
+            days_as_numbers = [days_map_he.get(day, day) for day in block.get('days', [])]
+            for day_num in days_as_numbers:
+                if not isinstance(day_num, int):
+                    continue
+                offset = (day_num - current_day) % 7
+                candidate_dt = (now + timedelta(days=offset)).replace(hour=start, minute=0, second=0, microsecond=0)
+                if candidate_dt <= now:
+                    candidate_dt += timedelta(days=7)
+                candidates.append(candidate_dt)
+        if not candidates:
+            return None
+        return min(candidates)
+
+    def _format_next_open(next_dt: datetime | None):
+        if not next_dt:
+            return None
+        days_delta = (next_dt.date() - now.date()).days
+        hhmm = next_dt.strftime('%H:%M')
+        if lang == 'he':
+            if days_delta == 0:
+                return f"היום ב־{hhmm}"
+            if days_delta == 1:
+                return f"מחר ב־{hhmm}"
+            day_label = day_names['he'][next_dt.weekday()]
+            return f"ביום {day_label} ב־{hhmm}"
+        if lang == 'ru':
+            if days_delta == 0:
+                return f"сегодня в {hhmm}"
+            if days_delta == 1:
+                return f"завтра в {hhmm}"
+            day_label = day_names['ru'][next_dt.weekday()]
+            return f"в {day_label} в {hhmm}"
+        if days_delta == 0:
+            return f"today at {hhmm}"
+        if days_delta == 1:
+            return f"tomorrow at {hhmm}"
+        day_label = day_names['en'][next_dt.weekday()]
+        return f"on {day_label} at {hhmm}"
+
     # 🔹 טוענים קובץ תרגום פעם אחת (לא לכל עובד)
     translations = {}
     translation_path = _resolve_translation_path(safe_lang, 'show_workers.json')
@@ -3409,16 +3467,35 @@ def show_workers(lang, field, area):
         review_list.sort(key=_review_sort_key, reverse=True)
 
     for w in workers:
-        # זמינות עכשיו
+        # זמינות עכשיו + זמן פתיחה הבא
         is_available = False
         for block in w.get('work_blocks', []):
-            start = int(block.get('start_hour', 0))
-            end = int(block.get('end_hour', 0))
+            start = _safe_int(block.get('start_hour'), 0)
+            end = _safe_int(block.get('end_hour'), 0)
             days_as_numbers = [days_map_he.get(day, day) for day in block.get('days', [])]
             if current_day in days_as_numbers and start <= current_hour < end:
                 is_available = True
                 break
         w['is_available_now'] = is_available
+
+        next_open_dt = None if is_available else _next_opening(w.get('work_blocks') or [])
+        next_open_text = _format_next_open(next_open_dt)
+        w['next_open_text'] = next_open_text
+        if is_available:
+            call_now_map = {'he': 'התקשר עכשיו', 'en': 'Call now', 'ru': 'Позвонить сейчас'}
+            w['call_cta_label'] = call_now_map.get(lang, call_now_map['he'])
+            w['call_cta_hint'] = None
+            w['call_cta_state'] = 'open'
+        else:
+            call_later_map = {'he': 'כרגע סגור', 'en': 'Currently closed', 'ru': 'Сейчас закрыто'}
+            w['call_cta_label'] = call_later_map.get(lang, call_later_map['he'])
+            if next_open_text:
+                prefix_map = {'he': 'התקשר', 'en': 'Call', 'ru': 'Позвонить'}
+                w['call_cta_hint'] = f"{prefix_map.get(lang, prefix_map['he'])} {next_open_text}"
+            else:
+                closed_map = {'he': 'סגור כעת', 'en': 'Closed now', 'ru': 'Сейчас закрыто'}
+                w['call_cta_hint'] = closed_map.get(lang, closed_map['he'])
+            w['call_cta_state'] = 'closed'
 
         # טלפון בפורמט
         w['phone_formatted'] = format_phone(w.get('phone'))

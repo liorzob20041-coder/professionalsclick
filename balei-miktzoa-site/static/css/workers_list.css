@@ -2691,3 +2691,175 @@ select:focus-visible,
     grid-template-columns: 1fr;
   }
 }
+
+/* === Phase 3 tightening === */
+.masthead-compact {
+  gap: 10px;
+  align-items: center;
+}
+
+.masthead-main {
+  display: grid;
+  gap: 6px;
+}
+
+.masthead--ripple .title--priority {
+  margin: 0;
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.masthead--ripple .brand-sub {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #4b5563;
+}
+
+.masthead-signals .pill {
+  font-size: 0.79rem;
+  padding: 5px 10px;
+}
+
+.results-toolbar {
+  margin: 8px 0 12px;
+  padding: 8px;
+  box-shadow: 0 8px 20px rgb(122 0 38 / 9%);
+}
+
+.results-toolbar .toolbar-row {
+  gap: 8px;
+}
+
+.btn-filter {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+}
+
+.toolbar-state {
+  margin-inline-start: auto;
+}
+
+.chips-scroll {
+  margin-top: 6px;
+  gap: 6px;
+}
+
+.chip {
+  padding: 5px 9px;
+  font-size: 0.82rem;
+}
+
+.wr-stack {
+  gap: 12px;
+}
+
+.worker-card {
+  grid-template-columns: 190px 1fr;
+  gap: 12px;
+  border-color: #e5e7eb;
+}
+
+.worker-card + .worker-card {
+  margin-block: 12px;
+}
+
+.media-box {
+  min-height: 220px;
+}
+
+.card-main {
+  padding: 12px 14px;
+  row-gap: 7px;
+}
+
+.card-quick-meta {
+  gap: 6px;
+}
+
+.quick-meta {
+  font-size: 0.74rem;
+  padding: 3px 8px;
+}
+
+.quick-meta--next {
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #9a3412;
+}
+
+.card-rating {
+  font-size: 0.88rem;
+}
+
+.card-last-review {
+  padding: 7px 9px;
+  gap: 4px;
+}
+
+.last-review-text {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.card-contact-bar {
+  gap: 6px;
+}
+
+.card-contact-bar .btn {
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+
+.btn-call {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  text-align: center;
+  padding: 7px 10px;
+}
+
+.btn-call__main {
+  font-weight: 800;
+}
+
+.btn-call__hint {
+  font-size: 0.68rem;
+  opacity: 0.95;
+}
+
+.btn-call--open {
+  background: linear-gradient(135deg, #b0183c 0%, #cf355d 100%);
+  box-shadow: 0 8px 14px rgb(176 24 60 / 30%);
+}
+
+.btn-call--closed {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  box-shadow: none;
+}
+
+.btn-call--closed:hover,
+.btn-call--closed:focus-visible {
+  background: #e5e7eb;
+  color: #1f2937;
+  transform: none;
+}
+
+@media (width <= 920px) {
+  .toolbar-state {
+    margin-inline-start: 0;
+  }
+
+  .worker-card {
+    gap: 0;
+  }
+
+  .media-box {
+    min-height: 210px;
+  }
+}

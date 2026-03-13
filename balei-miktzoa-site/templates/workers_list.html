@@ -217,15 +217,15 @@
     {% set _area_match_map = {'he':'פעיל באזור שחיפשתם','en':'Active in searched area','ru':'Работает в выбранном районе'} %}
     {% set _experience_short_map = {'he':'ניסיון','en':'Experience','ru':'Опыт'} %}
     {% set _results_label_map = {'he':'בעלי מקצוע נמצאו','en':'professionals found','ru':'специалистов найдено'} %}
-    {% set _call_label_map = {'he':'התקשרו עכשיו','en':'Call now','ru':'Позвонить'} %}
     {% set _whatsapp_label_map = {'he':'WhatsApp','en':'WhatsApp','ru':'WhatsApp'} %}
     {% set _review_snippet_label_map = {'he':'הביקורת האחרונה','en':'Latest review','ru':'Последний отзыв'} %}
     {% set _specialties_label_map = {'he':'מתמחה ב־','en':'Best for','ru':'Подходит для'} %}
+    {% set _next_open_label_map = {'he':'פתיחה הבאה','en':'Next opening','ru':'Следующее открытие'} %}
     {% set results_label = _results_label_map.get(g.current_lang, _results_label_map['he']) %}
-    {% set call_now_label = _call_label_map.get(g.current_lang, _call_label_map['he']) %}
     {% set whatsapp_label = _whatsapp_label_map.get(g.current_lang, _whatsapp_label_map['he']) %}
     {% set review_snippet_label = _review_snippet_label_map.get(g.current_lang, _review_snippet_label_map['he']) %}
     {% set specialties_label = _specialties_label_map.get(g.current_lang, _specialties_label_map['he']) %}
+    {% set next_open_label = _next_open_label_map.get(g.current_lang, _next_open_label_map['he']) %}
     {% set open_status_label = _open_status_map.get(g.current_lang, _open_status_map['he']) %}
     {% set area_match_status_label = _area_match_map.get(g.current_lang, _area_match_map['he']) %}
     {% set experience_short_label = _experience_short_map.get(g.current_lang, _experience_short_map['he']) %}
@@ -297,8 +297,8 @@
           <i class="fa-solid fa-sliders"></i> {{ filter_button_label }}
         </button>
         <div class="toolbar-state">
+          <span class="hint"><strong>{{ workers|length }}</strong> {{ results_label }}</span>
           <span class="sort-chip">{{ _('label_sort') if _ else 'Sort' }}: {% if sort_by == 'rating' %}{{ sort_rating_label }}{% elif sort_by == 'reviews' %}{{ sort_reviews_label }}{% elif sort_by == 'experience' %}{{ sort_experience_label }}{% else %}{{ recommended_label }}{% endif %}</span>
-          <span class="hint">{{ workers|length }} {{ results_label }}</span>
         </div>
       </div>
       {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
@@ -353,14 +353,6 @@
               {% set languages_extra = languages|length - languages_preview|length %}
               {% set bio_source = (w.bio_short or w.description or '') %}
               {% set bio_text = bio_source.strip() %}
-              {% set experience_label_map = {'he':'שנות ניסיון','en':'years experience','ru':'лет стажа'} %}
-              {% set experience_label = experience_label_map.get(g.current_lang, experience_label_map['he']) %}
-              {% set experience_chip = '' %}
-              {% if w.experience_years %}
-                {% set experience_chip = w.experience_years ~ ' ' ~ experience_label %}
-              {% elif w.experience_text %}
-                {% set experience_chip = w.experience_text %}
-              {% endif %}
               {% set has_badges = w.offers_emergency %}
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
@@ -485,6 +477,7 @@
                     {% if w.is_available_now %}<span class="quick-meta quick-meta--open"><i class="fa-solid fa-clock"></i> {{ open_status_label }}</span>{% endif %}
                     {% if w.is_direct_area_match %}<span class="quick-meta quick-meta--area"><i class="fa-solid fa-location-dot"></i> {{ area_match_status_label }}</span>{% endif %}
                     {% if w.experience %}<span class="quick-meta"><i class="fa-solid fa-briefcase"></i> {{ experience_short_label }}: {{ w.experience }}</span>{% endif %}
+                    {% if (not w.is_available_now) and w.next_open_text %}<span class="quick-meta quick-meta--next"><i class="fa-regular fa-clock"></i> {{ next_open_label }}: {{ w.next_open_text }}</span>{% endif %}
                   </div>
                   {% if rating_value %}
                     <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
@@ -508,7 +501,7 @@
                   {% endif %}
                   {% if has_badges %}
                     <div class="card-badges">
-                                            {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
+                      {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
                     </div>
                   {% endif %}
                   {% if bio_text %}
@@ -553,10 +546,11 @@
                   {% endif %}
                   <div class="card-contact-bar">
                     {% if phone_tel %}
-                      <a class="btn btn-call"
+                      <a class="btn btn-call btn-call--{{ w.call_cta_state or 'open' }}"
                          href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
-                         aria-label="{{ call_now_label }} {{ display_name }} {{ phone_display }}">
-                        📞 {{ call_now_label }}
+                         aria-label="{{ w.call_cta_label }} {{ display_name }} {{ phone_display }}">
+                        <span class="btn-call__main">📞 {{ w.call_cta_label }}</span>
+                        {% if w.call_cta_hint %}<span class="btn-call__hint">{{ w.call_cta_hint }}</span>{% endif %}
                       </a>
                     {% endif %}
                     {% if whatsapp_clean %}

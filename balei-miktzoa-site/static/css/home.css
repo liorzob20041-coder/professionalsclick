@@ -1306,59 +1306,26 @@ html[dir="rtl"] .niche-rail {
 
 .articles-head {
   text-align: center;
-  margin: 0 auto clamp(28px, 5vw, 48px);
+  margin: 0 auto clamp(26px, 4vw, 40px);
   max-width: min(760px, 92vw);
   display: grid;
-  gap: clamp(10px, 2vw, 16px);
+  justify-items: center;
+  gap: clamp(8px, 1.6vw, 14px);
 }
 
-.articles-head__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-@media (width <= 700px) {
-  .articles-head__top {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-.articles-head__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid rgb(139 21 56 / 22%);
-  color: #7f1734;
-  background: rgb(255 255 255 / 72%);
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-}
-
-.articles-head__link:hover,
-.articles-head__link:focus-visible {
-  background: #fff;
-  border-color: rgb(139 21 56 / 36%);
-  transform: translateY(-1px);
-}
 
 .articles-kicker {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 18px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-weight: 800;
-  font-size: 0.95rem;
-  color: var(--brand);
-  background: rgb(138 21 56 / 12%);
-  letter-spacing: 0.02em;
+  font-size: 0.82rem;
+  color: #7e1834;
+  background: transparent;
+  border: 1px solid rgb(139 21 56 / 18%);
+  letter-spacing: 0.04em;
 }
 
 .articles-title {
@@ -1600,6 +1567,34 @@ html[dir="ltr"] .home-articles .bm-article-card-link:focus-visible .bm-article-c
 
 html[dir="ltr"] .a-card:hover .a-more i {
   transform: scaleX(-1) translateX(-4px);
+}
+
+
+.articles-actions {
+  margin: clamp(24px, 4vw, 34px) auto 0;
+  display: flex;
+  justify-content: center;
+}
+
+.articles-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid rgb(139 21 56 / 26%);
+  color: #7f1734;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgb(255 255 255 / 80%);
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.articles-more-btn:hover,
+.articles-more-btn:focus-visible {
+  background: #fff;
+  border-color: rgb(139 21 56 / 38%);
+  transform: translateY(-1px);
 }
 
 .reveal {

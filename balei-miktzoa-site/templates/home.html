@@ -223,7 +223,13 @@
 <section class="home-articles mag" id="articles" aria-label="{{ _('homepage.articles.title') }}">
   <div class="container container--wide">
     <header class="articles-head">
-      <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
+      <div class="articles-head__top">
+        <span class="articles-kicker">{{ _('homepage.articles.kicker') }}</span>
+        <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="articles-head__link">
+          <span>{{ _('homepage.articles.all_articles') }}</span>
+          <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
+        </a>
+      </div>
       <h2 class="articles-title">{{ _('homepage.articles.title') }}</h2>
       <p class="articles-intro">{{ _('homepage.articles.subtitle') }}</p>
     </header>
@@ -236,12 +242,6 @@
       {% else %}
         <p class="bm-home-articles-empty">מאמרים חדשים יעלו לכאן בקרוב.</p>
       {% endif %}
-    </div>
-    <div class="articles-actions">
-      <a href="{{ url_for_lang('articles_index', lang=g.current_lang) }}" class="articles-more-btn">
-        <span>{{ _('homepage.articles.all_articles') }}</span>
-        <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
-      </a>
     </div>
   </div>
 </section>

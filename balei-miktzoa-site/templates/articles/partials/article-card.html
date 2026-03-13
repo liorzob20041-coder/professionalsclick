@@ -40,18 +40,21 @@
       </div>
     {% endif %}
     <div class="bm-article-card-content a-body">
-      {% if tag_label %}
-        <div class="bm-article-card-tag a-tag">{{ tag_label }}</div>
-      {% endif %}
+      <div class="bm-article-card-meta-top">
+        {% if tag_label %}
+          <span class="bm-article-card-tag a-tag">{{ tag_label }}</span>
+        {% endif %}
+        {% if article.reading_minutes %}
+          <span class="bm-article-card-reading">~{{ article.reading_minutes }} דק׳ קריאה</span>
+        {% endif %}
+      </div>
       <h3 class="bm-article-card-title a-title">{{ article.title }}</h3>
       {% if excerpt %}
         <p class="bm-article-card-excerpt a-excerpt">{{ excerpt }}</p>
       {% endif %}
       <div class="bm-article-card-meta">
-        {% if article.reading_minutes %}
-          <span>~{{ article.reading_minutes }} דק׳ קריאה</span>
-        {% endif %}
         <span class="bm-article-card-meta__cta">לקריאה מלאה</span>
+        <i class="fa-solid fa-arrow-left-long dir-flip" aria-hidden="true"></i>
       </div>
     </div>
   </a>

@@ -145,8 +145,8 @@ body {
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 10px 28px rgb(15 23 42 / 6%);
-  padding: 22px 16px 14px;
-  margin: 8px 0 14px;
+  padding: 16px 16px 10px;
+  margin: 6px 0 10px;
   overflow: visible;
 }
 
@@ -1234,8 +1234,8 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
   line-height: 1.5;
-  direction: rtl;
-  text-align: right;
+  direction: inherit;
+  text-align: start;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -2480,4 +2480,54 @@ select:focus-visible,
 .worker-card .info-row,
 .worker-card .lang-row {
   color: #111827; /* טקסט כהה נוח לקריאה */
+}
+
+.sort-chip {
+  border: 1px solid rgb(var(--brand-400-rgb), 0.35);
+  background: rgb(var(--brand-50-rgb), 0.85);
+  color: rgb(var(--brand-700-rgb), 0.96);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.card-quick-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.quick-meta--open {
+  background: #ecfdf3;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.quick-meta--area {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.filters-sort {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px;
+  font-weight: 600;
+  background: #fff;
 }

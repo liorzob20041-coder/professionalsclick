@@ -216,6 +216,16 @@
     {% set _open_status_map = {'he':'פתוח עכשיו','en':'Open now','ru':'Открыт сейчас'} %}
     {% set _area_match_map = {'he':'פעיל באזור שחיפשתם','en':'Active in searched area','ru':'Работает в выбранном районе'} %}
     {% set _experience_short_map = {'he':'ניסיון','en':'Experience','ru':'Опыт'} %}
+    {% set _results_label_map = {'he':'בעלי מקצוע נמצאו','en':'professionals found','ru':'специалистов найдено'} %}
+    {% set _call_label_map = {'he':'התקשרו עכשיו','en':'Call now','ru':'Позвонить'} %}
+    {% set _whatsapp_label_map = {'he':'WhatsApp','en':'WhatsApp','ru':'WhatsApp'} %}
+    {% set _review_snippet_label_map = {'he':'הביקורת האחרונה','en':'Latest review','ru':'Последний отзыв'} %}
+    {% set _specialties_label_map = {'he':'מתמחה ב־','en':'Best for','ru':'Подходит для'} %}
+    {% set results_label = _results_label_map.get(g.current_lang, _results_label_map['he']) %}
+    {% set call_now_label = _call_label_map.get(g.current_lang, _call_label_map['he']) %}
+    {% set whatsapp_label = _whatsapp_label_map.get(g.current_lang, _whatsapp_label_map['he']) %}
+    {% set review_snippet_label = _review_snippet_label_map.get(g.current_lang, _review_snippet_label_map['he']) %}
+    {% set specialties_label = _specialties_label_map.get(g.current_lang, _specialties_label_map['he']) %}
     {% set open_status_label = _open_status_map.get(g.current_lang, _open_status_map['he']) %}
     {% set area_match_status_label = _area_match_map.get(g.current_lang, _area_match_map['he']) %}
     {% set experience_short_label = _experience_short_map.get(g.current_lang, _experience_short_map['he']) %}
@@ -227,17 +237,22 @@
     </nav>
     <section class="masthead masthead--ripple" aria-label="Results header">
       <div class="dot-grid" aria-hidden="true"></div>
-      <div class="click-ripple" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
-      <h1 class="title title--priority">
-        <span class="t-field">{{ field_label }}</span>
-        <span class="t-area-wrap">
-          {% if area_label %}
-            <span class="t-sep"> ב</span>
-            <span class="t-area">{{ area_label }}</span>
-          {% endif %}
-          <span class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
+      <div class="masthead-compact">
+        <div class="masthead-main">
+          <p class="search-context">{{ _('label_field') if _ else 'Field' }} · {{ field_label }}{% if area_label %} · {{ area_label }}{% endif %}</p>
+          <h1 class="title title--priority">
+            <span class="t-field">{{ field_label }}</span>
+            {% if area_label %}<span class="t-sep">·</span><span class="t-area">{{ area_label }}</span>{% endif %}
+          </h1>
+          <p class="brand-sub">{{ filter_hint_label }}</p>
+          <div class="masthead-signals" role="list" aria-label="Signals">
+            <span class="pill pill--strong" role="listitem"><i class="fa-solid fa-users"></i> {{ workers|length }} {{ results_label }}</span>
+            <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> {{ _trust_1_map.get(g.current_lang, _trust_1_map['he']) }}</span>
+            <span class="pill" role="listitem"><i class="fa-solid fa-location-dot"></i> {{ _trust_3_map.get(g.current_lang, _trust_3_map['he']) }}</span>
+          </div>
+        </div>
+        <div class="masthead-side">
+          <div class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
             <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
               <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
               <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
@@ -271,14 +286,8 @@
                 {% endif %}
               </div>
             </div>
-          </span>
-        </span>
-      </h1>
-      <p class="brand-sub">{{ filter_hint_label }}</p>
-      <div class="trust-pills" role="list" aria-label="הבטחות השירות">
-        <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> {{ _trust_1_map.get(g.current_lang, _trust_1_map['he']) }}</span>
-        <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> {{ _trust_2_map.get(g.current_lang, _trust_2_map['he']) }}</span>
-        <span class="pill" role="listitem"><i class="fa-solid fa-location-dot"></i> {{ _trust_3_map.get(g.current_lang, _trust_3_map['he']) }}</span>
+          </div>
+        </div>
       </div>
       <div class="accent-line" aria-hidden="true"></div>
     </section>
@@ -287,13 +296,15 @@
         <button type="button" class="btn-filter" id="filtersOpenBtn" aria-controls="filtersDrawer" aria-expanded="false">
           <i class="fa-solid fa-sliders"></i> {{ filter_button_label }}
         </button>
-        <div class="hint">{{ filter_hint_label }}</div>
-        <span class="sort-chip">{{ _('label_sort') if _ else 'Sort' }}: {% if sort_by == 'rating' %}{{ sort_rating_label }}{% elif sort_by == 'reviews' %}{{ sort_reviews_label }}{% elif sort_by == 'experience' %}{{ sort_experience_label }}{% else %}{{ recommended_label }}{% endif %}</span>
+        <div class="toolbar-state">
+          <span class="sort-chip">{{ _('label_sort') if _ else 'Sort' }}: {% if sort_by == 'rating' %}{{ sort_rating_label }}{% elif sort_by == 'reviews' %}{{ sort_reviews_label }}{% elif sort_by == 'experience' %}{{ sort_experience_label }}{% else %}{{ recommended_label }}{% endif %}</span>
+          <span class="hint">{{ workers|length }} {{ results_label }}</span>
+        </div>
       </div>
       {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
       {% set active = [] %}
       {% if request.args.get('open_now') %}{% set _ = active.append(open_now_label) %}{% endif %}
-            {% if request.args.get('rating_4p') %}{% set _ = active.append(rating_4p_label) %}{% endif %}
+      {% if request.args.get('rating_4p') %}{% set _ = active.append(rating_4p_label) %}{% endif %}
       {% if request.args.get('nearby_area') %}{% set _ = active.append(nearby_area_label) %}{% endif %}
       {% set selected_langs = selected_languages if selected_languages is defined else [] %}
       {% for lang_option in (selected_langs|unique) %}
@@ -301,15 +312,17 @@
           {% set _ = active.append(lang_option) %}
         {% endif %}
       {% endfor %}
-      {% if active|length %}
-        <div class="chips-scroll" aria-label="Active filters">
+      <div class="chips-scroll" aria-label="Active filters">
+        {% if active|length %}
           {% for chip in active %}<span class="chip is-on">{{ chip }}</span>{% endfor %}
           <a class="chip reset" href="{{ list_url }}">{{ clear_label }}</a>
-        </div>
-      {% endif %}
+        {% else %}
+          <span class="chip chip--muted">{{ filter_hint_label }}</span>
+        {% endif %}
+      </div>
     </div>
     <div class="wr-container">
-      <main class="wr-list" aria-label="{{ _('workers_list_aria') }}">
+      <main class="wr-list" aria-label="{{ (_('workers_list_aria') if _ else 'Workers list') }}">
         {% if workers|length == 0 %}
           <div class="empty-state clean" role="status">
             <h3>לא מצאנו תוצאות תואמות</h3>
@@ -348,7 +361,7 @@
               {% elif w.experience_text %}
                 {% set experience_chip = w.experience_text %}
               {% endif %}
-              {% set has_badges = (experience_chip or w.offers_emergency) %}
+              {% set has_badges = w.offers_emergency %}
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
               {% set phone_tel = (w.phone_formatted or w.phone) %}
@@ -456,25 +469,6 @@
                     {% endif %}
                     <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                   </div>
-                  {% if phone_tel or whatsapp_clean %}
-                    <div class="card-actions">
-                      {% if phone_tel %}
-                        <a class="btn btn-call"
-                           href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
-                           aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
-                          📞 {{ phone_display }}
-                        </a>
-                      {% endif %}
-                      {% if whatsapp_clean %}
-                        <a class="btn btn-whatsapp"
-                           href="https://wa.me/{{ whatsapp_clean }}"
-                           target="_blank" rel="noopener"
-                           aria-label="שליחת הודעת WhatsApp ל{{ display_name }}">
-                          💬 WhatsApp
-                        </a>
-                      {% endif %}
-                    </div>
-                  {% endif %}
                 </div>
                 <div class="card-main">
                   <div class="card-title">
@@ -510,12 +504,11 @@
                     </div>
                   {% endif %}
                   {% if specialties_trim %}
-                    <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
+                    <div class="card-specialties" title="{{ specialties_text }}"><strong>{{ specialties_label }}</strong> {{ specialties_trim }}</div>
                   {% endif %}
                   {% if has_badges %}
                     <div class="card-badges">
-                      {% if experience_chip %}<span class="chip chip--experience">{{ experience_chip }}</span>{% endif %}
-                      {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
+                                            {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
                     </div>
                   {% endif %}
                   {% if bio_text %}
@@ -538,7 +531,7 @@
                                 title="{{ last_review_date_full or last_review_date_short }}">{{ last_review_date_short }}</time>
                         {% endif %}
                       </div>
-                      {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
+                      {% if last_review_snippet %}<div class="last-review-label">{{ review_snippet_label }}</div><div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
                       <a class="profile-link" href="{{ profile_url }}#reviews">
                         {{ full_profile_label }}
                         <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -558,6 +551,24 @@
                       </a>
                     </div>
                   {% endif %}
+                  <div class="card-contact-bar">
+                    {% if phone_tel %}
+                      <a class="btn btn-call"
+                         href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
+                         aria-label="{{ call_now_label }} {{ display_name }} {{ phone_display }}">
+                        📞 {{ call_now_label }}
+                      </a>
+                    {% endif %}
+                    {% if whatsapp_clean %}
+                      <a class="btn btn-whatsapp"
+                         href="https://wa.me/{{ whatsapp_clean }}"
+                         target="_blank" rel="noopener"
+                         aria-label="WhatsApp {{ display_name }}">
+                        💬 {{ whatsapp_label }}
+                      </a>
+                    {% endif %}
+                    <a class="btn btn-profile" href="{{ profile_url }}">{{ full_profile_label }}</a>
+                  </div>
                   {% if languages|length %}
                     <div class="card-langs" title="{{ languages_full }}">
                       <span class="langs-label">
@@ -613,7 +624,7 @@
     <aside class="drawer-panel" id="filtersDrawer" aria-hidden="true" aria-modal="true" role="dialog" aria-labelledby="filtersTitle" hidden>
       <div class="drawer-head">
         <h2 id="filtersTitle" class="drawer-title">{{ filter_button_label }}</h2>
-        <button type="button" class="drawer-close" id="filtersCloseBtn" aria-label="{{ _('close') or 'סגור' }}"><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" class="drawer-close" id="filtersCloseBtn" aria-label="{{ (_('close') if _ else 'Close') }}"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="drawer-body">
         {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}

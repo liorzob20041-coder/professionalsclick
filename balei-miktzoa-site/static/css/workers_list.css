@@ -2531,3 +2531,163 @@ select:focus-visible,
   font-weight: 600;
   background: #fff;
 }
+
+/* === Phase 2 redesign overrides === */
+.masthead--ripple {
+  padding: 14px 14px 10px;
+  border-radius: 20px;
+  border-color: rgb(var(--brand-400-rgb), 0.22);
+  background: linear-gradient(130deg, #fff 0%, #fff4f8 52%, #fefcff 100%);
+}
+
+.masthead-compact {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.search-context {
+  margin: 0 0 6px;
+  color: #6b7280;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.masthead-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill--strong {
+  background: rgb(var(--brand-600-rgb), 0.95);
+  color: #fff;
+  border-color: transparent;
+}
+
+.masthead-side .city-actions {
+  margin: 0;
+}
+
+.results-toolbar {
+  border-radius: 14px;
+  border-color: rgb(var(--brand-400-rgb), 0.18);
+  background: linear-gradient(180deg, rgb(255 255 255 / 95%), rgb(252 246 250 / 94%));
+}
+
+.toolbar-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.results-toolbar .hint {
+  color: #334155;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.chip--muted {
+  color: #64748b;
+  background: #f8fafc;
+  border-style: dashed;
+}
+
+.worker-card {
+  grid-template-columns: 210px 1fr;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 10%);
+}
+
+.card-main {
+  padding: 14px 16px 14px;
+  row-gap: 8px;
+}
+
+.card-title {
+  font-size: 1.18rem;
+}
+
+.card-specialties {
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.card-specialties strong {
+  color: #6b7280;
+  font-weight: 700;
+  margin-inline-end: 4px;
+}
+
+.card-bio {
+  -webkit-line-clamp: 3;
+}
+
+.card-last-review {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.last-review-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.card-contact-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.card-contact-bar .btn {
+  flex: 1 1 150px;
+  min-height: 42px;
+  height: auto;
+}
+
+.btn-profile {
+  background: #fff;
+  color: rgb(var(--brand-600-rgb));
+  border: 1px solid rgb(var(--brand-400-rgb), 0.4);
+  box-shadow: none;
+}
+
+.btn-profile:hover,
+.btn-profile:focus-visible {
+  background: rgb(var(--brand-50-rgb), 0.95);
+}
+
+.card-langs {
+  padding-top: 4px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.wr-faq {
+  margin-top: 18px;
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+@media (width <= 920px) {
+  .masthead-compact {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .worker-card {
+    grid-template-columns: 1fr;
+  }
+}

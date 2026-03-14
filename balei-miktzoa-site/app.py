@@ -3487,14 +3487,18 @@ def show_workers(lang, field, area):
             w['call_cta_hint'] = None
             w['call_cta_state'] = 'open'
         else:
-            call_later_map = {'he': 'כרגע סגור', 'en': 'Currently closed', 'ru': 'Сейчас закрыто'}
-            w['call_cta_label'] = call_later_map.get(lang, call_later_map['he'])
+            open_prefix_map = {'he': 'פתוח', 'en': 'Opens', 'ru': 'Откроется'}
+            closed_map = {'he': 'סגור כעת', 'en': 'Closed now', 'ru': 'Сейчас закрыто'}
             if next_open_text:
-                prefix_map = {'he': 'התקשר', 'en': 'Call', 'ru': 'Позвонить'}
-                w['call_cta_hint'] = f"{prefix_map.get(lang, prefix_map['he'])} {next_open_text}"
+                w['call_cta_label'] = f"{open_prefix_map.get(lang, open_prefix_map['he'])} {next_open_text}"
             else:
-                closed_map = {'he': 'סגור כעת', 'en': 'Closed now', 'ru': 'Сейчас закрыто'}
-                w['call_cta_hint'] = closed_map.get(lang, closed_map['he'])
+                w['call_cta_label'] = closed_map.get(lang, closed_map['he'])
+            alt_hint_map = {
+                'he': 'אפשר לשלוח WhatsApp עכשיו',
+                'en': 'You can send WhatsApp now',
+                'ru': 'Можно написать в WhatsApp сейчас',
+            }
+            w['call_cta_hint'] = alt_hint_map.get(lang, alt_hint_map['he'])
             w['call_cta_state'] = 'closed'
 
         # טלפון בפורמט

@@ -2863,3 +2863,68 @@ select:focus-visible,
     min-height: 210px;
   }
 }
+
+
+/* === Phase 3 refinement === */
+.masthead-signals .pill {
+  background: #fff;
+  border-color: #e5e7eb;
+  color: #475569;
+}
+
+.pill--strong {
+  background: #111827;
+  color: #fff;
+}
+
+.quick-meta {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.card-badges .chip {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.card-contact-bar {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.btn-call {
+  align-content: center;
+}
+
+.btn-call--open {
+  background: linear-gradient(135deg, #9f1239 0%, #be123c 100%);
+  box-shadow: 0 6px 12px rgb(159 18 57 / 25%);
+}
+
+.btn-call--closed {
+  background: #f9fafb;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.btn-call--closed .btn-call__main {
+  font-weight: 700;
+}
+
+.btn-call--closed .btn-call__hint {
+  color: #6b7280;
+}
+
+.results-toolbar {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+
+.chips-scroll .chip.is-on {
+  background: #f8fafc;
+  color: #334155;
+  border-color: #cbd5e1;
+}

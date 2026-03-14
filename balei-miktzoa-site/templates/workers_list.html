@@ -213,21 +213,17 @@
     {% set clear_label = _clear_map.get(g.current_lang, _clear_map['he']) %}
     {% set full_profile_label = _full_profile_map.get(g.current_lang, _full_profile_map['he']) %}
     {% set service_languages_prefix = _service_languages_prefix_map.get(g.current_lang, _service_languages_prefix_map['he']) %}
-    {% set _open_status_map = {'he':'פתוח עכשיו','en':'Open now','ru':'Открыт сейчас'} %}
-    {% set _area_match_map = {'he':'פעיל באזור שחיפשתם','en':'Active in searched area','ru':'Работает в выбранном районе'} %}
     {% set _experience_short_map = {'he':'ניסיון','en':'Experience','ru':'Опыт'} %}
     {% set _results_label_map = {'he':'בעלי מקצוע נמצאו','en':'professionals found','ru':'специалистов найдено'} %}
     {% set _whatsapp_label_map = {'he':'WhatsApp','en':'WhatsApp','ru':'WhatsApp'} %}
     {% set _review_snippet_label_map = {'he':'הביקורת האחרונה','en':'Latest review','ru':'Последний отзыв'} %}
     {% set _specialties_label_map = {'he':'מתמחה ב־','en':'Best for','ru':'Подходит для'} %}
-    {% set _next_open_label_map = {'he':'פתיחה הבאה','en':'Next opening','ru':'Следующее открытие'} %}
+    {% set _emergency_label_map = {'he':'זמינות 24/7','en':'24/7 availability','ru':'Доступен 24/7'} %}
     {% set results_label = _results_label_map.get(g.current_lang, _results_label_map['he']) %}
     {% set whatsapp_label = _whatsapp_label_map.get(g.current_lang, _whatsapp_label_map['he']) %}
     {% set review_snippet_label = _review_snippet_label_map.get(g.current_lang, _review_snippet_label_map['he']) %}
     {% set specialties_label = _specialties_label_map.get(g.current_lang, _specialties_label_map['he']) %}
-    {% set next_open_label = _next_open_label_map.get(g.current_lang, _next_open_label_map['he']) %}
-    {% set open_status_label = _open_status_map.get(g.current_lang, _open_status_map['he']) %}
-    {% set area_match_status_label = _area_match_map.get(g.current_lang, _area_match_map['he']) %}
+    {% set emergency_label = _emergency_label_map.get(g.current_lang, _emergency_label_map['he']) %}
     {% set experience_short_label = _experience_short_map.get(g.current_lang, _experience_short_map['he']) %}
 
     <nav class="crumbs-min" aria-label="Breadcrumb">
@@ -247,8 +243,6 @@
           <p class="brand-sub">{{ filter_hint_label }}</p>
           <div class="masthead-signals" role="list" aria-label="Signals">
             <span class="pill pill--strong" role="listitem"><i class="fa-solid fa-users"></i> {{ workers|length }} {{ results_label }}</span>
-            <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> {{ _trust_1_map.get(g.current_lang, _trust_1_map['he']) }}</span>
-            <span class="pill" role="listitem"><i class="fa-solid fa-location-dot"></i> {{ _trust_3_map.get(g.current_lang, _trust_3_map['he']) }}</span>
           </div>
         </div>
         <div class="masthead-side">
@@ -474,10 +468,7 @@
                     </a>
                   </div>
                   <div class="card-quick-meta">
-                    {% if w.is_available_now %}<span class="quick-meta quick-meta--open"><i class="fa-solid fa-clock"></i> {{ open_status_label }}</span>{% endif %}
-                    {% if w.is_direct_area_match %}<span class="quick-meta quick-meta--area"><i class="fa-solid fa-location-dot"></i> {{ area_match_status_label }}</span>{% endif %}
                     {% if w.experience %}<span class="quick-meta"><i class="fa-solid fa-briefcase"></i> {{ experience_short_label }}: {{ w.experience }}</span>{% endif %}
-                    {% if (not w.is_available_now) and w.next_open_text %}<span class="quick-meta quick-meta--next"><i class="fa-regular fa-clock"></i> {{ next_open_label }}: {{ w.next_open_text }}</span>{% endif %}
                   </div>
                   {% if rating_value %}
                     <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
@@ -501,7 +492,7 @@
                   {% endif %}
                   {% if has_badges %}
                     <div class="card-badges">
-                      {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
+                      {% if w.offers_emergency %}<span class="chip chip--availability">{{ emergency_label }}</span>{% endif %}
                     </div>
                   {% endif %}
                   {% if bio_text %}

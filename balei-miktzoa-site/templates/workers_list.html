@@ -218,7 +218,7 @@
     {% set _whatsapp_label_map = {'he':'WhatsApp','en':'WhatsApp','ru':'WhatsApp'} %}
     {% set _review_snippet_label_map = {'he':'הביקורת האחרונה','en':'Latest review','ru':'Последний отзыв'} %}
     {% set _specialties_label_map = {'he':'מתמחה ב־','en':'Best for','ru':'Подходит для'} %}
-    {% set _emergency_label_map = {'he':'זמינות 24/7','en':'24/7 availability','ru':'Доступен 24/7'} %}
+    {% set _emergency_label_map = {'he':'שירות חירום','en':'Emergency service','ru':'Экстренный выезд'} %}
     {% set results_label = _results_label_map.get(g.current_lang, _results_label_map['he']) %}
     {% set whatsapp_label = _whatsapp_label_map.get(g.current_lang, _whatsapp_label_map['he']) %}
     {% set review_snippet_label = _review_snippet_label_map.get(g.current_lang, _review_snippet_label_map['he']) %}
@@ -310,8 +310,6 @@
         {% if active|length %}
           {% for chip in active %}<span class="chip is-on">{{ chip }}</span>{% endfor %}
           <a class="chip reset" href="{{ list_url }}">{{ clear_label }}</a>
-        {% else %}
-          <span class="chip chip--muted">{{ filter_hint_label }}</span>
         {% endif %}
       </div>
     </div>

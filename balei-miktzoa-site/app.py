@@ -3427,6 +3427,23 @@ def show_workers(lang, field, area):
         day_label = day_names['en'][next_dt.weekday()]
         return f"on {day_label} at {hhmm}"
 
+    def _normalize_emergency_copy(text: str) -> str:
+        if not text:
+            return ''
+        normalized = str(text)
+        replacements = [
+            ('זמין 24/7', 'זמין לחירום'),
+            ('זמינה 24/7', 'זמינה לחירום'),
+            ('שירות 24/7', 'שירות חירום'),
+            ('24/7 service', 'emergency service'),
+            ('service 24/7', 'emergency service'),
+            ('доступен 24/7', 'экстренный выезд'),
+            ('24/7', ''),
+        ]
+        for src, dst in replacements:
+            normalized = normalized.replace(src, dst)
+        return ' '.join(normalized.split()).strip(' ,.-')
+
     # 🔹 טוענים קובץ תרגום פעם אחת (לא לכל עובד)
     translations = {}
     translation_path = _resolve_translation_path(safe_lang, 'show_workers.json')
@@ -3493,13 +3510,14 @@ def show_workers(lang, field, area):
                 w['call_cta_label'] = f"{open_prefix_map.get(lang, open_prefix_map['he'])} {next_open_text}"
             else:
                 w['call_cta_label'] = closed_map.get(lang, closed_map['he'])
-            alt_hint_map = {
-                'he': 'אפשר לשלוח WhatsApp עכשיו',
-                'en': 'You can send WhatsApp now',
-                'ru': 'Можно написать в WhatsApp сейчас',
-            }
-            w['call_cta_hint'] = alt_hint_map.get(lang, alt_hint_map['he'])
+            w['call_cta_hint'] = None
             w['call_cta_state'] = 'closed'
+
+        if w.get('offers_emergency'):
+            if w.get('bio_short'):
+                w['bio_short'] = _normalize_emergency_copy(w.get('bio_short'))
+            if w.get('description'):
+                w['description'] = _normalize_emergency_copy(w.get('description'))
 
         # טלפון בפורמט
         w['phone_formatted'] = format_phone(w.get('phone'))

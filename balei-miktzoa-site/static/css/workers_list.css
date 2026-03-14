@@ -2589,12 +2589,6 @@ select:focus-visible,
   font-weight: 700;
 }
 
-.chip--muted {
-  color: #64748b;
-  background: #f8fafc;
-  border-style: dashed;
-}
-
 .worker-card {
   grid-template-columns: 210px 1fr;
   border-radius: 18px;
@@ -2927,4 +2921,33 @@ select:focus-visible,
   background: #f8fafc;
   color: #334155;
   border-color: #cbd5e1;
+}
+
+
+/* === Merge-readiness cleanup === */
+.card-last-review {
+  padding: 6px 8px;
+}
+
+.last-review-meta {
+  gap: 6px;
+}
+
+.last-review-text {
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-contact-bar .btn {
+  min-height: 38px;
+}
+
+.btn-call__hint {
+  display: none;
+}
+
+.card-badges {
+  margin-top: 2px;
 }

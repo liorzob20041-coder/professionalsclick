@@ -3319,7 +3319,7 @@ def show_workers(lang, field, area):
         target = url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug)
         qs = request.query_string.decode('utf-8') if request.query_string else ''
         # Only allow filtered/expected query params (whitelist)
-        allowed_qs_keys = {'filter', 'area', 'field', 'q', 'page', 'sort'}  # Customize this set to match actual filtering params
+        allowed_qs_keys = {'filter', 'area', 'field', 'q', 'page', 'sort', 'open_now', 'rating_4p', 'nearby_area', 'lang'}
         parsed_qs = parse_qs(qs, keep_blank_values=True)
         safe_qs_dict = {k: v for k, v in parsed_qs.items() if k in allowed_qs_keys}
         from urllib.parse import urlencode
@@ -3358,11 +3358,91 @@ def show_workers(lang, field, area):
     if wanted_langs:
         workers = [w for w in workers if wanted_langs & set(w.get('languages', []))]
 
+    open_now_only = request.args.get('open_now') == '1'
+    rating_4p_only = request.args.get('rating_4p') == '1'
+    nearby_area_only = request.args.get('nearby_area') == '1' and bool(search_area)
+    sort_by = (request.args.get('sort') or 'recommended').strip().lower()
+
     # הכנה לזמינות
     now = datetime.now()
     current_day = now.weekday()
     current_hour = now.hour
     days_map_he = {'שני': 0, 'שלישי': 1, 'רביעי': 2, 'חמישי': 3, 'שישי': 4, 'שבת': 5, 'ראשון': 6}
+
+    day_names = {
+        'he': ['שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת', 'ראשון'],
+        'en': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        'ru': ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье'],
+    }
+
+    def _safe_int(v, default=0):
+        try:
+            return int(float(v))
+        except (TypeError, ValueError):
+            return default
+
+    def _next_opening(work_blocks):
+        candidates = []
+        for block in (work_blocks or []):
+            start = _safe_int(block.get('start_hour'), 0)
+            end = _safe_int(block.get('end_hour'), 0)
+            if end <= start:
+                continue
+            days_as_numbers = [days_map_he.get(day, day) for day in block.get('days', [])]
+            for day_num in days_as_numbers:
+                if not isinstance(day_num, int):
+                    continue
+                offset = (day_num - current_day) % 7
+                candidate_dt = (now + timedelta(days=offset)).replace(hour=start, minute=0, second=0, microsecond=0)
+                if candidate_dt <= now:
+                    candidate_dt += timedelta(days=7)
+                candidates.append(candidate_dt)
+        if not candidates:
+            return None
+        return min(candidates)
+
+    def _format_next_open(next_dt: datetime | None):
+        if not next_dt:
+            return None
+        days_delta = (next_dt.date() - now.date()).days
+        hhmm = next_dt.strftime('%H:%M')
+        if lang == 'he':
+            if days_delta == 0:
+                return f"היום ב־{hhmm}"
+            if days_delta == 1:
+                return f"מחר ב־{hhmm}"
+            day_label = day_names['he'][next_dt.weekday()]
+            return f"ביום {day_label} ב־{hhmm}"
+        if lang == 'ru':
+            if days_delta == 0:
+                return f"сегодня в {hhmm}"
+            if days_delta == 1:
+                return f"завтра в {hhmm}"
+            day_label = day_names['ru'][next_dt.weekday()]
+            return f"в {day_label} в {hhmm}"
+        if days_delta == 0:
+            return f"today at {hhmm}"
+        if days_delta == 1:
+            return f"tomorrow at {hhmm}"
+        day_label = day_names['en'][next_dt.weekday()]
+        return f"on {day_label} at {hhmm}"
+
+    def _normalize_emergency_copy(text: str) -> str:
+        if not text:
+            return ''
+        normalized = str(text)
+        replacements = [
+            ('זמין 24/7', 'זמין לחירום'),
+            ('זמינה 24/7', 'זמינה לחירום'),
+            ('שירות 24/7', 'שירות חירום'),
+            ('24/7 service', 'emergency service'),
+            ('service 24/7', 'emergency service'),
+            ('доступен 24/7', 'экстренный выезд'),
+            ('24/7', ''),
+        ]
+        for src, dst in replacements:
+            normalized = normalized.replace(src, dst)
+        return ' '.join(normalized.split()).strip(' ,.-')
 
     # 🔹 טוענים קובץ תרגום פעם אחת (לא לכל עובד)
     translations = {}
@@ -3373,17 +3453,71 @@ def show_workers(lang, field, area):
     default_template = translations.get('default_tagline', 'Professional in the field of {field}')
 
     # עיבוד נתונים לתצוגה
+    reviews_file = os.path.join(DATA_FOLDER, 'worker_reviews.json')
+    all_reviews = []
+    if os.path.exists(reviews_file):
+        try:
+            with open(reviews_file, 'r', encoding='utf-8') as f:
+                all_reviews = json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            all_reviews = []
+
+    reviews_by_worker: dict[str, list[dict[str, Any]]] = {}
+    for review in all_reviews:
+        wid = str(review.get('worker_id') or '').strip()
+        if not wid:
+            continue
+        reviews_by_worker.setdefault(wid, []).append(review)
+
+    def _review_sort_key(item):
+        if isinstance(item, dict):
+            dt = _parse_review_date(item.get('date'))
+            if dt is not None:
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                else:
+                    dt = dt.astimezone(timezone.utc)
+                return (1, dt.timestamp())
+        return (0, float('-inf'))
+
+    for review_list in reviews_by_worker.values():
+        review_list.sort(key=_review_sort_key, reverse=True)
+
     for w in workers:
-        # זמינות עכשיו
+        # זמינות עכשיו + זמן פתיחה הבא
         is_available = False
         for block in w.get('work_blocks', []):
-            start = int(block.get('start_hour', 0))
-            end = int(block.get('end_hour', 0))
+            start = _safe_int(block.get('start_hour'), 0)
+            end = _safe_int(block.get('end_hour'), 0)
             days_as_numbers = [days_map_he.get(day, day) for day in block.get('days', [])]
             if current_day in days_as_numbers and start <= current_hour < end:
                 is_available = True
                 break
         w['is_available_now'] = is_available
+
+        next_open_dt = None if is_available else _next_opening(w.get('work_blocks') or [])
+        next_open_text = _format_next_open(next_open_dt)
+        w['next_open_text'] = next_open_text
+        if is_available:
+            call_now_map = {'he': 'התקשר עכשיו', 'en': 'Call now', 'ru': 'Позвонить сейчас'}
+            w['call_cta_label'] = call_now_map.get(lang, call_now_map['he'])
+            w['call_cta_hint'] = None
+            w['call_cta_state'] = 'open'
+        else:
+            open_prefix_map = {'he': 'פתוח', 'en': 'Opens', 'ru': 'Откроется'}
+            closed_map = {'he': 'סגור כעת', 'en': 'Closed now', 'ru': 'Сейчас закрыто'}
+            if next_open_text:
+                w['call_cta_label'] = f"{open_prefix_map.get(lang, open_prefix_map['he'])} {next_open_text}"
+            else:
+                w['call_cta_label'] = closed_map.get(lang, closed_map['he'])
+            w['call_cta_hint'] = None
+            w['call_cta_state'] = 'closed'
+
+        if w.get('offers_emergency'):
+            if w.get('bio_short'):
+                w['bio_short'] = _normalize_emergency_copy(w.get('bio_short'))
+            if w.get('description'):
+                w['description'] = _normalize_emergency_copy(w.get('description'))
 
         # טלפון בפורמט
         w['phone_formatted'] = format_phone(w.get('phone'))
@@ -3464,7 +3598,7 @@ def show_workers(lang, field, area):
             w['experience_text'] = f"{w.get('experience')} лет опыта" if w.get('experience') else "Опыт не указан"
 
         # דירוג ממוצע + מספר ביקורות
-        reviews = get_all_reviews(w.get('worker_id'), lang)
+        reviews = reviews_by_worker.get(str(w.get('worker_id')), [])
         w['reviews_count'] = 0
         if reviews:
             ratings = [r['rating'] for r in reviews if r.get('rating') is not None]
@@ -3473,7 +3607,10 @@ def show_workers(lang, field, area):
         else:
             w['rating'] = None
 
-        latest_review = get_latest_review(w.get('worker_id'), lang) or {}
+        latest_review = (reviews[0] if reviews else {}) or {}
+        if 'translations' in latest_review and lang in latest_review['translations']:
+            latest_review = dict(latest_review)
+            latest_review['text'] = latest_review['translations'][lang]
         w['latest_review'] = (latest_review.get('text') or '').strip()
         w['latest_review_author'] = (latest_review.get('author') or '').strip()
         w['latest_review_rating'] = latest_review.get('rating')
@@ -3496,6 +3633,18 @@ def show_workers(lang, field, area):
                     latest_rating_val = None
         w['latest_review_rating'] = latest_rating_val
 
+        area_hits = set(w.get('active_cities') or [])
+        if w.get('base_city'):
+            area_hits.add(w.get('base_city'))
+        w['is_direct_area_match'] = bool(search_area and search_area in area_hits)
+
+    if open_now_only:
+        workers = [w for w in workers if w.get('is_available_now')]
+    if rating_4p_only:
+        workers = [w for w in workers if (w.get('rating') is not None and w.get('rating') >= 4.0)]
+    if nearby_area_only:
+        workers = [w for w in workers if w.get('is_direct_area_match')]
+
     ui_lang_to_label = {"he": "עברית", "en": "אנגלית", "ru": "רוסית"}
     ui_label = ui_lang_to_label.get(lang)
 
@@ -3517,7 +3666,15 @@ def show_workers(lang, field, area):
             base += 2.0
         return base
 
-    workers.sort(key=_score_worker, reverse=True)
+    if sort_by == 'rating':
+        workers.sort(key=lambda w: ((w.get('rating') or 0), (w.get('reviews_count') or 0), _score_worker(w)), reverse=True)
+    elif sort_by == 'reviews':
+        workers.sort(key=lambda w: ((w.get('reviews_count') or 0), (w.get('rating') or 0), _score_worker(w)), reverse=True)
+    elif sort_by == 'experience':
+        workers.sort(key=lambda w: ((w.get('experience') or 0), (w.get('rating') or 0), _score_worker(w)), reverse=True)
+    else:
+        sort_by = 'recommended'
+        workers.sort(key=_score_worker, reverse=True)
 
     # --- Labels לתצוגה בשפת ה-UI ---
     def _label_field(he_value, lang_code):
@@ -3700,7 +3857,13 @@ def show_workers(lang, field, area):
         meta_image=meta_image,
         structured_data_json=structured_data_json,
         language_choices=WORKER_LANGUAGE_CHOICES,
-        selected_languages=selected_langs
+        selected_languages=selected_langs,
+        active_filters={
+            'open_now': open_now_only,
+            'rating_4p': rating_4p_only,
+            'nearby_area': nearby_area_only,
+        },
+        sort_by=sort_by
     )
 
 

@@ -531,7 +531,7 @@ body {
 
 .wr-quote i {
   color: #8a1538;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   margin-top: 2px;
 }
 
@@ -662,7 +662,7 @@ body {
   }
 
   .wr-quote {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
   }
 
   .wr-body {
@@ -832,7 +832,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 42px;
+  height: 40px;
   padding: 8px 14px;
   border-radius: 12px;
   border: 1px solid var(--soft-border-strong);
@@ -886,7 +886,7 @@ body {
   border: none;
   background: transparent;
   color: var(--text-light);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1;
   padding: 4px;
   border-radius: 5px;
@@ -946,7 +946,7 @@ body {
   color: var(--text-dark);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -1089,6 +1089,7 @@ body {
 .toolbar-sort {
   color: #6b7280;
 }
+
 
 .btn-filter {
   display: inline-flex;
@@ -1261,7 +1262,7 @@ body {
   --space-3: 16px;
   --space-4: 24px;
   display: grid;
-  grid-template-columns: minmax(228px, 252px) 1fr;
+  grid-template-columns: minmax(230px, 252px) 1fr;
   grid-template-areas: "media main";
   gap: 18px;
   align-items: flex-start;
@@ -1548,11 +1549,9 @@ video.media-video:fullscreen {
   gap: 6px;
   font-size: 0.85rem;
   color: #4a4a4a;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 9px;
-  background: #fafbfc;
   border: 1px solid #eef2f7;
   border-radius: 12px;
+  background: #fafbfc;
   padding: 9px 11px;
 }
 
@@ -1691,7 +1690,7 @@ video.media-video:fullscreen {
   color: #fff;
   border: none;
   box-shadow: 0 2px 8px rgb(37 211 102 / 25%);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   height: 40px;
 }
 
@@ -1942,7 +1941,7 @@ video.media-video:fullscreen {
 }
 
 .rating__count {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #6b7280;
   text-decoration: none;
 }
@@ -2444,7 +2443,7 @@ select:focus-visible,
 
   .masthead--ripple .city-search {
     width: 42px;
-    height: 42px;
+    height: 40px;
     border-radius: 12px;
     transform: translateY(-10px);
   }

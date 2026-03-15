@@ -143,9 +143,9 @@ body {
   position: relative;
   border: 1px solid rgb(0 0 0 / 6%);
   border-radius: 18px;
-  background: #fff;
+  background: linear-gradient(180deg, #fff 0%, #fff9fc 100%);
   box-shadow: 0 10px 28px rgb(15 23 42 / 6%);
-  padding: 22px 16px 14px;
+  padding: 18px 18px 12px;
   margin: 8px 0 14px;
   overflow: visible;
 }
@@ -531,7 +531,7 @@ body {
 
 .wr-quote i {
   color: #8a1538;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   margin-top: 2px;
 }
 
@@ -662,7 +662,7 @@ body {
   }
 
   .wr-quote {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
   }
 
   .wr-body {
@@ -712,12 +712,40 @@ body {
 }
 
 .masthead--ripple .brand-sub {
-  margin: 0 0 8px;
+  margin: 2px 0 8px;
   color: var(--text-mid);
-  font-weight: var(--sub-boost-weight);
-  font-size: var(--sub-boost-size);
-  letter-spacing: var(--sub-boost-tracking);
-  line-height: var(--sub-boost-line);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.1vw, 1.18rem);
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.masthead-metrics {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 10px;
+}
+
+.masthead-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid rgb(var(--brand-400-rgb), 0.22);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.masthead-metric strong {
+  color: #111827;
+}
+
+.masthead-metric--soft {
+  background: rgb(var(--brand-50-rgb), 0.8);
 }
 
 /* trust pills */
@@ -804,7 +832,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 42px;
+  height: 40px;
   padding: 8px 14px;
   border-radius: 12px;
   border: 1px solid var(--soft-border-strong);
@@ -858,7 +886,7 @@ body {
   border: none;
   background: transparent;
   color: var(--text-light);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1;
   padding: 4px;
   border-radius: 5px;
@@ -918,7 +946,7 @@ body {
   color: var(--text-dark);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -1034,8 +1062,8 @@ body {
   background: rgb(255 255 255 / 88%);
   backdrop-filter: saturate(1.2) blur(6px);
   border: 1px solid rgb(0 0 0 / 6%);
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 14px;
+  padding: 10px 12px;
   box-shadow: 0 6px 18px rgb(0 0 0 / 6%);
   margin: 12px 0;
 }
@@ -1046,6 +1074,22 @@ body {
   align-items: center;
   justify-content: space-between;
 }
+
+.toolbar-summary {
+  font-size: 0.93rem;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.toolbar-summary strong {
+  color: #111827;
+  font-size: 1rem;
+}
+
+.toolbar-sort {
+  color: #6b7280;
+}
+
 
 .btn-filter {
   display: inline-flex;
@@ -1064,11 +1108,6 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgb(0 0 0 / 8%);
   border-color: rgb(var(--brand-400-rgb), 0.75);
-}
-
-.results-toolbar .hint {
-  color: #6b7280;
-  font-weight: 600;
 }
 
 .chips-scroll {
@@ -1223,14 +1262,14 @@ body {
   --space-3: 16px;
   --space-4: 24px;
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: minmax(230px, 252px) 1fr;
   grid-template-areas: "media main";
-  gap: 20px;
+  gap: 18px;
   align-items: flex-start;
   padding: 0;
   width: 100%;
   background: #fff;
-  border: 1px solid #ececec;
+  border: 1px solid rgb(15 23 42 / 10%);
   border-radius: 16px;
   box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
   line-height: 1.5;
@@ -1267,8 +1306,8 @@ body {
 .media-box {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  min-height: 260px;
+  aspect-ratio: 4 / 5;
+  min-height: 250px;
   border-radius: 0;
   overflow: hidden;
   background: #f6f6f6;
@@ -1371,9 +1410,9 @@ video.media-video:fullscreen {
 .card-main {
   grid-area: main;
   display: grid;
-  row-gap: var(--space-2);
+  row-gap: 11px;
   min-width: 0;
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  padding: 16px 20px 18px;
 }
 
 .card-title {
@@ -1416,7 +1455,7 @@ video.media-video:fullscreen {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: #555;
 }
 
@@ -1441,7 +1480,7 @@ video.media-video:fullscreen {
 }
 
 .card-rating .avg {
-  font-weight: 600;
+  font-weight: 700;
   color: #1f2937;
 }
 
@@ -1450,12 +1489,17 @@ video.media-video:fullscreen {
 }
 
 .card-specialties {
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   color: #1f2937;
   font-weight: 500;
   min-height: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-specialties__label {
+  color: #6b7280;
+  font-weight: 700;
 }
 
 .card-badges {
@@ -1491,7 +1535,7 @@ video.media-video:fullscreen {
 }
 
 .card-bio {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #374151;
   line-height: 1.6;
   display: -webkit-box;
@@ -1505,8 +1549,10 @@ video.media-video:fullscreen {
   gap: 6px;
   font-size: 0.85rem;
   color: #4a4a4a;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 10px;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  background: #fafbfc;
+  padding: 9px 11px;
 }
 
 .last-review-meta {
@@ -1606,7 +1652,7 @@ video.media-video:fullscreen {
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  background: #f8f9fa;
+  background: #f8fafc;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -1615,7 +1661,7 @@ video.media-video:fullscreen {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 48px;
+  height: 46px;
   padding: 0 16px;
   border-radius: 10px;
   font-weight: 700;
@@ -1644,8 +1690,8 @@ video.media-video:fullscreen {
   color: #fff;
   border: none;
   box-shadow: 0 2px 8px rgb(37 211 102 / 25%);
-  font-size: 0.9rem;
-  height: 42px;
+  font-size: 0.88rem;
+  height: 40px;
 }
 
 .btn-whatsapp:hover,
@@ -1698,6 +1744,10 @@ video.media-video:fullscreen {
     gap: 10px;
   }
 
+  .toolbar-summary {
+    font-size: 0.87rem;
+  }
+
   .worker-card .btn {
     flex: 1 1 0;
     width: auto;
@@ -1705,7 +1755,7 @@ video.media-video:fullscreen {
 
   .btn-whatsapp {
     font-size: 0.85rem;
-    height: 48px;
+    height: 46px;
   }
 }
 
@@ -1891,7 +1941,7 @@ video.media-video:fullscreen {
 }
 
 .rating__count {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #6b7280;
   text-decoration: none;
 }
@@ -2393,7 +2443,7 @@ select:focus-visible,
 
   .masthead--ripple .city-search {
     width: 42px;
-    height: 42px;
+    height: 40px;
     border-radius: 12px;
     transform: translateY(-10px);
   }

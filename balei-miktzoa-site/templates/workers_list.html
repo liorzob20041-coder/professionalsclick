@@ -164,6 +164,27 @@
     {% set city_search_label = _city_search_label_map.get(g.current_lang, _city_search_label_map['he']) %}
     {% set city_empty_state = _city_list_empty_map.get(g.current_lang, _city_list_empty_map['he']) %}
     {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
+    {% set _results_title_map = {'he':'אנשי מקצוע זמינים','en':'Available professionals','ru':'Доступные специалисты'} %}
+    {% set _results_context_map = {'he':'לבחירה מהירה ובטוחה','en':'for fast, confident choice','ru':'для быстрого и уверенного выбора'} %}
+    {% set _results_label_map = {'he':'תוצאות','en':'results','ru':'результатов'} %}
+    {% set _filters_label_map = {'he':'סינון','en':'Filters','ru':'Фильтры'} %}
+    {% set _active_filters_map = {'he':'מסננים פעילים','en':'Active filters','ru':'Активные фильтры'} %}
+    {% set _clear_filters_map = {'he':'נקה','en':'Clear','ru':'Сброс'} %}
+    {% set _sort_prefix_map = {'he':'מיון פעיל','en':'Current sort','ru':'Текущая сортировка'} %}
+    {% set _sort_label_map = {
+      'recommended': {'he':'מומלצים ביותר','en':'Top recommended','ru':'Лучшие по рекомендациям'},
+      'rating_desc': {'he':'דירוג גבוה','en':'Highest rating','ru':'Высокий рейтинг'},
+      'reviews_desc': {'he':'הכי הרבה ביקורות','en':'Most reviews','ru':'Больше всего отзывов'},
+      'distance_asc': {'he':'הכי קרובים','en':'Nearest','ru':'Ближайшие'},
+      'price_asc': {'he':'מחיר נמוך','en':'Lowest price','ru':'Низкая цена'}
+    } %}
+    {% set _service_verified_map = {'he':'מאומת','en':'Verified','ru':'Проверен'} %}
+    {% set _service_reviews_map = {'he':'ביקורות אמיתיות','en':'Real reviews','ru':'Реальные отзывы'} %}
+    {% set _service_contact_map = {'he':'שיחה ו-WhatsApp מיידיים','en':'Instant call & WhatsApp','ru':'Моментальный звонок и WhatsApp'} %}
+    {% set _best_for_map = {'he':'הכי מתאים ל:','en':'Best for:','ru':'Лучше всего для:'} %}
+    {% set _filter_open_now_map = {'he':'פתוחים עכשיו','en':'Open now','ru':'Открыто сейчас'} %}
+    {% set _filter_verified_map = {'he':'מאומתים','en':'Verified only','ru':'Только проверенные'} %}
+    {% set _filter_nearby_map = {'he':'עד 5 ק״מ','en':'Up to 5 km','ru':'До 5 км'} %}
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set languages_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
     {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}
@@ -183,6 +204,17 @@
     {% set video_unmute_label = video_unmute_label_map.get(g.current_lang, video_unmute_label_map['he']) %}
     {% set video_fullscreen_label = video_fullscreen_label_map.get(g.current_lang, video_fullscreen_label_map['he']) %}
     {% set video_exit_fullscreen_label = video_exit_fullscreen_label_map.get(g.current_lang, video_exit_fullscreen_label_map['he']) %}
+    {% set results_title = _results_title_map.get(g.current_lang, _results_title_map['he']) %}
+    {% set results_context = _results_context_map.get(g.current_lang, _results_context_map['he']) %}
+    {% set results_label = _results_label_map.get(g.current_lang, _results_label_map['he']) %}
+    {% set filters_label = _filters_label_map.get(g.current_lang, _filters_label_map['he']) %}
+    {% set active_filters_label = _active_filters_map.get(g.current_lang, _active_filters_map['he']) %}
+    {% set clear_filters_label = _clear_filters_map.get(g.current_lang, _clear_filters_map['he']) %}
+    {% set sort_prefix = _sort_prefix_map.get(g.current_lang, _sort_prefix_map['he']) %}
+    {% set verified_label = _service_verified_map.get(g.current_lang, _service_verified_map['he']) %}
+    {% set reviews_trust_label = _service_reviews_map.get(g.current_lang, _service_reviews_map['he']) %}
+    {% set contact_trust_label = _service_contact_map.get(g.current_lang, _service_contact_map['he']) %}
+    {% set best_for_label = _best_for_map.get(g.current_lang, _best_for_map['he']) %}
     {% set close_label = (_('close') if _ else 'סגור') %}
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
@@ -238,27 +270,37 @@
           </span>
         </span>
       </h1>
-      <p class="brand-sub">קליק אחד והמקצוען בדרך אליכם</p>
+      <p class="brand-sub">{{ results_title }}{% if area_label %} · {{ area_label }}{% endif %}</p>
+      <div class="masthead-metrics" role="status" aria-live="polite">
+        <span class="masthead-metric"><strong>{{ workers|length }}</strong> {{ results_label }}</span>
+        <span class="masthead-metric masthead-metric--soft">{{ results_context }}</span>
+      </div>
       <div class="trust-pills" role="list" aria-label="הבטחות השירות">
-        <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> מאומת</span>
-        <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> ביקורות אמיתיות</span>
-        <span class="pill" role="listitem"><i class="fa-solid fa-phone"></i> חייגו בלחיצה</span>
+        <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> {{ verified_label }}</span>
+        <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> {{ reviews_trust_label }}</span>
+        <span class="pill" role="listitem"><i class="fa-solid fa-phone"></i> {{ contact_trust_label }}</span>
       </div>
       <div class="accent-line" aria-hidden="true"></div>
     </section>
     <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
       <div class="toolbar-row">
         <button type="button" class="btn-filter" id="filtersOpenBtn" aria-controls="filtersDrawer" aria-expanded="false">
-          <i class="fa-solid fa-sliders"></i> סינון
+          <i class="fa-solid fa-sliders"></i> {{ filters_label }}
         </button>
-        <div class="hint">לטשו את התוצאות עד שתגיעו להתאמה המושלמת.</div>
+        {% set sort_key = request.args.get('sort') %}
+        {% set sort_label_entry = _sort_label_map.get(sort_key) if sort_key else none %}
+        {% set sort_label = (sort_label_entry and sort_label_entry.get(g.current_lang, sort_label_entry.get('he'))) or (sort_key or "") %}
+        <div class="toolbar-summary">
+          <strong>{{ workers|length }}</strong> {{ results_label }}
+          {% if sort_key %}<span class="toolbar-sort">· {{ sort_prefix }}: {{ sort_label }}</span>{% endif %}
+        </div>
       </div>
       {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
       {% set active = [] %}
-      {% if request.args.get('open_now') %}{% set _ = active.append('פתוחים עכשיו') %}{% endif %}
-      {% if request.args.get('verified') %}{% set _ = active.append('מאומתים') %}{% endif %}
+      {% if request.args.get('open_now') %}{% set _ = active.append(_filter_open_now_map.get(g.current_lang, _filter_open_now_map['he'])) %}{% endif %}
+      {% if request.args.get('verified') %}{% set _ = active.append(_filter_verified_map.get(g.current_lang, _filter_verified_map['he'])) %}{% endif %}
       {% if request.args.get('rating_4p') %}{% set _ = active.append('4★+') %}{% endif %}
-      {% if request.args.get('nearby_5km') %}{% set _ = active.append('עד 5 ק״מ') %}{% endif %}
+      {% if request.args.get('nearby_5km') %}{% set _ = active.append(_filter_nearby_map.get(g.current_lang, _filter_nearby_map['he'])) %}{% endif %}
       {% set selected_langs = selected_languages if selected_languages is defined else [] %}
       {% for lang_option in (selected_langs|unique) %}
         {% if language_choices is not defined or lang_option in language_choices %}
@@ -266,9 +308,9 @@
         {% endif %}
       {% endfor %}
       {% if active|length %}
-        <div class="chips-scroll" aria-label="מסננים פעילים">
+        <div class="chips-scroll" aria-label="{{ active_filters_label }}">
           {% for chip in active %}<span class="chip is-on">{{ chip }}</span>{% endfor %}
-          <a class="chip reset" href="{{ list_url }}">נקה</a>
+          <a class="chip reset" href="{{ list_url }}">{{ clear_filters_label }}</a>
         </div>
       {% endif %}
     </div>
@@ -469,7 +511,7 @@
                     </div>
                   {% endif %}
                   {% if specialties_trim %}
-                    <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
+                    <div class="card-specialties" title="{{ specialties_text }}"><span class="card-specialties__label">{{ best_for_label }}</span> {{ specialties_trim }}</div>
                   {% endif %}
                   {% if has_badges %}
                     <div class="card-badges">
@@ -479,6 +521,26 @@
                   {% endif %}
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>
+                  {% endif %}
+                  {% if languages|length %}
+                    <div class="card-langs" title="{{ languages_full }}">
+                      <span class="langs-label">
+                        <svg aria-hidden="true" class="langs-label__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M21 12a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z" />
+                          <path d="M3.6 9h16.8" />
+                          <path d="M3.6 15h16.8" />
+                          <path d="M12 3a15.3 15.3 0 0 0 0 18" />
+                          <path d="M12 3a15.3 15.3 0 0 1 0 18" />
+                        </svg>
+                        {{ languages_label }}:
+                      </span>
+                      {% for lang in languages_preview %}
+                        <span class="lang-tag">{{ lang }}</span>
+                      {% endfor %}
+                      {% if languages_extra > 0 %}
+                        <span class="lang-tag">+{{ languages_extra }}</span>
+                      {% endif %}
+                    </div>
                   {% endif %}
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
@@ -515,26 +577,6 @@
                           <polyline points="12 19 5 12 12 5" />
                         </svg>
                       </a>
-                    </div>
-                  {% endif %}
-                  {% if languages|length %}
-                    <div class="card-langs" title="{{ languages_full }}">
-                      <span class="langs-label">
-                        <svg aria-hidden="true" class="langs-label__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21 12a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z" />
-                          <path d="M3.6 9h16.8" />
-                          <path d="M3.6 15h16.8" />
-                          <path d="M12 3a15.3 15.3 0 0 0 0 18" />
-                          <path d="M12 3a15.3 15.3 0 0 1 0 18" />
-                        </svg>
-                        שפות שירות:
-                      </span>
-                      {% for lang in languages_preview %}
-                        <span class="lang-tag">{{ lang }}</span>
-                      {% endfor %}
-                      {% if languages_extra > 0 %}
-                        <span class="lang-tag">+{{ languages_extra }}</span>
-                      {% endif %}
                     </div>
                   {% endif %}
                 </div>
@@ -583,10 +625,10 @@
           {% endfor %}
           <fieldset class="filter-group">
             <legend class="sr-only">מצב ותעדוף</legend>
-            <label class="check"><input type="checkbox" name="open_now"  value="1" {{ 'checked' if request.args.get('open_now') else '' }}> פתוחים עכשיו</label>
-            <label class="check"><input type="checkbox" name="verified"  value="1" {{ 'checked' if request.args.get('verified') else '' }}> מאומתים</label>
+            <label class="check"><input type="checkbox" name="open_now"  value="1" {{ 'checked' if request.args.get('open_now') else '' }}> {{ _filter_open_now_map.get(g.current_lang, _filter_open_now_map['he']) }}</label>
+            <label class="check"><input type="checkbox" name="verified"  value="1" {{ 'checked' if request.args.get('verified') else '' }}> {{ _filter_verified_map.get(g.current_lang, _filter_verified_map['he']) }}</label>
             <label class="check"><input type="checkbox" name="rating_4p" value="1" {{ 'checked' if request.args.get('rating_4p') else '' }}> 4★+</label>
-            <label class="check"><input type="checkbox" name="nearby_5km" value="1" {{ 'checked' if request.args.get('nearby_5km') else '' }}> עד 5 ק״מ</label>
+            <label class="check"><input type="checkbox" name="nearby_5km" value="1" {{ 'checked' if request.args.get('nearby_5km') else '' }}> {{ _filter_nearby_map.get(g.current_lang, _filter_nearby_map['he']) }}</label>
           </fieldset>
           {% set _lang_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
           {% set langs_filter_label = _lang_label_map.get(g.current_lang, _lang_label_map['he']) %}
@@ -604,8 +646,8 @@
             </div>
           </fieldset>
           <div class="filters-actions">
-            <button type="submit" class="btn apply">החל מסננים</button>
-            <a class="link-clear" href="{{ list_url }}">נקה</a>
+            <button type="submit" class="btn apply">{{ {'he':'החל מסננים','en':'Apply filters','ru':'Применить фильтры'}.get(g.current_lang,'החל מסננים') }}</button>
+            <a class="link-clear" href="{{ list_url }}">{{ clear_filters_label }}</a>
           </div>
         </form>
       </div>

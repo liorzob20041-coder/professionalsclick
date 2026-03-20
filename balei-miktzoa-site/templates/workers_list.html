@@ -391,6 +391,11 @@
               {% if last_review_text %}
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
+              {% set quick_languages = languages[:3] %}
+              {% set quick_languages_text = quick_languages|join(', ') %}
+              {% if languages|length > quick_languages|length %}
+                {% set quick_languages_text = quick_languages_text ~ ' +' ~ (languages|length - quick_languages|length) %}
+              {% endif %}
               <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
                 {% set video_kind = w.card_video_kind %}
                 {% set video_src = w.card_video_src %}
@@ -420,62 +425,44 @@
                     {% endif %}
                     <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                   </div>
-                  {% if phone_tel or whatsapp_clean %}
-                    <div class="card-actions">
-                      {% if phone_tel %}
-                        <a class="btn btn-call"
-                           href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
-                           aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
-                          📞 {{ phone_display }}
-                        </a>
-                      {% endif %}
-                      {% if whatsapp_clean %}
-                        <a class="btn btn-whatsapp"
-                           href="https://wa.me/{{ whatsapp_clean }}"
-                           target="_blank" rel="noopener"
-                           aria-label="שליחת הודעת WhatsApp ל{{ display_name }}">
-                          💬 WhatsApp
-                        </a>
-                      {% endif %}
-                    </div>
-                  {% endif %}
                 </div>
                 <div class="card-main">
-                  <div class="card-title">
-                    <a href="{{ profile_url }}">
-                      {% if company_display %}
-                        <span class="company">{{ company_display }}</span>
-                        {% if display_name %}<span class="divider">·</span><span class="person">{{ display_name }}</span>{% endif %}
-                      {% else %}
-                        <span class="person">{{ display_name }}</span>
-                      {% endif %}
-                    </a>
+                  <div class="card-identity">
+                    <div class="card-title">
+                      <a href="{{ profile_url }}">
+                        {% if company_display %}
+                          <span class="company">{{ company_display }}</span>
+                          {% if display_name %}<span class="divider">·</span><span class="person">{{ display_name }}</span>{% endif %}
+                        {% else %}
+                          <span class="person">{{ display_name }}</span>
+                        {% endif %}
+                      </a>
+                    </div>
+                    {% if rating_value %}
+                      <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
+                        <span class="stars" aria-hidden="true">
+                          {% for i in range(1, 6) %}
+                            {% set star_class = 'star' %}
+                            {% if rating_numeric is not none and rating_numeric >= i %}
+                              {% set star_class = star_class ~ ' star--full' %}
+                            {% elif rating_numeric is not none and rating_numeric > (i - 1) %}
+                              {% set star_class = star_class ~ ' star--half' %}
+                            {% endif %}
+                            <span class="{{ star_class }}">★</span>
+                          {% endfor %}
+                        </span>
+                        <span class="avg">{{ rating_value }}</span>
+                        {% if w.reviews_count %}<span class="count">{{ w.reviews_count }} {{ reviews_label }}</span>{% endif %}
+                      </div>
+                    {% endif %}
                   </div>
-                  {% if rating_value %}
-                    <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
-                      <span class="stars" aria-hidden="true">
-                        {% for i in range(1, 6) %}
-                          {% set star_class = 'star' %}
-                          {% if rating_numeric is not none and rating_numeric >= i %}
-                            {% set star_class = star_class ~ ' star--full' %}
-                          {% elif rating_numeric is not none and rating_numeric > (i - 1) %}
-                            {% set star_class = star_class ~ ' star--half' %}
-                          {% endif %}
-                          <span class="{{ star_class }}">★</span>
-                        {% endfor %}
-                      </span>
-                      <span class="avg">{{ rating_value }}</span>
-                      {% if w.reviews_count %}<span class="count">({{ w.reviews_count }} {{ reviews_label }})</span>{% endif %}
-                    </div>
-                  {% endif %}
+                  <div class="card-quick-strip">
+                    {% if experience_chip %}<span class="quick-item"><strong>ניסיון:</strong> {{ experience_chip }}</span>{% endif %}
+                    {% if quick_languages_text %}<span class="quick-item"><strong>שפות שירות:</strong> {{ quick_languages_text }}</span>{% endif %}
+                    {% if w.offers_emergency %}<span class="quick-item quick-item--emergency">זמינות חירום</span>{% endif %}
+                  </div>
                   {% if specialties_trim %}
-                    <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
-                  {% endif %}
-                  {% if has_badges %}
-                    <div class="card-badges">
-                      {% if experience_chip %}<span class="chip chip--experience">{{ experience_chip }}</span>{% endif %}
-                      {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
-                    </div>
+                    <div class="card-specialties" title="{{ specialties_text }}"><span class="label">הכי מתאים ל:</span> {{ specialties_trim }}</div>
                   {% endif %}
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>
@@ -483,6 +470,7 @@
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
                       <div class="last-review-meta">
+                        <span class="review-proof-label">ביקורת אחרונה</span>
                         {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
                         {% if last_review_rating_value is not none %}
                           <span class="last-review-stars" aria-hidden="true">
@@ -498,45 +486,26 @@
                         {% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
-                      <a class="profile-link" href="{{ profile_url }}#reviews">
-                        הצג פרופיל מלא
-                        <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="19" y1="12" x2="5" y2="12" />
-                          <polyline points="12 19 5 12 12 5" />
-                        </svg>
-                      </a>
-                    </div>
-                  {% elif w.reviews_count %}
-                    <div class="card-last-review">
-                      <a class="profile-link" href="{{ profile_url }}#reviews">
-                        הצג פרופיל מלא
-                        <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="19" y1="12" x2="5" y2="12" />
-                          <polyline points="12 19 5 12 12 5" />
-                        </svg>
-                      </a>
                     </div>
                   {% endif %}
-                  {% if languages|length %}
-                    <div class="card-langs" title="{{ languages_full }}">
-                      <span class="langs-label">
-                        <svg aria-hidden="true" class="langs-label__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21 12a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z" />
-                          <path d="M3.6 9h16.8" />
-                          <path d="M3.6 15h16.8" />
-                          <path d="M12 3a15.3 15.3 0 0 0 0 18" />
-                          <path d="M12 3a15.3 15.3 0 0 1 0 18" />
-                        </svg>
-                        שפות שירות:
-                      </span>
-                      {% for lang in languages_preview %}
-                        <span class="lang-tag">{{ lang }}</span>
-                      {% endfor %}
-                      {% if languages_extra > 0 %}
-                        <span class="lang-tag">+{{ languages_extra }}</span>
-                      {% endif %}
-                    </div>
-                  {% endif %}
+                  <div class="card-footer-cta">
+                    {% if phone_tel %}
+                      <a class="btn btn-call"
+                         href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
+                         aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
+                        📞 התקשרו
+                      </a>
+                    {% endif %}
+                    {% if whatsapp_clean %}
+                      <a class="btn btn-whatsapp"
+                         href="https://wa.me/{{ whatsapp_clean }}"
+                         target="_blank" rel="noopener"
+                         aria-label="שליחת הודעת WhatsApp ל{{ display_name }}">
+                        💬 WhatsApp
+                      </a>
+                    {% endif %}
+                    <a class="btn btn-profile" href="{{ profile_url }}">הצג פרופיל מלא</a>
+                  </div>
                 </div>
               </article>
             {% endfor %}

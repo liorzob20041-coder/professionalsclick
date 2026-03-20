@@ -191,49 +191,49 @@
     </nav>
     <section class="masthead market-head" aria-label="כותרת עמוד">
       <div class="market-head__top">
-        <div>
-          <p class="market-head__eyebrow">MARKETPLACE</p>
+        <p class="market-head__eyebrow">MARKETPLACE</p>
+        <div class="market-head__title-row">
           <h1 class="market-head__title">
             <span class="t-field">{{ field_label }}</span>
             {% if area_label %}<span class="t-sep">ב</span><span class="t-area">{{ area_label }}</span>{% endif %}
           </h1>
-          <p class="market-head__subtitle">בחרו בעל מקצוע לפי אמינות, ביקורות והזמינות שמתאימה לכם.</p>
-        </div>
-        <div class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
-          <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
-            <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
-            <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
-          </button>
-          <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
-            <div class="city-menu__surface">
-              <div class="city-menu__header">
-                <p class="city-menu__title" id="changeCityTitle">{{ city_choose_label }}</p>
-                <button type="button" class="city-menu__close" data-city-close aria-label="{{ close_label }}">
-                  <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                </button>
-              </div>
-              {% if city_options %}
-                <div class="city-menu__search">
-                  <label class="sr-only" for="citySearchInput">{{ city_search_label }}</label>
-                  <input type="search" id="citySearchInput" class="city-menu__input" placeholder="{{ city_search_placeholder }}" autocomplete="off" data-city-search>
+          <div class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
+            <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
+              <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
+              <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
+            </button>
+            <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
+              <div class="city-menu__surface">
+                <div class="city-menu__header">
+                  <p class="city-menu__title" id="changeCityTitle">{{ city_choose_label }}</p>
+                  <button type="button" class="city-menu__close" data-city-close aria-label="{{ close_label }}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                  </button>
                 </div>
-                <ul class="city-menu__list" role="listbox">
-                  {% for option in city_options %}
-                    <li class="city-menu__item">
-                      <a href="{{ option.url }}" role="option" class="city-menu__option{% if option.is_current %} is-current{% endif %}" data-city-option data-city-key="{{ option.search_key }}" data-city-label="{{ option.label|lower }}" {% if option.is_current %}aria-current="true"{% endif %}>
-                        <span class="city-menu__option-label">{{ option.label }}</span>
-                        {% if option.count %}<span class="city-menu__badge" aria-hidden="true">{{ option.count }}</span>{% endif %}
-                      </a>
-                    </li>
-                  {% endfor %}
-                </ul>
-                <p class="city-menu__empty" data-city-empty hidden>{{ city_empty_state }}</p>
-              {% else %}
-                <p class="city-menu__empty is-static">{{ city_missing_state }}</p>
-              {% endif %}
+                {% if city_options %}
+                  <div class="city-menu__search">
+                    <label class="sr-only" for="citySearchInput">{{ city_search_label }}</label>
+                    <input type="search" id="citySearchInput" class="city-menu__input" placeholder="{{ city_search_placeholder }}" autocomplete="off" data-city-search>
+                  </div>
+                  <ul class="city-menu__list" role="listbox">
+                    {% for option in city_options %}
+                      <li class="city-menu__item">
+                        <a href="{{ option.url }}" role="option" class="city-menu__option{% if option.is_current %} is-current{% endif %}" data-city-option data-city-key="{{ option.search_key }}" data-city-label="{{ option.label|lower }}" {% if option.is_current %}aria-current="true"{% endif %}>
+                          <span class="city-menu__option-label">{{ option.label }}</span>
+                          {% if option.count %}<span class="city-menu__badge" aria-hidden="true">{{ option.count }}</span>{% endif %}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  <p class="city-menu__empty" data-city-empty hidden>{{ city_empty_state }}</p>
+                {% else %}
+                  <p class="city-menu__empty is-static">{{ city_missing_state }}</p>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
+        <p class="market-head__subtitle">בחרו בעל מקצוע לפי אמינות, ביקורות והזמינות שמתאימה לכם.</p>
       </div>
       <div class="market-head__proof" role="list" aria-label="הבטחות השירות">
         <span class="proof-chip" role="listitem"><i class="fa-solid fa-shield-halved"></i>מאומתים</span>

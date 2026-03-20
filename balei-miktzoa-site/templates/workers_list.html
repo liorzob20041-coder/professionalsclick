@@ -167,6 +167,103 @@
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set languages_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
     {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}
+    {% set dir_is_rtl = (g.current_lang == 'he') %}
+    {% set ui_text = {
+      'he': {
+        'crumbs_aria': 'ניווט משני',
+        'masthead_aria': 'כותרת עמוד',
+        'brand_sub': 'קליק אחד והמקצוען בדרך אליכם',
+        'trust_verified': 'פרופילים פעילים ומעודכנים',
+        'trust_reviews': 'ביקורות לקוחות אמיתיות',
+        'trust_contact': 'טלפון ו־WhatsApp בלחיצה',
+        'toolbar_aria': 'סרגל תוצאות',
+        'toolbar_hint': 'השוו בין בעלי מקצוע והגיעו להתאמה הנכונה מהר.',
+        'filters_btn': 'סינון תוצאות',
+        'results_found': 'תוצאות נמצאו',
+        'active_filters': 'מסננים פעילים',
+        'clear_filters': 'נקה',
+        'open_now': 'פתוחים עכשיו',
+        'rating_4p': 'דירוג 4★ ומעלה',
+        'view_profile': 'לפרופיל המלא',
+        'latest_review': 'חוות הדעת האחרונה',
+        'specialties': 'התמחויות',
+        'languages': 'שפות שירות',
+        'proof': 'אמינות והוכחות',
+        'actions': 'יצירת קשר מהירה',
+        'filters_title': 'סינון',
+        'filters_legend': 'מסננים זמינים',
+        'apply_filters': 'החל מסננים',
+        'empty_title': 'לא מצאנו תוצאות תואמות',
+        'empty_text': 'נסו לשנות עיר או להסיר מסננים כדי לראות התאמות נוספות.',
+        'faq_title': 'שאלות נפוצות',
+        'cta_title': 'בעל מקצוע?',
+        'cta_text': 'הצטרפו בחינם והציגו דירוגים וביקורות.',
+        'contact_cta': 'דברו איתנו'
+      },
+      'en': {
+        'crumbs_aria': 'Breadcrumb',
+        'masthead_aria': 'Page header',
+        'brand_sub': 'One click and a trusted pro is on the way',
+        'trust_verified': 'Active, up-to-date profiles',
+        'trust_reviews': 'Real customer reviews',
+        'trust_contact': 'Phone and WhatsApp in one tap',
+        'toolbar_aria': 'Results toolbar',
+        'toolbar_hint': 'Compare pros quickly and reach the best fit faster.',
+        'filters_btn': 'Filter results',
+        'results_found': 'results found',
+        'active_filters': 'Active filters',
+        'clear_filters': 'Clear',
+        'open_now': 'Open now',
+        'rating_4p': 'Rated 4★+',
+        'view_profile': 'View full profile',
+        'latest_review': 'Latest review',
+        'specialties': 'Specialties',
+        'languages': 'Service languages',
+        'proof': 'Trust signals',
+        'actions': 'Quick contact',
+        'filters_title': 'Filters',
+        'filters_legend': 'Available filters',
+        'apply_filters': 'Apply filters',
+        'empty_title': 'No matching professionals found',
+        'empty_text': 'Try switching city or clearing filters to see more matches.',
+        'faq_title': 'Frequently asked questions',
+        'cta_title': 'Are you a professional?',
+        'cta_text': 'Join for free and showcase ratings and reviews.',
+        'contact_cta': 'Contact us'
+      },
+      'ru': {
+        'crumbs_aria': 'Хлебные крошки',
+        'masthead_aria': 'Заголовок страницы',
+        'brand_sub': 'Один клик — и надежный мастер уже в пути',
+        'trust_verified': 'Актуальные профили специалистов',
+        'trust_reviews': 'Реальные отзывы клиентов',
+        'trust_contact': 'Телефон и WhatsApp в один клик',
+        'toolbar_aria': 'Панель результатов',
+        'toolbar_hint': 'Сравнивайте мастеров быстрее и выбирайте уверенно.',
+        'filters_btn': 'Фильтры',
+        'results_found': 'результатов',
+        'active_filters': 'Активные фильтры',
+        'clear_filters': 'Сбросить',
+        'open_now': 'Открыты сейчас',
+        'rating_4p': 'Рейтинг 4★ и выше',
+        'view_profile': 'Полный профиль',
+        'latest_review': 'Последний отзыв',
+        'specialties': 'Специализация',
+        'languages': 'Языки обслуживания',
+        'proof': 'Доверие и репутация',
+        'actions': 'Быстрый контакт',
+        'filters_title': 'Фильтры',
+        'filters_legend': 'Доступные фильтры',
+        'apply_filters': 'Применить',
+        'empty_title': 'Подходящие специалисты не найдены',
+        'empty_text': 'Попробуйте сменить город или убрать фильтры.',
+        'faq_title': 'Частые вопросы',
+        'cta_title': 'Вы специалист?',
+        'cta_text': 'Присоединяйтесь бесплатно и показывайте отзывы.',
+        'contact_cta': 'Связаться с нами'
+      }
+    } %}
+    {% set t = ui_text.get(g.current_lang, ui_text['he']) %}
     {% set video_controls_label_map = {'he':'פקדי וידאו','en':'Video controls','ru':'Управление видео'} %}
     {% set video_seek_label_map = {'he':'ניווט בסרטון','en':'Seek video','ru':'Перемотка видео'} %}
     {% set video_play_label_map = {'he':'נגן וידאו','en':'Play video','ru':'Воспроизвести видео'} %}
@@ -184,12 +281,12 @@
     {% set video_fullscreen_label = video_fullscreen_label_map.get(g.current_lang, video_fullscreen_label_map['he']) %}
     {% set video_exit_fullscreen_label = video_exit_fullscreen_label_map.get(g.current_lang, video_exit_fullscreen_label_map['he']) %}
     {% set close_label = (_('close') if _ else 'סגור') %}
-    <nav class="crumbs-min" aria-label="ניווט משני">
+    <nav class="crumbs-min" aria-label="{{ t.crumbs_aria }}">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
       <span>›</span>
       <span class="current">{{ field_label }}{% if area_label %} / {{ area_label }}{% endif %}</span>
     </nav>
-    <section class="masthead masthead--ripple" aria-label="כותרת עמוד">
+    <section class="masthead masthead--ripple" aria-label="{{ t.masthead_aria }}">
       <div class="dot-grid" aria-hidden="true"></div>
       <div class="click-ripple" aria-hidden="true">
         <span></span><span></span><span></span>
@@ -238,27 +335,35 @@
           </span>
         </span>
       </h1>
-      <p class="brand-sub">קליק אחד והמקצוען בדרך אליכם</p>
+      <p class="brand-sub">{{ t.brand_sub }}</p>
+      <div class="masthead-metrics" role="list" aria-label="{{ t.proof }}">
+        <div class="metric" role="listitem">
+          <span class="metric__value">{{ workers|length }}</span>
+          <span class="metric__label">{{ t.results_found }}</span>
+        </div>
+        <div class="metric" role="listitem">
+          <span class="metric__value">{% if workers and workers[0].rating %}{{ '%.1f'|format(workers[0].rating|float) }}★{% else %}4.7★{% endif %}</span>
+          <span class="metric__label">{{ t.proof }}</span>
+        </div>
+      </div>
       <div class="trust-pills" role="list" aria-label="הבטחות השירות">
-        <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> מאומת</span>
-        <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> ביקורות אמיתיות</span>
-        <span class="pill" role="listitem"><i class="fa-solid fa-phone"></i> חייגו בלחיצה</span>
+        <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> {{ t.trust_verified }}</span>
+        <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> {{ t.trust_reviews }}</span>
+        <span class="pill" role="listitem"><i class="fa-solid fa-phone"></i> {{ t.trust_contact }}</span>
       </div>
       <div class="accent-line" aria-hidden="true"></div>
     </section>
-    <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
+    <div class="results-toolbar" role="region" aria-label="{{ t.toolbar_aria }}">
       <div class="toolbar-row">
         <button type="button" class="btn-filter" id="filtersOpenBtn" aria-controls="filtersDrawer" aria-expanded="false">
-          <i class="fa-solid fa-sliders"></i> סינון
+          <i class="fa-solid fa-sliders"></i> {{ t.filters_btn }}
         </button>
-        <div class="hint">לטשו את התוצאות עד שתגיעו להתאמה המושלמת.</div>
+        <div class="hint">{{ t.toolbar_hint }}</div>
       </div>
       {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
       {% set active = [] %}
-      {% if request.args.get('open_now') %}{% set _ = active.append('פתוחים עכשיו') %}{% endif %}
-      {% if request.args.get('verified') %}{% set _ = active.append('מאומתים') %}{% endif %}
-      {% if request.args.get('rating_4p') %}{% set _ = active.append('4★+') %}{% endif %}
-      {% if request.args.get('nearby_5km') %}{% set _ = active.append('עד 5 ק״מ') %}{% endif %}
+      {% if request.args.get('open_now') %}{% set _ = active.append(t.open_now) %}{% endif %}
+      {% if request.args.get('rating_4p') %}{% set _ = active.append(t.rating_4p) %}{% endif %}
       {% set selected_langs = selected_languages if selected_languages is defined else [] %}
       {% for lang_option in (selected_langs|unique) %}
         {% if language_choices is not defined or lang_option in language_choices %}
@@ -266,9 +371,9 @@
         {% endif %}
       {% endfor %}
       {% if active|length %}
-        <div class="chips-scroll" aria-label="מסננים פעילים">
+        <div class="chips-scroll" aria-label="{{ t.active_filters }}">
           {% for chip in active %}<span class="chip is-on">{{ chip }}</span>{% endfor %}
-          <a class="chip reset" href="{{ list_url }}">נקה</a>
+          <a class="chip reset" href="{{ list_url }}">{{ t.clear_filters }}</a>
         </div>
       {% endif %}
     </div>
@@ -276,8 +381,8 @@
       <main class="wr-list" aria-label="{{ _('workers_list_aria') }}">
         {% if workers|length == 0 %}
           <div class="empty-state clean" role="status">
-            <h3>לא מצאנו תוצאות תואמות</h3>
-            <p>נסו לשנות אזור, להסיר מסננים או לעיין בתחומים קרובים.</p>
+            <h3>{{ t.empty_title }}</h3>
+            <p>{{ t.empty_text }}</p>
             <div class="suggestions">
               <a class="chip suggestion" href="{{ url_for_lang('workers', field=field_label, area='מרכז') }}">גוש דן</a>
               <a class="chip suggestion" href="{{ url_for_lang('workers', field=field_label, area='כל הארץ') }}">כל הארץ</a>
@@ -391,7 +496,7 @@
               {% if last_review_text %}
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
-              <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
+              <article class="worker-card" dir="{{ 'rtl' if dir_is_rtl else 'ltr' }}" role="listitem" data-href="{{ profile_url }}">
                 {% set video_kind = w.card_video_kind %}
                 {% set video_src = w.card_video_src %}
                 {% set video_poster = w.card_video_poster or image_url %}
@@ -441,7 +546,7 @@
                   {% endif %}
                 </div>
                 <div class="card-main">
-                  <div class="card-title">
+                  <div class="card-title card-title--identity">
                     <a href="{{ profile_url }}">
                       {% if company_display %}
                         <span class="company">{{ company_display }}</span>
@@ -452,7 +557,7 @@
                     </a>
                   </div>
                   {% if rating_value %}
-                    <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
+                    <div class="card-rating card-proof" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
                       <span class="stars" aria-hidden="true">
                         {% for i in range(1, 6) %}
                           {% set star_class = 'star' %}
@@ -469,7 +574,7 @@
                     </div>
                   {% endif %}
                   {% if specialties_trim %}
-                    <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
+                    <div class="card-specialties" title="{{ specialties_text }}"><strong>{{ t.specialties }}:</strong> {{ specialties_trim }}</div>
                   {% endif %}
                   {% if has_badges %}
                     <div class="card-badges">
@@ -482,6 +587,7 @@
                   {% endif %}
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
+                      <span class="card-last-review__title">{{ t.latest_review }}</span>
                       <div class="last-review-meta">
                         {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
                         {% if last_review_rating_value is not none %}
@@ -498,23 +604,9 @@
                         {% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
-                      <a class="profile-link" href="{{ profile_url }}#reviews">
-                        הצג פרופיל מלא
-                        <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="19" y1="12" x2="5" y2="12" />
-                          <polyline points="12 19 5 12 12 5" />
-                        </svg>
-                      </a>
                     </div>
                   {% elif w.reviews_count %}
                     <div class="card-last-review">
-                      <a class="profile-link" href="{{ profile_url }}#reviews">
-                        הצג פרופיל מלא
-                        <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="19" y1="12" x2="5" y2="12" />
-                          <polyline points="12 19 5 12 12 5" />
-                        </svg>
-                      </a>
                     </div>
                   {% endif %}
                   {% if languages|length %}
@@ -527,7 +619,7 @@
                           <path d="M12 3a15.3 15.3 0 0 0 0 18" />
                           <path d="M12 3a15.3 15.3 0 0 1 0 18" />
                         </svg>
-                        שפות שירות:
+                        {{ t.languages }}:
                       </span>
                       {% for lang in languages_preview %}
                         <span class="lang-tag">{{ lang }}</span>
@@ -537,6 +629,11 @@
                       {% endif %}
                     </div>
                   {% endif %}
+                  <div class="card-profile-cta">
+                    <a class="profile-link profile-link--button" href="{{ profile_url }}#reviews">
+                      {{ t.view_profile }}
+                    </a>
+                  </div>
                 </div>
               </article>
             {% endfor %}
@@ -552,7 +649,7 @@
           {% endif %}
         {% endif %}
         <section class="wr-faq">
-          <h2>שאלות נפוצות</h2>
+          <h2>{{ t.faq_title }}</h2>
           <details><summary>{{ faq_q1 }}</summary><p>{{ faq_a1 }}</p></details>
           <details><summary>{{ faq_q2 }}</summary><p>{{ faq_a2 }}</p></details>
           <details><summary>{{ faq_q3 }}</summary><p>{{ faq_a3 }}</p></details>
@@ -562,31 +659,29 @@
     <section class="cta-min" aria-label="פרסום בעלי מקצוע">
       <div class="cta-min__box">
         <div>
-          <strong>בעל מקצוע?</strong>
-          <div style="color:#6b7280">הצטרפו בחינם והציגו דירוגים וביקורות.</div>
+          <strong>{{ t.cta_title }}</strong>
+          <div style="color:#6b7280">{{ t.cta_text }}</div>
         </div>
-        <a class="btn-min" href="{{ url_for_lang('contact') }}">דברו איתנו</a>
+        <a class="btn-min" href="{{ url_for_lang('contact') }}">{{ t.contact_cta }}</a>
       </div>
     </section>
     <div class="drawer-overlay" id="filtersOverlay" hidden></div>
     <aside class="drawer-panel" id="filtersDrawer" aria-hidden="true" aria-modal="true" role="dialog" aria-labelledby="filtersTitle" hidden>
       <div class="drawer-head">
-        <h2 id="filtersTitle" class="drawer-title">סינון</h2>
+        <h2 id="filtersTitle" class="drawer-title">{{ t.filters_title }}</h2>
         <button type="button" class="drawer-close" id="filtersCloseBtn" aria-label="{{ _('close') or 'סגור' }}"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="drawer-body">
         {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
         <form method="get" action="{{ list_url }}" class="filters-form" id="filtersForm">
-          {% set _filter_keys = ['open_now','verified','rating_4p','nearby_5km','lang','page','sort'] %}
+          {% set _filter_keys = ['open_now','rating_4p','lang','page','sort'] %}
           {% for k, v in request.args.items(multi=True) if k not in _filter_keys %}
             <input type="hidden" name="{{ k }}" value="{{ v }}">
           {% endfor %}
           <fieldset class="filter-group">
-            <legend class="sr-only">מצב ותעדוף</legend>
-            <label class="check"><input type="checkbox" name="open_now"  value="1" {{ 'checked' if request.args.get('open_now') else '' }}> פתוחים עכשיו</label>
-            <label class="check"><input type="checkbox" name="verified"  value="1" {{ 'checked' if request.args.get('verified') else '' }}> מאומתים</label>
-            <label class="check"><input type="checkbox" name="rating_4p" value="1" {{ 'checked' if request.args.get('rating_4p') else '' }}> 4★+</label>
-            <label class="check"><input type="checkbox" name="nearby_5km" value="1" {{ 'checked' if request.args.get('nearby_5km') else '' }}> עד 5 ק״מ</label>
+            <legend class="filter-group__legend">{{ t.filters_legend }}</legend>
+            <label class="check"><input type="checkbox" name="open_now"  value="1" {{ 'checked' if request.args.get('open_now') else '' }}> {{ t.open_now }}</label>
+            <label class="check"><input type="checkbox" name="rating_4p" value="1" {{ 'checked' if request.args.get('rating_4p') else '' }}> {{ t.rating_4p }}</label>
           </fieldset>
           {% set _lang_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
           {% set langs_filter_label = _lang_label_map.get(g.current_lang, _lang_label_map['he']) %}
@@ -604,8 +699,8 @@
             </div>
           </fieldset>
           <div class="filters-actions">
-            <button type="submit" class="btn apply">החל מסננים</button>
-            <a class="link-clear" href="{{ list_url }}">נקה</a>
+            <button type="submit" class="btn apply">{{ t.apply_filters }}</button>
+            <a class="link-clear" href="{{ list_url }}">{{ t.clear_filters }}</a>
           </div>
         </form>
       </div>

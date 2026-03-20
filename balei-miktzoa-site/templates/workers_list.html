@@ -326,6 +326,10 @@
               {% if not display_name %}
                 {% set display_name = (w.name or w.company_name or '') %}
               {% endif %}
+              {% set name_initials = (display_name[:1] if display_name else '•')|upper %}
+              {% if name_ns.last %}
+                {% set name_initials = (name_ns.first[:1] ~ name_ns.last[:1])|upper %}
+              {% endif %}
               {% set company_display = w.company_name %}
               {# דירוג ממוצע #}
               {% set rating_source = none %}
@@ -388,6 +392,7 @@
                 {% set video_kind = w.card_video_kind %}
                 {% set video_src = w.card_video_src %}
                 {% set video_poster = w.card_video_poster or image_url %}
+                {% set has_profile_media = (w.card_image_url or w.image_filename) %}
                 <header class="card-top">
                   <div class="card-identity">
                     <h2 class="card-title">
@@ -418,9 +423,6 @@
                       </div>
                     {% endif %}
                     <div class="card-trust-row">
-                      {% if w.reviews_count %}
-                        <span class="trust-item"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> מבוסס ביקורות</span>
-                      {% endif %}
                       {% if experience_chip %}
                         <span class="trust-item"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{ experience_chip }}</span>
                       {% endif %}
@@ -444,39 +446,34 @@
                         </button>
                         <span class="media-badge">וידאו</span>
                       </div>
-                    {% else %}
+                    {% elif has_profile_media %}
                       <img class="media-thumb media-box" src="{{ image_url }}" alt="{{ display_name }}">
+                    {% else %}
+                      <div class="media-fallback" aria-hidden="true">
+                        <span class="media-fallback__initials">{{ name_initials }}</span>
+                        <span class="media-fallback__label">פרופיל מאומת</span>
+                      </div>
                     {% endif %}
                   </div>
                 </header>
                 <div class="card-main">
                   {% if specialties_preview|length %}
-                    <div class="card-specialties" title="{{ specialties_text }}">
-                      {% for specialty in specialties_preview %}
-                        <span class="spec-chip">{{ specialty }}</span>
-                      {% endfor %}
-                      {% if specialties_extra > 0 %}<span class="spec-chip">+{{ specialties_extra }}</span>{% endif %}
-                    </div>
+                    <p class="card-specialties" title="{{ specialties_text }}">
+                      {{ specialties_preview[:3]|join(' • ') }}{% if specialties_extra > 0 %} • +{{ specialties_extra }}{% endif %}
+                    </p>
                   {% endif %}
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>
                   {% endif %}
                   <div class="card-meta-row">
                     {% if languages|length %}
-                      <div class="card-langs" title="{{ languages_full }}">
-                        {% for lang in languages_preview %}
-                          <span class="lang-tag">{{ lang }}</span>
-                        {% endfor %}
-                        {% if languages_extra > 0 %}
-                          <span class="lang-tag">+{{ languages_extra }}</span>
-                        {% endif %}
-                      </div>
+                      <p class="card-langs" title="{{ languages_full }}">{{ languages_label }}: {{ languages_preview|join(', ') }}{% if languages_extra > 0 %} +{{ languages_extra }}{% endif %}</p>
                     {% endif %}
                   </div>
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
                       <div class="last-review-meta">
-                        <span class="last-review-label">ביקורת אחרונה</span>
+                        <span class="last-review-label"><i class="fa-solid fa-quote-right" aria-hidden="true"></i> ביקורת אחרונה</span>
                         {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
                         {% if last_review_rating_value is not none %}
                           <span class="last-review-stars" aria-hidden="true">

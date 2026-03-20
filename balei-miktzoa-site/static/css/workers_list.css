@@ -28,7 +28,7 @@ body {
 }
 
 .main-content {
-  width: min(1180px, 100% - 28px);
+  width: min(1220px, 100% - 24px);
   margin-inline: auto;
   padding: 12px 0 34px;
 }
@@ -182,7 +182,7 @@ body {
   border: 1px solid #e8ebf0;
   border-radius: 14px;
   box-shadow: var(--shadow-sm);
-  margin-top: 8px;
+  margin-top: 6px;
   margin-bottom: 12px;
   padding: 9px 11px;
 }
@@ -228,7 +228,7 @@ body {
 .chip.is-on { background: var(--brand-soft); border-color: #e7cad5; color: var(--brand); }
 .chip.reset { color: #b91c1c; border-color: #fecaca; }
 
-.wr-list { max-width: 1000px; margin-inline: auto; }
+.wr-list { max-width: 1080px; margin-inline: auto; }
 .wr-stack { display: grid; gap: 10px; }
 
 .worker-card {
@@ -247,12 +247,12 @@ body {
 
 .card-top {
   display: grid;
-  grid-template-columns: 1fr 118px;
+  grid-template-columns: 1fr 104px;
   gap: 8px;
   align-items: start;
 }
 
-.card-title { margin: 0 0 4px; font-size: 1.07rem; line-height: 1.2; }
+.card-title { margin: 0 0 4px; font-size: 1.12rem; line-height: 1.25; }
 .card-title a { color: var(--text-strong); text-decoration: none; }
 .card-title .company { font-weight: 800; }
 .card-title .person { color: #4b5563; font-weight: 600; }
@@ -265,7 +265,7 @@ body {
 .card-rating .avg { color: var(--text-strong); font-weight: 800; }
 .card-rating .count {
   color: var(--text-soft);
-  font-size: .84rem;
+  font-size: .88rem;
   border: 1px solid #e5e7eb;
   border-radius: 999px;
   padding: 2px 8px;
@@ -276,14 +276,14 @@ body {
   margin-top: 4px;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
 }
 
 .trust-item {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: .76rem;
+  font-size: .74rem;
   color: #475569;
   border: 1px solid #e7ebf0;
   border-radius: 999px;
@@ -295,8 +295,8 @@ body {
 .trust-item--ok i { color: #16a34a; }
 
 .card-media--compact {
-  width: 118px;
-  height: 112px;
+  width: 104px;
+  height: 102px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #e6eaf0;
@@ -351,17 +351,14 @@ body {
 }
 
 .card-main { margin-top: 8px; display: grid; gap: 6px; }
-.card-specialties { display: flex; flex-wrap: wrap; gap: 5px; }
-.spec-chip {
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  padding: 2px 8px;
-  background: #f8fafc;
+.card-specialties {
+  margin: 0;
   color: #334155;
-  font-size: .76rem;
-  font-weight: 700;
+  font-size: .88rem;
+  line-height: 1.4;
+  font-weight: 600;
 }
-.card-bio { color: #4b5563; font-size: .86rem; line-height: 1.35; }
+.card-bio { color: #4b5563; font-size: .91rem; line-height: 1.42; }
 
 .card-meta-row {
   display: flex;
@@ -371,35 +368,33 @@ body {
   flex-wrap: wrap;
 }
 
-.card-langs { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
-.lang-tag {
-  border-radius: 999px;
-  padding: 3px 7px;
-  font-size: .75rem;
-  font-weight: 600;
+.card-langs {
+  margin: 0;
+  color: #64748b;
+  font-size: .82rem;
+  line-height: 1.35;
 }
 
-.lang-tag { background: #f9fafb; border: 1px solid #e5e7eb; color: #4b5563; }
-
 .card-last-review {
-  border: 1px solid #eef0f3;
+  border: 1px solid #e6e8ec;
   padding-top: 6px;
   display: grid;
   gap: 4px;
-  background: #fcfcfd;
+  background: #f8fafc;
   border-radius: 8px;
   padding-inline: 8px;
   padding-block-end: 5px;
+  border-inline-start: 3px solid rgb(122 0 38 / 36%);
 }
 .last-review-label {
   color: var(--brand);
   font-size: .72rem;
   font-weight: 800;
 }
-.last-review-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .78rem; color: var(--text-soft); }
+.last-review-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .8rem; color: var(--text-soft); }
 .last-review-meta .author { color: #1f2937; font-weight: 700; }
 .last-review-stars { color: #f59e0b; }
-.last-review-text { color: #374151; font-size: .84rem; line-height: 1.4; }
+.last-review-text { color: #374151; font-size: .87rem; line-height: 1.42; }
 
 .card-actions {
   margin-top: 0;
@@ -415,7 +410,7 @@ body {
   border-radius: 9px;
   padding: 8px 10px;
   font-weight: 700;
-  font-size: .82rem;
+  font-size: .85rem;
   border: 1px solid transparent;
 }
 
@@ -481,13 +476,39 @@ body {
 .filters-actions .btn.apply { background: var(--brand); color: #fff; border: 0; border-radius: 10px; padding: 9px 12px; }
 .link-clear { color: #b91c1c; text-decoration: none; }
 
+.media-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+  background: linear-gradient(145deg, #f7f0f3 0%, #eef2f7 100%);
+  color: #7a0026;
+}
+.media-fallback__initials {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #e6dbe0;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: .96rem;
+}
+.media-fallback__label {
+  font-size: .7rem;
+  font-weight: 700;
+}
+
 @media (max-width: 860px) {
   .market-head__title-wrap { align-items: flex-start; flex-wrap: wrap; }
   .city-actions { width: 100%; }
   .city-switch { width: fit-content; min-width: 190px; justify-content: space-between; }
   .results-toolbar { position: static; }
-  .card-top { grid-template-columns: 1fr 96px; }
-  .card-media--compact { width: 96px; height: 98px; }
+  .card-top { grid-template-columns: 1fr 92px; }
+  .card-media--compact { width: 92px; height: 92px; }
   .card-title { font-size: 1.06rem; }
 }
 

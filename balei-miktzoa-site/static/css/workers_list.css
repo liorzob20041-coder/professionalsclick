@@ -111,6 +111,12 @@ body {
   max-width: 62ch;
   line-height: 1.55;
 }
+.market-head__context {
+  margin: 2px 0 0;
+  color: var(--text-strong);
+  font-size: .86rem;
+  font-weight: 700;
+}
 
 .market-head__proof {
   margin-top: 10px;
@@ -206,6 +212,7 @@ body {
   margin-top: 10px;
   margin-bottom: 16px;
   padding: 10px 12px;
+  border-inline-start: 4px solid #efe3e8;
 }
 
 .toolbar-row {
@@ -292,12 +299,13 @@ body {
 .star--full, .star--half { opacity: 1; }
 .card-rating .avg { color: var(--text-strong); font-weight: 800; }
 .card-rating .count {
-  color: var(--text-soft);
+  color: #374151;
   font-size: .84rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e3e6ea;
   border-radius: 999px;
   padding: 2px 8px;
-  background: #fafafa;
+  background: #f8fafc;
+  font-weight: 700;
 }
 
 .card-trust-row {
@@ -375,9 +383,45 @@ body {
 .card-media--compact:not(.has-video) {
   background: #eef2f7;
 }
+.media-fallback {
+  background: linear-gradient(145deg, #f7f8fb 0%, #edf1f6 100%);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 10px;
+}
+.media-fallback__initial {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--brand);
+  background: #fff;
+  border: 1px solid #e3e6ea;
+}
+.media-fallback__role {
+  margin-top: 8px;
+  color: #4b5563;
+  font-size: .76rem;
+  font-weight: 700;
+}
 
 .card-main { margin-top: 10px; display: grid; gap: 8px; }
 .card-specialties { color: #374151; font-weight: 600; font-size: .95rem; }
+.specialty-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.specialty-tag {
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  color: #374151;
+  padding: 3px 8px;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.specialty-tag--more { color: var(--brand); border-color: #edd4dd; background: #fff9fb; }
 .card-kicker {
   display: block;
   color: var(--brand);

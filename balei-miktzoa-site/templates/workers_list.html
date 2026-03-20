@@ -166,6 +166,16 @@
     {% set city_missing_state = _city_list_missing_map.get(g.current_lang, _city_list_missing_map['he']) %}
     {% set _lang_badge_label_map = {'he':'שפות שירות','en':'Service languages','ru':'Языки обслуживания'} %}
     {% set languages_label = _lang_badge_label_map.get(g.current_lang, _lang_badge_label_map['he']) %}
+    {% set services_label_map = {'he':'מתמחה ב־','en':'Focused on','ru':'Специализация'} %}
+    {% set services_label = services_label_map.get(g.current_lang, services_label_map['he']) %}
+    {% set recent_review_label_map = {'he':'המלצה אחרונה','en':'Latest review','ru':'Последний отзыв'} %}
+    {% set recent_review_label = recent_review_label_map.get(g.current_lang, recent_review_label_map['he']) %}
+    {% set emergency_label_map = {'he':'זמינות 24/7','en':'24/7 availability','ru':'Доступность 24/7'} %}
+    {% set emergency_label = emergency_label_map.get(g.current_lang, emergency_label_map['he']) %}
+    {% set verified_profile_label_map = {'he':'פרופיל מאומת','en':'Verified profile','ru':'Проверенный профиль'} %}
+    {% set verified_profile_label = verified_profile_label_map.get(g.current_lang, verified_profile_label_map['he']) %}
+    {% set more_services_label_map = {'he':'תחומים נוספים','en':'more services','ru':'доп. услуг'} %}
+    {% set more_services_label = more_services_label_map.get(g.current_lang, more_services_label_map['he']) %}
     {% set reviews_label_map = {'he':'ביקורות','en':'reviews','ru':'отзывов'} %}
     {% set video_controls_label_map = {'he':'פקדי וידאו','en':'Video controls','ru':'Управление видео'} %}
     {% set video_seek_label_map = {'he':'ניווט בסרטון','en':'Seek video','ru':'Перемотка видео'} %}
@@ -285,7 +295,7 @@
               {% set image_url = w.card_image_url or (w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg')) %}
               {% set specialties_list = (w.services_list or w.sub_services or []) %}
               {% set specialties_text = specialties_list|join(', ') %}
-              {% set specialties_preview = specialties_list[:4] %}
+              {% set specialties_preview = specialties_list[:3] %}
               {% set specialties_extra = specialties_list|length - specialties_preview|length %}
               {% set languages = w.languages or [] %}
               {% set languages_full = languages|join(', ') %}
@@ -424,10 +434,8 @@
                     {% endif %}
                     {% if experience_chip or w.offers_emergency %}
                       <div class="card-trust-row">
-                        {% if experience_chip %}
-                          <span class="trust-text"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{ experience_chip }}</span>
-                        {% endif %}
-                        {% if w.offers_emergency %}<span class="trust-text trust-text--ok"><i class="fa-solid fa-bolt" aria-hidden="true"></i> זמינות 24/7</span>{% endif %}
+                        {% if experience_chip %}<span class="trust-text">{{ experience_chip }}</span>{% endif %}
+                        {% if w.offers_emergency %}<span class="trust-text trust-text--ok">{{ emergency_label }}</span>{% endif %}
                       </div>
                     {% endif %}
                   </div>
@@ -452,8 +460,9 @@
                       <img class="media-thumb media-box" src="{{ image_url }}" alt="{{ display_name }}">
                     {% else %}
                       <div class="media-fallback" aria-hidden="true">
+                        <span class="media-fallback__mark"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
                         <span class="media-fallback__initials">{{ name_initials }}</span>
-                        <span class="media-fallback__label">פרופיל מאומת</span>
+                        <span class="media-fallback__label">{{ verified_profile_label }}</span>
                       </div>
                     {% endif %}
                   </div>
@@ -461,10 +470,13 @@
                 <div class="card-main">
                   {% if specialties_preview|length %}
                     <div class="card-specialties" title="{{ specialties_text }}">
-                      <span class="card-specialties__label">תחומי שירות</span>
+                      <span class="card-specialties__label">{{ services_label }}</span>
                       <p class="card-specialties__value">
-                        {{ specialties_preview[:3]|join(' • ') }}{% if specialties_extra > 0 %} • +{{ specialties_extra }}{% endif %}
+                        {{ specialties_preview[:2]|join(' • ') }}{% if specialties_preview|length > 2 %} • {{ specialties_preview[2] }}{% endif %}
                       </p>
+                      {% if specialties_extra > 0 %}
+                        <p class="card-specialties__more">+{{ specialties_extra }} {{ more_services_label }}</p>
+                      {% endif %}
                     </div>
                   {% endif %}
                   {% if bio_text %}
@@ -473,7 +485,7 @@
                   <div class="card-meta-row">
                     {% if languages|length %}
                       <div class="card-langs" title="{{ languages_full }}">
-                        <span class="card-langs__label">{{ languages_label }}</span>
+                        <span class="card-langs__label">{{ languages_label }}:</span>
                         <span class="card-langs__value">{{ languages_preview|join(' · ') }}{% if languages_extra > 0 %} · +{{ languages_extra }}{% endif %}</span>
                       </div>
                     {% endif %}
@@ -481,22 +493,24 @@
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
                       <div class="last-review-head">
-                        <span class="last-review-label"><i class="fa-solid fa-quote-right" aria-hidden="true"></i> ביקורת אחרונה</span>
-                        {% if last_review_date_short %}
-                          <time class="last-review-date"
-                                datetime="{{ last_review_date_iso or last_review_date_short }}"
-                                title="{{ last_review_date_full or last_review_date_short }}">{{ last_review_date_short }}</time>
-                        {% endif %}
+                        <span class="last-review-label"><i class="fa-solid fa-quote-right" aria-hidden="true"></i> {{ recent_review_label }}</span>
+                        <div class="last-review-proof">
+                          {% if last_review_rating_value is not none %}
+                            <span class="last-review-stars" aria-hidden="true">
+                              {% for i in range(1, 6) %}
+                                <span class="star{{ ' star--full' if last_review_rating_value >= i else '' }}">★</span>
+                              {% endfor %}
+                            </span>
+                          {% endif %}
+                          {% if last_review_date_short %}
+                            <time class="last-review-date"
+                                  datetime="{{ last_review_date_iso or last_review_date_short }}"
+                                  title="{{ last_review_date_full or last_review_date_short }}">{{ last_review_date_short }}</time>
+                          {% endif %}
+                        </div>
                       </div>
                       <div class="last-review-meta">
                         {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
-                        {% if last_review_rating_value is not none %}
-                          <span class="last-review-stars" aria-hidden="true">
-                            {% for i in range(1, 6) %}
-                              <span class="star{{ ' star--full' if last_review_rating_value >= i else '' }}">★</span>
-                            {% endfor %}
-                          </span>
-                        {% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
                     </div>

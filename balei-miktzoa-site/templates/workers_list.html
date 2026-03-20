@@ -192,6 +192,7 @@
     <section class="masthead market-head" aria-label="כותרת עמוד">
       <div class="market-head__top">
         <div>
+          <p class="market-head__eyebrow">MARKETPLACE</p>
           <h1 class="market-head__title">
             <span class="t-field">{{ field_label }}</span>
             {% if area_label %}<span class="t-sep">ב</span><span class="t-area">{{ area_label }}</span>{% endif %}
@@ -238,6 +239,7 @@
         <span class="proof-chip" role="listitem"><i class="fa-solid fa-shield-halved"></i>מאומתים</span>
         <span class="proof-chip" role="listitem"><i class="fa-regular fa-message"></i>ביקורות אמיתיות</span>
         <span class="proof-chip" role="listitem"><i class="fa-solid fa-clock"></i>זמינות מהירה</span>
+        <span class="proof-chip proof-chip--count" role="listitem"><i class="fa-solid fa-users"></i>{{ workers|length }} תוצאות באזור</span>
       </div>
     </section>
     <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
@@ -406,6 +408,7 @@
                     </h2>
                     {% if rating_value %}
                       <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
+                        <span class="rating-label">דירוג</span>
                         <span class="stars" aria-hidden="true">
                           {% for i in range(1, 6) %}
                             {% set star_class = 'star' %}
@@ -421,6 +424,14 @@
                         {% if w.reviews_count %}<span class="count">{{ w.reviews_count }} {{ reviews_label }}</span>{% endif %}
                       </div>
                     {% endif %}
+                    <div class="card-trust-row">
+                      {% if w.reviews_count %}
+                        <span class="trust-item"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> נבדק לפי ביקורות</span>
+                      {% endif %}
+                      {% if has_badges and experience_chip %}
+                        <span class="trust-item"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{ experience_chip }}</span>
+                      {% endif %}
+                    </div>
                   </div>
                   <div class="card-media card-media--compact">
                     {% if video_src and video_kind == 'mp4' %}
@@ -476,6 +487,7 @@
                   </div>
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
+                      <div class="last-review-kicker">ביקורת אחרונה</div>
                       <div class="last-review-meta">
                         {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
                         {% if last_review_rating_value is not none %}
@@ -496,7 +508,7 @@
                   {% endif %}
                   <div class="card-actions">
                     {% if phone_tel %}
-                      <a class="btn btn-call"
+                      <a class="btn btn-call btn-call--primary"
                          href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
                          aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
                         📞 {{ phone_display }}

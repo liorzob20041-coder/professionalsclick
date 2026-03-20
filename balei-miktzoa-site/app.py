@@ -3319,7 +3319,7 @@ def show_workers(lang, field, area):
         target = url_for('show_workers', lang=lang, field=canon_field_slug, area=canon_area_slug)
         qs = request.query_string.decode('utf-8') if request.query_string else ''
         # Only allow filtered/expected query params (whitelist)
-        allowed_qs_keys = {'filter', 'area', 'field', 'q', 'page', 'sort'}  # Customize this set to match actual filtering params
+        allowed_qs_keys = {'filter', 'area', 'field', 'q', 'page', 'sort', 'lang', 'open_now', 'rating_4p'}
         parsed_qs = parse_qs(qs, keep_blank_values=True)
         safe_qs_dict = {k: v for k, v in parsed_qs.items() if k in allowed_qs_keys}
         from urllib.parse import urlencode
@@ -3495,6 +3495,12 @@ def show_workers(lang, field, area):
                 except ValueError:
                     latest_rating_val = None
         w['latest_review_rating'] = latest_rating_val
+
+    if request.args.get('open_now'):
+        workers = [w for w in workers if w.get('is_available_now')]
+
+    if request.args.get('rating_4p'):
+        workers = [w for w in workers if (w.get('rating') is not None and float(w.get('rating', 0)) >= 4.0)]
 
     ui_lang_to_label = {"he": "עברית", "en": "אנגלית", "ru": "רוסית"}
     ui_label = ui_lang_to_label.get(lang)

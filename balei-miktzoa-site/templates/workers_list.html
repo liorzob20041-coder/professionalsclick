@@ -303,6 +303,9 @@
               {% set languages_extra = languages|length - languages_preview|length %}
               {% set bio_source = (w.bio_short or w.description or '') %}
               {% set bio_text = bio_source.strip() %}
+              {% if bio_text %}
+                {% set bio_text = bio_text|truncate(170, True, '…') %}
+              {% endif %}
               {% set experience_label_map = {'he':'שנות ניסיון','en':'years experience','ru':'лет стажа'} %}
               {% set experience_label = experience_label_map.get(g.current_lang, experience_label_map['he']) %}
               {% set experience_chip = '' %}
@@ -433,26 +436,22 @@
                       {% endif %}
                     </div>
                   </div>
-                  <div class="card-media card-media--compact">
+                  <div class="card-media card-media--compact{% if video_src %} has-video{% endif %}">
                     {% if video_src and video_kind == 'mp4' %}
-                      {% set _target_aspect = w.card_video_aspect_ratio|default(None) %}
-                      <div class="video-orientation-frame video-orientation-frame--fill card-video-frame media-box"
-                           {% if _target_aspect %}style="--video-target-aspect: {{ '%.6f' % _target_aspect }}"{% endif %}>
-                        <video class="media-video"
-                               src="{{ video_src }}"
-                               controls
-                               playsinline
-                               preload="metadata"{% if video_poster %}
-                               poster="{{ video_poster }}"{% endif %}></video>
+                      <div class="media-box media-box--preview">
+                        <img class="media-thumb" src="{{ video_poster }}" alt="{{ display_name }}">
+                        <button type="button" class="wr-play media-play" data-video="{{ video_src }}" data-kind="mp4" aria-label="{{ video_play_label }}">
+                          <i class="fa-solid fa-play"></i>
+                        </button>
+                        <span class="media-badge">וידאו</span>
                       </div>
                     {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
-                      <div class="media-box">
-                        <iframe class="media-video"
-                                src="{{ video_src }}"
-                                title="{{ display_name }}"
-                                loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen></iframe>
+                      <div class="media-box media-box--preview">
+                        <img class="media-thumb" src="{{ video_poster }}" alt="{{ display_name }}">
+                        <button type="button" class="wr-play media-play" data-video="{{ video_src }}" data-kind="{{ video_kind }}" aria-label="{{ video_play_label }}">
+                          <i class="fa-solid fa-play"></i>
+                        </button>
+                        <span class="media-badge">וידאו</span>
                       </div>
                     {% else %}
                       <img class="media-thumb media-box" src="{{ image_url }}" alt="{{ display_name }}">
@@ -461,7 +460,10 @@
                 </header>
                 <div class="card-main">
                   {% if specialties_trim %}
-                    <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
+                    <div class="card-specialties" title="{{ specialties_text }}">
+                      <span class="card-kicker">תחומי שירות</span>
+                      <span>{{ specialties_trim }}</span>
+                    </div>
                   {% endif %}
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>

@@ -1371,16 +1371,24 @@ video.media-video:fullscreen {
 .card-main {
   grid-area: main;
   display: grid;
-  row-gap: var(--space-2);
+  row-gap: 12px;
   min-width: 0;
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  padding: 18px 24px 20px;
+}
+
+.card-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 16px;
 }
 
 .card-title {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #333;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1f2937;
 }
 
 .card-title a {
@@ -1399,13 +1407,13 @@ video.media-video:fullscreen {
 }
 
 .card-title .company {
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .card-title .person {
   font-size: 1rem;
-  font-weight: 500;
-  color: #444;
+  font-weight: 600;
+  color: #4b5563;
 }
 
 .card-title .divider {
@@ -1415,9 +1423,13 @@ video.media-video:fullscreen {
 .card-rating {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  font-size: 0.95rem;
-  color: #555;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #374151;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 6px 12px;
 }
 
 .card-rating .stars {
@@ -1441,59 +1453,69 @@ video.media-video:fullscreen {
 }
 
 .card-rating .avg {
-  font-weight: 600;
+  font-weight: 700;
   color: #1f2937;
 }
 
 .card-rating .count {
-  color: #666;
+  color: #6b7280;
+  font-weight: 600;
 }
 
-.card-specialties {
-  font-size: 0.95rem;
-  color: #1f2937;
-  font-weight: 500;
-  min-height: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-badges {
+.card-quick-strip {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.card-badges .chip {
+.quick-item {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #2f2f2f;
-  background: #f0f2f5;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
-.chip--experience {
-  background: #eef1f5;
-  color: #2d3748;
+.quick-item strong {
+  font-weight: 700;
+  color: #1f2937;
 }
 
-.chip--availability {
-  background: #e5f8f0;
-  color: #116149;
+.quick-item--emergency {
+  border-color: rgb(176 24 60 / 26%);
+  color: #8d0f2d;
+  background: rgb(176 24 60 / 6%);
+  font-weight: 700;
 }
 
-.chip--emergency {
-  background: #eef3fd;
-  color: var(--brand-accent);
+.card-specialties {
+  font-size: 0.92rem;
+  color: #1f2937;
+  font-weight: 500;
+  min-height: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: #f9fafb;
+  border-inline-start: 3px solid rgb(176 24 60 / 35%);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.card-specialties .label {
+  font-weight: 800;
+  color: #7f1237;
 }
 
 .card-bio {
   font-size: 0.9rem;
-  color: #374151;
-  line-height: 1.6;
+  color: #4b5563;
+  line-height: 1.65;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1502,19 +1524,32 @@ video.media-video:fullscreen {
 
 .card-last-review {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   font-size: 0.85rem;
-  color: #4a4a4a;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 10px;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #fbfcfd 0%, #f8fafc 100%);
 }
 
 .last-review-meta {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   font-weight: 600;
-  color: #333;
+  color: #1f2937;
+}
+
+.review-proof-label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #7f1237;
+  background: rgb(176 24 60 / 10%);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
 .last-review-stars {
@@ -1528,7 +1563,7 @@ video.media-video:fullscreen {
 }
 
 .last-review-stars .star--full {
-  color: #6b7280;
+  color: #f59e0b;
 }
 
 .last-review-date {
@@ -1538,8 +1573,8 @@ video.media-video:fullscreen {
 }
 
 .last-review-text {
-  color: #4b5563;
-  font-style: italic;
+  color: #374151;
+  font-style: normal;
   line-height: 1.5;
 }
 
@@ -1551,63 +1586,12 @@ video.media-video:fullscreen {
   content: '\"';
 }
 
-.profile-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--brand-main);
-  text-decoration: none;
-  width: fit-content;
-  transition: color 0.2s ease;
-}
-
-.profile-link:hover,
-.profile-link:focus-visible {
-  color: #8d0f2d;
-  text-decoration: underline;
-}
-
-.card-langs {
+.card-footer-cta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  align-items: center;
-}
-
-.langs-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #6b7280;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.langs-label__icon {
-  width: 14px;
-  height: 14px;
-}
-
-.lang-tag {
-  display: inline-block;
-  padding: 4px 10px;
-  background: #f3f4f6;
-  color: #374151;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-}
-
-.card-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #eceff4;
+  padding-top: 12px;
 }
 
 .worker-card .btn {
@@ -1615,11 +1599,11 @@ video.media-video:fullscreen {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 48px;
-  padding: 0 16px;
+  min-height: 42px;
+  padding: 0 14px;
   border-radius: 10px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.9rem;
   white-space: nowrap;
   transition: all 0.15s ease;
   text-decoration: none;
@@ -1630,6 +1614,7 @@ video.media-video:fullscreen {
   color: #fff;
   border: none;
   box-shadow: 0 2px 8px rgb(176 24 60 / 25%);
+  flex: 1 1 170px;
 }
 
 .btn-call:hover,
@@ -1640,19 +1625,31 @@ video.media-video:fullscreen {
 }
 
 .btn-whatsapp {
-  background: #25d366;
+  background: #22c55e;
   color: #fff;
   border: none;
-  box-shadow: 0 2px 8px rgb(37 211 102 / 25%);
-  font-size: 0.9rem;
-  height: 42px;
+  box-shadow: 0 2px 8px rgb(34 197 94 / 25%);
+  flex: 0 1 144px;
 }
 
 .btn-whatsapp:hover,
 .btn-whatsapp:focus-visible {
-  background: #1eb257;
+  background: #16a34a;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgb(37 211 102 / 35%);
+  box-shadow: 0 4px 12px rgb(34 197 94 / 35%);
+}
+
+.btn-profile {
+  background: #fff;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  flex: 0 1 148px;
+}
+
+.btn-profile:hover,
+.btn-profile:focus-visible {
+  border-color: #9ca3af;
+  color: #374151;
 }
 
 .worker-card .btn:focus-visible {
@@ -1693,19 +1690,26 @@ video.media-video:fullscreen {
     border-radius: 0;
   }
 
-  .card-actions {
-    flex-direction: row;
-    gap: 10px;
+  .card-main {
+    padding: 14px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+  }
+
+  .card-identity {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-footer-cta {
+    flex-direction: column;
   }
 
   .worker-card .btn {
-    flex: 1 1 0;
-    width: auto;
-  }
-
-  .btn-whatsapp {
-    font-size: 0.85rem;
-    height: 48px;
+    width: 100%;
+    flex: 1 1 auto;
   }
 }
 

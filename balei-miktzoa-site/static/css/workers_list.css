@@ -50,22 +50,24 @@ body {
 .crumbs-min .current { color: var(--text-strong); font-weight: 600; }
 
 .market-head {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 6px 2px 6px;
-  margin-bottom: 0;
-  position: relative;
+  background: #fff;
+  border: 1px solid #e6e9ef;
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  padding: 12px;
+  margin-bottom: 8px;
 }
 
-.market-head::after { content: none; }
+.market-head__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
 
 .market-head__title-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  gap: 6px;
 }
 
 .market-head__title {
@@ -84,36 +86,31 @@ body {
 .market-head__title .t-area { color: var(--brand); font-weight: 800; }
 
 .market-head__subtitle {
-  margin: 6px 0 0;
+  margin: 0;
   color: #4b5563;
-  font-size: .92rem;
-  max-width: 62ch;
+  font-size: .96rem;
+  max-width: 66ch;
   line-height: 1.45;
 }
 
 .market-head__proof {
-  margin-top: 8px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #eef1f5;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 14px;
 }
 
-.proof-chip {
+.proof-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #e6dbe0;
-  background: #fff;
-  color: #4b5563;
-  border-radius: 999px;
-  padding: 5px 9px;
-  font-size: .78rem;
-  font-weight: 600;
+  color: #475569;
+  font-size: .83rem;
+  font-weight: 700;
 }
-.proof-chip--count {
-  border-color: #e8ccd7;
-  color: var(--brand);
-}
+.proof-item i { color: var(--brand); }
 
 .city-actions { position: relative; }
 .city-switch {
@@ -121,11 +118,11 @@ body {
   align-items: center;
   gap: 8px;
   background: #fff;
-  border: 1px solid #d8dde5;
+  border: 1px solid #cfd6e1;
   border-radius: 10px;
-  padding: 8px 11px;
+  padding: 9px 12px;
   color: var(--text-strong);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 .city-switch:hover,
@@ -182,7 +179,7 @@ body {
   border: 1px solid #e8ebf0;
   border-radius: 14px;
   box-shadow: var(--shadow-sm);
-  margin-top: 6px;
+  margin-top: 0;
   margin-bottom: 12px;
   padding: 9px 11px;
 }
@@ -233,10 +230,10 @@ body {
 
 .worker-card {
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dee5ef;
   border-radius: 14px;
   box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
-  padding: 10px;
+  padding: 12px;
   transition: transform .18s ease, box-shadow .18s ease;
 }
 .worker-card:hover {
@@ -247,12 +244,12 @@ body {
 
 .card-top {
   display: grid;
-  grid-template-columns: 1fr 104px;
-  gap: 8px;
+  grid-template-columns: 1fr 112px;
+  gap: 10px;
   align-items: start;
 }
 
-.card-title { margin: 0 0 5px; font-size: 1.18rem; line-height: 1.28; }
+.card-title { margin: 0 0 6px; font-size: 1.22rem; line-height: 1.26; }
 .card-title a { color: var(--text-strong); text-decoration: none; }
 .card-title .company { font-weight: 800; }
 .card-title .person { color: #4b5563; font-weight: 600; }
@@ -272,28 +269,21 @@ body {
   background: #fafafa;
 }
 
-.card-trust-row {
-  margin-top: 4px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
 .trust-text {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: .79rem;
+  gap: 5px;
+  font-size: .8rem;
   color: #64748b;
-  font-weight: 600;
+  font-weight: 700;
 }
 .trust-text i { color: #9ca3af; font-size: .78rem; }
 .trust-text--ok { color: #166534; }
 .trust-text--ok i { color: #16a34a; }
 
 .card-media--compact {
-  width: 104px;
-  height: 102px;
+  width: 112px;
+  height: 112px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #e6eaf0;
@@ -347,33 +337,50 @@ body {
   background: #eef2f7;
 }
 
-.card-main { margin-top: 8px; display: grid; gap: 6px; }
+.card-main { margin-top: 8px; display: grid; gap: 8px; }
 .card-specialties {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   margin: 0;
 }
 .card-specialties__label {
   color: #7a0026;
   font-size: .76rem;
   font-weight: 800;
-  letter-spacing: .01em;
+  letter-spacing: .02em;
 }
-.card-specialties__value {
+.card-specialties__list {
   margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.card-specialties__list li {
+  background: #f3f5f9;
+  border: 1px solid #e1e7f0;
+  border-radius: 8px;
+  padding: 3px 8px;
   color: #1f2937;
-  font-size: .95rem;
-  line-height: 1.42;
+  font-size: .83rem;
   font-weight: 700;
 }
-.card-bio { color: #4b5563; font-size: .93rem; line-height: 1.45; }
+.card-specialties__list .more {
+  color: #7a0026;
+  background: #f9f1f4;
+  border-color: #ecd7df;
+}
+.card-bio { color: #4b5563; font-size: .92rem; line-height: 1.42; }
 
 .card-meta-row {
   display: flex;
   justify-content: flex-start;
-  align-items: start;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
+  border-top: 1px solid #edf1f5;
+  padding-top: 7px;
 }
 
 .card-langs {
@@ -385,8 +392,8 @@ body {
 }
 .card-langs__label {
   color: #475569;
-  font-size: .8rem;
-  font-weight: 700;
+  font-size: .79rem;
+  font-weight: 800;
 }
 .card-langs__value {
   color: #334155;
@@ -395,15 +402,12 @@ body {
 }
 
 .card-last-review {
-  border: 1px solid #e6e8ec;
-  padding-top: 6px;
+  border: 1px solid #e5e9f0;
+  background: #f8fafd;
+  border-radius: 10px;
+  padding: 8px 9px;
   display: grid;
   gap: 4px;
-  background: #f8fafc;
-  border-radius: 8px;
-  padding-inline: 8px;
-  padding-block-end: 7px;
-  border-inline-start: 3px solid rgb(122 0 38 / 36%);
 }
 .last-review-head {
   display: flex;
@@ -412,22 +416,22 @@ body {
   gap: 8px;
 }
 .last-review-label {
-  color: var(--brand);
+  color: #7a0026;
   font-size: .75rem;
   font-weight: 800;
 }
-.last-review-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .82rem; color: var(--text-soft); }
-.last-review-meta .author { color: #1f2937; font-weight: 700; }
-.last-review-stars { color: #f59e0b; }
-.last-review-date { color: #64748b; font-size: .76rem; font-weight: 600; }
-.last-review-text { color: #374151; font-size: .9rem; line-height: 1.45; }
+.last-review-meta { display: flex; align-items: center; gap: 6px; font-size: .79rem; color: var(--text-soft); }
+.last-review-author { color: #1f2937; font-size: .84rem; font-weight: 700; }
+.last-review-stars { color: #f59e0b; letter-spacing: .5px; }
+.last-review-date { color: #64748b; font-size: .74rem; font-weight: 700; }
+.last-review-text { color: #334155; font-size: .88rem; line-height: 1.4; }
 
 .card-actions {
-  margin-top: 0;
+  margin-top: 2px;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding-top: 4px;
+  padding-top: 6px;
   border-top: 1px solid #edf0f4;
 }
 
@@ -509,8 +513,8 @@ body {
   align-content: center;
   justify-items: center;
   gap: 6px;
-  background: linear-gradient(145deg, #f7f0f3 0%, #eef2f7 100%);
-  color: #7a0026;
+  background: linear-gradient(155deg, #f4f7fb 0%, #ebf0f7 100%);
+  color: #475569;
 }
 .media-fallback__initials {
   width: 42px;
@@ -524,25 +528,25 @@ body {
   font-size: .96rem;
 }
 .media-fallback__label {
-  font-size: .7rem;
+  font-size: .68rem;
   font-weight: 700;
+  letter-spacing: .02em;
 }
 
 @media (max-width: 860px) {
-  .market-head__title-wrap { align-items: flex-start; flex-wrap: wrap; }
+  .market-head__top { align-items: stretch; flex-direction: column; }
   .city-actions { width: 100%; }
   .city-switch { width: fit-content; min-width: 190px; justify-content: space-between; }
   .results-toolbar { position: static; }
-  .card-top { grid-template-columns: 1fr 92px; }
-  .card-media--compact { width: 92px; height: 92px; }
+  .card-top { grid-template-columns: 1fr 96px; }
+  .card-media--compact { width: 96px; height: 96px; }
   .card-title { font-size: 1.06rem; }
 }
 
 @media (max-width: 640px) {
   .main-content { width: calc(100% - 18px); }
-  .market-head { padding: 2px 0 6px; }
+  .market-head { padding: 10px; }
   .market-head__subtitle { font-size: .92rem; }
-  .market-head__title-wrap { gap: 8px; }
   .city-switch { width: 100%; }
   .card-top { grid-template-columns: 1fr; }
   .card-media--compact { width: 84px; height: 84px; order: 0; }

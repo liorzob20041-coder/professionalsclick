@@ -190,14 +190,16 @@
       <span class="current">{{ field_label }}{% if area_label %} / {{ area_label }}{% endif %}</span>
     </nav>
     <section class="masthead market-head" aria-label="כותרת עמוד">
-      <div class="market-head__title-wrap">
-        <h1 class="market-head__title">
-          <span class="t-field">{{ field_label }}</span>
-          {% if area_label %}<span class="t-sep">ב</span><span class="t-area">{{ area_label }}</span>{% endif %}
-        </h1>
+      <h1 class="market-head__title">
+        <span class="t-field">{{ field_label }}</span>
+        {% if area_label %}<span class="t-sep">ב</span><span class="t-area">{{ area_label }}</span>{% endif %}
+      </h1>
+      <div class="market-head__context-row">
+        <p class="market-head__subtitle">בעלי מקצוע מדורגים עם ביקורות מאומתות, התאמה לתחום וזמינות מהירה.</p>
         <div class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
           <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
-            <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
+            <span class="city-switch__context">{{ g.current_lang == 'en' and 'Area' or (g.current_lang == 'ru' and 'Город' or 'עיר') }}</span>
+            <span class="city-switch__label">{{ area_label or city_choose_label }}</span>
             <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
           </button>
           <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
@@ -231,11 +233,10 @@
           </div>
         </div>
       </div>
-      <p class="market-head__subtitle">בחרו בעל מקצוע לפי אמינות, ביקורות והזמינות שמתאימה לכם.</p>
       <div class="market-head__proof" role="list" aria-label="הבטחות השירות">
-        <span class="proof-chip" role="listitem"><i class="fa-solid fa-shield-halved"></i>מאומתים</span>
-        <span class="proof-chip" role="listitem"><i class="fa-regular fa-message"></i>ביקורות אמיתיות</span>
-        <span class="proof-chip" role="listitem"><i class="fa-solid fa-clock"></i>מענה מהיר</span>
+        <span class="proof-item" role="listitem"><i class="fa-solid fa-shield-halved"></i>פרופילים מאומתים</span>
+        <span class="proof-item" role="listitem"><i class="fa-regular fa-star"></i>דירוגים וביקורות אמיתיים</span>
+        <span class="proof-item" role="listitem"><i class="fa-solid fa-clock"></i>{{ workers|length }} בעלי מקצוע זמינים</span>
       </div>
     </section>
     <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
@@ -305,7 +306,6 @@
               {% elif w.experience_text %}
                 {% set experience_chip = w.experience_text %}
               {% endif %}
-              {% set has_badges = (experience_chip or w.offers_emergency) %}
               {% set reviews_label = reviews_label_map.get(g.current_lang, reviews_label_map['he']) %}
               {% set profile_url = url_for('worker_reviews', worker_id=w.worker_id, lang=g.current_lang) %}
               {% set phone_tel = (w.phone_formatted or w.phone) %}
@@ -422,14 +422,6 @@
                         {% if w.reviews_count %}<span class="count">{{ w.reviews_count }} {{ reviews_label }}</span>{% endif %}
                       </div>
                     {% endif %}
-                    {% if experience_chip or w.offers_emergency %}
-                      <div class="card-trust-row">
-                        {% if experience_chip %}
-                          <span class="trust-text"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> {{ experience_chip }}</span>
-                        {% endif %}
-                        {% if w.offers_emergency %}<span class="trust-text trust-text--ok"><i class="fa-solid fa-bolt" aria-hidden="true"></i> זמינות 24/7</span>{% endif %}
-                      </div>
-                    {% endif %}
                   </div>
                   <div class="card-media card-media--compact{% if video_src %} has-video{% endif %}">
                     {% if video_src and video_kind == 'mp4' %}
@@ -453,7 +445,7 @@
                     {% else %}
                       <div class="media-fallback" aria-hidden="true">
                         <span class="media-fallback__initials">{{ name_initials }}</span>
-                        <span class="media-fallback__label">פרופיל מאומת</span>
+                        <span class="media-fallback__label">{{ g.current_lang == 'en' and 'Verified profile' or (g.current_lang == 'ru' and 'Проверенный профиль' or 'פרופיל מאומת') }}</span>
                       </div>
                     {% endif %}
                   </div>
@@ -461,27 +453,32 @@
                 <div class="card-main">
                   {% if specialties_preview|length %}
                     <div class="card-specialties" title="{{ specialties_text }}">
-                      <span class="card-specialties__label">תחומי שירות</span>
+                      <span class="card-specialties__label">{{ g.current_lang == 'en' and 'Main services' or (g.current_lang == 'ru' and 'Основные услуги' or 'תחומי שירות מרכזיים') }}</span>
                       <p class="card-specialties__value">
-                        {{ specialties_preview[:3]|join(' • ') }}{% if specialties_extra > 0 %} • +{{ specialties_extra }}{% endif %}
+                        {{ specialties_preview[:4]|join(' • ') }}{% if specialties_extra > 0 %} • +{{ specialties_extra }}{% endif %}
                       </p>
                     </div>
                   {% endif %}
+                  <div class="card-meta-row{% if not (experience_chip or w.offers_emergency or languages|length) %} is-empty{% endif %}">
+                    {% if experience_chip %}
+                      <span class="meta-item"><i class="fa-solid fa-briefcase" aria-hidden="true"></i>{{ experience_chip }}</span>
+                    {% endif %}
+                    {% if w.offers_emergency %}
+                      <span class="meta-item meta-item--ok"><i class="fa-solid fa-bolt" aria-hidden="true"></i>{{ g.current_lang == 'en' and '24/7 availability' or (g.current_lang == 'ru' and 'Доступен 24/7' or 'זמינות 24/7') }}</span>
+                    {% endif %}
+                    {% if languages|length %}
+                      <span class="meta-item meta-item--langs" title="{{ languages_full }}">
+                        <strong>{{ languages_label }}:</strong> {{ languages_preview|join(' · ') }}{% if languages_extra > 0 %} · +{{ languages_extra }}{% endif %}
+                      </span>
+                    {% endif %}
+                  </div>
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>
                   {% endif %}
-                  <div class="card-meta-row">
-                    {% if languages|length %}
-                      <div class="card-langs" title="{{ languages_full }}">
-                        <span class="card-langs__label">{{ languages_label }}</span>
-                        <span class="card-langs__value">{{ languages_preview|join(' · ') }}{% if languages_extra > 0 %} · +{{ languages_extra }}{% endif %}</span>
-                      </div>
-                    {% endif %}
-                  </div>
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
                       <div class="last-review-head">
-                        <span class="last-review-label"><i class="fa-solid fa-quote-right" aria-hidden="true"></i> ביקורת אחרונה</span>
+                        <span class="last-review-label"><i class="fa-solid fa-quote-right" aria-hidden="true"></i> {{ g.current_lang == 'en' and 'Latest review' or (g.current_lang == 'ru' and 'Последний отзыв' or 'ביקורת אחרונה') }}</span>
                         {% if last_review_date_short %}
                           <time class="last-review-date"
                                 datetime="{{ last_review_date_iso or last_review_date_short }}"
@@ -489,7 +486,6 @@
                         {% endif %}
                       </div>
                       <div class="last-review-meta">
-                        {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
                         {% if last_review_rating_value is not none %}
                           <span class="last-review-stars" aria-hidden="true">
                             {% for i in range(1, 6) %}
@@ -497,6 +493,7 @@
                             {% endfor %}
                           </span>
                         {% endif %}
+                        {% if last_review_author %}<span class="author">{{ last_review_author }}</span>{% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
                     </div>

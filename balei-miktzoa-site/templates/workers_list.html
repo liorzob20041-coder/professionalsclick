@@ -189,69 +189,66 @@
       <span>›</span>
       <span class="current">{{ field_label }}{% if area_label %} / {{ area_label }}{% endif %}</span>
     </nav>
-    <section class="masthead masthead--ripple" aria-label="כותרת עמוד">
-      <div class="dot-grid" aria-hidden="true"></div>
-      <div class="click-ripple" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
-      <h1 class="title title--priority">
-        <span class="t-field">{{ field_label }}</span>
-        <span class="t-area-wrap">
-          {% if area_label %}
-            <span class="t-sep"> ב</span>
-            <span class="t-area">{{ area_label }}</span>
-          {% endif %}
-          <span class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
-            <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
-              <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
-              <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
-            </button>
-            <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
-              <div class="city-menu__surface">
-                <div class="city-menu__header">
-                  <p class="city-menu__title" id="changeCityTitle">{{ city_choose_label }}</p>
-                  <button type="button" class="city-menu__close" data-city-close aria-label="{{ close_label }}">
-                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                  </button>
-                </div>
-                {% if city_options %}
-                  <div class="city-menu__search">
-                    <label class="sr-only" for="citySearchInput">{{ city_search_label }}</label>
-                    <input type="search" id="citySearchInput" class="city-menu__input" placeholder="{{ city_search_placeholder }}" autocomplete="off" data-city-search>
-                  </div>
-                  <ul class="city-menu__list" role="listbox">
-                    {% for option in city_options %}
-                      <li class="city-menu__item">
-                        <a href="{{ option.url }}" role="option" class="city-menu__option{% if option.is_current %} is-current{% endif %}" data-city-option data-city-key="{{ option.search_key }}" data-city-label="{{ option.label|lower }}" {% if option.is_current %}aria-current="true"{% endif %}>
-                          <span class="city-menu__option-label">{{ option.label }}</span>
-                          {% if option.count %}<span class="city-menu__badge" aria-hidden="true">{{ option.count }}</span>{% endif %}
-                        </a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                  <p class="city-menu__empty" data-city-empty hidden>{{ city_empty_state }}</p>
-                {% else %}
-                  <p class="city-menu__empty is-static">{{ city_missing_state }}</p>
-                {% endif %}
+    <section class="masthead market-head" aria-label="כותרת עמוד">
+      <div class="market-head__top">
+        <div>
+          <h1 class="market-head__title">
+            <span class="t-field">{{ field_label }}</span>
+            {% if area_label %}<span class="t-sep">ב</span><span class="t-area">{{ area_label }}</span>{% endif %}
+          </h1>
+          <p class="market-head__subtitle">בחרו בעל מקצוע לפי אמינות, ביקורות והזמינות שמתאימה לכם.</p>
+        </div>
+        <div class="city-actions{% if not area_label %} city-actions--solo{% endif %}" role="group" aria-label="{{ city_group_label }}">
+          <button type="button" class="city-switch" id="changeCityBtn" aria-haspopup="true" aria-expanded="false">
+            <span class="city-switch__label">{{ area_label and city_switch_label or city_choose_label }}</span>
+            <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
+          </button>
+          <div class="city-menu" id="changeCityMenu" role="dialog" aria-modal="false" aria-labelledby="changeCityTitle" aria-hidden="true" hidden>
+            <div class="city-menu__surface">
+              <div class="city-menu__header">
+                <p class="city-menu__title" id="changeCityTitle">{{ city_choose_label }}</p>
+                <button type="button" class="city-menu__close" data-city-close aria-label="{{ close_label }}">
+                  <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
               </div>
+              {% if city_options %}
+                <div class="city-menu__search">
+                  <label class="sr-only" for="citySearchInput">{{ city_search_label }}</label>
+                  <input type="search" id="citySearchInput" class="city-menu__input" placeholder="{{ city_search_placeholder }}" autocomplete="off" data-city-search>
+                </div>
+                <ul class="city-menu__list" role="listbox">
+                  {% for option in city_options %}
+                    <li class="city-menu__item">
+                      <a href="{{ option.url }}" role="option" class="city-menu__option{% if option.is_current %} is-current{% endif %}" data-city-option data-city-key="{{ option.search_key }}" data-city-label="{{ option.label|lower }}" {% if option.is_current %}aria-current="true"{% endif %}>
+                        <span class="city-menu__option-label">{{ option.label }}</span>
+                        {% if option.count %}<span class="city-menu__badge" aria-hidden="true">{{ option.count }}</span>{% endif %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+                <p class="city-menu__empty" data-city-empty hidden>{{ city_empty_state }}</p>
+              {% else %}
+                <p class="city-menu__empty is-static">{{ city_missing_state }}</p>
+              {% endif %}
             </div>
-          </span>
-        </span>
-      </h1>
-      <p class="brand-sub">קליק אחד והמקצוען בדרך אליכם</p>
-      <div class="trust-pills" role="list" aria-label="הבטחות השירות">
-        <span class="pill" role="listitem"><i class="fa-solid fa-shield-halved"></i> מאומת</span>
-        <span class="pill" role="listitem"><i class="fa-regular fa-message"></i> ביקורות אמיתיות</span>
-        <span class="pill" role="listitem"><i class="fa-solid fa-phone"></i> חייגו בלחיצה</span>
+          </div>
+        </div>
       </div>
-      <div class="accent-line" aria-hidden="true"></div>
+      <div class="market-head__proof" role="list" aria-label="הבטחות השירות">
+        <span class="proof-chip" role="listitem"><i class="fa-solid fa-shield-halved"></i>מאומתים</span>
+        <span class="proof-chip" role="listitem"><i class="fa-regular fa-message"></i>ביקורות אמיתיות</span>
+        <span class="proof-chip" role="listitem"><i class="fa-solid fa-clock"></i>זמינות מהירה</span>
+      </div>
     </section>
     <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
       <div class="toolbar-row">
+        <div class="results-summary">
+          <strong>{{ workers|length }}</strong>
+          <span>בעלי מקצוע זמינים</span>
+        </div>
         <button type="button" class="btn-filter" id="filtersOpenBtn" aria-controls="filtersDrawer" aria-expanded="false">
           <i class="fa-solid fa-sliders"></i> סינון
         </button>
-        <div class="hint">לטשו את התוצאות עד שתגיעו להתאמה המושלמת.</div>
       </div>
       {% set list_url = url_for('show_workers', lang=g.current_lang, field=field, area=area) %}
       {% set active = [] %}
@@ -391,15 +388,44 @@
               {% if last_review_text %}
                 {% set last_review_snippet = last_review_text|truncate(100, True, '…') %}
               {% endif %}
-              <article class="worker-card" dir="rtl" role="listitem" data-href="{{ profile_url }}">
+              <article class="worker-card" dir="{{ 'rtl' if g.current_lang == 'he' else 'ltr' }}" role="listitem" data-href="{{ profile_url }}">
                 {% set video_kind = w.card_video_kind %}
                 {% set video_src = w.card_video_src %}
                 {% set video_poster = w.card_video_poster or image_url %}
-                <div class="card-media">
-                  <div class="media-box">
+                <header class="card-top">
+                  <div class="card-identity">
+                    <h2 class="card-title">
+                      <a href="{{ profile_url }}">
+                        {% if company_display %}
+                          <span class="company">{{ company_display }}</span>
+                          {% if display_name %}<span class="divider">·</span><span class="person">{{ display_name }}</span>{% endif %}
+                        {% else %}
+                          <span class="person">{{ display_name }}</span>
+                        {% endif %}
+                      </a>
+                    </h2>
+                    {% if rating_value %}
+                      <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
+                        <span class="stars" aria-hidden="true">
+                          {% for i in range(1, 6) %}
+                            {% set star_class = 'star' %}
+                            {% if rating_numeric is not none and rating_numeric >= i %}
+                              {% set star_class = star_class ~ ' star--full' %}
+                            {% elif rating_numeric is not none and rating_numeric > (i - 1) %}
+                              {% set star_class = star_class ~ ' star--half' %}
+                            {% endif %}
+                            <span class="{{ star_class }}">★</span>
+                          {% endfor %}
+                        </span>
+                        <span class="avg">{{ rating_value }}</span>
+                        {% if w.reviews_count %}<span class="count">{{ w.reviews_count }} {{ reviews_label }}</span>{% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="card-media card-media--compact">
                     {% if video_src and video_kind == 'mp4' %}
                       {% set _target_aspect = w.card_video_aspect_ratio|default(None) %}
-                      <div class="video-orientation-frame video-orientation-frame--fill card-video-frame"
+                      <div class="video-orientation-frame video-orientation-frame--fill card-video-frame media-box"
                            {% if _target_aspect %}style="--video-target-aspect: {{ '%.6f' % _target_aspect }}"{% endif %}>
                         <video class="media-video"
                                src="{{ video_src }}"
@@ -409,77 +435,45 @@
                                poster="{{ video_poster }}"{% endif %}></video>
                       </div>
                     {% elif video_src and video_kind in ['youtube', 'vimeo'] %}
-                      <iframe class="media-video"
-                              src="{{ video_src }}"
-                              title="{{ display_name }}"
-                              loading="lazy"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowfullscreen></iframe>
+                      <div class="media-box">
+                        <iframe class="media-video"
+                                src="{{ video_src }}"
+                                title="{{ display_name }}"
+                                loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                      </div>
                     {% else %}
-                      <img class="media-video" src="{{ image_url }}" alt="{{ display_name }}">
+                      <img class="media-thumb media-box" src="{{ image_url }}" alt="{{ display_name }}">
                     {% endif %}
-                    <img class="media-thumb" src="{{ image_url }}" alt="{{ display_name }}">
                   </div>
-                  {% if phone_tel or whatsapp_clean %}
-                    <div class="card-actions">
-                      {% if phone_tel %}
-                        <a class="btn btn-call"
-                           href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
-                           aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
-                          📞 {{ phone_display }}
-                        </a>
-                      {% endif %}
-                      {% if whatsapp_clean %}
-                        <a class="btn btn-whatsapp"
-                           href="https://wa.me/{{ whatsapp_clean }}"
-                           target="_blank" rel="noopener"
-                           aria-label="שליחת הודעת WhatsApp ל{{ display_name }}">
-                          💬 WhatsApp
-                        </a>
-                      {% endif %}
-                    </div>
-                  {% endif %}
-                </div>
+                </header>
                 <div class="card-main">
-                  <div class="card-title">
-                    <a href="{{ profile_url }}">
-                      {% if company_display %}
-                        <span class="company">{{ company_display }}</span>
-                        {% if display_name %}<span class="divider">·</span><span class="person">{{ display_name }}</span>{% endif %}
-                      {% else %}
-                        <span class="person">{{ display_name }}</span>
-                      {% endif %}
-                    </a>
-                  </div>
-                  {% if rating_value %}
-                    <div class="card-rating" aria-label="{{ rating_label_template|replace('%.2f', rating_value) }}">
-                      <span class="stars" aria-hidden="true">
-                        {% for i in range(1, 6) %}
-                          {% set star_class = 'star' %}
-                          {% if rating_numeric is not none and rating_numeric >= i %}
-                            {% set star_class = star_class ~ ' star--full' %}
-                          {% elif rating_numeric is not none and rating_numeric > (i - 1) %}
-                            {% set star_class = star_class ~ ' star--half' %}
-                          {% endif %}
-                          <span class="{{ star_class }}">★</span>
-                        {% endfor %}
-                      </span>
-                      <span class="avg">{{ rating_value }}</span>
-                      {% if w.reviews_count %}<span class="count">({{ w.reviews_count }} {{ reviews_label }})</span>{% endif %}
-                    </div>
-                  {% endif %}
                   {% if specialties_trim %}
                     <div class="card-specialties" title="{{ specialties_text }}">{{ specialties_trim }}</div>
-                  {% endif %}
-                  {% if has_badges %}
-                    <div class="card-badges">
-                      {% if experience_chip %}<span class="chip chip--experience">{{ experience_chip }}</span>{% endif %}
-                      {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
-                    </div>
                   {% endif %}
                   {% if bio_text %}
                     <div class="card-bio">{{ bio_text }}</div>
                   {% endif %}
+                  <div class="card-meta-row">
+                    {% if has_badges %}
+                      <div class="card-badges">
+                        {% if experience_chip %}<span class="chip chip--experience">{{ experience_chip }}</span>{% endif %}
+                        {% if w.offers_emergency %}<span class="chip chip--availability">זמינות 24/7</span>{% endif %}
+                      </div>
+                    {% endif %}
+                    {% if languages|length %}
+                      <div class="card-langs" title="{{ languages_full }}">
+                        <span class="langs-label">{{ languages_label }}:</span>
+                        {% for lang in languages_preview %}
+                          <span class="lang-tag">{{ lang }}</span>
+                        {% endfor %}
+                        {% if languages_extra > 0 %}
+                          <span class="lang-tag">+{{ languages_extra }}</span>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
                   {% if last_review_author or last_review_snippet %}
                     <div class="card-last-review">
                       <div class="last-review-meta">
@@ -498,45 +492,26 @@
                         {% endif %}
                       </div>
                       {% if last_review_snippet %}<div class="last-review-text">{{ last_review_snippet }}</div>{% endif %}
-                      <a class="profile-link" href="{{ profile_url }}#reviews">
-                        הצג פרופיל מלא
-                        <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="19" y1="12" x2="5" y2="12" />
-                          <polyline points="12 19 5 12 12 5" />
-                        </svg>
-                      </a>
-                    </div>
-                  {% elif w.reviews_count %}
-                    <div class="card-last-review">
-                      <a class="profile-link" href="{{ profile_url }}#reviews">
-                        הצג פרופיל מלא
-                        <svg aria-hidden="true" class="profile-link__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <line x1="19" y1="12" x2="5" y2="12" />
-                          <polyline points="12 19 5 12 12 5" />
-                        </svg>
-                      </a>
                     </div>
                   {% endif %}
-                  {% if languages|length %}
-                    <div class="card-langs" title="{{ languages_full }}">
-                      <span class="langs-label">
-                        <svg aria-hidden="true" class="langs-label__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21 12a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z" />
-                          <path d="M3.6 9h16.8" />
-                          <path d="M3.6 15h16.8" />
-                          <path d="M12 3a15.3 15.3 0 0 0 0 18" />
-                          <path d="M12 3a15.3 15.3 0 0 1 0 18" />
-                        </svg>
-                        שפות שירות:
-                      </span>
-                      {% for lang in languages_preview %}
-                        <span class="lang-tag">{{ lang }}</span>
-                      {% endfor %}
-                      {% if languages_extra > 0 %}
-                        <span class="lang-tag">+{{ languages_extra }}</span>
-                      {% endif %}
-                    </div>
-                  {% endif %}
+                  <div class="card-actions">
+                    {% if phone_tel %}
+                      <a class="btn btn-call"
+                         href="tel:{{ w.phone_formatted or sanitized_phone or phone_tel }}"
+                         aria-label="התקשר ל{{ display_name }} במספר {{ phone_display }}">
+                        📞 {{ phone_display }}
+                      </a>
+                    {% endif %}
+                    {% if whatsapp_clean %}
+                      <a class="btn btn-whatsapp"
+                         href="https://wa.me/{{ whatsapp_clean }}"
+                         target="_blank" rel="noopener"
+                         aria-label="שליחת הודעת WhatsApp ל{{ display_name }}">
+                        💬 WhatsApp
+                      </a>
+                    {% endif %}
+                    <a class="btn btn-profile" href="{{ profile_url }}#reviews">צפו בפרופיל</a>
+                  </div>
                 </div>
               </article>
             {% endfor %}

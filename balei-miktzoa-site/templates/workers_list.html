@@ -184,6 +184,25 @@
     {% set video_fullscreen_label = video_fullscreen_label_map.get(g.current_lang, video_fullscreen_label_map['he']) %}
     {% set video_exit_fullscreen_label = video_exit_fullscreen_label_map.get(g.current_lang, video_exit_fullscreen_label_map['he']) %}
     {% set close_label = (_('close') if _ else 'סגור') %}
+    {% set header_eyebrow_map = {'he':'בעלי מקצוע מומלצים','en':'Recommended professionals','ru':'Рекомендуемые специалисты'} %}
+    {% set header_subtitle_map = {
+      'he':'השוו בעלי מקצוע לפי דירוג אמיתי, ביקורות עדכניות וזמינות. אפשר לשנות עיר או לדייק סינון בלחיצה.',
+      'en':'Compare professionals by real ratings, recent reviews, and availability. Change city or refine filters in one click.',
+      'ru':'Сравнивайте специалистов по реальному рейтингу, свежим отзывам и доступности. Меняйте город и уточняйте фильтры в один клик.'
+    } %}
+    {% set header_context_map = {
+      'he':'%s תוצאות ב%s',
+      'en':'%s results in %s',
+      'ru':'%s результатов в %s'
+    } %}
+    {% set header_context_fallback_map = {
+      'he':'%s תוצאות זמינות',
+      'en':'%s available results',
+      'ru':'Доступно %s результатов'
+    } %}
+    {% set header_eyebrow = header_eyebrow_map.get(g.current_lang, header_eyebrow_map['he']) %}
+    {% set header_subtitle = header_subtitle_map.get(g.current_lang, header_subtitle_map['he']) %}
+    {% set header_context = area_label and (header_context_map.get(g.current_lang, header_context_map['he'])|format(workers|length, area_label)) or (header_context_fallback_map.get(g.current_lang, header_context_fallback_map['he'])|format(workers|length)) %}
     <nav class="crumbs-min" aria-label="ניווט משני">
       <a href="{{ url_for_lang('home') }}">{{ _('nav_home') if _ else 'דף הבית' }}</a>
       <span>›</span>
@@ -191,7 +210,7 @@
     </nav>
     <section class="masthead market-head" aria-label="כותרת עמוד">
       <div class="market-head__top">
-        <p class="market-head__eyebrow">MARKETPLACE</p>
+        <p class="market-head__eyebrow">{{ header_eyebrow }}</p>
         <div class="market-head__title-row">
           <h1 class="market-head__title">
             <span class="t-field">{{ field_label }}</span>
@@ -233,13 +252,14 @@
             </div>
           </div>
         </div>
-        <p class="market-head__subtitle">בחרו בעל מקצוע לפי אמינות, ביקורות והזמינות שמתאימה לכם.</p>
+        <p class="market-head__subtitle">{{ header_subtitle }}</p>
+        <p class="market-head__context">{{ header_context }}</p>
       </div>
       <div class="market-head__proof" role="list" aria-label="הבטחות השירות">
-        <span class="proof-chip" role="listitem"><i class="fa-solid fa-shield-halved"></i>מאומתים</span>
-        <span class="proof-chip" role="listitem"><i class="fa-regular fa-message"></i>ביקורות אמיתיות</span>
-        <span class="proof-chip" role="listitem"><i class="fa-solid fa-clock"></i>זמינות מהירה</span>
-        <span class="proof-chip proof-chip--count" role="listitem"><i class="fa-solid fa-users"></i>{{ workers|length }} תוצאות באזור</span>
+        <span class="proof-chip" role="listitem"><i class="fa-solid fa-shield-halved"></i>פרופילים מאומתים</span>
+        <span class="proof-chip" role="listitem"><i class="fa-regular fa-message"></i>ביקורות לקוחות</span>
+        <span class="proof-chip" role="listitem"><i class="fa-solid fa-clock"></i>זמינות לפי סטטוס</span>
+        <span class="proof-chip proof-chip--count" role="listitem"><i class="fa-solid fa-users"></i>{{ workers|length }} תוצאות</span>
       </div>
     </section>
     <div class="results-toolbar" role="region" aria-label="סרגל תוצאות">
@@ -287,15 +307,11 @@
           <section class="wr-stack" role="list">
             {% for w in workers %}
               {% set image_url = w.card_image_url or (w.image_filename and url_for('static', filename=w.image_filename) or url_for('static', filename='default-worker.jpg')) %}
+              {% set has_media_image = (w.card_image_url or w.image_filename) %}
               {% set specialties_list = (w.services_list or w.sub_services or []) %}
+              {% set specialties_preview = specialties_list[:4] %}
+              {% set specialties_more = specialties_list|length - specialties_preview|length %}
               {% set specialties_text = specialties_list|join(', ') %}
-              {% set specialties_trim = specialties_text %}
-              {% if specialties_trim %}
-                {% set max_specialties = 110 %}
-                {% if specialties_trim|length > max_specialties %}
-                  {% set specialties_trim = specialties_trim[:max_specialties].rsplit(' ', 1)[0] ~ '…' %}
-                {% endif %}
-              {% endif %}
               {% set languages = w.languages or [] %}
               {% set languages_full = languages|join(', ') %}
               {% set max_lang_tags = 3 %}
@@ -336,6 +352,10 @@
                 {% set display_name = (w.name or w.company_name or '') %}
               {% endif %}
               {% set company_display = w.company_name %}
+              {% set initials = (display_name|trim)[:1]|upper %}
+              {% if company_display and company_display|trim %}
+                {% set initials = company_display[:1]|upper %}
+              {% endif %}
               {# דירוג ממוצע #}
               {% set rating_source = none %}
               {% if w.rating_avg is defined and w.rating_avg is not none and w.rating_avg != '' %}
@@ -453,16 +473,26 @@
                         </button>
                         <span class="media-badge">וידאו</span>
                       </div>
-                    {% else %}
+                    {% elif has_media_image %}
                       <img class="media-thumb media-box" src="{{ image_url }}" alt="{{ display_name }}">
+                    {% else %}
+                      <div class="media-fallback media-box" aria-hidden="true">
+                        <span class="media-fallback__initial">{{ initials }}</span>
+                        <span class="media-fallback__role">{{ field_label }}</span>
+                      </div>
                     {% endif %}
                   </div>
                 </header>
                 <div class="card-main">
-                  {% if specialties_trim %}
+                  {% if specialties_preview %}
                     <div class="card-specialties" title="{{ specialties_text }}">
                       <span class="card-kicker">תחומי שירות</span>
-                      <span>{{ specialties_trim }}</span>
+                      <div class="specialty-tags">
+                        {% for item in specialties_preview %}
+                          <span class="specialty-tag">{{ item }}</span>
+                        {% endfor %}
+                        {% if specialties_more > 0 %}<span class="specialty-tag specialty-tag--more">+{{ specialties_more }}</span>{% endif %}
+                      </div>
                     </div>
                   {% endif %}
                   {% if bio_text %}

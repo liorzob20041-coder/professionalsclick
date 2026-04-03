@@ -508,7 +508,7 @@ html[dir="ltr"] .search-btn{
   }
 
   html[dir="rtl"] .tb-logo-line {
-    margin-inline-end: 0;
+    margin-inline-end: -64px;
   }
 
   html[dir="ltr"] .tb-logo-line {

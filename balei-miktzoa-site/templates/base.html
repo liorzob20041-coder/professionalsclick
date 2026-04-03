@@ -883,14 +883,17 @@
       <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
     </ul>
     <div class="tb-header-tools" aria-label="header actions">
-      <button class="search-btn tb-tool-btn tb-tool-btn--search"
-              type="button"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              aria-controls="globalSearch"
-              aria-label="{{ _('search') if _ else ('חיפוש' if __nav_lang == 'he' else ('Search' if __nav_lang == 'en' else 'Поиск')) }}">
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      </button>
+      <details class="tb-lang-switcher">
+        <summary class="tb-lang-switcher__trigger" aria-label="{{ _('change_language') }}">
+          <i class="fa-solid fa-globe" aria-hidden="true"></i>
+          <span>{{ __lang_labels[g.current_lang] if g.current_lang in __lang_labels else __lang_labels['he'] }}</span>
+        </summary>
+        <ul class="tb-lang-switcher__menu" role="menu">
+          <li><a href="{{ url_for_lang(lang='he') }}" role="menuitem">{{ __lang_labels['he'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='en') }}" role="menuitem">{{ __lang_labels['en'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
+        </ul>
+      </details>
       <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
     </div>
   </div>

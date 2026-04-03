@@ -328,12 +328,12 @@ html[dir="ltr"] .search-btn{
   .topbar-rail .rail {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: clamp(14px, 1.8vw, 24px);
-    width: min(calc(100% - 40px), 1280px);
+    width: min(100%, 1280px);
     max-width: 1280px;
     margin-inline: auto;
-    padding-inline: 0;
+    padding-inline: clamp(16px, 2vw, 26px);
     min-height: var(--hdr-h);
   }
 
@@ -342,8 +342,7 @@ html[dir="ltr"] .search-btn{
     align-items: center;
     gap: clamp(10px, 1.4vw, 18px);
     min-width: 0;
-    flex: 0 1 auto;
-    margin-inline-end: 0;
+    flex: 1 1 auto;
   }
 
   .tb-main-nav {
@@ -355,7 +354,7 @@ html[dir="ltr"] .search-btn{
     list-style: none;
     min-width: 0;
     justify-content: flex-start;
-    padding-inline-start: clamp(8px, 1vw, 12px);
+    margin-inline-start: clamp(8px, 1vw, 12px);
     border-inline-start: 1px solid rgb(226 232 240 / 22%);
   }
 
@@ -387,8 +386,6 @@ html[dir="ltr"] .search-btn{
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-inline-start: auto;
-    margin-inline-end: 0;
     padding: 4px 0;
     flex: 0 0 auto;
   }
@@ -448,15 +445,15 @@ html[dir="ltr"] .search-btn{
   }
 
   html[dir="rtl"] .tb-header-tools {
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
 
   html[dir="rtl"] .tb-brand-nav {
-    margin-inline-start: clamp(18px, 2.2vw, 34px);
+    justify-content: flex-start;
   }
 
   html[dir="ltr"] .tb-brand-nav {
-    margin-inline-start: clamp(10px, 1.2vw, 18px);
+    justify-content: flex-start;
   }
 
   .tb-lang-switcher ul.show {

@@ -291,7 +291,7 @@ html[dir="ltr"] .search-btn{
 
 @media (width >= 992px) {
   :root {
-    --hdr-h: 78px;
+    --hdr-h: 82px;
   }
 
   .kebab-btn,
@@ -326,37 +326,50 @@ html[dir="ltr"] .search-btn{
   }
 
   .topbar-rail .rail {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: clamp(14px, 1.8vw, 24px);
+    display: block;
     width: min(calc(100% - 40px), 1280px);
     max-width: 1280px;
     margin-inline: auto;
-    padding-inline: 0;
+    padding-inline: clamp(12px, 2vw, 28px);
     min-height: var(--hdr-h);
+  }
+
+  .tb-desktop-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(20px, 3.1vw, 54px);
+    min-height: var(--hdr-h);
+    width: 100%;
+  }
+
+  html[dir="rtl"] .tb-desktop-shell {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  html[dir="ltr"] .tb-desktop-shell {
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .tb-brand-nav {
     display: flex;
     align-items: center;
-    gap: clamp(10px, 1.4vw, 18px);
+    gap: clamp(12px, 1.4vw, 20px);
     min-width: 0;
-    flex: 0 1 auto;
-    margin-inline-end: 0;
+    justify-self: start;
   }
 
   .tb-main-nav {
     display: flex;
     align-items: center;
-    gap: 1px;
+    gap: 2px;
     margin: 0;
     padding: 0;
     list-style: none;
     min-width: 0;
     justify-content: flex-start;
-    padding-inline-start: clamp(8px, 1vw, 12px);
-    border-inline-start: 1px solid rgb(226 232 240 / 22%);
+    padding-inline-start: clamp(12px, 1.3vw, 18px);
+    border-inline-start: 1px solid rgb(226 232 240 / 26%);
   }
 
   .tb-main-nav a {
@@ -386,11 +399,11 @@ html[dir="ltr"] .search-btn{
   .tb-header-tools {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-inline-start: auto;
-    margin-inline-end: 0;
-    padding: 4px 0;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 0;
     flex: 0 0 auto;
+    justify-self: end;
   }
 
   .tb-lang-switcher {
@@ -403,7 +416,7 @@ html[dir="ltr"] .search-btn{
     justify-content: center;
     gap: 7px;
     min-width: 106px;
-    min-height: 38px;
+    min-height: 40px;
     padding: 0 14px;
     border-radius: 10px;
     border: 1px solid rgb(148 163 184 / 34%);
@@ -447,18 +460,6 @@ html[dir="ltr"] .search-btn{
     z-index: 40;
   }
 
-  html[dir="rtl"] .tb-header-tools {
-    justify-content: flex-start;
-  }
-
-  html[dir="rtl"] .tb-brand-nav {
-    margin-inline-start: clamp(18px, 2.2vw, 34px);
-  }
-
-  html[dir="ltr"] .tb-brand-nav {
-    margin-inline-start: clamp(10px, 1.2vw, 18px);
-  }
-
   .tb-lang-switcher ul.show {
     display: block;
   }
@@ -483,7 +484,7 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
+    min-height: 42px;
     padding: 0 18px;
     border-radius: 999px;
     text-decoration: none;
@@ -505,17 +506,30 @@ html[dir="ltr"] .search-btn{
   .tb-logo-line {
     padding: 0;
     border-radius: 10px;
+    flex: 0 0 auto;
   }
 
-  html[dir="rtl"] .tb-logo-line {
-    margin-inline-end: 0;
+  html[dir="rtl"] .tb-brand-nav {
+    justify-self: end;
   }
 
-  html[dir="ltr"] .tb-logo-line {
-    margin-inline-start: 0;
+  html[dir="rtl"] .tb-header-tools {
+    justify-self: start;
+    justify-content: flex-start;
+  }
+
+  html[dir="ltr"] .tb-brand-nav {
+    justify-self: start;
+  }
+
+  html[dir="ltr"] .tb-header-tools {
+    justify-self: end;
   }
 
   html[dir="ltr"] .tb-main-nav {
-    justify-content: flex-end;
+    border-inline-start: none;
+    border-inline-end: 1px solid rgb(226 232 240 / 26%);
+    padding-inline-start: 0;
+    padding-inline-end: clamp(12px, 1.3vw, 18px);
   }
 }

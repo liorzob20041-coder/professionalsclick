@@ -182,6 +182,16 @@
     ) !important;
     left:auto !important;
   }
+
+  @media (min-width: 992px){
+    .kebab-btn,
+    .menu-close-btn,
+    body > .search-btn,
+    body > .language-switcher{
+      display:none !important;
+      pointer-events:none !important;
+    }
+  }
 </style>
 
 
@@ -730,6 +740,8 @@
 
   <!-- ====== כפתור ⋮ ותפריט צד (מובייל) ====== -->
   <button class="kebab-btn" id="kebabBtn"
+          hidden
+          aria-hidden="true"
           aria-controls="mobileMenu"
           aria-expanded="false"
           aria-label="{{ __menu_open_txt }}">
@@ -737,6 +749,8 @@
 
   <!-- כפתור סגירה שמופיע רק כשהתפריט פתוח -->
   <button class="menu-close-btn" id="menuCloseTop"
+          hidden
+          aria-hidden="true"
           type="button"
           aria-label="{{ __menu_close_txt }}"></button>
 
@@ -819,6 +833,7 @@
     'en': __lang_alt_en if __lang_alt_en and __lang_alt_en != 'homepage.language_menu.flag_alt.en' else 'United States flag',
     'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
   } %}
+  {% set __desktop_lang_label = __lang_labels.get(g.current_lang or 'he', __lang_labels['he']) %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
 <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}">
   <i class="fa-solid fa-globe" data-testid="lang-globe" aria-hidden="true"></i>
@@ -862,6 +877,7 @@
 <!-- Topbar – לוגו + ניווט דסקטופ + פעולות -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
+    <div class="tb-brand-nav">
     {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
     {% set __site_name_i18n = (_('site_name') if _ else '') %}
     {% set __brand_name = (__site_name_i18n if __site_name_i18n and __site_name_i18n != 'site_name' else (site_name if site_name else 'בעלי מקצוע בקליק')) %}
@@ -882,15 +898,20 @@
       <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
       <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
     </ul>
+    </div>
     <div class="tb-header-tools" aria-label="header actions">
-      <button class="search-btn tb-tool-btn tb-tool-btn--search"
-              type="button"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              aria-controls="globalSearch"
-              aria-label="{{ _('search') if _ else ('חיפוש' if __nav_lang == 'he' else ('Search' if __nav_lang == 'en' else 'Поиск')) }}">
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      </button>
+      <div class="tb-lang-switcher">
+        <button class="tb-lang-chip" type="button" onclick="toggleLanguageList('desktop-language-list')" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
+          <i class="fa-solid fa-globe" aria-hidden="true"></i>
+          <span>{{ __desktop_lang_label }}</span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <ul id="desktop-language-list" role="menu">
+          <li><a href="{{ url_for_lang(lang='he') }}" role="menuitem">{{ __lang_labels['he'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='en') }}" role="menuitem">{{ __lang_labels['en'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
+        </ul>
+      </div>
       <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
     </div>
   </div>
@@ -1072,8 +1093,9 @@ runWhenIdle(function () {
 });
 </script>
   <script>
-  function toggleLanguageList() {
-    const list = document.getElementById('language-list');
+  function toggleLanguageList(listId) {
+    const list = document.getElementById(listId || 'language-list');
+    if (!list) return;
     const btn = list.previousElementSibling;
     const isShown = list.classList.toggle('show');
     btn.setAttribute('aria-expanded', isShown);
@@ -1081,14 +1103,16 @@ runWhenIdle(function () {
   runWhenIdle(function(){
     if (window.__LH) return;
     document.addEventListener('click', function(event) {
-      const switcher = document.querySelector('.language-switcher');
-      const list = document.getElementById('language-list');
-      if (!switcher || !list) return;
-      if (!switcher.contains(event.target)) {
-        list.classList.remove('show');
-        const btn = switcher.querySelector('button');
-        if (btn) btn.setAttribute('aria-expanded', false);
-      }
+      const switchers = document.querySelectorAll('.language-switcher, .tb-lang-switcher');
+      switchers.forEach(function(switcher){
+        const list = switcher.querySelector('ul');
+        if (!list) return;
+        if (!switcher.contains(event.target)) {
+          list.classList.remove('show');
+          const btn = switcher.querySelector('button');
+          if (btn) btn.setAttribute('aria-expanded', false);
+        }
+      });
     });
   });
   </script>
@@ -1352,7 +1376,25 @@ runWhenIdle(function(){
     const closeTopBtn = document.getElementById('menuCloseTop');
     if (!btn || !drawer || !backdrop) return;
     if (closeTopBtn) closeTopBtn.style.display = 'none';
+    const mobileMq = window.matchMedia('(max-width: 991px)');
     let lastFocus = null;
+    function syncMobileOnlyControls(){
+      const isMobile = mobileMq.matches;
+      if (isMobile){
+        btn.hidden = false;
+        btn.removeAttribute('aria-hidden');
+      } else {
+        closeDrawer();
+        btn.hidden = true;
+        btn.setAttribute('aria-hidden', 'true');
+        btn.style.display = 'none';
+        if (closeTopBtn){
+          closeTopBtn.hidden = true;
+          closeTopBtn.setAttribute('aria-hidden', 'true');
+          closeTopBtn.style.display = 'none';
+        }
+      }
+    }
     function firstFocusable(){
       const sel='a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
       return Array.from(drawer.querySelectorAll(sel)).find(el=>!el.disabled && el.offsetParent!==null);
@@ -1362,14 +1404,24 @@ runWhenIdle(function(){
       drawer.classList.add('open'); drawer.removeAttribute('aria-hidden');
       btn.setAttribute('aria-expanded','true');
       backdrop.hidden=false; document.body.style.overflow='hidden'; document.body.classList.add('menu-open');
-      btn.style.display='none'; if (closeTopBtn) closeTopBtn.style.display='inline-flex';
+      btn.style.display='none';
+      if (closeTopBtn){
+        closeTopBtn.hidden = false;
+        closeTopBtn.removeAttribute('aria-hidden');
+        closeTopBtn.style.display='inline-flex';
+      }
       const f=firstFocusable(); if (f) f.focus({preventScroll:true});
     }
     function closeDrawer(){
       drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true');
       btn.setAttribute('aria-expanded','false');
       backdrop.hidden=true; document.body.style.overflow=''; document.body.classList.remove('menu-open');
-      btn.style.display=''; if (closeTopBtn) closeTopBtn.style.display='none';
+      btn.style.display='';
+      if (closeTopBtn){
+        closeTopBtn.hidden = true;
+        closeTopBtn.setAttribute('aria-hidden', 'true');
+        closeTopBtn.style.display='none';
+      }
       if (lastFocus && lastFocus.focus) { try{ lastFocus.focus(); }catch(_){} }
     }
     btn.addEventListener('click', e=>{ e.preventDefault(); openDrawer(); });
@@ -1387,6 +1439,9 @@ runWhenIdle(function(){
       if (e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
+    syncMobileOnlyControls();
+    if (mobileMq.addEventListener) mobileMq.addEventListener('change', syncMobileOnlyControls);
+    else if (mobileMq.addListener) mobileMq.addListener(syncMobileOnlyControls);
   }
   function boot(){ if ('requestIdleCallback' in window) requestIdleCallback(wire,{timeout:1200}); else window.addEventListener('load', ()=>setTimeout(wire,300)); }
   boot();

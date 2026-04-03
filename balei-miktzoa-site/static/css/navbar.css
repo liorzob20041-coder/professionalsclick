@@ -324,6 +324,7 @@ html[dir="ltr"] .search-btn{
     justify-self: end;
     gap: 18px;
     min-width: 0;
+    margin-inline-end: clamp(10px, 1.4vw, 22px);
   }
 
   .tb-main-nav {
@@ -376,17 +377,27 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 48px;
+    gap: 7px;
+    min-width: 86px;
     min-height: 38px;
-    padding: 0 12px;
+    padding: 0 10px;
     border-radius: 10px;
     border: 1px solid rgb(148 163 184 / 38%);
     background: rgb(248 250 252 / 96%);
     color: var(--top-navy);
     font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+    font-weight: 600;
     cursor: pointer;
+  }
+
+  .tb-lang-chip .fa-globe {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  .tb-lang-chip .fa-chevron-down {
+    font-size: 10px;
+    opacity: 0.68;
   }
 
   .tb-lang-chip:hover,

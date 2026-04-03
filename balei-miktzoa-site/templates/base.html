@@ -182,6 +182,16 @@
     ) !important;
     left:auto !important;
   }
+
+  @media (min-width: 992px){
+    .kebab-btn,
+    .menu-close-btn,
+    body > .search-btn,
+    body > .language-switcher{
+      display:none !important;
+      pointer-events:none !important;
+    }
+  }
 </style>
 
 
@@ -819,6 +829,7 @@
     'en': __lang_alt_en if __lang_alt_en and __lang_alt_en != 'homepage.language_menu.flag_alt.en' else 'United States flag',
     'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
   } %}
+  {% set __desktop_lang_label = __lang_labels.get(g.current_lang or 'he', __lang_labels['he']) %}
   <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
 <button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}">
   <i class="fa-solid fa-globe" data-testid="lang-globe" aria-hidden="true"></i>
@@ -887,7 +898,9 @@
     <div class="tb-header-tools" aria-label="header actions">
       <div class="tb-lang-switcher">
         <button class="tb-lang-chip" type="button" onclick="toggleLanguageList('desktop-language-list')" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
-          {{ (g.current_lang or 'he')|upper }}
+          <i class="fa-solid fa-globe" aria-hidden="true"></i>
+          <span>{{ __desktop_lang_label }}</span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
         </button>
         <ul id="desktop-language-list" role="menu">
           <li><a href="{{ url_for_lang(lang='he') }}" role="menuitem">{{ __lang_labels['he'] }}</a></li>

@@ -340,7 +340,7 @@ html[dir="ltr"] .search-btn{
   .tb-brand-nav {
     display: flex;
     align-items: center;
-    gap: clamp(10px, 1.4vw, 18px);
+    gap: 12px;
     min-width: 0;
     flex: 0 1 auto;
     margin-inline-end: 0;
@@ -449,6 +449,11 @@ html[dir="ltr"] .search-btn{
 
   html[dir="rtl"] .tb-header-tools {
     justify-content: flex-start;
+  }
+
+  html[dir="rtl"] .tb-main-nav {
+    padding-inline-start: 0;
+    border-inline-start: 0;
   }
 
   html[dir="rtl"] .tb-brand-nav {

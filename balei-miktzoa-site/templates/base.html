@@ -862,6 +862,7 @@
 <!-- Topbar – לוגו + ניווט דסקטופ + פעולות -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
+    <div class="tb-brand-nav">
     {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
     {% set __site_name_i18n = (_('site_name') if _ else '') %}
     {% set __brand_name = (__site_name_i18n if __site_name_i18n and __site_name_i18n != 'site_name' else (site_name if site_name else 'בעלי מקצוע בקליק')) %}
@@ -882,15 +883,18 @@
       <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
       <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
     </ul>
+    </div>
     <div class="tb-header-tools" aria-label="header actions">
-      <button class="search-btn tb-tool-btn tb-tool-btn--search"
-              type="button"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              aria-controls="globalSearch"
-              aria-label="{{ _('search') if _ else ('חיפוש' if __nav_lang == 'he' else ('Search' if __nav_lang == 'en' else 'Поиск')) }}">
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      </button>
+      <div class="tb-lang-switcher">
+        <button class="tb-lang-chip" type="button" onclick="toggleLanguageList('desktop-language-list')" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
+          {{ (g.current_lang or 'he')|upper }}
+        </button>
+        <ul id="desktop-language-list" role="menu">
+          <li><a href="{{ url_for_lang(lang='he') }}" role="menuitem">{{ __lang_labels['he'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='en') }}" role="menuitem">{{ __lang_labels['en'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
+        </ul>
+      </div>
       <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
     </div>
   </div>
@@ -1072,8 +1076,9 @@ runWhenIdle(function () {
 });
 </script>
   <script>
-  function toggleLanguageList() {
-    const list = document.getElementById('language-list');
+  function toggleLanguageList(listId) {
+    const list = document.getElementById(listId || 'language-list');
+    if (!list) return;
     const btn = list.previousElementSibling;
     const isShown = list.classList.toggle('show');
     btn.setAttribute('aria-expanded', isShown);
@@ -1081,14 +1086,16 @@ runWhenIdle(function () {
   runWhenIdle(function(){
     if (window.__LH) return;
     document.addEventListener('click', function(event) {
-      const switcher = document.querySelector('.language-switcher');
-      const list = document.getElementById('language-list');
-      if (!switcher || !list) return;
-      if (!switcher.contains(event.target)) {
-        list.classList.remove('show');
-        const btn = switcher.querySelector('button');
-        if (btn) btn.setAttribute('aria-expanded', false);
-      }
+      const switchers = document.querySelectorAll('.language-switcher, .tb-lang-switcher');
+      switchers.forEach(function(switcher){
+        const list = switcher.querySelector('ul');
+        if (!list) return;
+        if (!switcher.contains(event.target)) {
+          list.classList.remove('show');
+          const btn = switcher.querySelector('button');
+          if (btn) btn.setAttribute('aria-expanded', false);
+        }
+      });
     });
   });
   </script>

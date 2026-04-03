@@ -14,8 +14,8 @@
   --bg: #f7f8fc;
   --brand: #102a43;
   --brand-700: #0b1f33;
-  --cta: #c27a2c;
-  --cta-700: #b96c1c;
+  --cta: #b98243;
+  --cta-700: #9c6931;
   --brd: #e5e7eb;
   --muted: #6b7280;
   --radius: 12px;
@@ -30,7 +30,7 @@
   --hero-input-h: 38px;
   --hero-gap: 8px;
   --hero-accent: #102a43;
-  --hero-main: #c27a2c;
+  --hero-main: #b98243;
 
   /* נישה/פסי גלילה */
   --niche-d-gap: 8px;
@@ -48,7 +48,7 @@
   --sba-h: 0px;
 
   /* צבע אייקונים/הדגשות */
-  --accent-color: #c27a2c;
+  --accent-color: #b98243;
 }
 
 *,
@@ -192,12 +192,12 @@ main > section h3::after {
   gap: 24px;
   width: min(100% - 2 * var(--container-pad, 20px), 100%);
   max-width: 1280px;
-  margin: 18px auto 0;
+  margin: 24px auto 0;
   padding: 26px 20px;
-  background: #fff;
+  background: linear-gradient(180deg, #fff, #fcfdff);
   border: 1px solid rgb(15 23 42 / 8%);
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 8%);
+  box-shadow: 0 10px 28px rgb(15 23 42 / 10%);
   min-height: 380px;
 }
 
@@ -325,7 +325,7 @@ html[dir="ltr"] .check-item {
   width: var(--hero-card-w);
   padding: 13px 14px;
   border-radius: 16px;
-  background: rgb(15 23 42 / 58%);
+  background: linear-gradient(180deg, rgb(16 42 67 / 74%), rgb(15 23 42 / 66%));
   backdrop-filter: blur(6px) saturate(108%);
   border: 1px solid rgb(255 255 255 / 16%);
   box-shadow: 0 12px 32px rgb(2 6 23 / 24%);
@@ -478,7 +478,7 @@ html[dir="ltr"] .hero-cta .hs-field input {
   font-weight: 800;
   color: #fff;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--cta-700), var(--hero-main));
+  background: linear-gradient(140deg, var(--cta-700), var(--hero-main));
   box-shadow: 0 8px 18px rgb(2 6 23 / 24%);
   transition:
     filter 0.15s,
@@ -837,8 +837,8 @@ html[dir="ltr"] .input-group:has(#field)::before {
 
 .hq-pill {
   appearance: none;
-  border: 1px solid var(--brand);
-  background: var(--brand);
+  border: 1px solid rgb(16 42 67 / 88%);
+  background: linear-gradient(165deg, #12385a, #102a43);
   color: #fff;
   padding: 8px 12px;
   border-radius: 999px;
@@ -862,8 +862,9 @@ html[dir="ltr"] .input-group:has(#field)::before {
     sans-serif;
 }
 .home-quick-inline .hq-pill + .hq-pill {
-  background: rgb(255 255 255 / 92%);
-  color: var(--brand);
+  background: rgb(255 255 255 / 95%);
+  color: #12385a;
+  border-color: rgb(16 42 67 / 22%);
 }
 
 .hq-pill:hover {

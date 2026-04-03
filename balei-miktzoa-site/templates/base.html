@@ -859,7 +859,7 @@
     </ul>
   </div>
 
-<!-- Topbar – לוגו אופקי (אייקון + טקסט) -->
+<!-- Topbar – לוגו + ניווט דסקטופ + פעולות -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
     {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
@@ -875,6 +875,24 @@
         style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
       <span class="brand-text sr-only">{{ __brand_name }}</span>
     </a>
+    <ul class="tb-main-nav" aria-label="{{ __menu_main_txt }}">
+      <li><a href="{{ url_for_lang('home') }}">{{ __nav_home if __nav_home and __nav_home != 'navbar_home' else __nav_labels['home'] }}</a></li>
+      <li><a href="{{ url_for_lang('why_us') }}">{{ __nav_why if __nav_why and __nav_why != 'navbar_why_us' else __nav_labels['why'] }}</a></li>
+      <li><a href="{{ url_for_lang('works') }}">{{ __nav_works if __nav_works and __nav_works != 'navbar_works' else __nav_labels['works'] }}</a></li>
+      <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
+      <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
+    </ul>
+    <div class="tb-header-tools" aria-label="header actions">
+      <button class="search-btn tb-tool-btn tb-tool-btn--search"
+              type="button"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              aria-controls="globalSearch"
+              aria-label="{{ _('search') if _ else ('חיפוש' if __nav_lang == 'he' else ('Search' if __nav_lang == 'en' else 'Поиск')) }}">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      </button>
+      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
+    </div>
   </div>
 </nav>
 
@@ -986,8 +1004,8 @@ runWhenIdle(function () {
   if (window.__LH) return;
   function initGlobalSearchModal() {
     var modal = document.getElementById('globalSearch');
-    var openBtn = document.querySelector('.search-btn');
-    if (!modal || !openBtn) return;
+    var openBtns = Array.prototype.slice.call(document.querySelectorAll('.search-btn'));
+    if (!modal || !openBtns.length) return;
     var backdrop = modal.querySelector('[data-search-dismiss]');
     var closeBtn = modal.querySelector('[data-search-close]');
     var panel = modal.querySelector('.search-modal__panel');
@@ -1009,7 +1027,7 @@ runWhenIdle(function () {
       modal.hidden = false;
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
-      openBtn.setAttribute('aria-expanded', 'true');
+      openBtns.forEach(function(btn){ btn.setAttribute('aria-expanded', 'true'); });
       document.body.classList.add('search-modal-open');
       document.body.style.overflow = 'hidden';
       shouldFocusAfterOpen = !(e && (e.type === 'click' || e.type === 'pointerdown' || e.type === 'touchstart'));
@@ -1019,7 +1037,7 @@ runWhenIdle(function () {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
       modal.hidden = true;
-      openBtn.setAttribute('aria-expanded', 'false');
+      openBtns.forEach(function(btn){ btn.setAttribute('aria-expanded', 'false'); });
       document.body.classList.remove('search-modal-open');
       document.body.style.overflow = prevOverflow;
       clearErrors();
@@ -1035,8 +1053,10 @@ runWhenIdle(function () {
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
-    openBtn.addEventListener('click', openModal);
-    openBtn.addEventListener('keydown', function (e) { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); openModal(e); } });
+    openBtns.forEach(function (btn) {
+      btn.addEventListener('click', openModal);
+      btn.addEventListener('keydown', function (e) { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); openModal(e); } });
+    });
     if (backdrop)  backdrop.addEventListener('click', closeModal);
     if (closeBtn)  closeBtn.addEventListener('click', function(e){ e.preventDefault(); closeModal(); });
     modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });

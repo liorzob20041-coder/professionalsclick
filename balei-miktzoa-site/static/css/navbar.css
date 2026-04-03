@@ -278,7 +278,8 @@ html[dir="ltr"] .search-btn{
 }
 
 .tb-main-nav,
-.tb-header-tools {
+.tb-left-cluster,
+.tb-right-cluster {
   display: none;
 }
 
@@ -328,35 +329,35 @@ html[dir="ltr"] .search-btn{
   .topbar-rail .rail {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: clamp(14px, 1.8vw, 24px);
-    width: min(calc(100% - 40px), 1280px);
-    max-width: 1280px;
+    justify-content: space-between;
+    gap: clamp(22px, 3vw, 42px);
+    width: min(calc(100% - 52px), 1260px);
+    max-width: 1260px;
     margin-inline: auto;
-    padding-inline: 0;
+    padding-inline: clamp(8px, 1vw, 14px);
     min-height: var(--hdr-h);
   }
 
-  .tb-brand-nav {
+  .tb-right-cluster {
     display: flex;
     align-items: center;
-    gap: clamp(10px, 1.4vw, 18px);
+    gap: clamp(8px, 1vw, 14px);
     min-width: 0;
-    flex: 0 1 auto;
-    margin-inline-end: 0;
+    flex: 0 1 70%;
+    justify-content: flex-end;
   }
 
   .tb-main-nav {
     display: flex;
     align-items: center;
-    gap: 1px;
+    gap: clamp(2px, 0.35vw, 6px);
     margin: 0;
     padding: 0;
     list-style: none;
     min-width: 0;
-    justify-content: flex-start;
-    padding-inline-start: clamp(8px, 1vw, 12px);
-    border-inline-start: 1px solid rgb(226 232 240 / 22%);
+    justify-content: flex-end;
+    padding-inline-end: clamp(8px, 1vw, 14px);
+    border-inline-end: 1px solid rgb(226 232 240 / 20%);
   }
 
   .tb-main-nav a {
@@ -383,14 +384,13 @@ html[dir="ltr"] .search-btn{
     outline: none;
   }
 
-  .tb-header-tools {
+  .tb-left-cluster {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-inline-start: auto;
-    margin-inline-end: 0;
+    gap: 10px;
     padding: 4px 0;
     flex: 0 0 auto;
+    direction: ltr;
   }
 
   .tb-lang-switcher {
@@ -447,16 +447,8 @@ html[dir="ltr"] .search-btn{
     z-index: 40;
   }
 
-  html[dir="rtl"] .tb-header-tools {
+  html[dir="rtl"] .tb-left-cluster {
     justify-content: flex-start;
-  }
-
-  html[dir="rtl"] .tb-brand-nav {
-    margin-inline-start: clamp(18px, 2.2vw, 34px);
-  }
-
-  html[dir="ltr"] .tb-brand-nav {
-    margin-inline-start: clamp(10px, 1.2vw, 18px);
   }
 
   .tb-lang-switcher ul.show {
@@ -503,19 +495,20 @@ html[dir="ltr"] .search-btn{
   }
 
   .tb-logo-line {
-    padding: 0;
+    padding: 0 0 0 2px;
     border-radius: 10px;
+    flex: 0 0 auto;
   }
 
-  html[dir="rtl"] .tb-logo-line {
-    margin-inline-end: 0;
-  }
-
-  html[dir="ltr"] .tb-logo-line {
-    margin-inline-start: 0;
+  html[dir="rtl"] .tb-right-cluster {
+    margin-inline-start: auto;
   }
 
   html[dir="ltr"] .tb-main-nav {
-    justify-content: flex-end;
+    border-inline-end: 0;
+    border-inline-start: 1px solid rgb(226 232 240 / 20%);
+    padding-inline-end: 0;
+    padding-inline-start: clamp(8px, 1vw, 14px);
+    justify-content: flex-start;
   }
 }

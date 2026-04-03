@@ -57,7 +57,7 @@ html[dir="ltr"] .kebab-btn {
 }
 
 .kebab-btn:focus-visible {
-  outline: 2px solid #f2994a;
+  outline: 2px solid #c27a2c;
   outline-offset: 2px;
 }
 
@@ -68,7 +68,8 @@ html[dir="ltr"] .kebab-btn {
   bottom: 0;
   width: min(82vw, 340px);
   background: #fff;
-  box-shadow: 0 10px 30px rgb(0 0 0 / 22%);
+  border-inline-end: 1px solid rgb(15 23 42 / 12%);
+  box-shadow: 0 12px 34px rgb(15 23 42 / 20%);
   z-index: 2147482900;
   padding: 18px 16px 28px;
   overflow-y: auto;
@@ -129,7 +130,7 @@ html[dir="ltr"] .mobile-drawer .close-drawer {
   display: block;
   padding: 14px 6px;
   text-decoration: none;
-  color: #2c3e50;
+  color: #12385a;
   font-weight: 600;
   font-size: 16px;
 }
@@ -191,7 +192,7 @@ html[dir="ltr"] .language-switcher {
 }
 
 .language-switcher button:focus-visible {
-  outline: 2px solid #f2994a;
+  outline: 2px solid #c27a2c;
   outline-offset: 2px;
 }
 

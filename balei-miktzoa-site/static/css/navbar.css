@@ -509,6 +509,7 @@ html[dir="ltr"] .search-btn{
 
   html[dir="rtl"] .tb-logo-line {
     margin-inline-end: 0;
+    transform: translateX(-8px);
   }
 
   html[dir="ltr"] .tb-logo-line {

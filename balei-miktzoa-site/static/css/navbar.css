@@ -311,22 +311,22 @@ html[dir="ltr"] .search-btn{
     display: grid;
     grid-template-columns: minmax(220px, 320px) minmax(360px, 1fr) auto;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
     max-width: 1280px;
     margin-inline: auto;
-    padding-inline: clamp(18px, 2.6vw, 34px);
+    padding-inline: clamp(24px, 3.1vw, 44px);
   }
 
   .tb-main-nav {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
     min-width: 0;
-    justify-content: center;
-    justify-self: center;
+    justify-content: flex-start;
+    justify-self: start;
   }
 
   .tb-main-nav a {
@@ -356,8 +356,8 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-self: end;
-    gap: 8px;
-    padding: 6px 8px 6px 6px;
+    gap: 12px;
+    padding: 6px 10px;
     border-radius: 999px;
     background: linear-gradient(180deg, rgb(15 23 42 / 40%), rgb(2 6 23 / 34%));
     border: 1px solid rgb(148 163 184 / 26%);
@@ -409,12 +409,26 @@ html[dir="ltr"] .search-btn{
     justify-self: end;
   }
 
+  html[dir="rtl"] .tb-main-nav {
+    justify-self: end;
+    margin-inline-end: clamp(10px, 1.5vw, 20px);
+  }
+
   html[dir="rtl"] .tb-header-tools {
     justify-self: start;
-    padding: 6px 6px 6px 8px;
+    margin-inline-start: clamp(8px, 1.2vw, 18px);
   }
 
   html[dir="ltr"] .tb-logo-line {
     justify-self: start;
+  }
+
+  html[dir="ltr"] .tb-main-nav {
+    justify-self: start;
+    margin-inline-start: clamp(10px, 1.5vw, 20px);
+  }
+
+  html[dir="ltr"] .tb-header-tools {
+    margin-inline-end: clamp(8px, 1.2vw, 18px);
   }
 }

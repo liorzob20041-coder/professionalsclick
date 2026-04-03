@@ -874,32 +874,14 @@
     </ul>
   </div>
 
-<!-- Topbar – לוגו + ניווט דסקטופ + פעולות -->
-<nav class="topbar-rail" role="navigation" aria-label="מותג">
-  <div class="rail">
-    <div class="tb-brand-nav" aria-label="brand and primary navigation">
-      {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
-      {% set __site_name_i18n = (_('site_name') if _ else '') %}
-      {% set __brand_name = (__site_name_i18n if __site_name_i18n and __site_name_i18n != 'site_name' else (site_name if site_name else 'בעלי מקצוע בקליק')) %}
-      <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ __brand_name }}">
-        <img
-          class="tb-logo-strip"
-          src="{{ LOGO_JPG }}"
-          alt="{{ __brand_name }}"
-          width="320" height="40"
-          loading="eager" decoding="async"
-          style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
-        <span class="brand-text sr-only">{{ __brand_name }}</span>
-      </a>
-      <ul class="tb-main-nav" aria-label="{{ __menu_main_txt }}">
-        <li><a href="{{ url_for_lang('home') }}">{{ __nav_home if __nav_home and __nav_home != 'navbar_home' else __nav_labels['home'] }}</a></li>
-        <li><a href="{{ url_for_lang('why_us') }}">{{ __nav_why if __nav_why and __nav_why != 'navbar_why_us' else __nav_labels['why'] }}</a></li>
-        <li><a href="{{ url_for_lang('works') }}">{{ __nav_works if __nav_works and __nav_works != 'navbar_works' else __nav_labels['works'] }}</a></li>
-        <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
-        <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
-      </ul>
-    </div>
-    <div class="tb-header-tools" aria-label="header actions">
+<!-- Topbar – desktop shared header -->
+{% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
+{% set __site_name_i18n = (_('site_name') if _ else '') %}
+{% set __brand_name = (__site_name_i18n if __site_name_i18n and __site_name_i18n != 'site_name' else (site_name if site_name else 'בעלי מקצוע בקליק')) %}
+<header class="topbar" role="banner">
+  <div class="tb-shell">
+    <div class="tb-left-tools" aria-label="header actions">
+      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
       <div class="tb-lang-switcher">
         <button class="tb-lang-chip" type="button" onclick="toggleLanguageList('desktop-language-list')" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
           <i class="fa-solid fa-globe" aria-hidden="true"></i>
@@ -912,10 +894,32 @@
           <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
         </ul>
       </div>
-      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
+    </div>
+
+    <div class="tb-main">
+      <nav class="tb-nav" aria-label="{{ __menu_main_txt }}">
+        <ul>
+          <li><a href="{{ url_for_lang('home') }}">{{ __nav_home if __nav_home and __nav_home != 'navbar_home' else __nav_labels['home'] }}</a></li>
+          <li><a href="{{ url_for_lang('why_us') }}">{{ __nav_why if __nav_why and __nav_why != 'navbar_why_us' else __nav_labels['why'] }}</a></li>
+          <li><a href="{{ url_for_lang('works') }}">{{ __nav_works if __nav_works and __nav_works != 'navbar_works' else __nav_labels['works'] }}</a></li>
+          <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
+          <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
+        </ul>
+      </nav>
+
+      <a class="tb-brand" href="{{ url_for_lang('home') }}" aria-label="{{ __brand_name }}">
+        <img
+          class="tb-logo-strip"
+          src="{{ LOGO_JPG }}"
+          alt="{{ __brand_name }}"
+          width="320" height="40"
+          loading="eager" decoding="async"
+          style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
+        <span class="brand-text sr-only">{{ __brand_name }}</span>
+      </a>
     </div>
   </div>
-</nav>
+</header>
 
 
   <main id="main-content">
@@ -986,7 +990,7 @@ function runWhenIdle(run){
 }
 runWhenIdle(function(){
   try {
-    var img = document.querySelector('.tb-logo-line img.tb-logo-strip');
+    var img = document.querySelector('.tb-brand img.tb-logo-strip');
     if (!img) return;
     var rect = img.getBoundingClientRect();
     var needsFix = !img.currentSrc || rect.width < 4;

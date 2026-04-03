@@ -70,7 +70,7 @@
   :root{
     --cluster-edge:12px;
     --cluster-top: calc(env(safe-area-inset-top, 0px) + 10px);
-    --cluster-gap:16px;            /* ריווח קבוע בין הכפתורים */
+    --cluster-gap:14px;            /* ריווח קבוע בין הכפתורים */
     --kebab-w:28px;                /* רוחב כפתור התפריט */
     --search-w:40px;               /* רוחב כפתור החיפוש */
     --lang-chip-safe: max(var(--lang-chip-min), var(--lang-chip-w, 0px)); /* ערך בטוח לרוחב הצ׳יפ */
@@ -83,6 +83,13 @@
 
   /* ☰ */
   .kebab-btn{top:var(--cluster-top) !important;z-index:2147483000 !important}
+  .kebab-btn,
+  .search-btn{
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(16,42,67,.18);
+    box-shadow:0 4px 14px rgba(15,23,42,.12);
+    border-radius:999px;
+  }
   html[dir="rtl"] .kebab-btn{left:var(--cluster-edge) !important;right:auto !important}
   html[dir="ltr"] .kebab-btn{right:var(--cluster-edge) !important;left:auto !important}
 
@@ -112,10 +119,10 @@
     left:auto !important
   }
   .language-switcher > button.lang-chip{
-    background:rgba(255,255,255,.9);
+    background:rgba(255,255,255,.94);
     backdrop-filter:blur(6px);
-    border:1px solid rgba(0,0,0,.12);
-    box-shadow:0 2px 10px rgba(0,0,0,.1);
+    border:1px solid rgba(16,42,67,.18);
+    box-shadow:0 4px 14px rgba(15,23,42,.12);
     border-radius:50%;
     padding:0;
     min-inline-size:var(--btn-size);

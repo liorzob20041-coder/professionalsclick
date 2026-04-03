@@ -57,7 +57,7 @@ html[dir="ltr"] .kebab-btn {
 }
 
 .kebab-btn:focus-visible {
-  outline: 2px solid #d98324;
+  outline: 2px solid #c27a2c;
   outline-offset: 2px;
 }
 
@@ -192,7 +192,7 @@ html[dir="ltr"] .language-switcher {
 }
 
 .language-switcher button:focus-visible {
-  outline: 2px solid #d98324;
+  outline: 2px solid #c27a2c;
   outline-offset: 2px;
 }
 

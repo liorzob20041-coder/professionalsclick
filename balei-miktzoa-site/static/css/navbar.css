@@ -328,42 +328,40 @@ html[dir="ltr"] .search-btn{
   .topbar-rail .rail {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: clamp(14px, 1.8vw, 24px);
-    width: min(calc(100% - 40px), 1280px);
-    max-width: 1280px;
+    justify-content: space-between;
+    gap: clamp(16px, 2vw, 28px);
+    width: min(calc(100% - 48px), 1220px);
+    max-width: 1220px;
     margin-inline: auto;
-    padding-inline: 0;
+    padding-inline: clamp(6px, 1vw, 12px);
     min-height: var(--hdr-h);
   }
 
   .tb-brand-nav {
     display: flex;
     align-items: center;
-    gap: clamp(10px, 1.4vw, 18px);
+    gap: clamp(14px, 1.6vw, 22px);
     min-width: 0;
-    flex: 0 1 auto;
-    margin-inline-end: 0;
+    flex: 1 1 auto;
+    white-space: nowrap;
   }
 
   .tb-main-nav {
     display: flex;
     align-items: center;
-    gap: 1px;
+    gap: 2px;
     margin: 0;
     padding: 0;
     list-style: none;
     min-width: 0;
     justify-content: flex-start;
-    padding-inline-start: clamp(8px, 1vw, 12px);
-    border-inline-start: 1px solid rgb(226 232 240 / 22%);
   }
 
   .tb-main-nav a {
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: 0 11px;
+    min-height: 38px;
+    padding: 0 12px;
     border-radius: 9px;
     color: rgb(241 245 249 / 94%);
     text-decoration: none;
@@ -386,9 +384,8 @@ html[dir="ltr"] .search-btn{
   .tb-header-tools {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-inline-start: auto;
-    margin-inline-end: 0;
+    gap: 10px;
+    margin-inline: 0;
     padding: 4px 0;
     flex: 0 0 auto;
   }
@@ -402,13 +399,13 @@ html[dir="ltr"] .search-btn{
     align-items: center;
     justify-content: center;
     gap: 7px;
-    min-width: 106px;
-    min-height: 38px;
-    padding: 0 14px;
-    border-radius: 10px;
-    border: 1px solid rgb(148 163 184 / 34%);
-    background: rgb(241 245 249 / 96%);
-    color: rgb(15 23 42 / 88%);
+    min-width: 98px;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 9px;
+    border: 1px solid rgb(148 163 184 / 30%);
+    background: rgb(241 245 249 / 92%);
+    color: rgb(15 23 42 / 90%);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -447,16 +444,8 @@ html[dir="ltr"] .search-btn{
     z-index: 40;
   }
 
-  html[dir="rtl"] .tb-header-tools {
-    justify-content: flex-start;
-  }
-
   html[dir="rtl"] .tb-brand-nav {
-    margin-inline-start: clamp(18px, 2.2vw, 34px);
-  }
-
-  html[dir="ltr"] .tb-brand-nav {
-    margin-inline-start: clamp(10px, 1.2vw, 18px);
+    justify-content: flex-start;
   }
 
   .tb-lang-switcher ul.show {
@@ -483,8 +472,8 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    padding: 0 18px;
+    min-height: 38px;
+    padding: 0 16px;
     border-radius: 999px;
     text-decoration: none;
     color: #fff;
@@ -505,6 +494,7 @@ html[dir="ltr"] .search-btn{
   .tb-logo-line {
     padding: 0;
     border-radius: 10px;
+    flex-shrink: 0;
   }
 
   html[dir="rtl"] .tb-logo-line {
@@ -515,7 +505,11 @@ html[dir="ltr"] .search-btn{
     margin-inline-start: 0;
   }
 
+  html[dir="ltr"] .tb-brand-nav {
+    justify-content: flex-start;
+  }
+
   html[dir="ltr"] .tb-main-nav {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }

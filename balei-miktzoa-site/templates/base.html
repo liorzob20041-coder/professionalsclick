@@ -856,15 +856,17 @@
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
   <div class="rail">
     {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
-    <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ _('site_name') or site_name }}">
+    {% set __site_name_i18n = (_('site_name') if _ else '') %}
+    {% set __brand_name = (__site_name_i18n if __site_name_i18n and __site_name_i18n != 'site_name' else (site_name if site_name else 'בעלי מקצוע בקליק')) %}
+    <a class="tb-logo-line" href="{{ url_for_lang('home') }}" aria-label="{{ __brand_name }}">
       <img
         class="tb-logo-strip"
         src="{{ LOGO_JPG }}"
-        alt="{{ _('site_name') or site_name }}"
+        alt="{{ __brand_name }}"
         width="320" height="40"
         loading="eager" decoding="async"
         style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
-      <span class="brand-text sr-only">{{ _('site_name') or site_name }}</span>
+      <span class="brand-text sr-only">{{ __brand_name }}</span>
     </a>
   </div>
 </nav>

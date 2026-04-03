@@ -309,12 +309,13 @@ html[dir="ltr"] .search-btn{
 
   .topbar-rail .rail {
     display: grid;
-    grid-template-columns: minmax(220px, 320px) minmax(360px, 1fr) auto;
+    grid-template-columns: minmax(220px, 320px) minmax(340px, 1fr) minmax(220px, max-content);
+    grid-template-areas: "logo nav tools";
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     max-width: 1280px;
     margin-inline: auto;
-    padding-inline: clamp(18px, 2.6vw, 34px);
+    padding-inline: clamp(22px, 3vw, 42px);
   }
 
   .tb-main-nav {
@@ -327,6 +328,7 @@ html[dir="ltr"] .search-btn{
     min-width: 0;
     justify-content: center;
     justify-self: center;
+    grid-area: nav;
   }
 
   .tb-main-nav a {
@@ -355,15 +357,18 @@ html[dir="ltr"] .search-btn{
   .tb-header-tools {
     display: inline-flex;
     align-items: center;
-    justify-self: end;
-    gap: 8px;
-    padding: 6px 8px 6px 6px;
+    justify-self: stretch;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 8px 12px;
     border-radius: 999px;
     background: linear-gradient(180deg, rgb(15 23 42 / 40%), rgb(2 6 23 / 34%));
     border: 1px solid rgb(148 163 184 / 26%);
+    min-inline-size: fit-content;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 14%),
       0 1px 0 rgb(2 6 23 / 35%);
+    grid-area: tools;
   }
 
   .tb-header-tools .search-btn.tb-tool-btn {
@@ -388,7 +393,8 @@ html[dir="ltr"] .search-btn{
     align-items: center;
     justify-content: center;
     min-height: 40px;
-    padding: 0 18px;
+    min-inline-size: 148px;
+    padding: 0 20px;
     border-radius: 999px;
     text-decoration: none;
     color: #fff;
@@ -407,14 +413,19 @@ html[dir="ltr"] .search-btn{
 
   html[dir="rtl"] .tb-logo-line {
     justify-self: end;
+    grid-area: logo;
   }
 
   html[dir="rtl"] .tb-header-tools {
-    justify-self: start;
-    padding: 6px 6px 6px 8px;
+    justify-content: flex-start;
   }
 
   html[dir="ltr"] .tb-logo-line {
     justify-self: start;
+    grid-area: logo;
+  }
+
+  html[dir="rtl"] .topbar-rail .rail {
+    grid-template-areas: "tools nav logo";
   }
 }

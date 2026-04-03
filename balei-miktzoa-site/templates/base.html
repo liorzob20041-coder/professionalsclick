@@ -876,8 +876,23 @@
 
 <!-- Topbar – לוגו + ניווט דסקטופ + פעולות -->
 <nav class="topbar-rail" role="navigation" aria-label="מותג">
-  <div class="rail">
-    <div class="tb-brand-nav" aria-label="brand and primary navigation">
+  <div class="rail tb-inner">
+    <div class="tb-left-tools" aria-label="header actions">
+      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
+      <div class="tb-lang-switcher">
+        <button class="tb-lang-chip" type="button" onclick="toggleLanguageList('desktop-language-list')" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
+          <i class="fa-solid fa-globe" aria-hidden="true"></i>
+          <span>{{ __desktop_lang_label }}</span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <ul id="desktop-language-list" role="menu">
+          <li><a href="{{ url_for_lang(lang='he') }}" role="menuitem">{{ __lang_labels['he'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='en') }}" role="menuitem">{{ __lang_labels['en'] }}</a></li>
+          <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="tb-right-cluster" aria-label="brand and primary navigation">
       {% set LOGO_JPG  = static_rel('branding/logo-strip-he@2x.jpeg') %}
       {% set __site_name_i18n = (_('site_name') if _ else '') %}
       {% set __brand_name = (__site_name_i18n if __site_name_i18n and __site_name_i18n != 'site_name' else (site_name if site_name else 'בעלי מקצוע בקליק')) %}
@@ -898,21 +913,6 @@
         <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
         <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
       </ul>
-    </div>
-    <div class="tb-header-tools" aria-label="header actions">
-      <div class="tb-lang-switcher">
-        <button class="tb-lang-chip" type="button" onclick="toggleLanguageList('desktop-language-list')" aria-haspopup="true" aria-expanded="false" aria-label="{{ __lang_picker_txt }}">
-          <i class="fa-solid fa-globe" aria-hidden="true"></i>
-          <span>{{ __desktop_lang_label }}</span>
-          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-        </button>
-        <ul id="desktop-language-list" role="menu">
-          <li><a href="{{ url_for_lang(lang='he') }}" role="menuitem">{{ __lang_labels['he'] }}</a></li>
-          <li><a href="{{ url_for_lang(lang='en') }}" role="menuitem">{{ __lang_labels['en'] }}</a></li>
-          <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
-        </ul>
-      </div>
-      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
     </div>
   </div>
 </nav>

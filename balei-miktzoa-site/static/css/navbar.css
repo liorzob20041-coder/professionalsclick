@@ -278,7 +278,8 @@ html[dir="ltr"] .search-btn{
 }
 
 .tb-main-nav,
-.tb-header-tools {
+.tb-left-tools,
+.tb-right-cluster {
   display: none;
 }
 
@@ -325,11 +326,12 @@ html[dir="ltr"] .search-btn{
     overflow: clip;
   }
 
-  .topbar-rail .rail {
-    display: flex;
+  .topbar-rail .rail,
+  .topbar-rail .tb-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: flex-start;
-    gap: clamp(14px, 1.8vw, 24px);
+    column-gap: clamp(24px, 3vw, 48px);
     width: min(calc(100% - 40px), 1280px);
     max-width: 1280px;
     margin-inline: auto;
@@ -337,33 +339,43 @@ html[dir="ltr"] .search-btn{
     min-height: var(--hdr-h);
   }
 
-  .tb-brand-nav {
+  .tb-left-tools {
+    grid-column: 1;
+    justify-self: start;
     display: flex;
     align-items: center;
-    gap: clamp(10px, 1.4vw, 18px);
+    gap: clamp(12px, 1.2vw, 16px);
+    margin: 0;
+    padding: 0;
+  }
+
+  .tb-right-cluster {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 2vw, 28px);
     min-width: 0;
-    flex: 0 1 auto;
-    margin-inline-end: 0;
+    margin: 0;
+    padding: 0;
   }
 
   .tb-main-nav {
     display: flex;
     align-items: center;
-    gap: 1px;
+    flex-wrap: nowrap;
+    gap: clamp(8px, 0.8vw, 14px);
     margin: 0;
     padding: 0;
     list-style: none;
-    min-width: 0;
     justify-content: flex-start;
-    padding-inline-start: clamp(8px, 1vw, 12px);
-    border-inline-start: 1px solid rgb(226 232 240 / 22%);
   }
 
   .tb-main-nav a {
     display: inline-flex;
     align-items: center;
     min-height: 36px;
-    padding: 0 11px;
+    padding: 0 9px;
     border-radius: 9px;
     color: rgb(241 245 249 / 94%);
     text-decoration: none;
@@ -381,16 +393,6 @@ html[dir="ltr"] .search-btn{
     border-color: rgb(255 255 255 / 24%);
     transform: translateY(-1px);
     outline: none;
-  }
-
-  .tb-header-tools {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-inline-start: auto;
-    margin-inline-end: 0;
-    padding: 4px 0;
-    flex: 0 0 auto;
   }
 
   .tb-lang-switcher {
@@ -445,18 +447,6 @@ html[dir="ltr"] .search-btn{
     box-shadow: 0 8px 20px rgb(2 6 23 / 16%);
     display: none;
     z-index: 40;
-  }
-
-  html[dir="rtl"] .tb-header-tools {
-    justify-content: flex-start;
-  }
-
-  html[dir="rtl"] .tb-brand-nav {
-    margin-inline-start: clamp(18px, 2.2vw, 34px);
-  }
-
-  html[dir="ltr"] .tb-brand-nav {
-    margin-inline-start: clamp(10px, 1.2vw, 18px);
   }
 
   .tb-lang-switcher ul.show {

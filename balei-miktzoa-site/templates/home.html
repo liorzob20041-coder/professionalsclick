@@ -69,19 +69,14 @@
 
 {% block content %}
 
-<!-- HERO — כותרת + טופס -->
-<section class="hero-split" aria-label="חיפוש בעלי מקצוע">
-  <!-- LEFT: copy + quick actions + checklist -->
+<section class="hero-split container container--wide" aria-label="חיפוש בעלי מקצוע">
   <div class="hero-info">
-    <!-- שונה: כותרת צדדית -->
+    <span class="section-kicker">{{ _('site_name') or site_name }}</span>
     <h1>{{ _('homepage.hero_headline') }}</h1>
-
-    <!-- שונה: טקסט משנה -->
     <p class="hero-lead">{{ _('homepage.hero_subheadline') }}</p>
 
-
     <nav class="home-quick-inline" aria-label="פעולות מהירות">
-      <button class="hq-pill" type="button" onclick="return goToEstimate(event)">
+      <button class="hq-pill is-primary" type="button" onclick="return goToEstimate(event)">
         <i class="fa-solid fa-calculator" aria-hidden="true"></i>
         <span>{{ _('homepage.quick.estimate_nav') }}</span>
       </button>
@@ -89,54 +84,21 @@
         <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
         <span>{{ _('homepage.how_title') }}</span>
       </a>
-      <!-- הוסר: כפתור 'צפו בווידאו' -->
     </nav>
 
-    <!-- Checklist של ה־USPs -->
     <ul class="hero-checklist" role="list" aria-label="יתרונות השירות">
-      <li class="check-item">
-        <span class="check-ico" aria-hidden="true">✓</span>
-        {{ _('homepage.hero_checklist.1') }}
-      </li>
-      <li class="check-item">
-        <span class="check-ico" aria-hidden="true">✓</span>
-        {{ _('homepage.hero_checklist.2') }}
-      </li>
-        <li class="check-item check-langs">
-          <span class="check-ico" aria-hidden="true">✓</span>
-          <span class="lang-wrap">
-            <span class="lang-label">{{ _('homepage.hero_checklist.languages_label') }}</span>
-            <span class="lang-line">
-              <span class="lang-chunk"><bdi lang="he">עברית</bdi></span>
-              <span class="lang-chunk"><span class="lang-sep" aria-hidden="true"> / </span><bdi lang="en">English</bdi></span>
-              <span class="lang-chunk"><span class="lang-sep" aria-hidden="true"> / </span><bdi lang="ru">Русский</bdi></span>
-            </span>
-          </span>
-        </li>
-
-
-      <li class="check-item">
-        <span class="check-ico" aria-hidden="true">✓</span>
-        {{ _('homepage.hero_checklist.4') }}
-      </li>
+      <li class="check-item"><span class="check-ico" aria-hidden="true">✓</span>{{ _('homepage.hero_checklist.1') }}</li>
+      <li class="check-item"><span class="check-ico" aria-hidden="true">✓</span>{{ _('homepage.hero_checklist.2') }}</li>
+      <li class="check-item"><span class="check-ico" aria-hidden="true">✓</span>{{ _('homepage.hero_checklist.4') }}</li>
     </ul>
   </div>
 
-  <!-- RIGHT: visual + search panel -->
   <div class="hero-visual">
-    <div class="hero-slides"
-         style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=1600, q=80, fit='cover', format='auto') }}');">
-      <img id="slideA" class="slide active"
-           src="{{ url_for('static', filename='photo1.jpg') }}"
-           alt="{{ _('homepage.hero_img_main_alt') }}"
-           loading="eager" fetchpriority="high" decoding="async" />
-      <img id="slideB" class="slide"
-           src="{{ url_for('static', filename='photo2.jpg') }}"
-           alt="{{ _('homepage.hero_img_alt_b') }}"
-           loading="lazy" decoding="async" />
+    <div class="hero-slides" style="--hero-url: url('{{ url_for('img_proxy', filename='photo1.jpg', w=1600, q=80, fit='cover', format='auto') }}');">
+      <img id="slideA" class="slide active" src="{{ url_for('static', filename='photo1.jpg') }}" alt="{{ _('homepage.hero_img_main_alt') }}" loading="eager" fetchpriority="high" decoding="async" />
+      <img id="slideB" class="slide" src="{{ url_for('static', filename='photo2.jpg') }}" alt="{{ _('homepage.hero_img_alt_b') }}" loading="lazy" decoding="async" />
 
       <div class="hero-panel" role="group" aria-label="חיפוש מהיר">
-        <!-- נשאר כמו שהוא -->
         <h2 class="hero-title">{{ _('homepage.hero_title_overlay') }}</h2>
         <form class="hero-search" role="search" onsubmit="return redirectToCleanURL(event)" novalidate>
           <label class="sr-only" for="field">{{ _('homepage.choose_field') }}</label>
@@ -157,14 +119,14 @@
 
           <datalist id="fields">
             <option value="{{ _('field_renovations') }}" data-key="renovations">
-            <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
+            <option value="{{ _('field_plumbers') }}" data-key="plumbers">
             <option value="{{ _('field_electricians') }}" data-key="electricians">
-            <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
+            <option value="{{ _('field_locksmiths') }}" data-key="locksmiths">
           </datalist>
           <datalist id="areas">
-            <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
-            <option value="{{ _('city_haifa') }}"      data-key="haifa">
-            <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
+            <option value="{{ _('city_tel_aviv') }}" data-key="tel-aviv">
+            <option value="{{ _('city_haifa') }}" data-key="haifa">
+            <option value="{{ _('city_jerusalem') }}" data-key="jerusalem">
             <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
           </datalist>
         </form>
@@ -173,45 +135,32 @@
   </div>
 </section>
 
-<!-- WHY/FEATURES -->
-<section class="features" id="features" aria-label="למה לבחור בנו">
-  <div class="container container--wide">
-    <h2>{{ _('homepage.why_us_title') }}</h2>
-    <div class="feature-boxes">
-      <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i> {{ _('homepage.features.1') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> {{ _('homepage.features.2') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i> {{ _('homepage.features.3') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> {{ _('homepage.features.4') }}</div>
-    </div>
+<section class="trust-strip" aria-label="סמני אמון">
+  <div class="container container--wide trust-strip-grid">
+    <div class="trust-chip"><i class="fa-solid fa-user-check" aria-hidden="true"></i>{{ _('homepage.features.1') }}</div>
+    <div class="trust-chip"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>{{ _('homepage.features.2') }}</div>
+    <div class="trust-chip"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i>{{ _('homepage.features.3') }}</div>
+    <div class="trust-chip"><i class="fa-solid fa-bolt" aria-hidden="true"></i>{{ _('homepage.features.4') }}</div>
   </div>
 </section>
 
-<!-- POPULAR FIELDS -->
 <section class="niche-rail-wrap" id="niches" aria-label="{{ _('homepage.popular_fields_title') }}">
   <div class="container container--wide">
-    <h2>{{ _('homepage.popular_fields_title') }}</h2>
+    <h2 class="section-title">{{ _('homepage.popular_fields_title') }}</h2>
     <nav class="niche-rail" aria-label="{{ _('homepage.popular_fields_title') }}">
-      <button class="niche-pill" type="button"
-              data-label="{{ _('homepage.popular_fields.plumbers') }}"
-              onclick="return goToSearch(event, this.dataset.label)">
+      <button class="niche-pill" type="button" data-label="{{ _('homepage.popular_fields.plumbers') }}" onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-faucet-drip"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.plumbers') }}</span>
       </button>
-      <button class="niche-pill" type="button"
-              data-label="{{ _('homepage.popular_fields.electricians') }}"
-              onclick="return goToSearch(event, this.dataset.label)">
+      <button class="niche-pill" type="button" data-label="{{ _('homepage.popular_fields.electricians') }}" onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.electricians') }}</span>
       </button>
-      <button class="niche-pill" type="button"
-              data-label="{{ _('homepage.popular_fields.renovations') }}"
-              onclick="return goToSearch(event, this.dataset.label)">
+      <button class="niche-pill" type="button" data-label="{{ _('homepage.popular_fields.renovations') }}" onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-hammer"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.renovations') }}</span>
       </button>
-      <button class="niche-pill" type="button"
-              data-label="{{ _('homepage.popular_fields.locksmiths') }}"
-              onclick="return goToSearch(event, this.dataset.label)">
+      <button class="niche-pill" type="button" data-label="{{ _('homepage.popular_fields.locksmiths') }}" onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.locksmiths') }}</span>
       </button>
@@ -219,7 +168,67 @@
   </div>
 </section>
 
-<!-- ARTICLES -->
+<section id="how" class="how-it-works" aria-label="איך זה עובד">
+  <div class="container container--wide">
+    <h2 class="section-title">{{ _('homepage.how_title') }}</h2>
+    <ol class="steps">
+      <li><span class="step-index" aria-hidden="true">1</span><div class="step-body"><h3>{{ _('homepage.how.1.title') }}</h3><p class="muted">{{ _('homepage.how.1.text') }}</p></div></li>
+      <li><span class="step-index" aria-hidden="true">2</span><div class="step-body"><h3>{{ _('homepage.how.2.title') }}</h3><p class="muted">{{ _('homepage.how.2.text') }}</p></div></li>
+      <li><span class="step-index" aria-hidden="true">3</span><div class="step-body"><h3>{{ _('homepage.how.3.title') }}</h3><p class="muted">{{ _('homepage.how.3.text') }}</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="features" id="features" aria-label="למה לבחור בנו">
+  <div class="container container--wide">
+    <h2 class="section-title">{{ _('homepage.why_us_title') }}</h2>
+    <div class="feature-boxes">
+      <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i><span>{{ _('homepage.features.1') }}</span></div>
+      <div class="feature-item"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i><span>{{ _('homepage.features.2') }}</span></div>
+      <div class="feature-item"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i><span>{{ _('homepage.features.3') }}</span></div>
+      <div class="feature-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>{{ _('homepage.features.4') }}</span></div>
+    </div>
+  </div>
+</section>
+
+{% if featured_workers and featured_workers|length %}
+<section class="featured-pros" aria-label="בעלי מקצוע מובילים לידכם">
+  <div class="container container--wide">
+    <h2 class="section-title">{{ _('homepage.top_pros_title') }}</h2>
+    <div class="pros-grid">
+      {% for w in featured_workers[:8] %}
+        <a class="pro-card" href="{{ url_for_lang('worker_profile', worker_id=w.worker_id) }}">
+          <figure class="pro-media">
+            <img src="{{ w.photo_url or url_for('static', filename='placeholder-pro.jpg') }}" alt="{{ w.company_name or w.name }}" loading="lazy" decoding="async">
+          </figure>
+          <div class="pro-info">
+            <div class="pro-name">{{ w.company_name or w.name }}</div>
+            <div class="pro-meta">{{ w.field_label }} · {{ w.area_label }}</div>
+            {% if w.avg_score %}<div class="pro-rating" aria-label="{{ _('homepage.avg_rating_label') }}">⭐ {{ '%.1f'|format(w.avg_score) }}</div>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if featured_videos and featured_videos|length %}
+<section class="video-rail" id="videos" aria-label="סרטוני עבודה של בעלי מקצוע">
+  <div class="container container--wide">
+    <h2 class="section-title">{{ _('homepage.videos_title') }}</h2>
+    <div class="rail">
+      {% for v in featured_videos[:12] %}
+        <a class="video-chip" href="{{ url_for_lang('worker_profile', worker_id=v.worker_id) }}">
+          <img src="{{ v.thumbnail_url or url_for('static', filename='placeholder-video.jpg') }}" alt="{{ v.title or v.worker_name }}" loading="lazy" decoding="async">
+          <span class="chip-title">{{ v.title or (v.field_label ~ ' · ' ~ v.area_label) }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <section class="home-articles mag" id="articles" aria-label="{{ _('homepage.articles.title') }}">
   <div class="container container--wide">
     <header class="articles-head">
@@ -246,7 +255,18 @@
   </div>
 </section>
 
-<!-- ESTIMATE CTA -->
+<section class="faq" id="faq" aria-label="שאלות נפוצות">
+  <div class="container container--wide">
+    <h2 class="section-title">{{ _('homepage.faq_title') }}</h2>
+    <div class="faq-list">
+      <details><summary>{{ _('homepage.faq.q1') }}</summary><p>{{ _('homepage.faq.a1') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q2') }}</summary><p>{{ _('homepage.faq.a2') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q3') }}</summary><p>{{ _('homepage.faq.a3') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q4') }}</summary><p>{{ _('homepage.faq.a4') }}</p></details>
+    </div>
+  </div>
+</section>
+
 <section class="estimate-cta" id="estimate" aria-label="{{ _('homepage.quick.estimate_title') }}">
   <div class="section-wrap">
     <h2>{{ _('homepage.quick.estimate_title') }}</h2>
@@ -258,93 +278,9 @@
   </div>
 </section>
 
-<!-- FEATURED PROS -->
-{% if featured_workers and featured_workers|length %}
-<section class="featured-pros" aria-label="בעלי מקצוע מובילים לידכם">
-  <div class="container container--wide">
-    <h2>{{ _('homepage.top_pros_title') }}</h2>
-    <div class="pros-grid">
-      {% for w in featured_workers[:8] %}
-        <a class="pro-card" href="{{ url_for_lang('worker_profile', worker_id=w.worker_id) }}">
-          <figure class="pro-media">
-            <img src="{{ w.photo_url or url_for('static', filename='placeholder-pro.jpg') }}" alt="{{ w.company_name or w.name }}" loading="lazy" decoding="async">
-          </figure>
-          <div class="pro-info">
-            <div class="pro-name">{{ w.company_name or w.name }}</div>
-            <div class="pro-meta">{{ w.field_label }} · {{ w.area_label }}</div>
-            {% if w.avg_score %}<div class="pro-rating" aria-label="{{ _('homepage.avg_rating_label') }}">⭐ {{ '%.1f'|format(w.avg_score) }}</div>{% endif %}
-          </div>
-        </a>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
-
-<!-- VIDEO RAIL -->
-{% if featured_videos and featured_videos|length %}
-<section class="video-rail" id="videos" aria-label="סרטוני עבודה של בעלי מקצוע">
-  <div class="container container--wide">
-    <h2>{{ _('homepage.videos_title') }}</h2>
-    <div class="rail">
-      {% for v in featured_videos[:12] %}
-        <a class="video-chip" href="{{ url_for_lang('worker_profile', worker_id=v.worker_id) }}">
-          <img src="{{ v.thumbnail_url or url_for('static', filename='placeholder-video.jpg') }}" alt="{{ v.title or v.worker_name }}" loading="lazy" decoding="async">
-          <span class="chip-title">{{ v.title or (v.field_label ~ ' · ' ~ v.area_label) }}</span>
-        </a>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
-
-<!-- HOW IT WORKS -->
-<section id="how" class="how-it-works" aria-label="איך זה עובד">
-  <div class="container container--wide">
-    <h2>{{ _('homepage.how_title') }}</h2>
-    <ol class="steps">
-      <li>
-        <span class="step-index" aria-hidden="true">1</span>
-        <div class="step-body">
-          <h3>{{ _('homepage.how.1.title') }}</h3>
-          <p class="muted">{{ _('homepage.how.1.text') }}</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-index" aria-hidden="true">2</span>
-        <div class="step-body">
-          <h3>{{ _('homepage.how.2.title') }}</h3>
-          <p class="muted">{{ _('homepage.how.2.text') }}</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-index" aria-hidden="true">3</span>
-        <div class="step-body">
-          <h3>{{ _('homepage.how.3.title') }}</h3>
-          <p class="muted">{{ _('homepage.how.3.text') }}</p>
-        </div>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="faq" id="faq" aria-label="שאלות נפוצות">
-  <div class="container container--wide">
-    <h2>{{ _('homepage.faq_title') }}</h2>
-    <div class="faq-list">
-      <details><summary>{{ _('homepage.faq.q1') }}</summary><p>{{ _('homepage.faq.a1') }}</p></details>
-      <details><summary>{{ _('homepage.faq.q2') }}</summary><p>{{ _('homepage.faq.a2') }}</p></details>
-      <details><summary>{{ _('homepage.faq.q3') }}</summary><p>{{ _('homepage.faq.a3') }}</p></details>
-      <details><summary>{{ _('homepage.faq.q4') }}</summary><p>{{ _('homepage.faq.a4') }}</p></details>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
 <section id="contact" aria-label="{{ _('homepage.contact_title') }}">
   <div class="container">
-    <h2>{{ _('homepage.contact_title') }}</h2>
+    <h2 class="section-title">{{ _('homepage.contact_title') }}</h2>
     <p class="clientStatus" style="display:none"></p>
     <form class="contact-form" method="POST" action="{{ url_for_lang('send_message') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -362,15 +298,8 @@
   </div>
 </section>
 
-<!-- WhatsApp Floating Button -->
-<a href="https://wa.me/972502255368?text={{ _('homepage.whatsapp_messages.1') | urlencode }}"
-   target="_blank"
-   class="whatsapp-float"
-   aria-label="{{ _('homepage.whatsapp_help') }}">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"
-       alt="{{ _('homepage.whatsapp_alt') }}"
-       width="48" height="48"
-       loading="lazy">
+<a href="https://wa.me/972502255368?text={{ _('homepage.whatsapp_messages.1') | urlencode }}" target="_blank" class="whatsapp-float" aria-label="{{ _('homepage.whatsapp_help') }}">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="{{ _('homepage.whatsapp_alt') }}" width="48" height="48" loading="lazy">
 </a>
 
 {% endblock %}

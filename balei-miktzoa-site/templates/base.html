@@ -866,6 +866,23 @@
         style="display:block; inline-size:min(100%, var(--tb-logo-w,320px)); block-size:auto; min-block-size:var(--tb-logo-h,40px);" />
       <span class="brand-text sr-only">{{ _('site_name') or site_name }}</span>
     </a>
+
+    <div class="desktop-primary-nav" aria-label="{{ __menu_main_txt }}">
+      <ul class="desktop-nav-list">
+        <li><a href="{{ url_for_lang('home') }}">{{ __nav_home if __nav_home and __nav_home != 'navbar_home' else __nav_labels['home'] }}</a></li>
+        <li><a href="{{ url_for_lang('why_us') }}">{{ __nav_why if __nav_why and __nav_why != 'navbar_why_us' else __nav_labels['why'] }}</a></li>
+        <li><a href="{{ url_for_lang('works') }}">{{ __nav_works if __nav_works and __nav_works != 'navbar_works' else __nav_labels['works'] }}</a></li>
+        <li><a href="{{ url_for_lang('niches') }}">{{ __nav_niches if __nav_niches and __nav_niches != 'navbar_niches' else __nav_labels['niches'] }}</a></li>
+        <li><a href="{{ url_for_lang('contact') }}">{{ __nav_contact if __nav_contact and __nav_contact != 'navbar_contact' else __nav_labels['contact'] }}</a></li>
+      </ul>
+    </div>
+
+    <div class="desktop-nav-actions">
+      <a class="top-action-btn" href="{{ url_for_lang('estimate') }}">
+        {{ _('homepage.quick.estimate_nav') }}
+      </a>
+      <a class="top-action-btn primary" href="{{ url_for_lang('home') }}#main-content">{{ _('homepage.start_search') }}</a>
+    </div>
   </div>
 </nav>
 

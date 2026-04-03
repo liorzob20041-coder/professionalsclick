@@ -727,6 +727,11 @@
   {% set __menu_main_txt = (__menu_main_label if __menu_main_label and __menu_main_label != 'main_menu' else __menu_fallbacks['main'].get(__nav_lang, __menu_fallbacks['main']['en'])) %}
   {% set __lang_picker_bundle = t('homepage.language_menu.toggle', 'home') %}
   {% set __lang_picker_txt = (__lang_picker_bundle if __lang_picker_bundle and __lang_picker_bundle != 'homepage.language_menu.toggle' else __menu_fallbacks['lang'].get(__nav_lang, __menu_fallbacks['lang']['en'])) %}
+  {% set __change_language_raw = (_('change_language') if _ else '') %}
+  {% set __change_language_txt = (__change_language_raw if __change_language_raw and __change_language_raw != 'change_language' else __menu_fallbacks['lang'].get(__nav_lang, __menu_fallbacks['lang']['en'])) %}
+  {% set __estimate_fallbacks = {'he': 'קבלו הצעת מחיר', 'en': 'Get an estimate', 'ru': 'Получить смету'} %}
+  {% set __estimate_raw = (_('homepage.quick.estimate_nav') if _ else '') %}
+  {% set __estimate_txt = (__estimate_raw if __estimate_raw and __estimate_raw != 'homepage.quick.estimate_nav' else __estimate_fallbacks.get(__nav_lang, __estimate_fallbacks['he'])) %}
 
   <!-- קישור דילוג לתוכן -->
   <a href="#main-content" class="skip-link">
@@ -834,8 +839,8 @@
     'ru': __lang_alt_ru if __lang_alt_ru and __lang_alt_ru != 'homepage.language_menu.flag_alt.ru' else 'Russia flag'
   } %}
   {% set __desktop_lang_label = __lang_labels.get(g.current_lang or 'he', __lang_labels['he']) %}
-  <div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
-<button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ _('change_language') }}">
+<div class="language-switcher {{ 'right' if g.current_lang == 'he' else 'left' }}">
+<button class="lang-chip" type="button" onclick="toggleLanguageList()" aria-haspopup="true" aria-expanded="false" aria-label="{{ __change_language_txt }}">
   <i class="fa-solid fa-globe" data-testid="lang-globe" aria-hidden="true"></i>
 </button>
 
@@ -912,7 +917,7 @@
           <li><a href="{{ url_for_lang(lang='ru') }}" role="menuitem">{{ __lang_labels['ru'] }}</a></li>
         </ul>
       </div>
-      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ _('homepage.quick.estimate_nav') }}</a>
+      <a class="tb-header-cta" href="{{ url_for_lang('estimate') }}">{{ __estimate_txt }}</a>
     </div>
   </div>
 </nav>

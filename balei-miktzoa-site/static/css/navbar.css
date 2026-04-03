@@ -340,7 +340,7 @@ html[dir="ltr"] .search-btn{
   .tb-brand-nav {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: clamp(10px, 1.4vw, 18px);
     min-width: 0;
     flex: 0 1 auto;
     margin-inline-end: 0;
@@ -451,11 +451,6 @@ html[dir="ltr"] .search-btn{
     justify-content: flex-start;
   }
 
-  html[dir="rtl"] .tb-main-nav {
-    padding-inline-start: 0;
-    border-inline-start: 0;
-  }
-
   html[dir="rtl"] .tb-brand-nav {
     margin-inline-start: clamp(18px, 2.2vw, 34px);
   }
@@ -514,6 +509,7 @@ html[dir="ltr"] .search-btn{
 
   html[dir="rtl"] .tb-logo-line {
     margin-inline-end: 0;
+    transform: translateX(-8px);
   }
 
   html[dir="ltr"] .tb-logo-line {

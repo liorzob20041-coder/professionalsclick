@@ -297,8 +297,20 @@ html[dir="ltr"] .search-btn{
   .kebab-btn,
   .menu-close-btn,
   .language-switcher,
-  body > .search-btn {
+  .search-btn,
+  body > .search-btn,
+  body > .menu-close-btn,
+  body > .kebab-btn,
+  body > .language-switcher {
     display: none !important;
+    visibility: hidden !important;
+    inline-size: 0 !important;
+    block-size: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
   }
 
   .topbar-rail {
@@ -311,10 +323,11 @@ html[dir="ltr"] .search-btn{
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 28px;
-    max-width: 1280px;
+    gap: 34px;
+    max-width: 1320px;
     margin-inline: auto;
-    padding-inline: clamp(22px, 3vw, 44px);
+    padding-inline-start: clamp(52px, 6vw, 116px);
+    padding-inline-end: clamp(26px, 3.4vw, 54px);
     min-height: var(--hdr-h);
   }
 
@@ -322,15 +335,15 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-self: end;
-    gap: 18px;
+    gap: 24px;
     min-width: 0;
-    margin-inline-end: clamp(10px, 1.4vw, 22px);
+    margin-inline-end: clamp(26px, 3.2vw, 62px);
   }
 
   .tb-main-nav {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -341,9 +354,9 @@ html[dir="ltr"] .search-btn{
   .tb-main-nav a {
     display: inline-flex;
     align-items: center;
-    min-height: 42px;
-    padding: 0 12px;
-    border-radius: 10px;
+    min-height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
     color: rgb(241 245 249 / 94%);
     text-decoration: none;
     font-weight: 700;
@@ -365,8 +378,9 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-self: start;
-    gap: 12px;
-    margin-inline-start: clamp(8px, 1.2vw, 20px);
+    gap: 16px;
+    margin-inline-start: clamp(18px, 2.8vw, 48px);
+    margin-inline-end: clamp(8px, 1vw, 16px);
     padding: 4px 0;
   }
 
@@ -378,15 +392,15 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    min-width: 86px;
-    min-height: 38px;
-    padding: 0 10px;
-    border-radius: 10px;
+    gap: 6px;
+    min-width: 78px;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
     border: 1px solid rgb(148 163 184 / 38%);
-    background: rgb(248 250 252 / 96%);
-    color: var(--top-navy);
-    font-size: 13px;
+    background: rgb(241 245 249 / 92%);
+    color: rgb(15 23 42 / 84%);
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
   }
@@ -453,7 +467,7 @@ html[dir="ltr"] .search-btn{
     align-items: center;
     justify-content: center;
     min-height: 40px;
-    padding: 0 18px;
+    padding: 0 20px;
     border-radius: 999px;
     text-decoration: none;
     color: #fff;
@@ -470,12 +484,31 @@ html[dir="ltr"] .search-btn{
     transform: translateY(-1px);
   }
 
+  html[dir="rtl"] .topbar-rail .rail {
+    padding-inline-start: clamp(58px, 7vw, 132px);
+    padding-inline-end: clamp(24px, 3vw, 48px);
+  }
+
+  html[dir="ltr"] .topbar-rail .rail {
+    padding-inline-start: clamp(24px, 3vw, 48px);
+    padding-inline-end: clamp(58px, 7vw, 132px);
+  }
+
   html[dir="rtl"] .tb-logo-line {
-    margin-inline-end: 4px;
+    margin-inline-end: 0;
   }
 
   html[dir="ltr"] .tb-logo-line {
-    margin-inline-start: 4px;
+    margin-inline-start: 0;
+  }
+
+  html[dir="rtl"] .tb-brand-nav {
+    margin-inline-end: clamp(34px, 4.2vw, 80px);
+  }
+
+  html[dir="ltr"] .tb-brand-nav {
+    margin-inline-start: clamp(34px, 4.2vw, 80px);
+    margin-inline-end: 0;
   }
 
   html[dir="ltr"] .tb-brand-nav {

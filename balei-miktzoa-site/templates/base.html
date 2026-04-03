@@ -740,6 +740,8 @@
 
   <!-- ====== כפתור ⋮ ותפריט צד (מובייל) ====== -->
   <button class="kebab-btn" id="kebabBtn"
+          hidden
+          aria-hidden="true"
           aria-controls="mobileMenu"
           aria-expanded="false"
           aria-label="{{ __menu_open_txt }}">
@@ -747,6 +749,8 @@
 
   <!-- כפתור סגירה שמופיע רק כשהתפריט פתוח -->
   <button class="menu-close-btn" id="menuCloseTop"
+          hidden
+          aria-hidden="true"
           type="button"
           aria-label="{{ __menu_close_txt }}"></button>
 
@@ -1372,7 +1376,25 @@ runWhenIdle(function(){
     const closeTopBtn = document.getElementById('menuCloseTop');
     if (!btn || !drawer || !backdrop) return;
     if (closeTopBtn) closeTopBtn.style.display = 'none';
+    const mobileMq = window.matchMedia('(max-width: 991px)');
     let lastFocus = null;
+    function syncMobileOnlyControls(){
+      const isMobile = mobileMq.matches;
+      if (isMobile){
+        btn.hidden = false;
+        btn.removeAttribute('aria-hidden');
+      } else {
+        closeDrawer();
+        btn.hidden = true;
+        btn.setAttribute('aria-hidden', 'true');
+        btn.style.display = 'none';
+        if (closeTopBtn){
+          closeTopBtn.hidden = true;
+          closeTopBtn.setAttribute('aria-hidden', 'true');
+          closeTopBtn.style.display = 'none';
+        }
+      }
+    }
     function firstFocusable(){
       const sel='a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
       return Array.from(drawer.querySelectorAll(sel)).find(el=>!el.disabled && el.offsetParent!==null);
@@ -1382,14 +1404,24 @@ runWhenIdle(function(){
       drawer.classList.add('open'); drawer.removeAttribute('aria-hidden');
       btn.setAttribute('aria-expanded','true');
       backdrop.hidden=false; document.body.style.overflow='hidden'; document.body.classList.add('menu-open');
-      btn.style.display='none'; if (closeTopBtn) closeTopBtn.style.display='inline-flex';
+      btn.style.display='none';
+      if (closeTopBtn){
+        closeTopBtn.hidden = false;
+        closeTopBtn.removeAttribute('aria-hidden');
+        closeTopBtn.style.display='inline-flex';
+      }
       const f=firstFocusable(); if (f) f.focus({preventScroll:true});
     }
     function closeDrawer(){
       drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true');
       btn.setAttribute('aria-expanded','false');
       backdrop.hidden=true; document.body.style.overflow=''; document.body.classList.remove('menu-open');
-      btn.style.display=''; if (closeTopBtn) closeTopBtn.style.display='none';
+      btn.style.display='';
+      if (closeTopBtn){
+        closeTopBtn.hidden = true;
+        closeTopBtn.setAttribute('aria-hidden', 'true');
+        closeTopBtn.style.display='none';
+      }
       if (lastFocus && lastFocus.focus) { try{ lastFocus.focus(); }catch(_){} }
     }
     btn.addEventListener('click', e=>{ e.preventDefault(); openDrawer(); });
@@ -1407,6 +1439,9 @@ runWhenIdle(function(){
       if (e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
+    syncMobileOnlyControls();
+    if (mobileMq.addEventListener) mobileMq.addEventListener('change', syncMobileOnlyControls);
+    else if (mobileMq.addListener) mobileMq.addListener(syncMobileOnlyControls);
   }
   function boot(){ if ('requestIdleCallback' in window) requestIdleCallback(wire,{timeout:1200}); else window.addEventListener('load', ()=>setTimeout(wire,300)); }
   boot();

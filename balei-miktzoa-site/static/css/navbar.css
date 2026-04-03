@@ -365,8 +365,9 @@ html[dir="ltr"] .search-btn{
     display: inline-flex;
     align-items: center;
     justify-self: start;
-    gap: 10px;
-    padding-inline-start: 10px;
+    gap: 12px;
+    margin-inline-start: clamp(8px, 1.2vw, 20px);
+    padding: 4px 0;
   }
 
   .tb-lang-switcher {
@@ -421,6 +422,10 @@ html[dir="ltr"] .search-btn{
     box-shadow: 0 8px 20px rgb(2 6 23 / 16%);
     display: none;
     z-index: 40;
+  }
+
+  html[dir="rtl"] .tb-header-tools {
+    justify-content: flex-start;
   }
 
   .tb-lang-switcher ul.show {

@@ -11,7 +11,7 @@
 
 :root {
   --ink: #111827;
-  --bg: #f7f8fc;
+  --bg: #f8fafd;
   --brand: #102a43;
   --brand-700: #0b1f33;
   --cta: #b98243;
@@ -20,8 +20,8 @@
   --muted: #6b7280;
   --radius: 12px;
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 6%);
-  --shadow-sm: 0 2px 8px rgb(0 0 0 / 8%);
-  --shadow-md: 0 6px 18px rgb(0 0 0 / 12%);
+  --shadow-sm: 0 2px 8px rgb(15 23 42 / 8%);
+  --shadow-md: 0 8px 20px rgb(15 23 42 / 11%);
   --shadow-lg: 0 10px 28px rgb(0 0 0 / 18%);
 
   /* HERO */
@@ -179,9 +179,43 @@ main > section h3::after {
   background: linear-gradient(
     90deg,
     rgb(16 42 67 / 0%),
-    rgb(16 42 67 / 28%),
+    rgb(16 42 67 / 20%),
     rgb(16 42 67 / 0%)
   );
+}
+
+main > section {
+  padding-block: clamp(32px, 5vw, 64px);
+}
+
+/* -------------------- Homepage header/footer integration -------------------- */
+.topbar-rail {
+  background: linear-gradient(180deg, #0f2c49, #102a43);
+  border-bottom: 1px solid rgb(185 130 67 / 35%);
+}
+
+.topbar-rail .tb-main-nav a {
+  color: rgb(248 250 252 / 92%);
+}
+
+.topbar-rail .tb-main-nav a:hover,
+.topbar-rail .tb-main-nav a:focus-visible {
+  color: #fbbf24;
+}
+
+body > footer {
+  background: #0b2238 !important;
+  color: rgb(241 245 249 / 92%) !important;
+  border-top: 1px solid rgb(185 130 67 / 36%);
+}
+
+body > footer a {
+  color: rgb(241 245 249 / 92%) !important;
+}
+
+body > footer a:hover,
+body > footer a:focus-visible {
+  color: #fbbf24 !important;
 }
 
 /* -------------------- HERO -------------------- */
@@ -192,12 +226,12 @@ main > section h3::after {
   gap: 24px;
   width: min(100% - 2 * var(--container-pad, 20px), 100%);
   max-width: 1280px;
-  margin: 24px auto 0;
-  padding: 26px 20px;
-  background: linear-gradient(180deg, #fff, #fcfdff);
+  margin: 20px auto 0;
+  padding: 24px 20px;
+  background: linear-gradient(180deg, #fff, #fbfdff);
   border: 1px solid rgb(15 23 42 / 8%);
   border-radius: 16px;
-  box-shadow: 0 10px 28px rgb(15 23 42 / 10%);
+  box-shadow: 0 8px 20px rgb(15 23 42 / 9%);
   min-height: 380px;
 }
 
@@ -909,7 +943,7 @@ html[dir="ltr"] .input-group:has(#field)::before {
 
 /* -------------------- How it works -------------------- */
 .how-it-works {
-  padding: 28px 0;
+  background: linear-gradient(180deg, #fff, #fbfdff);
 }
 
 .how-it-works h2 {
@@ -931,10 +965,10 @@ html[dir="ltr"] .input-group:has(#field)::before {
   display: flex;
   gap: 12px;
   padding: 14px;
-  background: #fff;
-  border: 1px solid var(--brd);
+  background: rgb(255 255 255 / 85%);
+  border: 1px solid rgb(16 42 67 / 14%);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .step-index {
@@ -1001,27 +1035,24 @@ html[dir="ltr"] .input-group:has(#field)::before {
 }
 
 /* -------------------- Estimate CTA -------------------- */
-.estimate-cta {
-  padding: 24px 0;
-}
-
 .estimate-cta .section-wrap {
-  background: #fff;
-  border: 1px solid var(--brd);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(140deg, #0f2d4a, #102a43 65%, #173a5c);
+  border: 1px solid rgb(16 42 67 / 26%);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgb(15 23 42 / 18%);
   text-align: center;
-  padding: 18px 20px;
+  padding: clamp(24px, 4vw, 34px) 20px;
 }
 
 .estimate-cta h2 {
   margin: 0 0 6px;
   font-size: clamp(20px, 2.4vw, 28px);
+  color: #fff;
 }
 
 .estimate-cta p {
   margin: 0 0 12px;
-  color: var(--muted);
+  color: rgb(241 245 249 / 88%);
 }
 
 /* -------------------- Categories -------------------- */
@@ -1090,10 +1121,6 @@ html[dir="ltr"] .input-group:has(#field)::before {
 /* -------------------- Popular Fields (Consolidated) -------------------- */
 
 /* ׳³ֲ³ײ²ֲ¨׳³ֲ³׳’ג€ֲ¢׳³ֲ³׳’ג€ֲ¢׳³ֲ³ײ²ֲ ׳³ֲ³ײ²ֲ׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ²ֲ§׳³ֲ³׳’ג€ֲ¢ ׳³ֲ³ײ²ֲ§׳³ֲ³׳’ג‚¬ֲ¢׳³ֲ³ײ²ֲ׳³ֲ³׳’ג€ֳ—׳³ֲ³ײ²ֲ§׳³ֲ³ײ»ֲ׳³ֲ³׳’ג€ֲ¢ */
-.niche-rail-wrap {
-  padding: 30px 0;
-}
-
 .niche-rail-wrap h2 {
   text-align: center;
   margin: 0 0 16px;
@@ -1282,8 +1309,7 @@ html[dir="rtl"] .niche-rail {
 
 /* -------------------- Articles -------------------- */
 .home-articles.mag {
-  padding: clamp(48px, 7vw, 92px) 0 clamp(38px, 6vw, 72px);
-  background: linear-gradient(180deg, #f8fafc 0%, #fff 84%);
+  background: linear-gradient(180deg, #f9fbfe 0%, #fff 84%);
   position: relative;
   isolation: isolate;
 }
@@ -1293,8 +1319,8 @@ html[dir="rtl"] .niche-rail {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(90% 50% at 100% 0%, rgb(16 42 67 / 7%), transparent 60%),
-    radial-gradient(70% 40% at 0% 100%, rgb(16 42 67 / 5%), transparent 60%);
+    radial-gradient(90% 50% at 100% 0%, rgb(16 42 67 / 5%), transparent 60%),
+    radial-gradient(70% 40% at 0% 100%, rgb(16 42 67 / 3%), transparent 60%);
   pointer-events: none;
   z-index: 0;
 }
@@ -1619,10 +1645,6 @@ html[dir="ltr"] .a-card:hover .a-more i {
 }
 
 /* -------------------- Video rail -------------------- */
-.video-rail {
-  padding: 26px 0;
-}
-
 .video-rail h2 {
   text-align: center;
   font-size: clamp(20px, 2.4vw, 28px);
@@ -1757,10 +1779,6 @@ html[dir="ltr"] .a-card:hover .a-more i {
 }
 
 /* -------------------- Featured pros -------------------- */
-.featured-pros {
-  padding: 24px 0;
-}
-
 .featured-pros h2 {
   text-align: center;
   margin: 0 0 12px;
@@ -1818,10 +1836,6 @@ html[dir="ltr"] .a-card:hover .a-more i {
 }
 
 /* -------------------- Features -------------------- */
-.features {
-  padding: 30px 0;
-}
-
 .features h2 {
   text-align: center;
   margin: 0 0 16px;
@@ -1835,7 +1849,7 @@ html[dir="ltr"] .a-card:hover .a-more i {
 
 .feature-item {
   background: #fff;
-  border: 1px solid rgb(16 42 67 / 16%);
+  border: 1px solid rgb(16 42 67 / 13%);
   padding: 14px;
   border-radius: 12px;
   font-weight: 700;
@@ -1919,7 +1933,7 @@ html[dir="ltr"] .a-card:hover .a-more i {
 
 /* -------------------- FAQ -------------------- */
 .faq {
-  padding: 26px 0;
+  background: linear-gradient(180deg, #fff, #f9fbfd);
 }
 
 .faq h2 {
@@ -1936,9 +1950,9 @@ html[dir="ltr"] .a-card:hover .a-more i {
 
 .faq-list details {
   background: #fff;
-  border: 1px solid rgb(16 42 67 / 14%);
+  border: 1px solid rgb(16 42 67 / 12%);
   border-radius: 12px;
-  box-shadow: var(--shadow-xs);
+  box-shadow: none;
   padding: 10px 12px;
 }
 
@@ -1960,7 +1974,7 @@ html[dir="ltr"] .a-card:hover .a-more i {
 
 /* -------------------- Contact -------------------- */
 #contact {
-  padding: 26px 0;
+  background: #fff;
 }
 
 #contact h2 {
@@ -1977,7 +1991,7 @@ html[dir="ltr"] .a-card:hover .a-more i {
   border: 1px solid var(--brd);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
 }
 
 .contact-form input,

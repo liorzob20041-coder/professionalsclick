@@ -452,7 +452,7 @@ html[dir="ltr"] .search-btn{
   }
 
   html[dir="rtl"] .tb-brand-nav {
-    margin-inline-start: clamp(58px, 6vw, 92px);
+    margin-inline-start: clamp(78px, 8vw, 130px);
   }
 
   html[dir="ltr"] .tb-brand-nav {

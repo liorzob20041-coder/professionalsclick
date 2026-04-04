@@ -1581,11 +1581,15 @@ runWhenIdle(function(){
   </script>
   {% endblock %}
 
-  <footer style="background-color:#f2f2f2; padding:20px; text-align:center; direction:rtl; font-family:Arial,sans-serif; font-size:14px; color:#333;">
-    <a href="{{ url_for('terms', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">תנאי שימוש</a> |
-    <a href="{{ url_for('privacy', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">מדיניות פרטיות</a> |
-    <a href="{{ url_for('accessibility', lang=g.current_lang) }}" style="margin:0 10px; color:#333; text-decoration:none;">נגישות</a>
-    <div style="margin-top:10px;">© 2025 בעלי מקצוע בקליק. כל הזכויות שמורות.</div>
+  <footer class="site-footer" aria-label="Footer">
+    <div class="site-footer__inner">
+      <nav class="site-footer__links" aria-label="Legal links">
+        <a href="{{ url_for('terms', lang=g.current_lang) }}">תנאי שימוש</a>
+        <a href="{{ url_for('privacy', lang=g.current_lang) }}">מדיניות פרטיות</a>
+        <a href="{{ url_for('accessibility', lang=g.current_lang) }}">נגישות</a>
+      </nav>
+      <p class="site-footer__copy">© 2025 בעלי מקצוע בקליק. כל הזכויות שמורות.</p>
+    </div>
   </footer>
   {% block body_end_extra %}{% endblock %}
 </body>

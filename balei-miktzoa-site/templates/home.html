@@ -176,12 +176,30 @@
 <!-- WHY/FEATURES -->
 <section class="features" id="features" aria-label="למה לבחור בנו">
   <div class="container container--wide">
-    <h2>{{ _('homepage.why_us_title') }}</h2>
+    <header class="section-head">
+      <h2>{{ _('homepage.why_us_title') }}</h2>
+    </header>
     <div class="feature-boxes">
-      <div class="feature-item"><i class="fa-solid fa-user-check" aria-hidden="true"></i> {{ _('homepage.features.1') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> {{ _('homepage.features.2') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-hand-holding" aria-hidden="true"></i> {{ _('homepage.features.3') }}</div>
-      <div class="feature-item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> {{ _('homepage.features.4') }}</div>
+      <article class="feature-item">
+        <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+        <h3>{{ _('homepage.features.1') }}</h3>
+        <p>{{ _('homepage.features.1_desc') }}</p>
+      </article>
+      <article class="feature-item">
+        <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+        <h3>{{ _('homepage.features.2') }}</h3>
+        <p>{{ _('homepage.features.2_desc') }}</p>
+      </article>
+      <article class="feature-item">
+        <i class="fa-solid fa-hand-holding" aria-hidden="true"></i>
+        <h3>{{ _('homepage.features.3') }}</h3>
+        <p>{{ _('homepage.features.3_desc') }}</p>
+      </article>
+      <article class="feature-item">
+        <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+        <h3>{{ _('homepage.features.4') }}</h3>
+        <p>{{ _('homepage.features.4_desc') }}</p>
+      </article>
     </div>
   </div>
 </section>
@@ -189,31 +207,37 @@
 <!-- POPULAR FIELDS -->
 <section class="niche-rail-wrap" id="niches" aria-label="{{ _('homepage.popular_fields_title') }}">
   <div class="container container--wide">
-    <h2>{{ _('homepage.popular_fields_title') }}</h2>
+    <header class="section-head">
+      <h2>{{ _('homepage.popular_fields_title') }}</h2>
+    </header>
     <nav class="niche-rail" aria-label="{{ _('homepage.popular_fields_title') }}">
       <button class="niche-pill" type="button"
               data-label="{{ _('homepage.popular_fields.plumbers') }}"
               onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-faucet-drip"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.plumbers') }}</span>
+        <span class="np-meta">{{ _('homepage.popular_fields.plumbers_meta') }}</span>
       </button>
       <button class="niche-pill" type="button"
               data-label="{{ _('homepage.popular_fields.electricians') }}"
               onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.electricians') }}</span>
+        <span class="np-meta">{{ _('homepage.popular_fields.electricians_meta') }}</span>
       </button>
       <button class="niche-pill" type="button"
               data-label="{{ _('homepage.popular_fields.renovations') }}"
               onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-hammer"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.renovations') }}</span>
+        <span class="np-meta">{{ _('homepage.popular_fields.renovations_meta') }}</span>
       </button>
       <button class="niche-pill" type="button"
               data-label="{{ _('homepage.popular_fields.locksmiths') }}"
               onclick="return goToSearch(event, this.dataset.label)">
         <span class="np-ico" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
         <span class="np-label">{{ _('homepage.popular_fields.locksmiths') }}</span>
+        <span class="np-meta">{{ _('homepage.popular_fields.locksmiths_meta') }}</span>
       </button>
     </nav>
   </div>
@@ -249,12 +273,23 @@
 <!-- ESTIMATE CTA -->
 <section class="estimate-cta" id="estimate" aria-label="{{ _('homepage.quick.estimate_title') }}">
   <div class="section-wrap">
-    <h2>{{ _('homepage.quick.estimate_title') }}</h2>
-    <p>{{ _('homepage.quick.estimate_desc') }}</p>
-    <button class="btn btn-primary" type="button" onclick="return goToEstimate(event)">
-      <i class="fa-solid fa-calculator" aria-hidden="true"></i>
-      {{ _('homepage.quick.estimate_cta') }}
-    </button>
+    <div class="estimate-copy">
+      <span class="estimate-kicker">{{ _('homepage.quick.estimate_kicker') }}</span>
+      <h2>{{ _('homepage.quick.estimate_title') }}</h2>
+      <p>{{ _('homepage.quick.estimate_desc') }}</p>
+      <ul class="estimate-chips" role="list">
+        <li>{{ _('homepage.quick.estimate_chip_free') }}</li>
+        <li>{{ _('homepage.quick.estimate_chip_no_commitment') }}</li>
+        <li>{{ _('homepage.quick.estimate_chip_fast') }}</li>
+      </ul>
+    </div>
+    <div class="estimate-actions">
+      <button class="btn btn-primary estimate-btn" type="button" onclick="return goToEstimate(event)">
+        <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+        {{ _('homepage.quick.estimate_cta') }}
+      </button>
+      <p class="estimate-example">{{ _('homepage.quick.estimate_examples') }}</p>
+    </div>
   </div>
 </section>
 
@@ -301,7 +336,9 @@
 <!-- HOW IT WORKS -->
 <section id="how" class="how-it-works" aria-label="איך זה עובד">
   <div class="container container--wide">
-    <h2>{{ _('homepage.how_title') }}</h2>
+    <header class="section-head">
+      <h2>{{ _('homepage.how_title') }}</h2>
+    </header>
     <ol class="steps">
       <li>
         <span class="step-index" aria-hidden="true">1</span>
@@ -331,12 +368,16 @@
 <!-- FAQ -->
 <section class="faq" id="faq" aria-label="שאלות נפוצות">
   <div class="container container--wide">
-    <h2>{{ _('homepage.faq_title') }}</h2>
+    <header class="section-head">
+      <h2>{{ _('homepage.faq_title') }}</h2>
+    </header>
     <div class="faq-list">
       <details><summary>{{ _('homepage.faq.q1') }}</summary><p>{{ _('homepage.faq.a1') }}</p></details>
       <details><summary>{{ _('homepage.faq.q2') }}</summary><p>{{ _('homepage.faq.a2') }}</p></details>
       <details><summary>{{ _('homepage.faq.q3') }}</summary><p>{{ _('homepage.faq.a3') }}</p></details>
       <details><summary>{{ _('homepage.faq.q4') }}</summary><p>{{ _('homepage.faq.a4') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q5') }}</summary><p>{{ _('homepage.faq.a5') }}</p></details>
+      <details><summary>{{ _('homepage.faq.q6') }}</summary><p>{{ _('homepage.faq.a6') }}</p></details>
     </div>
   </div>
 </section>
@@ -344,7 +385,10 @@
 <!-- CONTACT -->
 <section id="contact" aria-label="{{ _('homepage.contact_title') }}">
   <div class="container">
-    <h2>{{ _('homepage.contact_title') }}</h2>
+    <header class="section-head">
+      <h2>{{ _('homepage.contact_title') }}</h2>
+      <p>{{ _('homepage.contact_intro') }}</p>
+    </header>
     <p class="clientStatus" style="display:none"></p>
     <form class="contact-form" method="POST" action="{{ url_for_lang('send_message') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

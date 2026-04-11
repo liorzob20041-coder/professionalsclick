@@ -178,7 +178,6 @@
   <div class="container container--wide">
     <header class="section-head">
       <h2>{{ _('homepage.why_us_title') }}</h2>
-      <p>{{ _('homepage.why_us_intro') }}</p>
     </header>
     <div class="feature-boxes">
       <article class="feature-item">
@@ -210,7 +209,6 @@
   <div class="container container--wide">
     <header class="section-head">
       <h2>{{ _('homepage.popular_fields_title') }}</h2>
-      <p>{{ _('homepage.popular_fields_intro') }}</p>
     </header>
     <nav class="niche-rail" aria-label="{{ _('homepage.popular_fields_title') }}">
       <button class="niche-pill" type="button"
@@ -242,7 +240,6 @@
         <span class="np-meta">{{ _('homepage.popular_fields.locksmiths_meta') }}</span>
       </button>
     </nav>
-    <p class="niche-rail-note">{{ _('homepage.popular_fields_note') }}</p>
   </div>
 </section>
 
@@ -341,7 +338,6 @@
   <div class="container container--wide">
     <header class="section-head">
       <h2>{{ _('homepage.how_title') }}</h2>
-      <p>{{ _('homepage.how_intro') }}</p>
     </header>
     <ol class="steps">
       <li>
@@ -366,7 +362,6 @@
         </div>
       </li>
     </ol>
-    <p class="how-note">{{ _('homepage.how_bottom_note') }}</p>
   </div>
 </section>
 
@@ -375,7 +370,6 @@
   <div class="container container--wide">
     <header class="section-head">
       <h2>{{ _('homepage.faq_title') }}</h2>
-      <p>{{ _('homepage.faq_intro') }}</p>
     </header>
     <div class="faq-list">
       <details><summary>{{ _('homepage.faq.q1') }}</summary><p>{{ _('homepage.faq.a1') }}</p></details>
@@ -398,7 +392,6 @@
     <p class="clientStatus" style="display:none"></p>
     <form class="contact-form" method="POST" action="{{ url_for_lang('send_message') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <p class="contact-assurance">{{ _('homepage.contact_reassurance') }}</p>
       <label class="sr-only" for="name">{{ _('homepage.full_name') }}</label>
       <input type="text" id="name" name="name" placeholder="{{ _('homepage.full_name') }}" required autocomplete="name">
       <label class="sr-only" for="email">{{ _('homepage.email') }}</label>

@@ -185,7 +185,7 @@ main > section h3::after {
 }
 
 main > section {
-  padding-block: clamp(32px, 5vw, 64px);
+  padding-block: clamp(26px, 4vw, 52px);
 }
 
 /* -------------------- Homepage header/footer integration -------------------- */
@@ -949,13 +949,13 @@ html[dir="ltr"] .input-group:has(#field)::before {
 .how-it-works h2 {
   text-align: center;
   font-size: clamp(20px, 2.4vw, 28px);
-  margin: 0 0 14px;
+  margin: 0 0 10px;
 }
 
 .section-head {
   text-align: center;
   max-width: 760px;
-  margin: 0 auto 18px;
+  margin: 0 auto 14px;
 }
 
 .section-head p {
@@ -976,7 +976,7 @@ html[dir="ltr"] .input-group:has(#field)::before {
 .steps li {
   display: flex;
   gap: 12px;
-  padding: 14px 14px 14px 12px;
+  padding: 16px 16px 14px 12px;
   background: #fff;
   border: 1px solid rgb(16 42 67 / 12%);
   border-inline-start: 3px solid rgb(16 42 67 / 24%);
@@ -996,8 +996,9 @@ html[dir="ltr"] .input-group:has(#field)::before {
 }
 
 .step-body h3 {
-  margin: 0 0 4px;
+  margin: 0 0 9px;
   font-size: 1rem;
+  line-height: 1.35;
 }
 
 .how-note {
@@ -1060,21 +1061,22 @@ html[dir="ltr"] .input-group:has(#field)::before {
   border: 1px solid rgb(16 42 67 / 26%);
   border-radius: 16px;
   box-shadow: 0 10px 22px rgb(15 23 42 / 18%);
-  padding: clamp(24px, 4vw, 36px) 20px;
+  padding: clamp(24px, 3.8vw, 34px) clamp(18px, 3.2vw, 28px);
   text-align: center;
   display: grid;
-  gap: 14px;
+  gap: 12px;
   justify-items: center;
+  max-width: 980px;
 }
 
 .estimate-cta h2 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: clamp(20px, 2.4vw, 28px);
   color: #fff;
 }
 
 .estimate-cta p {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: rgb(241 245 249 / 88%);
 }
 
@@ -1123,9 +1125,10 @@ html[dir="ltr"] .input-group:has(#field)::before {
 .estimate-btn {
   width: 100%;
   max-width: 360px;
-  min-height: 56px;
-  font-size: 1.1rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+  min-height: 58px;
+  font-size: 1.12rem;
+  box-shadow: 0 10px 26px rgb(0 0 0 / 20%);
+  border: 1px solid rgb(255 255 255 / 24%);
 }
 
 /* -------------------- Categories -------------------- */
@@ -1305,7 +1308,8 @@ html[dir="rtl"] .niche-rail {
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #f3f4f6, #eef1f5);
+  background: linear-gradient(145deg, #fffaf2, #f8efe3);
+  border: 1px solid rgb(183 139 88 / 24%);
   transition:
     transform 0.14s ease,
     background-color 0.14s ease;
@@ -1357,7 +1361,13 @@ html[dir="rtl"] .niche-rail {
 .np-ico i.fa,
 .np-ico i[class^="fa-"],
 .np-ico i[class*=" fa-"] {
-  color: #12385a;
+  color: #9c6931;
+}
+
+.niche-pill:hover .np-ico i.fa,
+.niche-pill:hover .np-ico i[class^="fa-"],
+.niche-pill:hover .np-ico i[class*=" fa-"] {
+  color: #8a5b2b;
 }
 
 .np-ico i:not(.fa, [class^="fa-"], [class*=" fa-"]) {
@@ -2039,6 +2049,22 @@ html[dir="ltr"] .feature-item {
   .feature-item {
     text-align: center;
     align-items: center;
+  }
+}
+
+@media (width >=980px) {
+  .steps li {
+    position: relative;
+  }
+
+  .steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: -9px;
+    top: 50%;
+    width: 18px;
+    height: 1px;
+    background: rgb(16 42 67 / 20%);
   }
 }
 

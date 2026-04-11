@@ -519,3 +519,100 @@ html[dir="ltr"] .search-btn{
     justify-content: flex-end;
   }
 }
+
+/* ===== Header/Footer coherence pass (2026-04) ===== */
+@media (width >= 992px) {
+  .topbar-rail {
+    background: linear-gradient(180deg, #0b1f33 0%, #102a43 100%);
+    border-bottom: 1px solid rgb(217 226 236 / 18%);
+    box-shadow: 0 10px 24px rgb(11 31 51 / 18%);
+  }
+
+  .topbar-rail .rail {
+    min-height: 82px;
+    width: min(calc(100% - 48px), 1360px);
+  }
+
+  .tb-logo-line {
+    padding: 8px 12px;
+    border: 1px solid rgb(217 226 236 / 20%);
+    background: rgb(255 255 255 / 4%);
+    border-radius: 12px;
+  }
+
+  html[dir="rtl"] .tb-logo-line { margin-inline-end: 0; }
+  html[dir="rtl"] .tb-brand-nav { margin-inline-start: 0; }
+
+  .tb-main-nav {
+    border-inline-start-color: rgb(217 226 236 / 22%);
+    margin-inline-start: 6px;
+  }
+
+  .tb-main-nav a {
+    min-height: 38px;
+    border-radius: 10px;
+    color: rgb(241 245 249 / 96%);
+  }
+
+  .tb-main-nav a:hover,
+  .tb-main-nav a:focus-visible {
+    background: rgb(255 255 255 / 13%);
+    border-color: rgb(217 226 236 / 30%);
+  }
+
+  .tb-lang-chip {
+    border-radius: 999px;
+    min-height: 40px;
+    border-color: rgb(217 226 236 / 45%);
+  }
+
+  .tb-header-cta {
+    min-height: 42px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: linear-gradient(140deg, #9b6b35, #b98243);
+  }
+}
+
+.site-footer {
+  margin-top: 56px;
+  background: linear-gradient(180deg, #0b1f33 0%, #102a43 100%);
+  border-top: 1px solid rgb(217 226 236 / 18%);
+  color: #d9e2ec;
+}
+
+.site-footer__inner {
+  width: min(calc(100% - 40px), 1280px);
+  margin-inline: auto;
+  padding: 26px 0 30px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+}
+
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-footer__links a {
+  color: #f0f4f8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.site-footer__links a:hover,
+.site-footer__links a:focus-visible {
+  color: #d9b07f;
+}
+
+.site-footer__copy {
+  margin: 0;
+  color: #bcccdc;
+  font-size: 13px;
+}

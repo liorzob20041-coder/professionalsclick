@@ -154,19 +154,6 @@
           </div>
 
           <button class="hs-btn" type="submit">{{ _('homepage.start_search') }}</button>
-
-          <datalist id="fields">
-            <option value="{{ _('field_renovations') }}" data-key="renovations">
-            <option value="{{ _('field_plumbers') }}"    data-key="plumbers">
-            <option value="{{ _('field_electricians') }}" data-key="electricians">
-            <option value="{{ _('field_locksmiths') }}"   data-key="locksmiths">
-          </datalist>
-          <datalist id="areas">
-            <option value="{{ _('city_tel_aviv') }}"   data-key="tel-aviv">
-            <option value="{{ _('city_haifa') }}"      data-key="haifa">
-            <option value="{{ _('city_jerusalem') }}"  data-key="jerusalem">
-            <option value="{{ _('city_beer_sheva') }}" data-key="beer-sheva">
-          </datalist>
         </form>
       </div>
     </div>
@@ -440,69 +427,30 @@
       }, DURATION);
     });
   </script>
-
-  <!-- Search routing -->
   <script>
-    (function () {
-      function convertToSlug(text) {
-        var s = (text || '').trim().toLowerCase();
-        if (typeof s.normalize === 'function') s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-        s = s.replace(/[^0-9a-z\u0590-\u05FF\u0400-\u04FF\\s_-]/g, '')
-             .replace(/[\\s_]+/g, '-')
-             .replace(/-+/g, '-')
-             .replace(/^-|-$/g, '');
-        return s;
-      }
-      window.redirectToCleanURL = function (e) {
-        if (e && e.preventDefault) e.preventDefault();
-        var form = (e && e.target && e.target.closest) ? e.target.closest('form') : document.querySelector('.hero-search');
-        var areaInput  = form ? (form.querySelector('#area')  || form.querySelector('#area_m'))  : null;
-        var fieldInput = form ? (form.querySelector('#field') || form.querySelector('#field_m')) : null;
-        var areaError  = areaInput  && areaInput.parentElement ? areaInput.parentElement.querySelector('.input-error')  : null;
-        var fieldError = fieldInput && fieldInput.parentElement ? fieldInput.parentElement.querySelector('.input-error') : null;
-        if (areaError)  areaError.textContent  = '';
-        if (fieldError) fieldError.textContent = '';
-        var areaValue  = areaInput  && areaInput.value  ? areaInput.value.trim()  : '';
-        var fieldValue = fieldInput && fieldInput.value ? fieldInput.value.trim() : '';
-        var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
-        var msgs = {
-          he: { area: "{{ _('homepage.search_error_choose_area') }}", field: "{{ _('homepage.search_error_choose_field') }}" },
-          en: { area: "{{ _('homepage.search_error_choose_area') }}", field: "{{ _('homepage.search_error_choose_field') }}" },
-          ru: { area: "{{ _('homepage.search_error_choose_area') }}", field: "{{ _('homepage.search_error_choose_field') }}" }
-        };
-        if (!msgs[lang]) lang = 'he';
-        var hasError = false;
-        if (areaInput) areaInput.setAttribute('aria-invalid', 'false');
-        if (fieldInput) fieldInput.setAttribute('aria-invalid', 'false');
-        if (!areaValue)  { if (areaError)  areaError.textContent  = msgs[lang].area; if (areaInput) areaInput.setAttribute('aria-invalid', 'true'); hasError = true; }
-        if (!fieldValue) { if (fieldError) fieldError.textContent = msgs[lang].field; if (fieldInput) fieldInput.setAttribute('aria-invalid', 'true'); hasError = true; }
-        if (hasError) return false;
-        var areaSlug  = convertToSlug(areaValue);
-        var fieldSlug = convertToSlug(fieldValue);
-        if (typeof window.trackEvent === 'function') {
-          window.trackEvent('search_submit', { field: fieldValue, city: areaValue });
-        }
-        window.location.href = '/' + lang + '/workers/' + fieldSlug + '/' + areaSlug;
-        return false;
-      };
-    })();
     function goToSearch(e, fieldLabel){
       if (e && e.preventDefault) e.preventDefault();
-      var form  = document.querySelector('.hero-search');
+      var form = document.querySelector('.hero-search');
       if (!form) { window.location.hash = '#niches'; return false; }
       var fInp = form.querySelector('#field');
       var aInp = form.querySelector('#area');
       if (fieldLabel && fInp) fInp.value = fieldLabel;
       var hasField = fInp && fInp.value && fInp.value.trim();
-      var hasArea  = aInp && aInp.value && aInp.value.trim();
-      if (hasField && hasArea){
+      var hasArea = aInp && aInp.value && aInp.value.trim();
+      if (hasField && hasArea && typeof window.redirectToCleanURL === 'function'){
         return window.redirectToCleanURL({ preventDefault: function(){}, target: form });
       }
       form.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setTimeout(function(){ (!hasField && fInp ? fInp : aInp).focus(); }, 250);
       return false;
     }
-    function goToEstimate(e){ if (e && e.preventDefault) e.preventDefault(); var lang=(document.documentElement.getAttribute('lang')||'he').toLowerCase(); window.location.href='/' + lang + '/estimate/'; return false; }
+
+    function goToEstimate(e){
+      if (e && e.preventDefault) e.preventDefault();
+      var lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+      window.location.href = '/' + lang + '/estimate/';
+      return false;
+    }
   </script>
 
   <!-- Async contact submit -->

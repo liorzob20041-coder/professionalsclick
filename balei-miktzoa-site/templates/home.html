@@ -80,16 +80,11 @@
     <p class="hero-lead">{{ _('homepage.hero_subheadline') }}</p>
 
 
-    <nav class="home-quick-inline" aria-label="פעולות מהירות">
+    <nav class="home-quick-inline" aria-label="פעולה משנית">
       <button class="hq-pill" type="button" onclick="return goToEstimate(event)">
         <i class="fa-solid fa-calculator" aria-hidden="true"></i>
         <span>{{ _('homepage.quick.estimate_nav') }}</span>
       </button>
-      <a class="hq-pill" href="#leading-categories">
-        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-        <span>תחומים מובילים</span>
-      </a>
-      <!-- הוסר: כפתור 'צפו בווידאו' -->
     </nav>
 
     <!-- Checklist של ה־USPs -->
@@ -241,24 +236,24 @@
 <section class="trust-strip" aria-label="למה לבחור בנו">
   <div class="container container--wide">
     <h2>למה לבחור בנו</h2>
-    <div class="trust-strip-grid">
-      <article class="trust-chip">
-        <h3>פרופילים ברורים</h3>
-        <p>תחום, אזור ושפת שירות במקום אחד.</p>
-      </article>
-      <article class="trust-chip">
-        <h3>בודקים מחיר מראש</h3>
-        <p>מחשבון המחירים עוזר להבין טווח עלות.</p>
-      </article>
-      <article class="trust-chip">
-        <h3>משווים בנוחות</h3>
-        <p>אפשר לבדוק כמה אפשרויות לפני שפונים.</p>
-      </article>
-      <article class="trust-chip">
-        <h3>פונים רק כשמתאים</h3>
-        <p>בלי סבב טלפונים מיותר.</p>
-      </article>
-    </div>
+    <ul class="trust-strip-list" role="list">
+      <li class="trust-point">
+        <strong>פרופילים ברורים</strong>
+        <span>תחום, אזור ושפת שירות במקום אחד.</span>
+      </li>
+      <li class="trust-point">
+        <strong>בודקים מחיר מראש</strong>
+        <span>מחשבון המחירים עוזר להבין טווח עלות.</span>
+      </li>
+      <li class="trust-point">
+        <strong>משווים בנוחות</strong>
+        <span>אפשר לבדוק כמה אפשרויות לפני שפונים.</span>
+      </li>
+      <li class="trust-point">
+        <strong>פונים רק כשמתאים</strong>
+        <span>בלי סבב טלפונים מיותר.</span>
+      </li>
+    </ul>
   </div>
 </section>
 

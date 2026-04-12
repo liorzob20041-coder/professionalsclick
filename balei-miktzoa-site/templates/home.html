@@ -255,51 +255,69 @@
   </div>
 </section>
 
-<!-- ESTIMATE CTA -->
+<!-- PRICE CHECK STARTER -->
 <section class="estimate-cta" id="estimate" aria-label="מחשבון מחיר מהיר">
   <div class="section-wrap">
-    <div class="estimate-copy">
-      <span class="estimate-kicker">מחשבון מחיר מהיר</span>
-      <h2>בדקו טווח מחיר לפני שפונים</h2>
-      <p>בחרו תחום ועבודה, וקבלו אומדן מהיר שיעזור לכם להבין אם המחיר שקיבלתם הגיוני.</p>
-      <ul class="estimate-chips" role="list">
-        <li>חינם</li>
-        <li>ללא התחייבות</li>
-        <li>עד 2 דקות</li>
-      </ul>
-      <p class="estimate-example">מתאים לחשמל, אינסטלציה, שיפוץ, צבע ועוד.</p>
-    </div>
-    <div class="estimate-actions">
-      <button class="btn btn-primary estimate-btn" type="button" onclick="return goToEstimate(event)">
-        <i class="fa-solid fa-calculator" aria-hidden="true"></i>
-        פתחו את המחשבון
-      </button>
-    </div>
-  </div>
-</section>
+    <header class="estimate-head">
+      <span class="estimate-kicker">בדיקת מחיר ראשונית</span>
+      <h2>בדקו טווח מחיר לפני שמתקשרים</h2>
+      <p>ממלאים כמה פרטים קצרים וממשיכים למחשבון המלא עם בסיס טוב יותר להשוואה.</p>
+      <p class="estimate-example">בדיקה ראשונית תוך פחות מדקה · מתאים לחשמל, אינסטלציה, שיפוץ ועוד.</p>
+    </header>
 
-<!-- COMPACT TRUST STRIP -->
-<section class="trust-strip" aria-label="למה לבחור בנו">
-  <div class="container container--wide">
-    <div class="trust-strip-head">למה לבחור בנו</div>
-    <div class="trust-points" role="list" aria-label="למה לבחור בנו">
-      <article class="trust-point" role="listitem">
-        <h3>פרופילים ברורים</h3>
-        <p>תחום, אזור ושפת שירות במקום אחד.</p>
-      </article>
-      <article class="trust-point" role="listitem">
-        <h3>בודקים מחיר מראש</h3>
-        <p>מחשבון המחירים עוזר להבין טווח עלות.</p>
-      </article>
-      <article class="trust-point" role="listitem">
-        <h3>משווים בנוחות</h3>
-        <p>אפשר לבדוק כמה אפשרויות לפני שפונים.</p>
-      </article>
-      <article class="trust-point" role="listitem">
-        <h3>פונים רק כשמתאים</h3>
-        <p>בלי סבב טלפונים מיותר.</p>
-      </article>
-    </div>
+    <form class="estimate-starter" method="get" action="{{ url_for_lang('estimate', lang=g.current_lang) }}">
+      <input type="hidden" name="source" value="home_starter">
+      <div class="estimate-grid">
+        <label class="estimate-field">
+          <span>תחום שירות</span>
+          <select name="field" aria-label="תחום שירות">
+            <option value="">בחרו תחום</option>
+            <option value="חשמל">חשמל</option>
+            <option value="אינסטלציה">אינסטלציה</option>
+            <option value="שיפוצים">שיפוצים</option>
+            <option value="מיזוג אוויר">מיזוג אוויר</option>
+            <option value="צביעה">צביעה</option>
+          </select>
+        </label>
+
+        <label class="estimate-field">
+          <span>אזור</span>
+          <select name="area" aria-label="אזור">
+            <option value="">בחרו אזור</option>
+            <option value="מרכז">מרכז</option>
+            <option value="ירושלים">ירושלים והסביבה</option>
+            <option value="שרון">שרון</option>
+            <option value="צפון">צפון</option>
+            <option value="דרום">דרום</option>
+          </select>
+        </label>
+
+        <label class="estimate-field">
+          <span>סוג עבודה</span>
+          <select name="task" id="starter-task" aria-label="סוג עבודה" disabled>
+            <option value="">בחרו תחום כדי לראות סוגי עבודות</option>
+          </select>
+        </label>
+
+        <label class="estimate-field">
+          <span>דחיפות</span>
+          <select name="urgency" aria-label="דחיפות">
+            <option value="">לא דחוף</option>
+            <option value="השבוע">השבוע</option>
+            <option value="24 שעות">ב־24 שעות הקרובות</option>
+            <option value="דחוף היום">דחוף להיום</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="estimate-actions">
+        <button class="btn btn-primary estimate-btn" type="submit">
+          <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+          המשיכו למחשבון המלא
+        </button>
+        <p class="estimate-flow-note">הבחירות נשמרות וממשיכות איתכם למחשבון המלא.</p>
+      </div>
+    </form>
   </div>
 </section>
 
@@ -467,6 +485,75 @@
       return false;
     }
     function goToEstimate(e){ if (e && e.preventDefault) e.preventDefault(); var lang=(document.documentElement.getAttribute('lang')||'he').toLowerCase(); window.location.href='/' + lang + '/estimate/'; return false; }
+  </script>
+
+  <script>
+    (function () {
+      var form = document.querySelector('.estimate-starter');
+      if (!form) return;
+      var fieldSelect = form.querySelector('select[name="field"]');
+      var taskSelect = form.querySelector('#starter-task');
+      if (!fieldSelect || !taskSelect) return;
+
+      var categoryByField = {
+        'חשמל': 'electricity',
+        'אינסטלציה': 'plumbing',
+        'צביעה': 'painting',
+        'שיפוצים': 'renovation'
+      };
+      var fallbackTasks = {
+        electricity: ['החלפת לוח חשמל', 'התקנת נקודת חשמל', 'קצר חשמלי', 'התקנת גוף תאורה', 'בדיקת חשמל כללית'],
+        plumbing: ['פתיחת סתימה', 'תיקון נזילה', 'החלפת ברז', 'תיקון ניאגרה', 'תיקון דוד'],
+        painting: ['צביעת חדר', 'תיקון והכנת קיר', 'צביעה לפני כניסה', 'צביעת דירה חלקית', 'תיקוני שפכטל'],
+        renovation: ['שיפוץ אמבטיה', 'עבודות גבס', 'ריצוף נקודתי', 'שיפוץ מטבח', 'שיפוץ כללי']
+      };
+
+      function setTaskOptions(options, placeholder, disabled) {
+        taskSelect.innerHTML = '';
+        var base = document.createElement('option');
+        base.value = '';
+        base.textContent = placeholder;
+        taskSelect.appendChild(base);
+        (options || []).forEach(function (label) {
+          var option = document.createElement('option');
+          option.value = label;
+          option.textContent = label;
+          taskSelect.appendChild(option);
+        });
+        taskSelect.disabled = !!disabled;
+      }
+
+      function loadTasksForCategory(category) {
+        setTaskOptions([], 'טוענים סוגי עבודות…', true);
+        fetch('/api/estimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lang: (document.documentElement.getAttribute('lang') || 'he').toLowerCase(), category: category })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var jobs = (data && Array.isArray(data.jobs)) ? data.jobs : [];
+          var labels = jobs.map(function (j) { return j && j.label ? String(j.label).trim() : ''; }).filter(Boolean);
+          if (!labels.length) labels = fallbackTasks[category] || [];
+          setTaskOptions(labels, 'בחרו סוג עבודה', false);
+        })
+        .catch(function () {
+          setTaskOptions(fallbackTasks[category] || [], 'בחרו סוג עבודה', false);
+        });
+      }
+
+      fieldSelect.addEventListener('change', function () {
+        var category = categoryByField[fieldSelect.value];
+        taskSelect.value = '';
+        if (!category) {
+          setTaskOptions([], 'בחרו תחום כדי לראות סוגי עבודות', true);
+          return;
+        }
+        loadTasksForCategory(category);
+      });
+
+      setTaskOptions([], 'בחרו תחום כדי לראות סוגי עבודות', true);
+    })();
   </script>
 
   <!-- Async contact submit -->

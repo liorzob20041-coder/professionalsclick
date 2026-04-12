@@ -39,6 +39,12 @@
       </ul>
     </header>
 
+    <section class="est-resume" data-est-resume hidden aria-label="המשך מהבחירה הקודמת">
+      <p class="est-resume__title">הבחירות מהעמוד הראשי נשמרו</p>
+      <div class="est-resume__chips" data-est-resume-list></div>
+      <button type="button" class="est-resume__btn" data-est-resume-continue>ממשיכים מהשלב הבא</button>
+    </section>
+
 
     <div class="est-shell" data-est-contact="{{ contact_url }}">
       <div class="est-shell__card">
@@ -143,7 +149,11 @@
         progressPrimary: Array.from(document.querySelectorAll('[data-est-progress-primary]')),
         progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
         progressSteps: Array.from(document.querySelectorAll('[data-est-progress-step]')),
-        journey: document.querySelector('[data-est-journey]')
+        journey: document.querySelector('[data-est-journey]'),
+        shellCard: document.querySelector('.est-shell__card'),
+        resume: document.querySelector('[data-est-resume]'),
+        resumeList: document.querySelector('[data-est-resume-list]'),
+        resumeCta: document.querySelector('[data-est-resume-continue]')
       };
       const config = {
         contactUrl: document.querySelector('[data-est-contact]')?.getAttribute('data-est-contact') || ''
@@ -160,6 +170,19 @@
         questions: [],
         resultNote: ''
       };
+      const queryParams = new URLSearchParams(window.location.search || '');
+      const prefillState = {
+        category: (queryParams.get('field') || '').trim(),
+        area: (queryParams.get('area') || '').trim(),
+        task: (queryParams.get('task') || '').trim(),
+        urgency: (queryParams.get('urgency') || '').trim(),
+        source: (queryParams.get('source') || '').trim(),
+        categoryApplied: false,
+        taskApplied: false,
+        hintShown: false
+      };
+      const isHomeResume = prefillState.source === 'home_starter';
+      let resumeScrollTimer = null;
       const fallback = {
         'ui.ask_category': 'בחרו תחום עבודה',
         'ui.choose_job': 'איזו עבודה בדיוק צריך?',
@@ -677,6 +700,77 @@
           : stringValue;
         return normalized.toLowerCase();
       }
+      function resolvePrefillCategory(rawValue){
+        const normalized = normalizeText(rawValue);
+        if (!normalized){
+          return null;
+        }
+        const keywordMap = [
+          { id: 'electricity', keys: ['חשמל', 'electric', 'electrical'] },
+          { id: 'plumbing', keys: ['אינסטלציה', 'אינסטלטור', 'plumb'] },
+          { id: 'painting', keys: ['צבע', 'צביעה', 'paint'] },
+          { id: 'renovation', keys: ['שיפוץ', 'שיפוצים', 'renovation', 'remodel'] }
+        ];
+        const direct = categories.find(cat => normalizeText(cat.id) === normalized || normalizeText(cat.label) === normalized);
+        if (direct){
+          return direct.id;
+        }
+        const mapped = keywordMap.find(entry => entry.keys.some(key => normalized.includes(normalizeText(key))));
+        return mapped ? mapped.id : null;
+      }
+      function maybeShowPrefillHint(){
+        if (prefillState.hintShown) return;
+        const chips = [prefillState.area, prefillState.task, prefillState.urgency].filter(Boolean);
+        if (!chips.length) return;
+        prefillState.hintShown = true;
+        appendMetaBubble(`הבאנו מהעמוד הראשי: ${chips.join(' · ')}.`);
+      }
+      function scheduleResumeScroll(delay){
+        if (!isHomeResume || !els.body) return;
+        if (resumeScrollTimer){
+          window.clearTimeout(resumeScrollTimer);
+        }
+        resumeScrollTimer = window.setTimeout(() => {
+          const header = document.querySelector('.topbar-rail');
+          const navOffset = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+          const contextOffset = navOffset + 18;
+          const latestBubble = els.body.querySelector('.est-bubble:last-child');
+          const target = latestBubble || els.body || els.shellCard;
+          if (!target) return;
+          const targetTop = window.scrollY + target.getBoundingClientRect().top - contextOffset;
+          const minimumTop = els.shellCard
+            ? window.scrollY + els.shellCard.getBoundingClientRect().top - contextOffset
+            : targetTop;
+          const scrollTop = Math.max(Math.min(targetTop, minimumTop + 90), 0);
+          window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+        }, typeof delay === 'number' ? delay : 120);
+      }
+      function setupResumePanel(){
+        if (!isHomeResume || !els.resume || !els.resumeList){
+          return;
+        }
+        const rows = [
+          { label: 'תחום', value: prefillState.category },
+          { label: 'אזור', value: prefillState.area },
+          { label: 'סוג עבודה', value: prefillState.task },
+          { label: 'דחיפות', value: prefillState.urgency }
+        ].filter(item => item.value);
+        if (!rows.length){
+          return;
+        }
+        rows.forEach(item => {
+          const chip = document.createElement('span');
+          chip.className = 'est-resume__chip';
+          chip.textContent = `${item.label}: ${item.value}`;
+          els.resumeList.appendChild(chip);
+        });
+        els.resume.hidden = false;
+        if (els.resumeCta){
+          els.resumeCta.addEventListener('click', () => {
+            scheduleResumeScroll(10);
+          });
+        }
+      }
       function createChip(option, handler){
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -847,7 +941,54 @@
         appendBotBubble(wrap, { ensureVisible: false });
 
         filterQuickPick('', chips, filterState);
+        maybeApplyPrefillCategory();
+        scheduleResumeScroll(180);
 
+      }
+      function maybeApplyPrefillCategory(){
+        if (prefillState.categoryApplied) return;
+        const categoryId = resolvePrefillCategory(prefillState.category);
+        if (!categoryId){
+          prefillState.categoryApplied = true;
+          maybeShowPrefillHint();
+          return;
+        }
+        const found = categories.find(cat => cat.id === categoryId);
+        if (!found){
+          prefillState.categoryApplied = true;
+          maybeShowPrefillHint();
+          return;
+        }
+        prefillState.categoryApplied = true;
+        setTimeout(() => {
+          handleCategoryPick({
+            id: found.id,
+            value: found.id,
+            label: found.label || found.id,
+            emoji: emojiMap[found.id] || found.emoji
+          });
+          maybeShowPrefillHint();
+          scheduleResumeScroll(140);
+        }, 80);
+      }
+      function maybeAutoPickByTask(items, onPick){
+        if (prefillState.taskApplied || !prefillState.task || !Array.isArray(items) || !items.length){
+          return false;
+        }
+        const taskNeedle = normalizeText(prefillState.task);
+        const match = items.find(item => normalizeText(item.label || item.id).includes(taskNeedle))
+          || items.find(item => taskNeedle.includes(normalizeText(item.label || item.id)));
+        if (!match){
+          maybeShowPrefillHint();
+          return false;
+        }
+        prefillState.taskApplied = true;
+        setTimeout(() => {
+          onPick(match);
+          maybeShowPrefillHint();
+          scheduleResumeScroll(140);
+        }, 80);
+        return true;
       }
 
       function setActiveCategory(id){
@@ -1012,6 +1153,7 @@
         });
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
+        maybeAutoPickByTask(jobs, selectJob);
       }
 
       function renderSubtypes(subtypes){
@@ -1050,6 +1192,7 @@
         });
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
+        maybeAutoPickByTask(subtypes, selectSubtype);
       }
 
       function renderComputeCallToAction(){
@@ -1384,6 +1527,7 @@
           showError('ui.err_quote');
         });
       }
+      setupResumePanel();
       resetFlow();
     })();
   </script>

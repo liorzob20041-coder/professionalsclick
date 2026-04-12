@@ -148,6 +148,57 @@ main, section, article { direction: rtl; }
   font-size: 12px;
   line-height: 1;
 }
+
+.est-resume {
+  width: min(100%, 980px);
+  border: 1px solid rgb(var(--primary-rgb) / 20%);
+  background: rgb(var(--primary-rgb) / 5%);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.est-resume__title {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.est-resume__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.est-resume__chip {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--primary-rgb) / 18%);
+  background: #fff;
+  color: rgb(var(--ink-rgb) / 90%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+
+.est-resume__btn {
+  justify-self: flex-start;
+  appearance: none;
+  border: 1px solid rgb(var(--primary-rgb) / 30%);
+  background: rgb(var(--primary-rgb) / 10%);
+  color: var(--primary);
+  font: inherit;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.est-resume__btn:hover {
+  background: rgb(var(--primary-rgb) / 14%);
+}
 /* Shell */
 .est-shell {
   width: min(100%, 980px);

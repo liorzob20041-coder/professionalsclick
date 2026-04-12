@@ -85,9 +85,9 @@
         <i class="fa-solid fa-calculator" aria-hidden="true"></i>
         <span>{{ _('homepage.quick.estimate_nav') }}</span>
       </button>
-      <a class="hq-pill" href="#start-hub">
-        <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
-        <span>איך תרצו להתחיל?</span>
+      <a class="hq-pill" href="#leading-categories">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        <span>תחומים מובילים</span>
       </a>
       <!-- הוסר: כפתור 'צפו בווידאו' -->
     </nav>
@@ -173,58 +173,90 @@
   </div>
 </section>
 
-
-<!-- DECISION HUB -->
-<section class="decision-hub" id="start-hub" aria-label="איך תרצו להתחיל?">
+<!-- LEADING SERVICE CATEGORIES -->
+<section class="leading-categories" id="leading-categories" aria-label="תחומים מובילים">
   <div class="container container--wide">
     <header class="section-head">
-      <h2>איך תרצו להתחיל?</h2>
+      <h2>תחומים מובילים</h2>
     </header>
+    <div class="category-grid">
+      <button class="category-card category-card--emphasis" type="button" data-label="אינסטלטורים" onclick="return goToSearch(event, this.dataset.label)">
+        <span class="cat-icon" aria-hidden="true"><i class="fa-solid fa-faucet-drip"></i></span>
+        <h3>אינסטלטורים</h3>
+        <p>נזילות, סתימות ותיקונים דחופים</p>
+      </button>
+      <button class="category-card category-card--emphasis" type="button" data-label="חשמלאים" onclick="return goToSearch(event, this.dataset.label)">
+        <span class="cat-icon" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
+        <h3>חשמלאים</h3>
+        <p>קצרים, שקעים, לוחות ותקלות חשמל</p>
+      </button>
+      <button class="category-card" type="button" data-label="שיפוצים" onclick="return goToSearch(event, this.dataset.label)">
+        <span class="cat-icon" aria-hidden="true"><i class="fa-solid fa-hammer"></i></span>
+        <h3>שיפוצניקים</h3>
+        <p>גבס, צבע, תיקונים ושיפוץ כללי</p>
+      </button>
+      <button class="category-card" type="button" data-label="מנעולנים" onclick="return goToSearch(event, this.dataset.label)">
+        <span class="cat-icon" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
+        <h3>מנעולנים</h3>
+        <p>דלתות, פריצות והחלפת מנעולים</p>
+      </button>
+      <button class="category-card" type="button" data-label="מיזוג אוויר" onclick="return goToSearch(event, this.dataset.label)">
+        <span class="cat-icon" aria-hidden="true"><i class="fa-solid fa-fan"></i></span>
+        <h3>טכנאי מזגנים</h3>
+        <p>התקנה, תיקון וניקוי מזגנים</p>
+      </button>
+      <button class="category-card" type="button" data-label="צבע" onclick="return goToSearch(event, this.dataset.label)">
+        <span class="cat-icon" aria-hidden="true"><i class="fa-solid fa-paint-roller"></i></span>
+        <h3>צבעים</h3>
+        <p>צביעת דירה, קירות וגמר נקי</p>
+      </button>
+    </div>
+  </div>
+</section>
 
-    <div class="hub-layout">
-      <article class="hub-pane hub-pane--fields" aria-label="לפי תחום">
-        <div class="hub-pane-head">
-          <h3>לפי תחום</h3>
-        </div>
-        <div class="chip-group" role="list">
-          <button class="hub-chip" type="button" data-label="אינסטלטורים" onclick="return goToSearch(event, this.dataset.label)">אינסטלטור</button>
-          <button class="hub-chip" type="button" data-label="חשמלאים" onclick="return goToSearch(event, this.dataset.label)">חשמלאי</button>
-          <button class="hub-chip" type="button" data-label="שיפוצים" onclick="return goToSearch(event, this.dataset.label)">שיפוצניק</button>
-          <button class="hub-chip" type="button" data-label="מנעולנים" onclick="return goToSearch(event, this.dataset.label)">מנעולן</button>
-          <button class="hub-chip" type="button" data-label="מיזוג אוויר" onclick="return goToSearch(event, this.dataset.label)">טכנאי מזגנים</button>
-          <button class="hub-chip" type="button" data-label="צבע" onclick="return goToSearch(event, this.dataset.label)">צבעי</button>
-        </div>
+<!-- ESTIMATE CTA -->
+<section class="estimate-cta" id="estimate" aria-label="בדקו טווח מחיר לפני שפונים">
+  <div class="section-wrap">
+    <div class="estimate-copy">
+      <span class="estimate-kicker">מחשבון מחיר מהיר</span>
+      <h2>בדקו טווח מחיר לפני שפונים</h2>
+      <p>בחרו תחום ועבודה, וקבלו אומדן מהיר שיעזור לכם להבין אם המחיר שקיבלתם הגיוני.</p>
+      <ul class="estimate-chips" role="list">
+        <li>חינם</li>
+        <li>ללא התחייבות</li>
+        <li>עד 2 דקות</li>
+      </ul>
+    </div>
+    <div class="estimate-actions">
+      <button class="btn btn-primary estimate-btn" type="button" onclick="return goToEstimate(event)">
+        <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+        פתחו את המחשבון
+      </button>
+      <p class="estimate-example">מתאים לחשמל, אינסטלציה, שיפוץ, צבע ועוד.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPACT TRUST STRIP -->
+<section class="trust-strip" aria-label="למה לבחור בנו">
+  <div class="container container--wide">
+    <h2>למה לבחור בנו</h2>
+    <div class="trust-strip-grid">
+      <article class="trust-chip">
+        <h3>פרופילים ברורים</h3>
+        <p>תחום, אזור ושפת שירות במקום אחד.</p>
       </article>
-
-      <article class="hub-pane hub-pane--jobs" aria-label="לפי עבודה נפוצה">
-        <div class="hub-pane-head">
-          <h3>לפי עבודה נפוצה</h3>
-        </div>
-        <div class="chip-group" role="list">
-          <button class="hub-chip hub-chip--job" type="button" data-label="אינסטלטורים" onclick="return goToSearch(event, this.dataset.label)">פתיחת סתימה</button>
-          <button class="hub-chip hub-chip--job" type="button" data-label="אינסטלטורים" onclick="return goToSearch(event, this.dataset.label)">תיקון נזילה</button>
-          <button class="hub-chip hub-chip--job" type="button" data-label="חשמלאים" onclick="return goToSearch(event, this.dataset.label)">החלפת לוח חשמל</button>
-          <button class="hub-chip hub-chip--job" type="button" data-label="מיזוג אוויר" onclick="return goToSearch(event, this.dataset.label)">התקנת מזגן</button>
-          <button class="hub-chip hub-chip--job" type="button" data-label="שיפוצים" onclick="return goToSearch(event, this.dataset.label)">צביעת דירה</button>
-          <button class="hub-chip hub-chip--job" type="button" data-label="דודים" onclick="return goToSearch(event, this.dataset.label)">תיקון דוד</button>
-        </div>
+      <article class="trust-chip">
+        <h3>בודקים מחיר מראש</h3>
+        <p>מחשבון המחירים עוזר להבין טווח עלות.</p>
       </article>
-
-      <article class="hub-pane hub-pane--price" aria-label="לפי מחיר">
-        <div class="hub-pane-head">
-          <h3>לפי מחיר</h3>
-        </div>
-        <h4>רוצים להבין מחיר קודם?</h4>
-        <p>פתחו את מחשבון המחירים וקבלו אומדן מהיר לפני שפונים.</p>
-        <ul class="hub-price-chips" role="list">
-          <li>חינם</li>
-          <li>ללא התחייבות</li>
-          <li>עד 2 דקות</li>
-        </ul>
-        <button class="btn btn-primary hub-price-btn" type="button" onclick="return goToEstimate(event)">
-          <i class="fa-solid fa-calculator" aria-hidden="true"></i>
-          פתחו את המחשבון
-        </button>
+      <article class="trust-chip">
+        <h3>משווים בנוחות</h3>
+        <p>אפשר לבדוק כמה אפשרויות לפני שפונים.</p>
+      </article>
+      <article class="trust-chip">
+        <h3>פונים רק כשמתאים</h3>
+        <p>בלי סבב טלפונים מיותר.</p>
       </article>
     </div>
   </div>

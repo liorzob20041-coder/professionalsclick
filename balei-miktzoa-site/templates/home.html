@@ -266,6 +266,7 @@
     </header>
 
     <form class="estimate-starter" method="get" action="{{ url_for_lang('estimate', lang=g.current_lang) }}">
+      <input type="hidden" name="source" value="home_starter">
       <div class="estimate-grid">
         <label class="estimate-field">
           <span>תחום שירות</span>

@@ -183,26 +183,32 @@
       <button class="category-chip" type="button" data-label="אינסטלטורים" onclick="return goToSearch(event, this.dataset.label)">
         <span class="category-icon" aria-hidden="true"><i class="fa-solid fa-faucet-drip"></i></span>
         <span class="category-label">אינסטלטורים</span>
+        <span class="category-go" aria-hidden="true"><i class="fa-solid fa-chevron-left dir-flip"></i></span>
       </button>
       <button class="category-chip" type="button" data-label="חשמלאים" onclick="return goToSearch(event, this.dataset.label)">
         <span class="category-icon" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
         <span class="category-label">חשמלאים</span>
+        <span class="category-go" aria-hidden="true"><i class="fa-solid fa-chevron-left dir-flip"></i></span>
       </button>
       <button class="category-chip" type="button" data-label="שיפוצניקים" onclick="return goToSearch(event, this.dataset.label)">
         <span class="category-icon" aria-hidden="true"><i class="fa-solid fa-hammer"></i></span>
         <span class="category-label">שיפוצניקים</span>
+        <span class="category-go" aria-hidden="true"><i class="fa-solid fa-chevron-left dir-flip"></i></span>
       </button>
       <button class="category-chip" type="button" data-label="מנעולנים" onclick="return goToSearch(event, this.dataset.label)">
         <span class="category-icon" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
         <span class="category-label">מנעולנים</span>
+        <span class="category-go" aria-hidden="true"><i class="fa-solid fa-chevron-left dir-flip"></i></span>
       </button>
       <button class="category-chip" type="button" data-label="טכנאי מזגנים" onclick="return goToSearch(event, this.dataset.label)">
         <span class="category-icon" aria-hidden="true"><i class="fa-solid fa-fan"></i></span>
         <span class="category-label">טכנאי מזגנים</span>
+        <span class="category-go" aria-hidden="true"><i class="fa-solid fa-chevron-left dir-flip"></i></span>
       </button>
       <button class="category-chip" type="button" data-label="צבעים" onclick="return goToSearch(event, this.dataset.label)">
         <span class="category-icon" aria-hidden="true"><i class="fa-solid fa-paint-roller"></i></span>
         <span class="category-label">צבעים</span>
+        <span class="category-go" aria-hidden="true"><i class="fa-solid fa-chevron-left dir-flip"></i></span>
       </button>
     </nav>
   </div>
@@ -216,34 +222,34 @@
     </header>
     <div class="jobs-grid">
       <article class="job-card">
-        <h3>פתיחת סתימה</h3>
+        <div class="job-head"><h3>פתיחת סתימה</h3><i class="fa-solid fa-arrow-left dir-flip" aria-hidden="true"></i></div>
         <p>לכיור, מקלחת או קו ניקוז עם הגעה מהירה.</p>
         <span class="job-cue">בדקו טווח מחיר</span>
       </article>
       <article class="job-card">
-        <h3>תיקון נזילה</h3>
+        <div class="job-head"><h3>תיקון נזילה</h3><i class="fa-solid fa-arrow-left dir-flip" aria-hidden="true"></i></div>
         <p>איתור מקור הנזילה ותיקון ממוקד בלי ניחושים.</p>
         <span class="job-cue">טווח נפוץ</span>
       </article>
       <article class="job-card">
-        <h3>החלפת לוח חשמל</h3>
+        <div class="job-head"><h3>החלפת לוח חשמל</h3><i class="fa-solid fa-arrow-left dir-flip" aria-hidden="true"></i></div>
         <p>שדרוג לוח לפי הצורך והכנה לבית בטוח יותר.</p>
-        <span class="job-cue">בדקו במחשבון</span>
+        <span class="job-cue">במחשבון</span>
       </article>
       <article class="job-card">
-        <h3>התקנת מזגן</h3>
+        <div class="job-head"><h3>התקנת מזגן</h3><i class="fa-solid fa-arrow-left dir-flip" aria-hidden="true"></i></div>
         <p>התקנה בסיסית לדירה עם בדיקה לפני הפעלה.</p>
         <span class="job-cue">בדקו טווח מחיר</span>
       </article>
       <article class="job-card">
-        <h3>צביעת חדר</h3>
+        <div class="job-head"><h3>צביעת חדר</h3><i class="fa-solid fa-arrow-left dir-flip" aria-hidden="true"></i></div>
         <p>הכנת קיר, צביעה וניקוי בסיום העבודה.</p>
         <span class="job-cue">טווח נפוץ</span>
       </article>
       <article class="job-card">
-        <h3>תיקון דוד</h3>
+        <div class="job-head"><h3>תיקון דוד</h3><i class="fa-solid fa-arrow-left dir-flip" aria-hidden="true"></i></div>
         <p>בדיקה ותיקון רכיבים נפוצים לחימום מים תקין.</p>
-        <span class="job-cue">בדקו במחשבון</span>
+        <span class="job-cue">במחשבון</span>
       </article>
     </div>
   </div>
@@ -275,10 +281,8 @@
 <!-- COMPACT TRUST STRIP -->
 <section class="trust-strip" aria-label="למה לבחור בנו">
   <div class="container container--wide">
-    <header class="section-head">
-      <h2>למה לבחור בנו</h2>
-    </header>
-    <div class="trust-points" role="list">
+    <div class="trust-strip-head">למה לבחור בנו</div>
+    <div class="trust-points" role="list" aria-label="למה לבחור בנו">
       <article class="trust-point" role="listitem">
         <h3>פרופילים ברורים</h3>
         <p>תחום, אזור ושפת שירות במקום אחד.</p>

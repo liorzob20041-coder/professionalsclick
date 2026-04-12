@@ -255,49 +255,91 @@
   </div>
 </section>
 
-<!-- ESTIMATE CTA -->
+<!-- PRICE CHECK STARTER -->
 <section class="estimate-cta" id="estimate" aria-label="מחשבון מחיר מהיר">
   <div class="section-wrap">
-    <div class="estimate-copy">
-      <span class="estimate-kicker">מחשבון מחיר מהיר</span>
-      <h2>בדקו טווח מחיר לפני שפונים</h2>
-      <p>בחרו תחום ועבודה, וקבלו אומדן מהיר שיעזור לכם להבין אם המחיר שקיבלתם הגיוני.</p>
-      <ul class="estimate-chips" role="list">
-        <li>חינם</li>
-        <li>ללא התחייבות</li>
-        <li>עד 2 דקות</li>
-      </ul>
-      <p class="estimate-example">מתאים לחשמל, אינסטלציה, שיפוץ, צבע ועוד.</p>
-    </div>
-    <div class="estimate-actions">
-      <button class="btn btn-primary estimate-btn" type="button" onclick="return goToEstimate(event)">
-        <i class="fa-solid fa-calculator" aria-hidden="true"></i>
-        פתחו את המחשבון
-      </button>
-    </div>
+    <header class="estimate-head">
+      <span class="estimate-kicker">בדיקת מחיר ראשונית</span>
+      <h2>בדקו טווח מחיר לפני שמתקשרים</h2>
+      <p>ממלאים כמה פרטים קצרים וממשיכים למחשבון המלא עם בסיס טוב יותר להשוואה.</p>
+      <p class="estimate-example">בדיקה ראשונית תוך פחות מדקה · מתאים לחשמל, אינסטלציה, שיפוץ ועוד.</p>
+    </header>
+
+    <form class="estimate-starter" method="get" action="{{ url_for_lang('estimate', lang=g.current_lang) }}">
+      <div class="estimate-grid">
+        <label class="estimate-field">
+          <span>תחום שירות</span>
+          <select name="field" aria-label="תחום שירות">
+            <option value="">בחרו תחום</option>
+            <option value="חשמל">חשמל</option>
+            <option value="אינסטלציה">אינסטלציה</option>
+            <option value="שיפוצים">שיפוצים</option>
+            <option value="מיזוג אוויר">מיזוג אוויר</option>
+            <option value="צביעה">צביעה</option>
+          </select>
+        </label>
+
+        <label class="estimate-field">
+          <span>אזור</span>
+          <select name="area" aria-label="אזור">
+            <option value="">בחרו אזור</option>
+            <option value="מרכז">מרכז</option>
+            <option value="ירושלים">ירושלים והסביבה</option>
+            <option value="שרון">שרון</option>
+            <option value="צפון">צפון</option>
+            <option value="דרום">דרום</option>
+          </select>
+        </label>
+
+        <label class="estimate-field">
+          <span>סוג עבודה</span>
+          <input type="text" name="task" placeholder="למשל: פתיחת סתימה / התקנת מזגן" aria-label="סוג עבודה">
+        </label>
+
+        <label class="estimate-field">
+          <span>דחיפות</span>
+          <select name="urgency" aria-label="דחיפות">
+            <option value="">לא דחוף</option>
+            <option value="השבוע">השבוע</option>
+            <option value="24 שעות">ב־24 שעות הקרובות</option>
+            <option value="דחוף היום">דחוף להיום</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="estimate-actions">
+        <button class="btn btn-primary estimate-btn" type="submit">
+          <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+          בדקו טווח מחיר
+        </button>
+        <p class="estimate-flow-note">אחרי הלחיצה תעברו למחשבון המלא ותראו טווח משוער לפי הפרטים שמילאתם.</p>
+      </div>
+    </form>
   </div>
 </section>
 
-<!-- COMPACT TRUST STRIP -->
-<section class="trust-strip" aria-label="למה לבחור בנו">
+<!-- SMART START PROCESS -->
+<section class="trust-strip" aria-label="למה חכם להתחיל כאן לפני שמזמינים בעל מקצוע">
   <div class="container container--wide">
-    <div class="trust-strip-head">למה לבחור בנו</div>
+    <header class="trust-strip-head">
+      <h2>למה חכם להתחיל כאן לפני שמזמינים בעל מקצוע</h2>
+      <p>שלושה צעדים קצרים שעוזרים לקבל החלטה רגועה, עם יותר הקשר ופחות ניחושים.</p>
+    </header>
     <div class="trust-points" role="list" aria-label="למה לבחור בנו">
       <article class="trust-point" role="listitem">
-        <h3>פרופילים ברורים</h3>
-        <p>תחום, אזור ושפת שירות במקום אחד.</p>
+        <span class="trust-step">01</span>
+        <h3>בחרו לפי תחום ואזור</h3>
+        <p>מתחילים מסינון פשוט לפי סוג העבודה והמיקום, ורואים רק בעלי מקצוע רלוונטיים.</p>
       </article>
       <article class="trust-point" role="listitem">
-        <h3>בודקים מחיר מראש</h3>
-        <p>מחשבון המחירים עוזר להבין טווח עלות.</p>
+        <span class="trust-step">02</span>
+        <h3>בדקו טווח מחיר לפני שיחה</h3>
+        <p>מחשבון המחיר נותן סדר גודל ראשוני כדי להבין אם ההצעה שקיבלתם נמצאת בטווח סביר.</p>
       </article>
       <article class="trust-point" role="listitem">
-        <h3>משווים בנוחות</h3>
-        <p>אפשר לבדוק כמה אפשרויות לפני שפונים.</p>
-      </article>
-      <article class="trust-point" role="listitem">
-        <h3>פונים רק כשמתאים</h3>
-        <p>בלי סבב טלפונים מיותר.</p>
+        <span class="trust-step">03</span>
+        <h3>השוו עם יותר הקשר</h3>
+        <p>בודקים עבודות נפוצות ומדריכים לפני פנייה, משווים בצורה ברורה ופונים רק כשמרגיש נכון.</p>
       </article>
     </div>
   </div>

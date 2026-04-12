@@ -2594,8 +2594,7 @@ body.home-pattern main > section:not(.hero-split) {
 
 /* ===== Homepage final flow refinements ===== */
 .category-strip,
-.popular-jobs,
-.trust-strip {
+.popular-jobs {
   padding-block: 20px;
 }
 
@@ -2821,53 +2820,6 @@ body.home-pattern main > section:not(.hero-split) {
   color: rgb(226 232 240 / 90%);
 }
 
-.trust-strip {
-  padding-top: 8px;
-}
-
-.trust-points {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.trust-point {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 52px;
-  background: #fff;
-  border: 1px solid rgb(15 23 42 / 8%);
-  border-radius: 10px;
-  padding: 8px 12px;
-}
-
-.trust-point strong {
-  font-size: 0.92rem;
-  color: #1e293b;
-  line-height: 1.35;
-  font-weight: 800;
-}
-
-.trust-step {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 30px;
-  min-height: 30px;
-  border-radius: 999px;
-  background: rgb(185 130 67 / 10%);
-  border: 1px solid rgb(185 130 67 / 30%);
-  color: #b98243;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
 @media (width <= 1080px) {
   .category-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2885,19 +2837,6 @@ body.home-pattern main > section:not(.hero-split) {
     align-items: flex-start;
   }
 
-  .trust-points {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .trust-point {
-    min-height: 48px;
-    padding: 8px 10px;
-  }
-
-  .trust-point strong {
-    font-size: 0.9rem;
-  }
 }
 
 @media (width <= 720px) {

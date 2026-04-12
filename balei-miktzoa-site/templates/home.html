@@ -294,7 +294,9 @@
 
         <label class="estimate-field">
           <span>סוג עבודה</span>
-          <input type="text" name="task" placeholder="למשל: פתיחת סתימה / התקנת מזגן" aria-label="סוג עבודה">
+          <select name="task" id="starter-task" aria-label="סוג עבודה" disabled>
+            <option value="">בחרו תחום כדי לראות סוגי עבודות</option>
+          </select>
         </label>
 
         <label class="estimate-field">
@@ -311,31 +313,11 @@
       <div class="estimate-actions">
         <button class="btn btn-primary estimate-btn" type="submit">
           <i class="fa-solid fa-calculator" aria-hidden="true"></i>
-          בדקו טווח מחיר והמשיכו למחשבון המלא
+          המשיכו למחשבון המלא
         </button>
-        <p class="estimate-flow-note">אחרי הלחיצה תעברו למחשבון המלא ותראו טווח משוער לפי הפרטים שמילאתם.</p>
+        <p class="estimate-flow-note">הבחירות נשמרות וממשיכות איתכם למחשבון המלא.</p>
       </div>
     </form>
-  </div>
-</section>
-
-<!-- COMPACT PROCESS STRIP -->
-<section class="trust-strip" aria-label="איך מתחילים נכון">
-  <div class="container container--wide">
-    <ol class="trust-points" aria-label="תהליך בדיקה קצר לפני פנייה לבעל מקצוע">
-      <li class="trust-point">
-        <span class="trust-step">01</span>
-        <strong>בוחרים תחום ואזור</strong>
-      </li>
-      <li class="trust-point">
-        <span class="trust-step">02</span>
-        <strong>בודקים סדר גודל למחיר</strong>
-      </li>
-      <li class="trust-point">
-        <span class="trust-step">03</span>
-        <strong>ממשיכים להשוואה חכמה</strong>
-      </li>
-    </ol>
   </div>
 </section>
 
@@ -503,6 +485,75 @@
       return false;
     }
     function goToEstimate(e){ if (e && e.preventDefault) e.preventDefault(); var lang=(document.documentElement.getAttribute('lang')||'he').toLowerCase(); window.location.href='/' + lang + '/estimate/'; return false; }
+  </script>
+
+  <script>
+    (function () {
+      var form = document.querySelector('.estimate-starter');
+      if (!form) return;
+      var fieldSelect = form.querySelector('select[name="field"]');
+      var taskSelect = form.querySelector('#starter-task');
+      if (!fieldSelect || !taskSelect) return;
+
+      var categoryByField = {
+        'חשמל': 'electricity',
+        'אינסטלציה': 'plumbing',
+        'צביעה': 'painting',
+        'שיפוצים': 'renovation'
+      };
+      var fallbackTasks = {
+        electricity: ['החלפת לוח חשמל', 'התקנת נקודת חשמל', 'קצר חשמלי', 'התקנת גוף תאורה', 'בדיקת חשמל כללית'],
+        plumbing: ['פתיחת סתימה', 'תיקון נזילה', 'החלפת ברז', 'תיקון ניאגרה', 'תיקון דוד'],
+        painting: ['צביעת חדר', 'תיקון והכנת קיר', 'צביעה לפני כניסה', 'צביעת דירה חלקית', 'תיקוני שפכטל'],
+        renovation: ['שיפוץ אמבטיה', 'עבודות גבס', 'ריצוף נקודתי', 'שיפוץ מטבח', 'שיפוץ כללי']
+      };
+
+      function setTaskOptions(options, placeholder, disabled) {
+        taskSelect.innerHTML = '';
+        var base = document.createElement('option');
+        base.value = '';
+        base.textContent = placeholder;
+        taskSelect.appendChild(base);
+        (options || []).forEach(function (label) {
+          var option = document.createElement('option');
+          option.value = label;
+          option.textContent = label;
+          taskSelect.appendChild(option);
+        });
+        taskSelect.disabled = !!disabled;
+      }
+
+      function loadTasksForCategory(category) {
+        setTaskOptions([], 'טוענים סוגי עבודות…', true);
+        fetch('/api/estimate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lang: (document.documentElement.getAttribute('lang') || 'he').toLowerCase(), category: category })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var jobs = (data && Array.isArray(data.jobs)) ? data.jobs : [];
+          var labels = jobs.map(function (j) { return j && j.label ? String(j.label).trim() : ''; }).filter(Boolean);
+          if (!labels.length) labels = fallbackTasks[category] || [];
+          setTaskOptions(labels, 'בחרו סוג עבודה', false);
+        })
+        .catch(function () {
+          setTaskOptions(fallbackTasks[category] || [], 'בחרו סוג עבודה', false);
+        });
+      }
+
+      fieldSelect.addEventListener('change', function () {
+        var category = categoryByField[fieldSelect.value];
+        taskSelect.value = '';
+        if (!category) {
+          setTaskOptions([], 'בחרו תחום כדי לראות סוגי עבודות', true);
+          return;
+        }
+        loadTasksForCategory(category);
+      });
+
+      setTaskOptions([], 'בחרו תחום כדי לראות סוגי עבודות', true);
+    })();
   </script>
 
   <!-- Async contact submit -->

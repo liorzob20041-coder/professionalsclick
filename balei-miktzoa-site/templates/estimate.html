@@ -150,6 +150,7 @@
         progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
         progressSteps: Array.from(document.querySelectorAll('[data-est-progress-step]')),
         journey: document.querySelector('[data-est-journey]'),
+        shellCard: document.querySelector('.est-shell__card'),
         resume: document.querySelector('[data-est-resume]'),
         resumeList: document.querySelector('[data-est-resume-list]'),
         resumeCta: document.querySelector('[data-est-resume-continue]')
@@ -730,9 +731,18 @@
           window.clearTimeout(resumeScrollTimer);
         }
         resumeScrollTimer = window.setTimeout(() => {
+          const header = document.querySelector('.topbar-rail');
+          const navOffset = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+          const contextOffset = navOffset + 18;
           const latestBubble = els.body.querySelector('.est-bubble:last-child');
-          const target = latestBubble || els.body;
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const target = latestBubble || els.body || els.shellCard;
+          if (!target) return;
+          const targetTop = window.scrollY + target.getBoundingClientRect().top - contextOffset;
+          const minimumTop = els.shellCard
+            ? window.scrollY + els.shellCard.getBoundingClientRect().top - contextOffset
+            : targetTop;
+          const scrollTop = Math.max(Math.min(targetTop, minimumTop + 90), 0);
+          window.scrollTo({ top: scrollTop, behavior: 'smooth' });
         }, typeof delay === 'number' ? delay : 120);
       }
       function setupResumePanel(){

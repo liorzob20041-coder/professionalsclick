@@ -160,6 +160,16 @@
         questions: [],
         resultNote: ''
       };
+      const queryParams = new URLSearchParams(window.location.search || '');
+      const prefillState = {
+        category: (queryParams.get('field') || '').trim(),
+        area: (queryParams.get('area') || '').trim(),
+        task: (queryParams.get('task') || '').trim(),
+        urgency: (queryParams.get('urgency') || '').trim(),
+        categoryApplied: false,
+        taskApplied: false,
+        hintShown: false
+      };
       const fallback = {
         'ui.ask_category': 'בחרו תחום עבודה',
         'ui.choose_job': 'איזו עבודה בדיוק צריך?',
@@ -677,6 +687,31 @@
           : stringValue;
         return normalized.toLowerCase();
       }
+      function resolvePrefillCategory(rawValue){
+        const normalized = normalizeText(rawValue);
+        if (!normalized){
+          return null;
+        }
+        const keywordMap = [
+          { id: 'electricity', keys: ['חשמל', 'electric', 'electrical'] },
+          { id: 'plumbing', keys: ['אינסטלציה', 'אינסטלטור', 'plumb'] },
+          { id: 'painting', keys: ['צבע', 'צביעה', 'paint'] },
+          { id: 'renovation', keys: ['שיפוץ', 'שיפוצים', 'renovation', 'remodel'] }
+        ];
+        const direct = categories.find(cat => normalizeText(cat.id) === normalized || normalizeText(cat.label) === normalized);
+        if (direct){
+          return direct.id;
+        }
+        const mapped = keywordMap.find(entry => entry.keys.some(key => normalized.includes(normalizeText(key))));
+        return mapped ? mapped.id : null;
+      }
+      function maybeShowPrefillHint(){
+        if (prefillState.hintShown) return;
+        const chips = [prefillState.area, prefillState.task, prefillState.urgency].filter(Boolean);
+        if (!chips.length) return;
+        prefillState.hintShown = true;
+        appendMetaBubble(`הבאנו מהעמוד הראשי: ${chips.join(' · ')}.`);
+      }
       function createChip(option, handler){
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -847,7 +882,51 @@
         appendBotBubble(wrap, { ensureVisible: false });
 
         filterQuickPick('', chips, filterState);
+        maybeApplyPrefillCategory();
 
+      }
+      function maybeApplyPrefillCategory(){
+        if (prefillState.categoryApplied) return;
+        const categoryId = resolvePrefillCategory(prefillState.category);
+        if (!categoryId){
+          prefillState.categoryApplied = true;
+          maybeShowPrefillHint();
+          return;
+        }
+        const found = categories.find(cat => cat.id === categoryId);
+        if (!found){
+          prefillState.categoryApplied = true;
+          maybeShowPrefillHint();
+          return;
+        }
+        prefillState.categoryApplied = true;
+        setTimeout(() => {
+          handleCategoryPick({
+            id: found.id,
+            value: found.id,
+            label: found.label || found.id,
+            emoji: emojiMap[found.id] || found.emoji
+          });
+          maybeShowPrefillHint();
+        }, 80);
+      }
+      function maybeAutoPickByTask(items, onPick){
+        if (prefillState.taskApplied || !prefillState.task || !Array.isArray(items) || !items.length){
+          return false;
+        }
+        const taskNeedle = normalizeText(prefillState.task);
+        const match = items.find(item => normalizeText(item.label || item.id).includes(taskNeedle))
+          || items.find(item => taskNeedle.includes(normalizeText(item.label || item.id)));
+        if (!match){
+          maybeShowPrefillHint();
+          return false;
+        }
+        prefillState.taskApplied = true;
+        setTimeout(() => {
+          onPick(match);
+          maybeShowPrefillHint();
+        }, 80);
+        return true;
       }
 
       function setActiveCategory(id){
@@ -1012,6 +1091,7 @@
         });
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
+        maybeAutoPickByTask(jobs, selectJob);
       }
 
       function renderSubtypes(subtypes){
@@ -1050,6 +1130,7 @@
         });
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
+        maybeAutoPickByTask(subtypes, selectSubtype);
       }
 
       function renderComputeCallToAction(){

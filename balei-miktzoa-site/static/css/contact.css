@@ -1,21 +1,21 @@
 /* Contact page — cohesive premium layout */
 .contact-page {
-  --contact-primary: #7a1f3d;
-  --contact-primary-dark: #631935;
-  --contact-bg-soft: #fff8fb;
-  --contact-border: rgb(122 31 61 / 18%);
-  --contact-ink: #1f2937;
-  --contact-muted: #5d667b;
+  --contact-primary: var(--bm-color-navy-800);
+  --contact-primary-dark: var(--bm-color-navy-900);
+  --contact-bg-soft: var(--bm-color-bg-soft);
+  --contact-border: rgb(16 42 67 / 16%);
+  --contact-ink: var(--bm-color-text);
+  --contact-muted: var(--bm-color-text-muted);
 
   width: min(1020px, 100%);
   margin: clamp(28px, 6vw, 68px) auto;
   padding: clamp(18px, 4vw, 34px);
   border-radius: 30px;
   background:
-    radial-gradient(120% 120% at 100% 0%, rgb(122 31 61 / 10%) 0%, transparent 58%),
-    linear-gradient(180deg, #fff 0%, #fff8fb 58%, #fff 100%);
-  border: 1px solid rgb(122 31 61 / 11%);
-  box-shadow: 0 26px 62px rgb(122 31 61 / 9%);
+    radial-gradient(120% 120% at 100% 0%, rgb(16 42 67 / 9%) 0%, transparent 58%),
+    linear-gradient(180deg, #fff 0%, var(--bm-color-bg-soft) 58%, #fff 100%);
+  border: 1px solid rgb(16 42 67 / 11%);
+  box-shadow: 0 26px 62px rgb(15 23 42 / 10%);
 }
 
 .contact-hero {
@@ -86,7 +86,7 @@
   width: 100%;
   padding: 14px 16px;
   margin: 0 0 14px;
-  border: 1px solid rgb(122 31 61 / 26%);
+  border: 1px solid rgb(16 42 67 / 20%);
   background: #fff;
   border-radius: 12px;
   font-size: 1rem;
@@ -121,14 +121,14 @@
   font-weight: 700;
   cursor: pointer;
   color: #fff;
-  background: linear-gradient(135deg, var(--contact-primary) 0%, var(--contact-primary-dark) 100%);
-  box-shadow: 0 12px 28px rgb(122 31 61 / 30%);
+  background: linear-gradient(135deg, var(--bm-color-gold-500) 0%, var(--bm-color-gold-600) 100%);
+  box-shadow: 0 12px 28px rgb(185 130 67 / 32%);
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .contact-form button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgb(122 31 61 / 35%);
+  box-shadow: 0 16px 32px rgb(185 130 67 / 38%);
 }
 
 .contact-form button:disabled {
@@ -139,7 +139,7 @@
 .contact-info {
   border: 1px solid var(--contact-border);
   border-radius: 24px;
-  background: linear-gradient(180deg, #fff 0%, #fff7fa 100%);
+  background: linear-gradient(180deg, #fff 0%, var(--bm-color-bg-soft) 100%);
   box-shadow: 0 20px 52px rgb(122 31 61 / 12%);
   padding: clamp(18px, 2.8vw, 24px);
   display: grid;

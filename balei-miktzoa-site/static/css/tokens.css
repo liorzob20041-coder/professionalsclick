@@ -1,37 +1,47 @@
 :root {
-  --color-brand-500: #0f172a;
-  --color-brand-400: #1d4ed8;
-  --color-accent-500: #2563eb;
-  --color-accent-400: #60a5fa;
-  --color-surface: #fff;
-  --color-surface-subtle: #f8fafc;
-  --color-surface-muted: #f1f5f9;
-  --color-border: #d0d8e5;
-  --color-border-strong: #94a3b8;
-  --color-text: #1e293b;
-  --color-text-muted: #475569;
-  --color-success: #15803d;
-  --color-danger: #b42318;
-  --color-warning: #b45309;
-  --focus-ring-color: #2563eb;
-  --focus-ring-shadow: 0 0 0 3px rgb(37 99 235 / 45%);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --shadow-soft: 0 12px 28px rgb(15 23 42 / 12%);
-  --shadow-subtle: 0 4px 16px rgb(15 23 42 / 8%);
-  --transition-fast: 0.15s ease;
-  --transition-slower: 0.3s ease;
+  --bm-color-navy-900: #0f2438;
+  --bm-color-navy-800: #102a43;
+  --bm-color-navy-700: #12385a;
+  --bm-color-gold-500: #b98243;
+  --bm-color-gold-600: #9c6931;
+  --bm-color-gold-soft: #f5eadc;
+  --bm-color-bg: #f7f9fc;
+  --bm-color-bg-soft: #f8fafd;
+  --bm-color-surface: #ffffff;
+  --bm-color-surface-muted: #f1f5f9;
+  --bm-color-border: #d9e2ec;
+  --bm-color-border-strong: #bfccdb;
+  --bm-color-text: #0f172a;
+  --bm-color-text-muted: #475569;
+  --bm-color-success: #15803d;
+  --bm-color-danger: #b42318;
+
+  --bm-radius-sm: 10px;
+  --bm-radius-md: 14px;
+  --bm-radius-lg: 20px;
+  --bm-radius-xl: 28px;
+
+  --bm-shadow-soft: 0 8px 22px rgb(15 23 42 / 8%);
+  --bm-shadow-card: 0 16px 36px rgb(15 23 42 / 11%);
+  --bm-shadow-lift: 0 22px 48px rgb(15 23 42 / 14%);
+
+  --bm-space-section: clamp(30px, 5vw, 62px);
+  --bm-space-stack: clamp(16px, 2.5vw, 24px);
+  --bm-container-max: 1200px;
+
+  --bm-focus-ring: 0 0 0 3px rgb(185 130 67 / 34%);
 }
+
 a {
   color: inherit;
 }
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--focus-ring-color);
+  outline: 2px solid var(--bm-color-gold-500);
   outline-offset: 2px;
-  box-shadow: var(--focus-ring-shadow);
+  box-shadow: var(--bm-focus-ring);
 }

@@ -268,6 +268,7 @@
 
   {# --- קישורי CSS/נכסים --- #}
   {% set STYLE_URL = static_rel('css/style.css') %}
+  {% set TOKENS_URL = static_rel('css/tokens.css') %}
   {% set NAVBAR_URL = static_rel('css/navbar.css') %}
   {% set BASE_BUNDLE_URL = static_rel('css/base.bundle.css') %}
   {% set UI_FOUNDATION_URL = static_rel('css/ui-foundation.css') %}
@@ -278,6 +279,8 @@
   {% set FA_SOLID_FONT_URL = static_rel('vendor/fa/webfonts/fa-solid-900.woff2') %}
   {% set FA_REGULAR_FONT_URL = static_rel('vendor/fa/webfonts/fa-regular-400.woff2') %}
   {% set FA_BRANDS_FONT_URL = static_rel('vendor/fa/webfonts/fa-brands-400.woff2') %}
+  <link rel="preload" as="style" href="{{ TOKENS_URL }}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{ TOKENS_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ STYLE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="{{ STYLE_URL }}"></noscript>
   <link rel="preload" as="style" href="{{ FONTS_OVERRIDE_URL }}" onload="this.onload=null;this.rel='stylesheet'">
@@ -295,6 +298,7 @@
   <link rel="preload" as="font" type="font/woff2" href="{{ FA_SOLID_FONT_URL }}" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="{{ FA_REGULAR_FONT_URL }}" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="{{ FA_BRANDS_FONT_URL }}" crossorigin>
+  <link rel="stylesheet" href="{{ TOKENS_URL }}">
   <link rel="stylesheet" href="{{ STYLE_URL }}">
   <link rel="stylesheet" href="{{ NAVBAR_URL }}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ ICONS_URL }}" media="print" onload="this.media='all'">

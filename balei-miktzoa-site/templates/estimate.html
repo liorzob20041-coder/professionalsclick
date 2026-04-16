@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}בעלי מקצוע בקליק — מחשבון{% endblock %}
+{% block title %}{{ (i18n_est or {}).get('ui.page_title', 'Price estimate wizard') }}{% endblock %}
 
 {% block extra_head %}
   {{ super() }}
@@ -9,74 +9,41 @@
 
 {% block content %}
   {% set t = i18n_est or {} %}
-  {% set contact_url = url_for('contact', lang=g.current_lang or 'he') %}
   {% set categories = [
     {"id": "electricity", "emoji": "\u26A1\uFE0E", "label": t.get('categories.electricity', 'חשמל')},
     {"id": "plumbing", "emoji": "\U0001F6B0\uFE0E", "label": t.get('categories.plumbing', 'אינסטלציה')},
     {"id": "painting", "emoji": "\U0001F58C\uFE0E", "label": t.get('categories.painting', 'צביעה')},
-    {"id": "renovation", "emoji": "\U0001F6E0\uFE0E", "label": t.get('categories.renovation', 'שיפוצים')}
+    {"id": "renovation", "emoji": "\U0001F6E0\uFE0E", "label": t.get('categories.renovation', 'שיפוצים')},
+    {"id": "locksmith", "emoji": "\U0001F511", "label": t.get('categories.locksmith', 'מנעולן')}
   ] %}
-  {% set progress_steps = [
-    {"id": "category", "label": t.get('ui.progress_stage_category', 'בוחרים תחום')},
-    {"id": "job", "label": t.get('ui.progress_stage_job', 'בוחרים את סוג העבודה')},
-    {"id": "subtype", "label": t.get('ui.progress_stage_subtype', 'מדייקים את סוג העבודה')},
-    {"id": "quote", "label": t.get('ui.progress_stage_quote', 'עונים על כמה שאלות ממוקדות')}
-  ] %}
-  <section class="est-page" aria-label="מחשבון הצעת מחיר">
+  {% set home_url = url_for_lang('home', lang=g.current_lang) if url_for_lang else '/' %}
+  {% set contact_url = url_for('contact', lang=g.current_lang or 'he') %}
 
-    <header class="est-hero est-hero--compact" data-est-header>
-      <h1 class="est-hero__title">{{ t.get('ui.header_title', 'קבלו טווח מחיר ראשוני תוך דקה') }}</h1>
-      <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות ונחשב סדר גודל לפני שפונים לבעל מקצוע') }}</p>
+  <section class="est-page" data-est-root data-est-contact="{{ contact_url }}" data-est-home="{{ home_url }}" aria-label="{{ t.get('ui.page_title', 'Estimate wizard') }}">
+    <header class="est-topbar" aria-label="{{ t.get('ui.topbar_aria', 'Wizard progress') }}">
+      <a class="est-topbar__back" href="{{ home_url }}">← {{ t.get('ui.action_back', 'Back') }}</a>
+      <p class="est-topbar__progress" data-est-progress-text>{{ t.get('ui.progress_step_counter', 'Step {current} of {total}')|replace('{current}', '1')|replace('{total}', '4') }}</p>
+      <div class="est-topbar__track" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" data-est-progressbar>
+        <span class="est-topbar__fill" data-est-progressfill></span>
+      </div>
+      <p class="est-topbar__helper" data-est-helper>{{ t.get('ui.top_helper', 'Answer one quick question per step for a reliable starting range.') }}</p>
     </header>
 
-    <section class="est-resume" data-est-resume hidden aria-label="המשך מהבחירה הקודמת">
-      <p class="est-resume__title">הבחירות מהעמוד הראשי נשמרו</p>
-      <div class="est-resume__chips" data-est-resume-list></div>
-      <button type="button" class="est-resume__btn" data-est-resume-continue>ממשיכים מהשלב הבא</button>
-    </section>
+    <section class="est-context" data-est-context hidden aria-live="polite"></section>
 
+    <section class="est-summary" data-est-summary hidden aria-label="{{ t.get('ui.summary_title', 'Completed steps') }}"></section>
 
-    <div class="est-shell" data-est-contact="{{ contact_url }}">
-      <div class="est-shell__card">
-        <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
-          <div class="est-shell__meta">
-            <div class="est-progresswrap">
-              <div class="est-progress__meta">
-                <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
-                <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
-              </div>
-              <div class="est-progressboard">
-                <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-                  <div class="est-progress__bar"></div>
-                </div>
-                <ol class="est-stepper" role="list" style="--step-count: {{ progress_steps|length }}">
-                  {% for step in progress_steps %}
-                    <li class="est-stepper__item{% if loop.first %} is-active{% endif %}"
-                        data-est-progress-step="{{ step.id }}"{% if loop.first %} aria-current="step"{% endif %}>
-                      <span class="est-stepper__bullet" aria-hidden="true" data-step-index="{{ loop.index }}"></span>
-                      <span class="est-stepper__label" data-est-progress-label data-default-label="{{ step.label }}">{{ step.label }}</span>
-                    </li>
-                  {% endfor %}
-                </ol>
-              </div>
-            </div>
-            <div class="est-journey" data-est-journey>
-              <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
-            </div>
-          </div>
-          <div class="est-convo__body" data-est-body aria-live="polite"></div>
-        </section>
-      </div>
-    </div>
-    <section class="est-content" aria-labelledby="est-support-heading">
-      <h2 class="est-content__title est-content__title--sr" id="est-support-heading">מידע ותמיכה</h2>
-      <details class="est-support" open>
-        <summary class="est-support__summary">איך להשתמש במחשבון ב-30 שניות</summary>
-        <p class="est-support__text">בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור אחורה ולעדכן תשובות בכל שלב.</p>
+    <section class="est-active" data-est-active aria-live="polite"></section>
+
+    <section class="est-help" aria-labelledby="est-help-title">
+      <h2 id="est-help-title">{{ t.get('ui.help_title', 'Need help?') }}</h2>
+      <details open>
+        <summary>{{ t.get('ui.help_q1', 'How does this estimate work?') }}</summary>
+        <p>{{ t.get('ui.help_a1', 'We ask short practical questions, then calculate a real-world starting range based on similar jobs.') }}</p>
       </details>
-      <details class="est-support">
-        <summary class="est-support__summary">מה קורה אחרי קבלת הטווח?</summary>
-        <p class="est-support__text">בסיום תקבלו כפתור יצירת קשר מהיר עם מומחה כדי לאמת פרטים ולקבל הצעה מדויקת לפרויקט שלכם.</p>
+      <details>
+        <summary>{{ t.get('ui.help_q2', 'What happens after I see the range?') }}</summary>
+        <p>{{ t.get('ui.help_a2', 'You can continue to a specialist with your selections, so the final quote is faster and more accurate.') }}</p>
       </details>
     </section>
   </section>
@@ -87,40 +54,99 @@
 
 {% block extra_scripts %}
   {{ super() }}
-
   <script>
-    (function(){
+    (function () {
       const i18n = JSON.parse(document.getElementById('est-i18n')?.textContent || '{}');
       const categories = JSON.parse(document.getElementById('est-cats')?.textContent || '[]');
-      const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
-      const emojiFallback = {
-        electricity: '\u26A1\uFE0E',
-        plumbing: '\u{1F6B0}\uFE0E',
-        painting: '\u{1F58C}\uFE0E',
-        renovation: '\u{1F6E0}\uFE0E'
+      const root = document.querySelector('[data-est-root]');
+      if (!root) return;
+
+      const fallback = {
+        'ui.ask_category': 'Which field is this job in?',
+        'ui.choose_job': 'What exactly do you need?',
+        'ui.where_exactly': 'Which specific service fits best?',
+        'ui.progress_step_counter': 'Step {current} of {total}',
+        'ui.progress_question_counter': 'Question {current} of {total}',
+        'ui.top_helper': 'Answer one quick question per step for a reliable starting range.',
+        'ui.step_helper_category': 'Choose the area first. We will tailor everything from here.',
+        'ui.step_helper_job': 'Pick the closest job type to get accurate follow-up questions.',
+        'ui.step_helper_subtype': 'A quick refinement helps us tighten your estimate range.',
+        'ui.step_helper_quote': 'Short practical questions. Then we calculate instantly.',
+        'ui.summary_title': 'Completed steps',
+        'ui.action_change': 'Change',
+        'ui.action_clear_all': 'Clear all',
+        'ui.action_continue': 'Continue',
+        'ui.action_back': 'Back',
+        'ui.context_intro': 'Selected for you',
+        'ui.context_action_change': 'change',
+        'ui.context_action_clear': 'clear all',
+        'ui.search_label_category': 'Search field',
+        'ui.search_label_job': 'Search job type',
+        'ui.search_label_subtype': 'Search detailed service',
+        'ui.search_clear': 'Clear search',
+        'ui.search_empty': 'No matching options found.',
+        'ui.loading_jobs': 'Loading matching jobs…',
+        'ui.preparing_opts': 'Preparing options…',
+        'ui.loading_questions': 'Loading focused questions…',
+        'ui.no_jobs': 'No jobs were found for this field.',
+        'ui.no_subtypes': 'No subtypes for this job. Continuing…',
+        'ui.no_questions': 'No more questions. Continue to calculate.',
+        'ui.compute_btn': 'Continue',
+        'ui.computing': 'Calculating estimate…',
+        'ui.range_label': 'Estimated price range',
+        'ui.result_note': 'This is a starting range based on similar real jobs.',
+        'ui.result_cta_label': 'Continue to a specialist',
+        'ui.result_cta_secondary': 'Share these details and get a precise quote faster.',
+        'ui.reset_btn': 'Start over',
+        'ui.add_job_btn': 'Add another job',
+        'ui.field_label': 'Field',
+        'ui.job_label': 'Job type',
+        'ui.where_label': 'Service',
+        'ui.details_label': 'Details:',
+        'ui.err_load_opts': 'Could not load options right now. Please try again.',
+        'ui.err_load_subs': 'Could not load detailed options right now. Please try again.',
+        'ui.err_load_qs': 'Could not load the next questions right now. Please try again.',
+        'ui.err_quote': 'Could not calculate the estimate right now. Please try again.',
+        'ui.category_hint_electricity': 'Repairs, panel work, lighting',
+        'ui.category_hint_plumbing': 'Leaks, clogs, installations',
+        'ui.category_hint_painting': 'Home painting, touchups, full repaint',
+        'ui.category_hint_renovation': 'Renovation, drywall, finishing',
+        'ui.category_hint_locksmith': 'Emergency opening, cylinder replacement',
+        'ui.help_title': 'Need help?',
+        'ui.help_q1': 'How does this estimate work?',
+        'ui.help_a1': 'We ask short practical questions, then calculate a real-world starting range based on similar jobs.',
+        'ui.help_q2': 'What happens after I see the range?',
+        'ui.help_a2': 'You can continue to a specialist with your selections, so the final quote is faster and more accurate.'
       };
-      const emojiMap = categories.reduce((acc, cat) => {
-        if (cat && cat.id){
-          acc[cat.id] = cat.emoji || emojiFallback[cat.id] || '';
-        }
-        return acc;
-      }, Object.assign({}, emojiFallback));
+      const t = (key) => i18n[key] || fallback[key] || '';
+
+      const steps = ['category', 'job', 'subtype', 'quote'];
+      const helpByStep = {
+        category: t('ui.step_helper_category'),
+        job: t('ui.step_helper_job'),
+        subtype: t('ui.step_helper_subtype'),
+        quote: t('ui.step_helper_quote'),
+        result: t('ui.result_cta_secondary')
+      };
+
+      const categoryHintMap = {
+        electricity: t('ui.category_hint_electricity'),
+        plumbing: t('ui.category_hint_plumbing'),
+        painting: t('ui.category_hint_painting'),
+        renovation: t('ui.category_hint_renovation'),
+        locksmith: t('ui.category_hint_locksmith')
+      };
+
       const els = {
-        body: document.querySelector('[data-est-body]'),
-        progress: Array.from(document.querySelectorAll('[data-est-progress]')),
-        progressPrimary: Array.from(document.querySelectorAll('[data-est-progress-primary]')),
-        progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
-        progressSteps: Array.from(document.querySelectorAll('[data-est-progress-step]')),
-        journey: document.querySelector('[data-est-journey]'),
-        shellCard: document.querySelector('.est-shell__card'),
-        resume: document.querySelector('[data-est-resume]'),
-        resumeList: document.querySelector('[data-est-resume-list]'),
-        resumeCta: document.querySelector('[data-est-resume-continue]')
+        active: root.querySelector('[data-est-active]'),
+        summary: root.querySelector('[data-est-summary]'),
+        context: root.querySelector('[data-est-context]'),
+        progressText: root.querySelector('[data-est-progress-text]'),
+        progressbar: root.querySelector('[data-est-progressbar]'),
+        progressFill: root.querySelector('[data-est-progressfill]'),
+        helper: root.querySelector('[data-est-helper]')
       };
-      const config = {
-        contactUrl: document.querySelector('[data-est-contact]')?.getAttribute('data-est-contact') || ''
-      };
-      const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
+
       const state = {
         category: null,
         categoryLabel: '',
@@ -128,1350 +154,640 @@
         jobLabel: '',
         subtype: null,
         subtypeLabel: '',
-        answers: {},
         questions: [],
-        resultNote: ''
+        answers: {},
+        resultNote: '',
+        currentQuestionIndex: 0,
+        currentStep: 'category'
       };
-      const queryParams = new URLSearchParams(window.location.search || '');
-      const prefillState = {
-        category: (queryParams.get('field') || '').trim(),
-        area: (queryParams.get('area') || '').trim(),
-        task: (queryParams.get('task') || '').trim(),
-        urgency: (queryParams.get('urgency') || '').trim(),
-        source: (queryParams.get('source') || '').trim(),
-        categoryApplied: false,
-        taskApplied: false,
-        hintShown: false
+
+      const params = new URLSearchParams(window.location.search || '');
+      const prefill = {
+        source: params.get('source') || '',
+        field: params.get('field') || '',
+        area: params.get('area') || '',
+        task: params.get('task') || '',
+        urgency: params.get('urgency') || ''
       };
-      const isHomeResume = prefillState.source === 'home_starter';
-      let resumeScrollTimer = null;
-      const fallback = {
-        'ui.ask_category': 'בחרו תחום עבודה',
-        'ui.choose_job': 'איזו עבודה בדיוק צריך?',
-        'ui.where_exactly': 'איזה סוג עבודה בדיוק?',
-        'ui.loading_jobs': 'טוען עבודות מתאימות…',
-        'ui.preparing_opts': 'מכין אפשרויות…',
-        'ui.loading_questions': 'טוען שאלות מתאימות…',
-        'ui.computing': 'מחשב תוצאה…',
-        'ui.err_load_opts': 'בעיה זמנית בטעינת האפשרויות. נסו שוב.',
-        'ui.err_load_subs': 'בעיה זמנית בטעינת האפשרויות.',
-        'ui.err_load_qs': 'אירעה שגיאה בטעינת השאלות.',
-        'ui.err_quote': 'שגיאה בהבאת הצעת המחיר.',
-        'ui.field_label': 'תחום:',
-        'ui.job_label': 'עבודה:',
-        'ui.where_label': 'תת-סוג:',
-        'ui.range_label': 'טווח מחיר משוער:',
-        'ui.details_label': 'פירוט:',
-        'ui.greeting': 'היי, נחשב יחד טווח מחיר משוער.',
-        'ui.subtitle': 'ענו על כמה שאלות קצרות ונחשב טווח מחיר משוער לפי התחום שבחרתם.',
-        'ui.result_note': 'הטווח מבוסס על נתונים של פרויקטים אמיתיים.',
-        'ui.compute_btn': 'חשב טווח מחיר',
-        'ui.add_more': 'נוסיף עבודה נוספת לחישוב המצטבר.',
-        'ui.no_jobs': 'לא נמצאו עבודות זמינות לתחום שנבחר.',
-        'ui.no_subtypes': 'אין תתי-סוג זמינים לעבודה הזו.',
-        'ui.add_job_btn': 'הוספת עבודה נוספת',
-        'ui.reset_btn': 'התחילו חישוב חדש',
-        'ui.meta_ready_pick': 'מוכנים? בחרו תחום כדי שנתחיל.',
-        'ui.meta_category_selected': 'התחום כבר נבחר. בואו נמשיך.',
-        'ui.meta_restart': 'מתחילים מחדש את החישוב.',
-        'ui.meta_add_job': 'בוחרים עבודה נוספת לאותו תחום.',
-        'ui.result_cta_label': 'דברו עם מומחה להתאמת בעל מקצוע',
-        'ui.result_cta_secondary': 'נשמור עבורכם את הטווח ונחזור עם הצעה מדויקת.',
-        'ui.result_chart_heading': 'איך הטווח שלכם נראה במספרים',
-        'ui.result_chart_note': 'התרשים מבוסס על הטווח שחישבנו עבורכם.',
-        'ui.result_chart_columns_min': 'טווח נמוך',
-        'ui.result_chart_columns_mid': 'אמצע הטווח',
-        'ui.result_chart_columns_max': 'טווח גבוה',
-        'ui.no_questions': 'אין שאלות נוספות. נחשב את הטווח מיד.',
-        'ui.header_title': 'קבלו טווח מחיר ראשוני תוך דקה',
-        'ui.header_title_prefix': 'קבלו טווח מחיר',
-        'ui.header_title_highlight': 'ראשוני',
-        'ui.header_title_suffix': 'תוך דקה',
-        'ui.header_tagline': 'ענו על כמה שאלות ונחשב סדר גודל לפני שפונים לבעל מקצוע.',
-        'ui.header_point_speed': 'ענו על כמה שאלות קצרות ותצאו לדרך.',
-        'ui.header_point_accuracy': 'הטווחים מבוססים על אלפי עבודות אמיתיות.',
-        'ui.header_point_confidence': 'אפשר לעדכן תשובות ולהוסיף עבודות בכל שלב.',
-        'ui.assistant_intro': 'שלום! אני כאן כדי לתת לכם הערכת מחיר מדויקת.',
-        'ui.assistant_subtitle': 'נתחיל בשאלות קצרות ומיד נבנה לכם טווח שמתאים בדיוק לעבודה שלכם.',
-        'ui.progress_stage_category': 'בוחרים תחום',
-        'ui.progress_stage_job': 'בוחרים את סוג העבודה',
-        'ui.progress_stage_subtype': 'מדייקים את סוג העבודה',
-        'ui.progress_stage_quote': 'עונים על כמה שאלות ממוקדות',
-        'ui.progress_stage_result': 'הנה הטווח המשוער שלכם',
-        'ui.progress_step_counter': 'שלב {current} מתוך {total}',
-        'ui.progress_question_counter': 'שאלה {current} מתוך {total}',
-        'ui.progress_done': 'החישוב הושלם',
-        'ui.progress_final_step': 'שלב אחרון — בדקו את הטווח והמשיכו למומחה',
-        'ui.result_min': 'טווח נמוך',
-        'ui.result_max': 'טווח גבוה',
-        'ui.result_spread': 'פער בין הקצוות',
-        'ui.journey_empty': 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.',
-        'ui.journey_label': 'מה כבר בחרתם',
-        'ui.trust_title': 'לפני שמתחילים — מה תקבלו כאן?',
-        'ui.trust_item_1': 'טווח מחיר ברור עם מינימום ומקסימום',
-        'ui.trust_item_2': 'שאלות קצרות שמדייקות את ההערכה',
-        'ui.trust_item_3': 'כפתור ישיר לשיחה עם מומחה בסיום',
-        'ui.category_hint_electricity': 'תיקוני חשמל, לוחות ותאורה',
-        'ui.category_hint_plumbing': 'נזילות, פתיחת סתימות, התקנות',
-        'ui.category_hint_painting': 'צביעת דירות, קירות מיוחדים',
-        'ui.category_hint_renovation': 'שיפוצים, גבס, עבודות גמר',
-        'ui.category_hint_locksmith': 'פריצות והחלפת צילינדרים'
-      };
-      const steps = ['category', 'job', 'subtype', 'quote'];
-      const stageKeyMap = {
-        category: 'ui.progress_stage_category',
-        job: 'ui.progress_stage_job',
-        subtype: 'ui.progress_stage_subtype',
-        quote: 'ui.progress_stage_quote',
-        result: 'ui.progress_stage_result'
-      };
-      const categoryHintKeyMap = {
-        electricity: 'ui.category_hint_electricity',
-        plumbing: 'ui.category_hint_plumbing',
-        painting: 'ui.category_hint_painting',
-        renovation: 'ui.category_hint_renovation',
-        locksmith: 'ui.category_hint_locksmith'
-      };
-      let activeBotBubble = null;
-      const currencyFormatter = (typeof Intl !== 'undefined' && Intl.NumberFormat)
-        ? new Intl.NumberFormat(lang === 'he' ? 'he-IL' : 'en-US', {
-            style: 'currency',
-            currency: 'ILS',
-            maximumFractionDigits: 0
-          })
-        : null;
-      function t(key){
-        return Object.prototype.hasOwnProperty.call(i18n, key) ? i18n[key] : (fallback[key] || '');
-      }
-      function setBusy(isBusy){
-        if (!els.body) return;
-        if (isBusy){
-          els.body.setAttribute('aria-busy', 'true');
-        } else {
-          els.body.removeAttribute('aria-busy');
-        }
-      }
-      function parseAmount(value){
-        if (typeof value === 'number' && Number.isFinite(value)){
-          return value;
-        }
-        if (typeof value === 'string'){
-          const normalized = value
-            .replace(/[\u2012\u2013\u2014\u2015\u2212]/g, '-')
-            .replace(/[^0-9,.-]/g, '')
-            .replace(/,(?=\d{3}\b)/g, '')
-            .replace(/,/g, '.');
-          const numeric = Number(normalized);
-          return Number.isFinite(numeric) ? numeric : NaN;
-        }
-        return NaN;
-      }
-      function formatCurrencyValue(value){
-        if (!Number.isFinite(value)){
-          return '—';
-        }
-        if (currencyFormatter){
-          try {
-            return currencyFormatter.format(value);
-          } catch (err) {
-            // ignore and fall back below
-          }
-        }
-        const rounded = Math.round(value);
-        if (typeof rounded.toLocaleString === 'function'){
-          return `₪${rounded.toLocaleString('he-IL')}`;
-        }
-        return `₪${rounded}`;
-      }
-      function clearFeed(){
-        if (!els.body) return;
-        els.body.innerHTML = '';
-        activeBotBubble = null;
-      }
 
-
-      function focusFirstInteractive(scope){
-        if (!scope) return;
-        const target = scope.querySelector(focusableSelector);
-        if (target && typeof target.focus === 'function'){
-          try {
-            target.focus({ preventScroll: true });
-          } catch (err) {
-            target.focus();
-          }
+      function format(template, values) {
+        return (template || '').replace(/\{(\w+)\}/g, (_, key) => values[key] ?? '');
+      }
+      function setBusy(isBusy) {
+        if (!els.active) return;
+        if (isBusy) els.active.setAttribute('aria-busy', 'true');
+        else els.active.removeAttribute('aria-busy');
+      }
+      function normalizeText(value) {
+        const base = (value || '').toString().trim();
+        if (!base) return '';
+        const normalized = typeof base.normalize === 'function' ? base.normalize('NFKC') : base;
+        return normalized.toLowerCase();
+      }
+      function formatCurrency(value) {
+        if (!Number.isFinite(value)) return '—';
+        try {
+          return new Intl.NumberFormat(document.documentElement.lang === 'he' ? 'he-IL' : 'en-US', {
+            style: 'currency', currency: 'ILS', maximumFractionDigits: 0
+          }).format(value);
+        } catch (_err) {
+          return `₪${Math.round(value)}`;
         }
       }
-
-      function ensureBubbleInView(bubble, shouldFocus){
-        if (!bubble || !els.body) return;
-        requestAnimationFrame(() => {
-          if (typeof els.body.getBoundingClientRect === 'function'){
-            const containerRect = els.body.getBoundingClientRect();
-            const bubbleRect = bubble.getBoundingClientRect();
-            const offset = bubbleRect.top - containerRect.top - (containerRect.height * 0.15);
-            if (typeof els.body.scrollBy === 'function' && Math.abs(offset) > 1){
-              els.body.scrollBy({ top: offset, behavior: 'smooth' });
-            } else if (typeof bubble.scrollIntoView === 'function'){
-              bubble.scrollIntoView({ block: 'start', behavior: 'smooth' });
-            }
-          } else if (typeof bubble.scrollIntoView === 'function'){
-            bubble.scrollIntoView({ block: 'start', behavior: 'smooth' });
-          }
-          if (shouldFocus){
-            focusFirstInteractive(bubble);
-          }
-        });
+      function parseAmount(value) {
+        if (typeof value === 'number' && Number.isFinite(value)) return value;
+        if (typeof value !== 'string') return NaN;
+        const cleaned = value.replace(/[^0-9,.-]/g, '').replace(/,(?=\d{3}\b)/g, '').replace(/,/g, '.');
+        const numeric = Number(cleaned);
+        return Number.isFinite(numeric) ? numeric : NaN;
       }
-
-      function createBubble(type){
-        const article = document.createElement('article');
-        article.className = `est-bubble est-bubble--${type}`;
-        article.dataset.type = type;
-        requestAnimationFrame(() => {
-          article.classList.add('is-visible');
-        });
-        return article;
-      }
-
-      function appendBubble(bubble, options){
-        if (!els.body || !bubble) return bubble;
-        els.body.appendChild(bubble);
-
-        const shouldFocus = options && Object.prototype.hasOwnProperty.call(options, 'focusInteractive')
-          ? options.focusInteractive !== false
-          : true;
-
-        const shouldEnsure = options && Object.prototype.hasOwnProperty.call(options, 'ensureVisible')
-          ? options.ensureVisible !== false
-          : true;
-        if (shouldEnsure){
-          ensureBubbleInView(bubble, shouldFocus);
-        } else if (shouldFocus){
-          focusFirstInteractive(bubble);
-        }
-        return bubble;
-      }
-      function formatString(template, values){
-        if (!template) return '';
-        return template.replace(/\{(\w+)\}/g, (match, key) => {
-          if (!values || !Object.prototype.hasOwnProperty.call(values, key)){
-            return '';
-          }
-          const value = values[key];
-          return value === undefined || value === null ? '' : String(value);
-        });
-      }
-      function setProgressPrimary(text){
-        if (!els.progressPrimary || !els.progressPrimary.length) return;
-        els.progressPrimary.forEach((el) => {
-          if (el){
-            el.textContent = text || '';
-          }
-        });
-      }
-      function setProgressSecondary(text){
-        if (!els.progressSecondary || !els.progressSecondary.length) return;
-        els.progressSecondary.forEach((el) => {
-          if (el){
-            el.textContent = text || '';
-          }
-        });
-      }
-
-      function getStageLabel(stage){
-        const key = stageKeyMap[stage];
-        return key ? (t(key) || '') : '';
-      }
-      function getCategoryHint(id){
-        const key = categoryHintKeyMap[id];
-        return key ? (t(key) || '') : '';
-      }
-      function cleanLabel(text){
-        return text ? text.replace(/[:：]\s*$/, '') : '';
-      }
-      function updateJourney(){
-        if (!els.journey) return;
-        els.journey.innerHTML = '';
-        const selections = [];
-        if (state.categoryLabel){
-          selections.push({ label: cleanLabel(t('ui.field_label') || fallback['ui.field_label']), value: state.categoryLabel });
-        }
-        if (state.jobLabel){
-          selections.push({ label: cleanLabel(t('ui.job_label') || fallback['ui.job_label']), value: state.jobLabel });
-        }
-        if (state.subtypeLabel && state.subtypeLabel !== state.jobLabel){
-          selections.push({ label: cleanLabel(t('ui.where_label') || fallback['ui.where_label']), value: state.subtypeLabel });
-        }
-        if (!selections.length){
-          const empty = document.createElement('span');
-          empty.className = 'est-journey__empty';
-          empty.textContent = t('ui.journey_empty') || fallback['ui.journey_empty'];
-          els.journey.appendChild(empty);
-          return;
-        }
-        const label = document.createElement('span');
-        label.className = 'est-journey__label';
-        label.textContent = t('ui.journey_label') || fallback['ui.journey_label'];
-        els.journey.appendChild(label);
-        const list = document.createElement('div');
-        list.className = 'est-journey__list';
-        selections.forEach((item) => {
-          const pill = document.createElement('span');
-          pill.className = 'est-journey__item';
-          const labelEl = document.createElement('span');
-          labelEl.className = 'est-journey__item-label';
-          labelEl.textContent = item.label || '';
-          pill.appendChild(labelEl);
-          const valueEl = document.createElement('span');
-          valueEl.className = 'est-journey__item-value';
-          valueEl.textContent = item.value || '';
-          pill.appendChild(valueEl);
-          list.appendChild(pill);
-        });
-        els.journey.appendChild(list);
-      }
-
-      function appendBotBubble(content, options){
-
-        const bubble = createBubble('bot');
-        if (typeof content === 'string'){
-          bubble.innerHTML = content;
-        } else if (content){
-          bubble.appendChild(content);
-        }
-        activeBotBubble = appendBubble(bubble, Object.assign({ focusInteractive: true }, options));
-
-
-        return activeBotBubble;
-      }
-      function finalizeBotBubble(promptText, metaText){
-        if (!activeBotBubble || activeBotBubble.dataset.type !== 'bot'){
-          return;
-        }
-        const summary = document.createElement('div');
-        summary.className = 'est-botcard est-botcard--locked';
-        if (promptText){
-          const heading = document.createElement('h3');
-          heading.className = 'est-botcard__title';
-          heading.textContent = promptText;
-          summary.appendChild(heading);
-        }
-        if (metaText){
-          const meta = document.createElement('p');
-          meta.className = 'est-botcard__why';
-          meta.textContent = metaText;
-          summary.appendChild(meta);
-        }
-        activeBotBubble.innerHTML = '';
-        activeBotBubble.appendChild(summary);
-        activeBotBubble = null;
-      }
-
-      function appendUserBubble(label, symbol){
-
-        const bubble = createBubble('user');
-        const inner = document.createElement('div');
-        inner.className = 'est-chip est-chip--selected';
-        if (symbol){
-          const emojiEl = document.createElement('span');
-          emojiEl.className = 'est-chip__emoji';
-          emojiEl.setAttribute('aria-hidden', 'true');
-          emojiEl.textContent = symbol;
-          inner.appendChild(emojiEl);
-        }
-        const span = document.createElement('span');
-        span.textContent = label;
-        inner.appendChild(span);
-        bubble.appendChild(inner);
-        appendBubble(bubble, { focusInteractive: false });
-
-        return bubble;
-      }
-
-      function appendMetaBubble(text){
-        if (!text) return null;
-        const bubble = createBubble('meta');
-        bubble.textContent = text;
-        appendBubble(bubble, { focusInteractive: false });
-
-        return bubble;
-      }
-
-      function appendErrorBubble(text){
-        const bubble = createBubble('error');
-        bubble.textContent = text;
-        appendBubble(bubble, { focusInteractive: false });
-
-        return bubble;
-      }
-      function buildResultChartData(result){
-        if (!result) return null;
-        const min = parseAmount(result.price_min);
-        const max = parseAmount(result.price_max);
-        const single = parseAmount(result.price);
-        const hasRange = Number.isFinite(min) && Number.isFinite(max) && max >= min;
-        const central = Number.isFinite(single)
-          ? single
-          : (hasRange ? (min + max) / 2 : NaN);
-        const items = [];
-        const minLabel = t('ui.result_chart_columns_min') || fallback['ui.result_chart_columns_min'] || '';
-        const midLabel = t('ui.result_chart_columns_mid') || fallback['ui.result_chart_columns_mid'] || '';
-        const maxLabel = t('ui.result_chart_columns_max') || fallback['ui.result_chart_columns_max'] || '';
-        if (Number.isFinite(min)){
-          items.push({ label: minLabel || 'Min', value: min, variant: 'low' });
-        }
-        if (Number.isFinite(central)){
-          items.push({ label: midLabel || 'Mid', value: central, variant: 'highlight' });
-        }
-        if (hasRange && Number.isFinite(max)){
-          items.push({ label: maxLabel || 'Max', value: max, variant: 'high' });
-        } else if (!hasRange && Number.isFinite(max)){
-          items.push({ label: maxLabel || 'Max', value: max, variant: 'high' });
-        }
-        if (!items.length){
-          return null;
-        }
-        const maxValue = Math.max(...items.map(item => item.value));
-        if (!(maxValue > 0)){
-          return null;
-        }
-        return {
-          items: items.map(item => Object.assign({}, item, {
-            ratio: Math.max(0.12, Math.min(1, item.value / maxValue))
-          }))
-        };
-      }
-      function createResultChart(data){
-        if (!data || !data.items || !data.items.length){
-          return null;
-        }
-        const box = document.createElement('div');
-        box.className = 'est-resultcard__chart';
-        const titleText = t('ui.result_chart_heading') || fallback['ui.result_chart_heading'] || '';
-        if (titleText){
-          const title = document.createElement('h4');
-          title.className = 'est-resultchart__title';
-          title.textContent = titleText;
-          box.appendChild(title);
-        }
-        const bars = document.createElement('div');
-        bars.className = 'est-resultchart__bars';
-        data.items.forEach((item) => {
-          const bar = document.createElement('div');
-          bar.className = 'est-resultchart__bar';
-          if (item.variant){
-            bar.classList.add(`is-${item.variant}`);
-          }
-          const value = document.createElement('div');
-          value.className = 'est-resultchart__value';
-          value.textContent = formatCurrencyValue(item.value);
-          bar.appendChild(value);
-          const meter = document.createElement('div');
-          meter.className = 'est-resultchart__meter';
-          const fill = document.createElement('div');
-          fill.className = 'est-resultchart__fill';
-          fill.style.setProperty('--bar-value', `${Math.round(item.ratio * 100)}%`);
-          meter.appendChild(fill);
-          bar.appendChild(meter);
-          const label = document.createElement('div');
-          label.className = 'est-resultchart__label';
-          label.textContent = item.label || '';
-          bar.appendChild(label);
-          bars.appendChild(bar);
-        });
-        box.appendChild(bars);
-        const noteText = t('ui.result_chart_note') || fallback['ui.result_chart_note'] || '';
-        if (noteText){
-          const note = document.createElement('p');
-          note.className = 'est-resultchart__note';
-          note.textContent = noteText;
-          box.appendChild(note);
-        }
-        return box;
-      }
-      function makeLoadingNode(message){
-        const wrap = document.createElement('div');
-        wrap.className = 'est-loading';
-        const icon = document.createElement('span');
-        icon.className = 'est-loading__icon';
-        icon.innerHTML = '<i class="fa-solid fa-circle-notch" aria-hidden="true"></i>';
-        const text = document.createElement('span');
-        text.className = 'est-loading__text';
-        text.textContent = message;
-        wrap.appendChild(text);
-        wrap.insertBefore(icon, text);
-        return wrap;
-      }
-
-      function replaceBotBubbleContent(node){
-        if (!activeBotBubble){
-          return appendBotBubble(node);
-        }
-        activeBotBubble.innerHTML = '';
-        if (typeof node === 'string'){
-          activeBotBubble.innerHTML = node;
-        } else if (node){
-          activeBotBubble.appendChild(node);
-        }
-        return activeBotBubble;
-      }
-
-      function fetchEstimate(payload){
+      function fetchEstimate(payload) {
         return fetch('/api/estimate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(Object.assign({ lang }, payload || {}))
+          body: JSON.stringify(Object.assign({ lang: (document.documentElement.lang || 'he').toLowerCase() }, payload || {}))
         }).then(async (res) => {
           const data = await res.json();
-          if (!res.ok){
-            throw new Error(data && data.error ? data.error : 'Request failed');
-          }
+          if (!res.ok) throw new Error(data && data.error ? data.error : 'Request failed');
           return data;
         });
       }
 
-      function resetState(){
-        state.category = null;
-        state.categoryLabel = '';
-        state.job = null;
-        state.jobLabel = '';
-        state.subtype = null;
-        state.subtypeLabel = '';
-        state.answers = {};
-        state.questions = [];
-        state.resultNote = '';
+      function shouldShowSearch(stepName, optionsLength) {
+        if (!Number.isFinite(optionsLength) || optionsLength <= 0) return false;
+        if (stepName === 'category') return optionsLength > 6;
+        if (stepName === 'job' || stepName === 'subtype') return optionsLength > 7;
+        return false;
       }
 
-      function resetFlow(){
-        resetState();
-        updateProgress('category');
-        updateJourney();
-        setBusy(false);
-        renderOnboarding();
-      }
-      function normalizeText(value){
-        const stringValue = (value || '')
-          .toString()
-          .trim();
-        if (!stringValue){
-          return '';
+      function updateTop(stepName, questionIndex, totalQuestions) {
+        const stepIndex = steps.indexOf(stepName);
+        const current = Math.max(1, stepIndex + 1);
+        const total = steps.length;
+        if (els.progressText) {
+          const template = stepName === 'quote' && Number.isFinite(questionIndex)
+            ? t('ui.progress_question_counter')
+            : t('ui.progress_step_counter');
+          els.progressText.textContent = stepName === 'quote' && Number.isFinite(questionIndex)
+            ? format(template, { current: questionIndex + 1, total: totalQuestions || 1 })
+            : format(template, { current, total });
         }
-        const normalized = typeof stringValue.normalize === 'function'
-          ? stringValue.normalize('NFKC')
-          : stringValue;
-        return normalized.toLowerCase();
-      }
-      function resolvePrefillCategory(rawValue){
-        const normalized = normalizeText(rawValue);
-        if (!normalized){
-          return null;
+        if (els.progressbar && els.progressFill) {
+          const stepProgress = stepName === 'result' ? 1 : (stepIndex / Math.max(1, total - 1));
+          const percent = Math.round(stepProgress * 100);
+          els.progressbar.setAttribute('aria-valuenow', String(stepName === 'result' ? total : current));
+          els.progressFill.style.width = `${percent}%`;
         }
-        const keywordMap = [
-          { id: 'electricity', keys: ['חשמל', 'electric', 'electrical'] },
-          { id: 'plumbing', keys: ['אינסטלציה', 'אינסטלטור', 'plumb'] },
-          { id: 'painting', keys: ['צבע', 'צביעה', 'paint'] },
-          { id: 'renovation', keys: ['שיפוץ', 'שיפוצים', 'renovation', 'remodel'] }
-        ];
-        const direct = categories.find(cat => normalizeText(cat.id) === normalized || normalizeText(cat.label) === normalized);
-        if (direct){
-          return direct.id;
-        }
-        const mapped = keywordMap.find(entry => entry.keys.some(key => normalized.includes(normalizeText(key))));
-        return mapped ? mapped.id : null;
-      }
-      function maybeShowPrefillHint(){
-        if (prefillState.hintShown) return;
-        const chips = [prefillState.area, prefillState.task, prefillState.urgency].filter(Boolean);
-        if (!chips.length) return;
-        prefillState.hintShown = true;
-        appendMetaBubble(`הבאנו מהעמוד הראשי: ${chips.join(' · ')}.`);
-      }
-      function scheduleResumeScroll(delay){
-        if (!isHomeResume || !els.body) return;
-        if (resumeScrollTimer){
-          window.clearTimeout(resumeScrollTimer);
-        }
-        resumeScrollTimer = window.setTimeout(() => {
-          const header = document.querySelector('.topbar-rail');
-          const navOffset = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
-          const contextOffset = navOffset + 18;
-          const latestBubble = els.body.querySelector('.est-bubble:last-child');
-          const target = latestBubble || els.body || els.shellCard;
-          if (!target) return;
-          const targetTop = window.scrollY + target.getBoundingClientRect().top - contextOffset;
-          const minimumTop = els.shellCard
-            ? window.scrollY + els.shellCard.getBoundingClientRect().top - contextOffset
-            : targetTop;
-          const scrollTop = Math.max(Math.min(targetTop, minimumTop + 90), 0);
-          window.scrollTo({ top: scrollTop, behavior: 'smooth' });
-        }, typeof delay === 'number' ? delay : 120);
-      }
-      function setupResumePanel(){
-        if (!isHomeResume || !els.resume || !els.resumeList){
-          return;
-        }
-        const rows = [
-          { label: 'תחום', value: prefillState.category },
-          { label: 'אזור', value: prefillState.area },
-          { label: 'סוג עבודה', value: prefillState.task },
-          { label: 'דחיפות', value: prefillState.urgency }
-        ].filter(item => item.value);
-        if (!rows.length){
-          return;
-        }
-        rows.forEach(item => {
-          const chip = document.createElement('span');
-          chip.className = 'est-resume__chip';
-          chip.textContent = `${item.label}: ${item.value}`;
-          els.resumeList.appendChild(chip);
-        });
-        els.resume.hidden = false;
-        if (els.resumeCta){
-          els.resumeCta.addEventListener('click', () => {
-            scheduleResumeScroll(10);
-          });
+        if (els.helper) {
+          els.helper.textContent = helpByStep[stepName] || t('ui.top_helper');
         }
       }
-      function createChip(option, handler){
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'est-chip';
-        btn.dataset.value = option.id || option.value;
-        const searchSource = [option.label, option.value, option.hint]
 
-          .filter(Boolean)
-          .map(str => normalizeText(str))
-          .join(' ')
-          .trim();
-        btn.dataset.search = searchSource;
-        if (option.hint){
-          btn.dataset.hint = option.hint;
+      function renderContextStrip() {
+        if (!els.context) return;
+        const tokens = [prefill.field, prefill.area, prefill.urgency].filter(Boolean);
+        if (!(prefill.source === 'home_starter' && tokens.length)) {
+          els.context.hidden = true;
+          els.context.innerHTML = '';
+          return;
         }
-        btn.setAttribute('role', 'listitem');
-        btn.setAttribute('aria-pressed', 'false');
-        btn.addEventListener('click', () => {
-          handler(option);
+        const intro = document.createElement('span');
+        intro.className = 'est-context__intro';
+        intro.textContent = `${t('ui.context_intro')}:`;
+
+        const values = document.createElement('span');
+        values.className = 'est-context__values';
+        values.textContent = tokens.join(' · ');
+
+        const actions = document.createElement('div');
+        actions.className = 'est-context__actions';
+        const change = document.createElement('button');
+        change.type = 'button';
+        change.textContent = t('ui.context_action_change');
+        change.addEventListener('click', () => {
+          els.active.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
-        btn.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter' || event.key === ' '){
-            event.preventDefault();
-            handler(option);
-          }
+        const clear = document.createElement('button');
+        clear.type = 'button';
+        clear.textContent = t('ui.context_action_clear');
+        clear.addEventListener('click', () => {
+          prefill.field = '';
+          prefill.area = '';
+          prefill.urgency = '';
+          renderContextStrip();
         });
-        if (option.emoji){
-          const emojiEl = document.createElement('span');
-          emojiEl.className = 'est-chip__emoji';
-          emojiEl.setAttribute('aria-hidden', 'true');
-          emojiEl.textContent = option.emoji;
-          btn.appendChild(emojiEl);
-        } else if (option.icon){
-          const iconEl = document.createElement('i');
-          iconEl.className = `fa-solid ${option.icon}`;
-          iconEl.setAttribute('aria-hidden', 'true');
-          btn.appendChild(iconEl);
-        }
-        const textWrap = document.createElement('span');
-        textWrap.className = 'est-chip__text';
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'est-chip__label';
-        labelSpan.textContent = option.label || option.value;
-        textWrap.appendChild(labelSpan);
-        if (option.hint){
-          const hintSpan = document.createElement('span');
-          hintSpan.className = 'est-chip__hint';
-          hintSpan.textContent = option.hint;
-          textWrap.appendChild(hintSpan);
-        }
-        btn.appendChild(textWrap);
-        return btn;
+        actions.append(change, clear);
+
+        els.context.hidden = false;
+        els.context.innerHTML = '';
+        els.context.append(intro, values, actions);
       }
-      function filterQuickPick(term, items, options){
-        const normalized = normalizeText(term);
-        const tokens = normalized ? normalized.split(/\s+/).filter(Boolean) : [];
-        let matches = 0;
-        items.forEach(item => {
-          const haystack = item.dataset.search || '';
-          const match = tokens.length === 0 || tokens.every(token => haystack.includes(token));
-          item.hidden = !match;
-          if (match){
-            item.style.removeProperty('display');
-            item.setAttribute('aria-hidden', 'false');
-          } else {
-            item.style.display = 'none';
-            item.setAttribute('aria-hidden', 'true');
-          }
-          if (match){
-            matches += 1;
-          }
+
+      function renderSummary() {
+        if (!els.summary) return;
+        const rows = [];
+        if (state.categoryLabel) rows.push({ key: 'category', label: t('ui.field_label'), value: state.categoryLabel });
+        if (state.jobLabel) rows.push({ key: 'job', label: t('ui.job_label'), value: state.jobLabel });
+        if (state.subtypeLabel && state.subtypeLabel !== state.jobLabel) rows.push({ key: 'subtype', label: t('ui.where_label'), value: state.subtypeLabel });
+
+        if (!rows.length) {
+          els.summary.hidden = true;
+          els.summary.innerHTML = '';
+          return;
+        }
+
+        const title = document.createElement('h2');
+        title.className = 'est-summary__title';
+        title.textContent = t('ui.summary_title');
+        const list = document.createElement('div');
+        list.className = 'est-summary__list';
+        rows.forEach((row) => {
+          const item = document.createElement('div');
+          item.className = 'est-summary__row';
+          const text = document.createElement('p');
+          text.innerHTML = `<strong>${row.label.replace(/[:：]\s*$/, '')}:</strong> ${row.value}`;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = t('ui.action_change');
+          btn.addEventListener('click', () => jumpToStep(row.key));
+          item.append(text, btn);
+          list.appendChild(item);
         });
-        if (options && options.tip){
-          const hideTip = tokens.length > 0;
-          options.tip.hidden = hideTip;
-          if (!hideTip){
-            options.tip.removeAttribute('aria-hidden');
-          } else {
-            options.tip.setAttribute('aria-hidden', 'true');
-          }
-        }
-        if (options && options.empty){
-          const showEmpty = matches === 0;
-          options.empty.hidden = !showEmpty;
-          options.empty.setAttribute('aria-hidden', showEmpty ? 'false' : 'true');
-        }
+
+        const clear = document.createElement('button');
+        clear.type = 'button';
+        clear.className = 'est-summary__clear';
+        clear.textContent = t('ui.action_clear_all');
+        clear.addEventListener('click', resetFlow);
+
+        els.summary.hidden = false;
+        els.summary.innerHTML = '';
+        els.summary.append(title, list, clear);
       }
-      function renderCategoryQuickPick(){
+
+      function createSearchBox(stepName, onFilter) {
         const wrap = document.createElement('div');
-        wrap.className = 'est-quickpick';
-        updateProgress('category', { label: t('ui.ask_category') || getStageLabel('category') });
-        const heading = document.createElement('h2');
-        heading.className = 'est-quickpick__title';
-        heading.textContent = t('ui.ask_category');
-        wrap.appendChild(heading);
-
-        const searchWrap = document.createElement('div');
-        searchWrap.className = 'est-search est-search--inline';
-        const searchId = 'est-inline-search';
+        wrap.className = 'est-search';
+        const inputId = `est-search-${stepName}`;
         const label = document.createElement('label');
-        label.className = 'sr-only';
-        label.setAttribute('for', searchId);
-        label.textContent = t('ui.ask_category');
-        const searchIcon = document.createElement('span');
-        searchIcon.className = 'est-search__leading';
-        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
+        label.htmlFor = inputId;
+        label.textContent = stepName === 'category' ? t('ui.search_label_category') : (stepName === 'job' ? t('ui.search_label_job') : t('ui.search_label_subtype'));
+        const row = document.createElement('div');
+        row.className = 'est-search__row';
+        const icon = document.createElement('span');
+        icon.className = 'est-search__icon';
+        icon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
         const input = document.createElement('input');
+        input.id = inputId;
         input.type = 'search';
-        input.id = searchId;
-        input.className = 'est-search__input';
-        input.placeholder = '...חיפוש מהיר';
         input.autocomplete = 'off';
         const clear = document.createElement('button');
         clear.type = 'button';
         clear.className = 'est-search__clear';
-        clear.setAttribute('aria-label', 'ניקוי החיפוש');
-        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
-        const list = document.createElement('div');
-        list.className = 'est-quickpick__list';
-        const emptyState = document.createElement('p');
-        emptyState.className = 'est-quickpick__empty';
-        emptyState.textContent = 'לא נמצאו תחומים תואמים לחיפוש.';
-        emptyState.hidden = true;
+        clear.textContent = '×';
+        clear.setAttribute('aria-label', t('ui.search_clear'));
         clear.addEventListener('click', () => {
           input.value = '';
-          filterQuickPick(input.value, chips, filterState);
+          onFilter('');
           input.focus();
         });
-        input.addEventListener('input', () => {
-          filterQuickPick(input.value, chips, filterState);
+        input.addEventListener('input', () => onFilter(input.value));
+        row.append(icon, input, clear);
+        wrap.append(label, row);
+        return wrap;
+      }
+
+      function createActiveCard(title, subtitle) {
+        const card = document.createElement('article');
+        card.className = 'est-card';
+        const h1 = document.createElement('h1');
+        h1.textContent = title;
+        const p = document.createElement('p');
+        p.className = 'est-card__subtitle';
+        p.textContent = subtitle || '';
+        card.append(h1, p);
+        return card;
+      }
+
+      function renderOptionsStep({ stepName, title, subtitle, options, onSelect, tileMode = false, popularCount = 0 }) {
+        state.currentStep = stepName;
+        updateTop(stepName);
+        renderSummary();
+
+        const card = createActiveCard(title, subtitle);
+        const listWrap = document.createElement('div');
+        listWrap.className = tileMode ? 'est-options est-options--tiles' : 'est-options';
+        const empty = document.createElement('p');
+        empty.className = 'est-options__empty';
+        empty.textContent = t('ui.search_empty');
+        empty.hidden = true;
+
+        const nodes = options.map((option, index) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = tileMode ? 'est-option est-option--tile' : 'est-option';
+          const selected = (stepName === 'category' && state.category === option.id)
+            || (stepName === 'job' && state.job === option.id)
+            || (stepName === 'subtype' && state.subtype === option.id);
+          if (selected) btn.classList.add('is-selected');
+          btn.dataset.search = normalizeText(`${option.label} ${option.hint || ''}`);
+          btn.addEventListener('click', () => onSelect(option));
+
+          if (tileMode && option.emoji) {
+            const icon = document.createElement('span');
+            icon.className = 'est-option__icon';
+            icon.textContent = option.emoji;
+            btn.appendChild(icon);
+          }
+
+          const body = document.createElement('span');
+          body.className = 'est-option__body';
+          const name = document.createElement('strong');
+          name.textContent = option.label;
+          body.appendChild(name);
+          if (option.hint) {
+            const hint = document.createElement('small');
+            hint.textContent = option.hint;
+            body.appendChild(hint);
+          }
+          btn.appendChild(body);
+          listWrap.appendChild(btn);
+          if (popularCount && index < popularCount) btn.classList.add('is-popular');
+          return btn;
         });
-        searchWrap.appendChild(searchIcon);
-        searchWrap.appendChild(input);
-        searchWrap.appendChild(clear);
-        wrap.appendChild(label);
-        wrap.appendChild(searchWrap);
 
-
-        const chips = categories.map(cat => {
-          const option = {
-            id: cat.id,
-            value: cat.id,
-            label: cat.label,
-            emoji: emojiMap[cat.id] || cat.emoji,
-            hint: getCategoryHint(cat.id)
+        if (shouldShowSearch(stepName, options.length)) {
+          const filter = (term) => {
+            const needle = normalizeText(term);
+            let matches = 0;
+            nodes.forEach((node) => {
+              const show = !needle || (node.dataset.search || '').includes(needle);
+              node.hidden = !show;
+              if (show) matches += 1;
+            });
+            empty.hidden = matches !== 0;
           };
-          const chip = createChip(option, () => {
-            handleCategoryPick(option);
+          card.appendChild(createSearchBox(stepName, filter));
+        }
+
+        if (popularCount && options.length > popularCount) {
+          const popularWrap = document.createElement('div');
+          popularWrap.className = 'est-popular';
+          for (let i = 0; i < popularCount; i += 1) {
+            const chip = document.createElement('span');
+            chip.className = 'est-popular__chip';
+            chip.textContent = options[i].label;
+            popularWrap.appendChild(chip);
+          }
+          card.appendChild(popularWrap);
+        }
+
+        card.append(listWrap, empty);
+        els.active.innerHTML = '';
+        els.active.appendChild(card);
+      }
+
+      function renderQuestion() {
+        state.currentStep = 'quote';
+        const question = state.questions[state.currentQuestionIndex];
+        if (!question) {
+          renderCompute();
+          return;
+        }
+        updateTop('quote', state.currentQuestionIndex, state.questions.length);
+        renderSummary();
+
+        const card = createActiveCard(question.text || '', question.meta?.why || t('ui.step_helper_quote'));
+        const list = document.createElement('div');
+        list.className = 'est-options';
+        (question.options || []).forEach((opt) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'est-option';
+          btn.innerHTML = `<span class="est-option__body"><strong>${opt.label || opt.value}</strong></span>`;
+          btn.addEventListener('click', () => {
+            state.answers[question.id] = opt.value;
+            state.currentQuestionIndex += 1;
+            renderQuestion();
           });
-          chip.classList.add('est-chip--ghost', 'est-chip--full');
-          list.appendChild(chip);
-          return chip;
+          list.appendChild(btn);
         });
-
-        const filterState = { empty: emptyState };
-
-        wrap.appendChild(list);
-        wrap.appendChild(emptyState);
-        appendBotBubble(wrap, { ensureVisible: false });
-
-        filterQuickPick('', chips, filterState);
-        maybeApplyPrefillCategory();
-        scheduleResumeScroll(180);
-
-      }
-      function maybeApplyPrefillCategory(){
-        if (prefillState.categoryApplied) return;
-        const categoryId = resolvePrefillCategory(prefillState.category);
-        if (!categoryId){
-          prefillState.categoryApplied = true;
-          maybeShowPrefillHint();
-          return;
-        }
-        const found = categories.find(cat => cat.id === categoryId);
-        if (!found){
-          prefillState.categoryApplied = true;
-          maybeShowPrefillHint();
-          return;
-        }
-        prefillState.categoryApplied = true;
-        setTimeout(() => {
-          handleCategoryPick({
-            id: found.id,
-            value: found.id,
-            label: found.label || found.id,
-            emoji: emojiMap[found.id] || found.emoji
-          });
-          maybeShowPrefillHint();
-          scheduleResumeScroll(140);
-        }, 80);
-      }
-      function maybeAutoPickByTask(items, onPick){
-        if (prefillState.taskApplied || !prefillState.task || !Array.isArray(items) || !items.length){
-          return false;
-        }
-        const taskNeedle = normalizeText(prefillState.task);
-        const match = items.find(item => normalizeText(item.label || item.id).includes(taskNeedle))
-          || items.find(item => taskNeedle.includes(normalizeText(item.label || item.id)));
-        if (!match){
-          maybeShowPrefillHint();
-          return false;
-        }
-        prefillState.taskApplied = true;
-        setTimeout(() => {
-          onPick(match);
-          maybeShowPrefillHint();
-          scheduleResumeScroll(140);
-        }, 80);
-        return true;
+        card.appendChild(list);
+        els.active.innerHTML = '';
+        els.active.appendChild(card);
       }
 
-      function setActiveCategory(id){
-        document.querySelectorAll('.est-quickpick__list .est-chip').forEach(btn => {
-          if (!(btn instanceof HTMLElement)) return;
-          const selected = btn.dataset.value === id;
-          btn.classList.toggle('est-chip--active', selected);
-          btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
-        });
-      }
-
-      function updateProgress(step, options){
-        const index = steps.indexOf(step);
-        const totalSteps = steps.length;
-        const progressIndex = index < 0 ? 0 : index;
-        const denominator = Math.max(totalSteps - 1, 1);
-        const percent = (progressIndex / denominator) * 100;
-        if (els.progress && els.progress.length){
-          const value = String(Math.round(percent));
-          els.progress.forEach((progressEl) => {
-            if (progressEl){
-              progressEl.setAttribute('aria-valuenow', value);
-              progressEl.style.setProperty('--progress', `${percent}%`);
-            }
-          });
-        }
-        const desiredLabel = options && Object.prototype.hasOwnProperty.call(options, 'label')
-          ? options.label
-          : getStageLabel(step);
-        if (typeof desiredLabel === 'string'){
-          setProgressPrimary(desiredLabel);
-        }
-        if (options && typeof options.secondary === 'string'){
-          setProgressSecondary(options.secondary);
-        } else {
-          const counterTemplate = t('ui.progress_step_counter') || fallback['ui.progress_step_counter'] || '';
-          const counterText = formatString(counterTemplate, {
-            current: Math.max(1, progressIndex + 1),
-            total: totalSteps
-          });
-          setProgressSecondary(counterText);
-        }
-        if (els.progressSteps && els.progressSteps.length){
-          els.progressSteps.forEach((stepEl) => {
-            if (!stepEl) return;
-            const stepName = stepEl.getAttribute('data-est-progress-step');
-            const stepIndex = steps.indexOf(stepName);
-            const labelEl = stepEl.querySelector('[data-est-progress-label]');
-            const defaultLabel = labelEl ? labelEl.getAttribute('data-default-label') : '';
-            const isCurrent = stepIndex === progressIndex;
-            const isComplete = stepIndex > -1 && stepIndex < progressIndex;
-            stepEl.classList.toggle('is-active', isCurrent);
-            stepEl.classList.toggle('is-complete', isComplete);
-            if (isCurrent){
-              stepEl.setAttribute('aria-current', 'step');
-              if (labelEl && typeof desiredLabel === 'string'){
-                labelEl.textContent = desiredLabel;
-              }
-            } else {
-              stepEl.removeAttribute('aria-current');
-              if (labelEl && typeof defaultLabel === 'string'){
-                labelEl.textContent = defaultLabel;
-              }
-            }
-          });
-        }
-      }
-
-      function renderOnboarding(){
-        clearFeed();
-        renderCategoryQuickPick();
-      }
-
-      function handleCategoryPick(option){
-        if (!option) return;
-        if (state.category === option.id){
-          appendMetaBubble(t('ui.meta_category_selected') || fallback['ui.meta_category_selected']);
-          return;
-        }
-        finalizeBotBubble(t('ui.ask_category'));
-        state.category = option.id;
-        state.categoryLabel = option.label || option.id;
-        state.job = null;
-        state.jobLabel = '';
-        state.subtype = null;
-        state.subtypeLabel = '';
-        state.answers = {};
-        state.questions = [];
-        state.resultNote = '';
-        setActiveCategory(option.id);
-        appendUserBubble(state.categoryLabel, emojiMap[option.id]);
-        updateJourney();
-        updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
-        loadJobs();
-      }
-
-      function showLoading(key){
-        const node = makeLoadingNode(t(key) || key);
-        appendBotBubble(node);
-        setBusy(true);
-        const label = t(key) || key;
-        if (label){
-          setProgressPrimary(label);
-        }
-      }
-
-      function showError(key){
-        setBusy(false);
-
-        const message = t(key) || key || 'בעיה זמנית.';
-        if (activeBotBubble){
-          activeBotBubble.className = 'est-bubble est-bubble--error';
-          activeBotBubble.textContent = message;
-          activeBotBubble = null;
-          return;
-        }
-        appendErrorBubble(message);
-      }
-
-      function renderJobs(jobs){
-        setBusy(false);
-        updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
-        const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
-
-        const title = document.createElement('h3');
-        title.className = 'est-botcard__title';
-        title.textContent = t('ui.choose_job');
-        wrap.appendChild(title);
-        if (!jobs.length){
-          const empty = document.createElement('p');
-          empty.className = 'est-botcard__empty';
-          empty.textContent = t('ui.no_jobs');
-          wrap.appendChild(empty);
-          replaceBotBubbleContent(wrap);
-          return;
-        }
-        const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
-        grid.setAttribute('role', 'list');
-        jobs.forEach(job => {
-          const option = {
-            id: job.id,
-            value: job.id,
-            label: job.label || job.id
-          };
-          const chip = createChip(option, () => {
-            selectJob(job);
-          });
-          chip.classList.add('est-chip--ghost', 'est-chip--full');
-
-          grid.appendChild(chip);
-        });
-        wrap.appendChild(grid);
-        replaceBotBubbleContent(wrap);
-        maybeAutoPickByTask(jobs, selectJob);
-      }
-
-      function renderSubtypes(subtypes){
-        setBusy(false);
-        updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
-
-        const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
-        const title = document.createElement('h3');
-        title.className = 'est-botcard__title';
-        title.textContent = t('ui.where_exactly');
-        wrap.appendChild(title);
-        if (!subtypes.length){
-          const empty = document.createElement('p');
-          empty.className = 'est-botcard__empty';
-          empty.textContent = t('ui.no_subtypes');
-          wrap.appendChild(empty);
-          replaceBotBubbleContent(wrap);
-          return;
-        }
-        const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
-        grid.setAttribute('role', 'list');
-        subtypes.forEach(sub => {
-          const option = {
-            id: sub.id,
-            value: sub.id,
-            label: sub.label || sub.id
-          };
-          const chip = createChip(option, () => {
-            selectSubtype(sub);
-          });
-          chip.classList.add('est-chip--ghost', 'est-chip--full');
-
-          grid.appendChild(chip);
-        });
-        wrap.appendChild(grid);
-        replaceBotBubbleContent(wrap);
-        maybeAutoPickByTask(subtypes, selectSubtype);
-      }
-
-      function renderComputeCallToAction(){
-        setBusy(false);
-
-        const wrap = document.createElement('div');
-        wrap.className = 'est-botcard est-botcard--cta';
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'est-btn est-btn--primary';
-        button.textContent = t('ui.compute_btn');
-        button.addEventListener('click', () => {
-          button.disabled = true;
-          appendMetaBubble(t('ui.computing'));
+      function renderCompute() {
+        updateTop('quote', state.questions.length - 1, state.questions.length);
+        renderSummary();
+        const card = createActiveCard(t('ui.no_questions'), t('ui.step_helper_quote'));
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'est-primary';
+        btn.textContent = t('ui.compute_btn');
+        btn.addEventListener('click', () => {
+          btn.disabled = true;
           computeQuote();
         });
-        wrap.appendChild(button);
-        appendBotBubble(wrap, { ensureVisible: false });
-        updateProgress('quote', { label: getStageLabel('quote') });
-
+        card.appendChild(btn);
+        els.active.innerHTML = '';
+        els.active.appendChild(card);
       }
 
-      function renderResult(result){
-        setBusy(false);
+      function renderLoading(message) {
+        const card = createActiveCard(message, '');
+        card.classList.add('is-loading');
+        card.insertAdjacentHTML('beforeend', '<div class="est-loading"><i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i></div>');
+        els.active.innerHTML = '';
+        els.active.appendChild(card);
+      }
 
-        const wrap = document.createElement('div');
-        wrap.className = 'est-resultcard';
-        const heading = document.createElement('h3');
-        heading.className = 'est-resultcard__title';
-        heading.textContent = t('ui.range_label');
-        wrap.appendChild(heading);
-        const priceValue = parseAmount(result.price);
-        const minValue = parseAmount(result.price_min);
-        const maxValue = parseAmount(result.price_max);
-        let priceText = '';
-        if (Number.isFinite(priceValue)){
-          priceText = formatCurrencyValue(priceValue);
-        } else if (Number.isFinite(minValue) && Number.isFinite(maxValue)){
-          priceText = `${formatCurrencyValue(minValue)} – ${formatCurrencyValue(maxValue)}`;
-        }
+      function renderError(message) {
+        const card = createActiveCard(message, '');
+        card.classList.add('is-error');
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'est-primary';
+        retry.textContent = t('ui.action_continue');
+        retry.addEventListener('click', () => jumpToStep(state.currentStep));
+        card.appendChild(retry);
+        els.active.innerHTML = '';
+        els.active.appendChild(card);
+      }
+
+      function renderResult(result) {
+        state.currentStep = 'result';
+        updateTop('result');
+        renderSummary();
+
+        const card = createActiveCard(t('ui.range_label'), t('ui.result_note'));
+        const price = parseAmount(result.price);
+        const min = parseAmount(result.price_min);
+        const max = parseAmount(result.price_max);
         const range = document.createElement('p');
-        range.className = 'est-resultcard__range';
-        range.textContent = priceText || '—';
-        wrap.appendChild(range);
-        if (Number.isFinite(minValue) && Number.isFinite(maxValue)){
-          const spread = Math.max(maxValue - minValue, 0);
-          const breakdown = document.createElement('dl');
-          breakdown.className = 'est-resultcard__breakdown';
-          const minLabel = t('ui.result_min') || fallback['ui.result_min'];
-          const maxLabel = t('ui.result_max') || fallback['ui.result_max'];
-          const spreadLabel = t('ui.result_spread') || fallback['ui.result_spread'];
-          const appendBreakdownStat = (labelText, valueText) => {
-            const stat = document.createElement('div');
-            stat.className = 'est-resultcard__stat';
-            const dt = document.createElement('dt');
-            dt.textContent = labelText || '';
-            const dd = document.createElement('dd');
-            dd.textContent = valueText || '';
-            stat.appendChild(dt);
-            stat.appendChild(dd);
-            breakdown.appendChild(stat);
-          };
-          appendBreakdownStat(minLabel, formatCurrencyValue(minValue));
-          appendBreakdownStat(maxLabel, formatCurrencyValue(maxValue));
-          appendBreakdownStat(spreadLabel, formatCurrencyValue(spread));
-          wrap.appendChild(breakdown);
-        }
-        const noteText = result.result_note || state.resultNote || t('ui.result_note');
-        if (noteText){
-          const note = document.createElement('p');
-          note.className = 'est-resultcard__note';
-          note.textContent = noteText;
-          wrap.appendChild(note);
-        }
-        if (result.description){
-          const desc = document.createElement('p');
-          desc.className = 'est-resultcard__desc';
-          desc.textContent = `${t('ui.details_label')} ${result.description}`;
-          wrap.appendChild(desc);
-        }
-        const extraCopy = t('ui.add_more');
-        if (extraCopy){
-          const extra = document.createElement('p');
-          extra.className = 'est-resultcard__desc';
-          extra.textContent = extraCopy;
-          wrap.appendChild(extra);
-        }
-        const chartData = buildResultChartData(result);
-        const chartNode = createResultChart(chartData);
-        if (chartNode){
-          wrap.appendChild(chartNode);
-        }
-        const ctaWrap = document.createElement('div');
-        ctaWrap.className = 'est-resultcard__cta';
-        const ctaNoteText = t('ui.result_cta_secondary') || fallback['ui.result_cta_secondary'] || '';
-        if (ctaNoteText){
-          const ctaNote = document.createElement('p');
-          ctaNote.className = 'est-resultcard__cta-note';
-          ctaNote.textContent = ctaNoteText;
-          ctaWrap.appendChild(ctaNote);
-        }
-        const ctaLabel = t('ui.result_cta_label') || fallback['ui.result_cta_label'] || '';
-        if (ctaLabel){
-          const ctaBtn = document.createElement('a');
-          ctaBtn.className = 'est-btn est-btn--primary est-btn--cta';
-          ctaBtn.textContent = ctaLabel;
-          if (config.contactUrl){
-            ctaBtn.href = config.contactUrl;
-          } else {
-            ctaBtn.href = '#';
-            ctaBtn.setAttribute('aria-disabled', 'true');
-            ctaBtn.setAttribute('tabindex', '-1');
-            ctaBtn.classList.add('is-disabled');
-          }
-          ctaWrap.appendChild(ctaBtn);
-        }
-        wrap.appendChild(ctaWrap);
-        const actions = document.createElement('div');
-        actions.className = 'est-resultcard__actions';
-        const resetBtn = document.createElement('button');
-        resetBtn.type = 'button';
-        resetBtn.className = 'est-btn est-btn--ghost';
-        resetBtn.textContent = t('ui.reset_btn') || fallback['ui.reset_btn'];
-        resetBtn.addEventListener('click', () => {
-          appendMetaBubble(t('ui.meta_restart') || fallback['ui.meta_restart']);
-          resetFlow();
-        });
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'est-btn est-btn--primary';
-        addBtn.textContent = t('ui.add_job_btn') || fallback['ui.add_job_btn'];
-        addBtn.addEventListener('click', () => {
-          appendMetaBubble('בוחרים עבודה נוספת לאותו תחום.');
+        range.className = 'est-result__range';
+        range.textContent = Number.isFinite(price)
+          ? formatCurrency(price)
+          : (Number.isFinite(min) && Number.isFinite(max) ? `${formatCurrency(min)} – ${formatCurrency(max)}` : '—');
+
+        const note = document.createElement('p');
+        note.className = 'est-result__note';
+        note.textContent = result.result_note || state.resultNote || t('ui.result_note');
+
+        const details = document.createElement('p');
+        details.className = 'est-result__details';
+        details.textContent = result.description ? `${t('ui.details_label')} ${result.description}` : '';
+
+        const ctas = document.createElement('div');
+        ctas.className = 'est-result__actions';
+        const contact = document.createElement('a');
+        contact.className = 'est-primary';
+        contact.href = root.dataset.estContact || '#';
+        contact.textContent = t('ui.result_cta_label');
+
+        const add = document.createElement('button');
+        add.type = 'button';
+        add.className = 'est-secondary';
+        add.textContent = t('ui.add_job_btn');
+        add.addEventListener('click', () => {
           state.job = null;
           state.jobLabel = '';
           state.subtype = null;
           state.subtypeLabel = '';
           state.answers = {};
           state.questions = [];
-          updateJourney();
-          updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
           loadJobs();
         });
-        actions.appendChild(resetBtn);
-        actions.appendChild(addBtn);
-        wrap.appendChild(actions);
-        replaceBotBubbleContent(wrap);
-        updateJourney();
-        const resultLabel = getStageLabel('result') || getStageLabel('quote');
-        const doneText = t('ui.progress_final_step') || fallback['ui.progress_final_step'] || t('ui.progress_done') || fallback['ui.progress_done'] || '';
-        const progressOptions = { label: resultLabel };
-        if (doneText){
-          progressOptions.secondary = doneText;
-        }
-        updateProgress('quote', progressOptions);
+
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'est-secondary';
+        reset.textContent = t('ui.reset_btn');
+        reset.addEventListener('click', resetFlow);
+
+        ctas.append(contact, add, reset);
+        card.append(range, note);
+        if (details.textContent) card.appendChild(details);
+        card.appendChild(ctas);
+
+        els.active.innerHTML = '';
+        els.active.appendChild(card);
       }
 
-      function selectJob(job){
-        if (!job) return;
-        finalizeBotBubble(t('ui.choose_job'));
-        state.job = job.id;
-        state.jobLabel = job.label || job.id;
-        state.subtype = null;
-        state.subtypeLabel = '';
-        state.answers = {};
-        state.questions = [];
-        state.resultNote = '';
-        appendUserBubble(state.jobLabel);
-        updateJourney();
-        updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
-        loadSubtypes();
+      function resolvePrefillCategory(raw) {
+        const normalized = normalizeText(raw);
+        if (!normalized) return null;
+        return categories.find((cat) => normalizeText(cat.id) === normalized || normalizeText(cat.label) === normalized)?.id || null;
       }
 
-      function selectSubtype(sub){
-        if (!sub) return;
-        finalizeBotBubble(t('ui.where_exactly'));
-        state.subtype = sub.id;
-        state.subtypeLabel = sub.label || sub.id;
-        state.answers = {};
-        state.questions = [];
-        appendUserBubble(state.subtypeLabel);
-        updateJourney();
-        updateProgress('quote', { label: getStageLabel('quote') });
-        loadQuestions();
+      function applyPrefillIfPossible() {
+        const categoryId = resolvePrefillCategory(prefill.field);
+        if (!categoryId) return;
+        const cat = categories.find((item) => item.id === categoryId);
+        if (!cat) return;
+        state.category = cat.id;
+        state.categoryLabel = cat.label;
+        loadJobs(prefill.task || '');
       }
 
-      function loadJobs(){
+      function loadJobs(taskNeedle = '') {
         if (!state.category) return;
-        showLoading('ui.loading_jobs');
+        state.currentStep = 'job';
+        setBusy(true);
+        renderLoading(t('ui.loading_jobs'));
         fetchEstimate({ category: state.category }).then((data) => {
-          renderJobs(data.jobs || []);
+          setBusy(false);
+          const jobs = (data.jobs || []).map((job) => ({ id: job.id, label: job.label || job.id }));
+          renderOptionsStep({
+            stepName: 'job',
+            title: t('ui.choose_job'),
+            subtitle: t('ui.step_helper_job'),
+            options: jobs,
+            onSelect: (opt) => {
+              state.job = opt.id;
+              state.jobLabel = opt.label;
+              state.subtype = null;
+              state.subtypeLabel = '';
+              state.answers = {};
+              loadSubtypes();
+            },
+            popularCount: Math.min(4, jobs.length)
+          });
+          if (taskNeedle) {
+            const needle = normalizeText(taskNeedle);
+            const match = jobs.find((job) => normalizeText(job.label).includes(needle));
+            if (match) {
+              state.job = match.id;
+              state.jobLabel = match.label;
+              loadSubtypes();
+            }
+          }
         }).catch((err) => {
           console.error(err);
-          showError('ui.err_load_opts');
+          setBusy(false);
+          renderError(t('ui.err_load_opts'));
         });
       }
 
-      function loadSubtypes(){
+      function loadSubtypes() {
         if (!state.category || !state.job) return;
-        showLoading('ui.preparing_opts');
+        state.currentStep = 'subtype';
+        setBusy(true);
+        renderLoading(t('ui.preparing_opts'));
         fetchEstimate({ category: state.category, job: state.job }).then((data) => {
           setBusy(false);
-
-          const subtypes = data.subtypes || [];
-          if (!subtypes.length){
+          const subtypes = (data.subtypes || []).map((sub) => ({ id: sub.id, label: sub.label || sub.id }));
+          if (!subtypes.length) {
             state.subtype = state.job;
             state.subtypeLabel = state.jobLabel;
-            updateJourney();
-            updateProgress('quote', { label: getStageLabel('quote') });
             loadQuestions();
             return;
           }
-          renderSubtypes(subtypes);
+          renderOptionsStep({
+            stepName: 'subtype',
+            title: t('ui.where_exactly'),
+            subtitle: t('ui.step_helper_subtype'),
+            options: subtypes,
+            onSelect: (opt) => {
+              state.subtype = opt.id;
+              state.subtypeLabel = opt.label;
+              state.answers = {};
+              loadQuestions();
+            },
+            popularCount: Math.min(3, subtypes.length)
+          });
         }).catch((err) => {
           console.error(err);
-          showError('ui.err_load_subs');
+          setBusy(false);
+          renderError(t('ui.err_load_subs'));
         });
       }
 
-      function loadQuestions(){
+      function loadQuestions() {
         if (!state.category || !state.job || !state.subtype) return;
-        showLoading('ui.loading_questions');
+        state.currentStep = 'quote';
+        setBusy(true);
+        renderLoading(t('ui.loading_questions'));
         fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype }).then((data) => {
           setBusy(false);
-
           state.questions = data.questions || [];
-          state.resultNote = data.result_note || state.resultNote;
-          renderQuestions(state.questions);
+          state.resultNote = data.result_note || '';
+          state.answers = {};
+          state.currentQuestionIndex = 0;
+          if (!state.questions.length) {
+            renderCompute();
+            return;
+          }
+          renderQuestion();
         }).catch((err) => {
           console.error(err);
-          showError('ui.err_load_qs');
+          setBusy(false);
+          renderError(t('ui.err_load_qs'));
         });
       }
-      function renderQuestions(questions){
-        setBusy(false);
-        updateProgress('quote', { label: getStageLabel('quote') });
 
-        if (!questions.length){
-          const wrap = document.createElement('div');
-          wrap.className = 'est-botcard';
-          const note = document.createElement('p');
-          note.className = 'est-botcard__empty';
-          note.textContent = t('ui.no_questions');
-          wrap.appendChild(note);
-          replaceBotBubbleContent(wrap);
-          renderComputeCallToAction();
-          return;
-        }
-        state.questions = questions;
-        askQuestion(0);
-      }
-
-      function askQuestion(index){
-        const q = state.questions[index];
-        if (!q){
-          renderComputeCallToAction();
-          return;
-        }
-        showQuestion(q, index);
-      }
-
-      function showQuestion(question, index){
-        const questionCounterTemplate = t('ui.progress_question_counter') || fallback['ui.progress_question_counter'] || '';
-        const questionCounter = formatString(questionCounterTemplate, {
-          current: index + 1,
-          total: state.questions.length
-        });
-        updateProgress('quote', {
-          label: getStageLabel('quote'),
-          secondary: questionCounter
-        });
-        const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
-        const title = document.createElement('h3');
-        title.className = 'est-botcard__title';
-        title.textContent = question.text || '';
-        wrap.appendChild(title);
-        let whyId = '';
-        if (question.meta && question.meta.why){
-          whyId = `why-${question.id}`;
-          const why = document.createElement('p');
-          why.className = 'est-botcard__why';
-          why.id = whyId;
-          why.textContent = question.meta.why;
-          wrap.appendChild(why);
-        }
-        const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
-        grid.setAttribute('role', 'list');
-        (question.options || []).forEach(opt => {
-          const option = {
-            id: opt.value,
-            value: opt.value,
-            label: opt.label || opt.value
-          };
-          const chip = createChip(option, () => {
-            if (grid.dataset.locked === 'true') return;
-            grid.dataset.locked = 'true';
-            Array.from(grid.children).forEach(child => {
-              if (child instanceof HTMLButtonElement){
-                child.disabled = true;
-                child.classList.add('is-disabled');
-                child.setAttribute('aria-pressed', child === chip ? 'true' : 'false');
-              }
-            });
-            state.answers[question.id] = opt.value;
-            finalizeBotBubble(question.text || '', question.meta && question.meta.why ? question.meta.why : '');
-            appendUserBubble(option.label);
-            askQuestion(index + 1);
-          });
-          if (whyId){
-            chip.setAttribute('aria-describedby', whyId);
-          }
-          if (opt.hint){
-            chip.dataset.hint = opt.hint;
-          }
-          grid.appendChild(chip);
-        });
-        wrap.appendChild(grid);
-        replaceBotBubbleContent(wrap);
-      }
-
-
-      function computeQuote(){
-        showLoading('ui.computing');
+      function computeQuote() {
+        setBusy(true);
+        renderLoading(t('ui.computing'));
         fetchEstimate({ category: state.category, job: state.job, subtype: state.subtype, answers: state.answers }).then((data) => {
           setBusy(false);
-
-          renderResult(data);
+          renderResult(data || {});
         }).catch((err) => {
           console.error(err);
-          showError('ui.err_quote');
+          setBusy(false);
+          renderError(t('ui.err_quote'));
         });
       }
-      setupResumePanel();
-      resetFlow();
+
+      function jumpToStep(stepName) {
+        if (stepName === 'category') {
+          state.category = null;
+          state.categoryLabel = '';
+          state.job = null;
+          state.jobLabel = '';
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.questions = [];
+          state.answers = {};
+          renderCategory();
+          return;
+        }
+        if (stepName === 'job' && state.category) {
+          state.job = null;
+          state.jobLabel = '';
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.questions = [];
+          state.answers = {};
+          loadJobs();
+          return;
+        }
+        if (stepName === 'subtype' && state.job) {
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.questions = [];
+          state.answers = {};
+          loadSubtypes();
+          return;
+        }
+        if (stepName === 'quote' && state.subtype) {
+          loadQuestions();
+          return;
+        }
+        if (stepName === 'result') {
+          computeQuote();
+        }
+      }
+
+      function renderCategory() {
+        state.currentStep = 'category';
+        updateTop('category');
+        renderSummary();
+        const options = categories.map((cat) => ({
+          id: cat.id,
+          label: cat.label || cat.id,
+          emoji: cat.emoji || '•',
+          hint: categoryHintMap[cat.id] || ''
+        }));
+        renderOptionsStep({
+          stepName: 'category',
+          title: t('ui.ask_category'),
+          subtitle: t('ui.step_helper_category'),
+          options,
+          tileMode: true,
+          onSelect: (opt) => {
+            state.category = opt.id;
+            state.categoryLabel = opt.label;
+            state.job = null;
+            state.jobLabel = '';
+            state.subtype = null;
+            state.subtypeLabel = '';
+            state.questions = [];
+            state.answers = {};
+            loadJobs(prefill.task || '');
+          }
+        });
+      }
+
+      function resetFlow() {
+        state.category = null;
+        state.categoryLabel = '';
+        state.job = null;
+        state.jobLabel = '';
+        state.subtype = null;
+        state.subtypeLabel = '';
+        state.questions = [];
+        state.answers = {};
+        state.resultNote = '';
+        state.currentQuestionIndex = 0;
+        renderCategory();
+      }
+
+      renderContextStrip();
+      renderCategory();
+      if (prefill.source === 'home_starter' && prefill.field) {
+        applyPrefillIfPossible();
+      }
     })();
   </script>
 {% endblock %}

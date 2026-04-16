@@ -29,10 +29,10 @@
       <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות ונחשב סדר גודל לפני שפונים לבעל מקצוע') }}</p>
     </header>
 
-    <section class="est-resume" data-est-resume hidden aria-label="המשך מהבחירה הקודמת">
-      <p class="est-resume__title">הבחירות מהעמוד הראשי נשמרו</p>
+    <section class="est-resume" data-est-resume hidden aria-label="{{ t.get('ui.resume_aria', 'המשך מהבחירה הקודמת') }}">
+      <p class="est-resume__title">{{ t.get('ui.resume_title', 'הבחירות מהעמוד הראשי נשמרו') }}</p>
       <div class="est-resume__chips" data-est-resume-list></div>
-      <button type="button" class="est-resume__btn" data-est-resume-continue>ממשיכים מהשלב הבא</button>
+      <button type="button" class="est-resume__btn" data-est-resume-continue>{{ t.get('ui.resume_continue', 'ממשיכים מהשלב הבא') }}</button>
     </section>
 
 
@@ -71,12 +71,12 @@
     <section class="est-content" aria-labelledby="est-support-heading">
       <h2 class="est-content__title est-content__title--sr" id="est-support-heading">מידע ותמיכה</h2>
       <details class="est-support" open>
-        <summary class="est-support__summary">איך להשתמש במחשבון ב-30 שניות</summary>
-        <p class="est-support__text">בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור אחורה ולעדכן תשובות בכל שלב.</p>
+        <summary class="est-support__summary">{{ t.get('ui.help_how_to_use_title', 'איך להשתמש במחשבון ב-30 שניות') }}</summary>
+        <p class="est-support__text">{{ t.get('ui.help_how_to_use_body', 'בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור אחורה ולעדכן תשובות בכל שלב.') }}</p>
       </details>
       <details class="est-support">
-        <summary class="est-support__summary">מה קורה אחרי קבלת הטווח?</summary>
-        <p class="est-support__text">בסיום תקבלו כפתור יצירת קשר מהיר עם מומחה כדי לאמת פרטים ולקבל הצעה מדויקת לפרויקט שלכם.</p>
+        <summary class="est-support__summary">{{ t.get('ui.help_after_range_title', 'מה קורה אחרי קבלת הטווח?') }}</summary>
+        <p class="est-support__text">{{ t.get('ui.help_after_range_body', 'בסיום תקבלו כפתור יצירת קשר מהיר עם מומחה כדי לאמת פרטים ולקבל הצעה מדויקת לפרויקט שלכם.') }}</p>
       </details>
     </section>
   </section>
@@ -215,7 +215,20 @@
         'ui.category_hint_plumbing': 'נזילות, פתיחת סתימות, התקנות',
         'ui.category_hint_painting': 'צביעת דירות, קירות מיוחדים',
         'ui.category_hint_renovation': 'שיפוצים, גבס, עבודות גמר',
-        'ui.category_hint_locksmith': 'פריצות והחלפת צילינדרים'
+        'ui.category_hint_locksmith': 'פריצות והחלפת צילינדרים',
+        'ui.search_placeholder': 'חפשו תחום או סוג עבודה',
+        'ui.search_clear': 'ניקוי החיפוש',
+        'ui.search_empty_category': 'לא נמצאו תחומים תואמים לחיפוש.',
+        'ui.search_label_jobs': 'חיפוש סוג עבודה',
+        'ui.search_label_subtypes': 'חיפוש תת-סוג',
+        'ui.search_label_options': 'חיפוש אפשרויות',
+        'ui.search_empty_jobs': 'לא נמצאו סוגי עבודה תואמים.',
+        'ui.search_empty_subtypes': 'לא נמצאו תתי-סוג תואמים.',
+        'ui.search_empty_options': 'לא נמצאו אפשרויות תואמות.',
+        'ui.resume_area': 'אזור',
+        'ui.resume_task': 'סוג עבודה',
+        'ui.resume_urgency': 'דחיפות',
+        'ui.resume_field': 'תחום'
       };
       const steps = ['category', 'job', 'subtype', 'quote'];
       const stageKeyMap = {
@@ -711,10 +724,10 @@
           return;
         }
         const rows = [
-          { label: 'תחום', value: prefillState.category },
-          { label: 'אזור', value: prefillState.area },
-          { label: 'סוג עבודה', value: prefillState.task },
-          { label: 'דחיפות', value: prefillState.urgency }
+          { label: t('ui.resume_field') || 'תחום', value: prefillState.category },
+          { label: t('ui.resume_area') || 'אזור', value: prefillState.area },
+          { label: t('ui.resume_task') || 'סוג עבודה', value: prefillState.task },
+          { label: t('ui.resume_urgency') || 'דחיפות', value: prefillState.urgency }
         ].filter(item => item.value);
         if (!rows.length){
           return;
@@ -819,6 +832,56 @@
           options.empty.setAttribute('aria-hidden', showEmpty ? 'false' : 'true');
         }
       }
+      function createSearchFilterBlock(config){
+        const threshold = typeof config.threshold === 'number' ? config.threshold : 8;
+        if (!Array.isArray(config.items) || config.items.length < threshold){
+          return null;
+        }
+        const container = document.createElement('div');
+        container.className = 'est-searchgroup';
+        const label = document.createElement('label');
+        const searchId = `est-search-${config.scope || 'options'}-${Math.random().toString(36).slice(2, 8)}`;
+        label.className = 'est-search__label';
+        label.setAttribute('for', searchId);
+        label.textContent = config.labelText || t('ui.search_label_options') || 'חיפוש אפשרויות';
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'est-search est-search--inline';
+        const searchIcon = document.createElement('span');
+        searchIcon.className = 'est-search__leading';
+        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
+        const input = document.createElement('input');
+        input.type = 'search';
+        input.id = searchId;
+        input.className = 'est-search__input';
+        input.placeholder = config.placeholderText || t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה';
+        input.autocomplete = 'off';
+        const clear = document.createElement('button');
+        clear.type = 'button';
+        clear.className = 'est-search__clear';
+        clear.setAttribute('aria-label', t('ui.search_clear') || 'ניקוי החיפוש');
+        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        const empty = document.createElement('p');
+        empty.className = 'est-quickpick__empty';
+        empty.textContent = config.emptyText || t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.';
+        empty.hidden = true;
+        const filterState = { empty };
+        input.addEventListener('input', () => {
+          filterQuickPick(input.value, config.items, filterState);
+        });
+        clear.addEventListener('click', () => {
+          input.value = '';
+          filterQuickPick(input.value, config.items, filterState);
+          input.focus();
+        });
+        searchWrap.appendChild(searchIcon);
+        searchWrap.appendChild(input);
+        searchWrap.appendChild(clear);
+        container.appendChild(label);
+        container.appendChild(searchWrap);
+        container.appendChild(empty);
+        filterQuickPick('', config.items, filterState);
+        return container;
+      }
       function renderCategoryQuickPick(){
         const wrap = document.createElement('div');
         wrap.className = 'est-quickpick';
@@ -842,18 +905,18 @@
         input.type = 'search';
         input.id = searchId;
         input.className = 'est-search__input';
-        input.placeholder = '...חיפוש מהיר';
+        input.placeholder = t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה';
         input.autocomplete = 'off';
         const clear = document.createElement('button');
         clear.type = 'button';
         clear.className = 'est-search__clear';
-        clear.setAttribute('aria-label', 'ניקוי החיפוש');
+        clear.setAttribute('aria-label', t('ui.search_clear') || 'ניקוי החיפוש');
         clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
         const list = document.createElement('div');
         list.className = 'est-quickpick__list';
         const emptyState = document.createElement('p');
         emptyState.className = 'est-quickpick__empty';
-        emptyState.textContent = 'לא נמצאו תחומים תואמים לחיפוש.';
+        emptyState.textContent = t('ui.search_empty_category') || 'לא נמצאו תחומים תואמים לחיפוש.';
         emptyState.hidden = true;
         clear.addEventListener('click', () => {
           input.value = '';
@@ -1079,8 +1142,9 @@
           return;
         }
         const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
+        grid.className = 'est-botcard__grid est-botcard__grid--jobs';
         grid.setAttribute('role', 'list');
+        const chips = [];
         jobs.forEach(job => {
           const option = {
             id: job.id,
@@ -1091,9 +1155,20 @@
             selectJob(job);
           });
           chip.classList.add('est-chip--ghost', 'est-chip--full');
-
+          chips.push(chip);
           grid.appendChild(chip);
         });
+        const searchNode = createSearchFilterBlock({
+          scope: 'jobs',
+          items: chips,
+          threshold: 8,
+          labelText: t('ui.search_label_jobs') || 'חיפוש סוג עבודה',
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_jobs') || 'לא נמצאו סוגי עבודה תואמים.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
         maybeAutoPickByTask(jobs, selectJob);
@@ -1118,8 +1193,9 @@
           return;
         }
         const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
+        grid.className = 'est-botcard__grid est-botcard__grid--subtypes';
         grid.setAttribute('role', 'list');
+        const chips = [];
         subtypes.forEach(sub => {
           const option = {
             id: sub.id,
@@ -1130,9 +1206,20 @@
             selectSubtype(sub);
           });
           chip.classList.add('est-chip--ghost', 'est-chip--full');
-
+          chips.push(chip);
           grid.appendChild(chip);
         });
+        const searchNode = createSearchFilterBlock({
+          scope: 'subtypes',
+          items: chips,
+          threshold: 7,
+          labelText: t('ui.search_label_subtypes') || 'חיפוש תת-סוג',
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_subtypes') || 'לא נמצאו תתי-סוג תואמים.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
         maybeAutoPickByTask(subtypes, selectSubtype);
@@ -1425,6 +1512,7 @@
         const grid = document.createElement('div');
         grid.className = 'est-botcard__grid';
         grid.setAttribute('role', 'list');
+        const chips = [];
         (question.options || []).forEach(opt => {
           const option = {
             id: opt.value,
@@ -1452,8 +1540,20 @@
           if (opt.hint){
             chip.dataset.hint = opt.hint;
           }
+          chips.push(chip);
           grid.appendChild(chip);
         });
+        const searchNode = createSearchFilterBlock({
+          scope: `question-${question.id || index}`,
+          items: chips,
+          threshold: 9,
+          labelText: t('ui.search_label_options') || 'חיפוש אפשרויות',
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
       }

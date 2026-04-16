@@ -219,6 +219,12 @@
         'ui.search_placeholder': 'חפשו תחום או סוג עבודה',
         'ui.search_clear': 'ניקוי החיפוש',
         'ui.search_empty_category': 'לא נמצאו תחומים תואמים לחיפוש.',
+        'ui.search_label_jobs': 'חיפוש סוג עבודה',
+        'ui.search_label_subtypes': 'חיפוש תת-סוג',
+        'ui.search_label_options': 'חיפוש אפשרויות',
+        'ui.search_empty_jobs': 'לא נמצאו סוגי עבודה תואמים.',
+        'ui.search_empty_subtypes': 'לא נמצאו תתי-סוג תואמים.',
+        'ui.search_empty_options': 'לא נמצאו אפשרויות תואמות.',
         'ui.resume_area': 'אזור',
         'ui.resume_task': 'סוג עבודה',
         'ui.resume_urgency': 'דחיפות',
@@ -826,6 +832,56 @@
           options.empty.setAttribute('aria-hidden', showEmpty ? 'false' : 'true');
         }
       }
+      function createSearchFilterBlock(config){
+        const threshold = typeof config.threshold === 'number' ? config.threshold : 8;
+        if (!Array.isArray(config.items) || config.items.length < threshold){
+          return null;
+        }
+        const container = document.createElement('div');
+        container.className = 'est-searchgroup';
+        const label = document.createElement('label');
+        const searchId = `est-search-${config.scope || 'options'}-${Math.random().toString(36).slice(2, 8)}`;
+        label.className = 'est-search__label';
+        label.setAttribute('for', searchId);
+        label.textContent = config.labelText || t('ui.search_label_options') || 'חיפוש אפשרויות';
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'est-search est-search--inline';
+        const searchIcon = document.createElement('span');
+        searchIcon.className = 'est-search__leading';
+        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
+        const input = document.createElement('input');
+        input.type = 'search';
+        input.id = searchId;
+        input.className = 'est-search__input';
+        input.placeholder = config.placeholderText || t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה';
+        input.autocomplete = 'off';
+        const clear = document.createElement('button');
+        clear.type = 'button';
+        clear.className = 'est-search__clear';
+        clear.setAttribute('aria-label', t('ui.search_clear') || 'ניקוי החיפוש');
+        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        const empty = document.createElement('p');
+        empty.className = 'est-quickpick__empty';
+        empty.textContent = config.emptyText || t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.';
+        empty.hidden = true;
+        const filterState = { empty };
+        input.addEventListener('input', () => {
+          filterQuickPick(input.value, config.items, filterState);
+        });
+        clear.addEventListener('click', () => {
+          input.value = '';
+          filterQuickPick(input.value, config.items, filterState);
+          input.focus();
+        });
+        searchWrap.appendChild(searchIcon);
+        searchWrap.appendChild(input);
+        searchWrap.appendChild(clear);
+        container.appendChild(label);
+        container.appendChild(searchWrap);
+        container.appendChild(empty);
+        filterQuickPick('', config.items, filterState);
+        return container;
+      }
       function renderCategoryQuickPick(){
         const wrap = document.createElement('div');
         wrap.className = 'est-quickpick';
@@ -1086,8 +1142,9 @@
           return;
         }
         const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
+        grid.className = 'est-botcard__grid est-botcard__grid--jobs';
         grid.setAttribute('role', 'list');
+        const chips = [];
         jobs.forEach(job => {
           const option = {
             id: job.id,
@@ -1098,9 +1155,20 @@
             selectJob(job);
           });
           chip.classList.add('est-chip--ghost', 'est-chip--full');
-
+          chips.push(chip);
           grid.appendChild(chip);
         });
+        const searchNode = createSearchFilterBlock({
+          scope: 'jobs',
+          items: chips,
+          threshold: 8,
+          labelText: t('ui.search_label_jobs') || 'חיפוש סוג עבודה',
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_jobs') || 'לא נמצאו סוגי עבודה תואמים.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
         maybeAutoPickByTask(jobs, selectJob);
@@ -1125,8 +1193,9 @@
           return;
         }
         const grid = document.createElement('div');
-        grid.className = 'est-botcard__grid';
+        grid.className = 'est-botcard__grid est-botcard__grid--subtypes';
         grid.setAttribute('role', 'list');
+        const chips = [];
         subtypes.forEach(sub => {
           const option = {
             id: sub.id,
@@ -1137,9 +1206,20 @@
             selectSubtype(sub);
           });
           chip.classList.add('est-chip--ghost', 'est-chip--full');
-
+          chips.push(chip);
           grid.appendChild(chip);
         });
+        const searchNode = createSearchFilterBlock({
+          scope: 'subtypes',
+          items: chips,
+          threshold: 7,
+          labelText: t('ui.search_label_subtypes') || 'חיפוש תת-סוג',
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_subtypes') || 'לא נמצאו תתי-סוג תואמים.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
         maybeAutoPickByTask(subtypes, selectSubtype);
@@ -1432,6 +1512,7 @@
         const grid = document.createElement('div');
         grid.className = 'est-botcard__grid';
         grid.setAttribute('role', 'list');
+        const chips = [];
         (question.options || []).forEach(opt => {
           const option = {
             id: opt.value,
@@ -1459,8 +1540,20 @@
           if (opt.hint){
             chip.dataset.hint = opt.hint;
           }
+          chips.push(chip);
           grid.appendChild(chip);
         });
+        const searchNode = createSearchFilterBlock({
+          scope: `question-${question.id || index}`,
+          items: chips,
+          threshold: 9,
+          labelText: t('ui.search_label_options') || 'חיפוש אפשרויות',
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
       }

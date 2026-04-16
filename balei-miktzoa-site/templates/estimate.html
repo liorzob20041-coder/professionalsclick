@@ -38,32 +38,32 @@
 
     <div class="est-shell" data-est-contact="{{ contact_url }}">
       <div class="est-shell__card">
-        <div class="est-shell__meta">
-          <div class="est-progresswrap">
-            <div class="est-progress__meta">
-              <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
-              <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
-            </div>
-            <div class="est-progressboard">
-              <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-                <div class="est-progress__bar"></div>
-              </div>
-              <ol class="est-stepper" role="list" style="--step-count: {{ progress_steps|length }}">
-                {% for step in progress_steps %}
-                  <li class="est-stepper__item{% if loop.first %} is-active{% endif %}"
-                      data-est-progress-step="{{ step.id }}"{% if loop.first %} aria-current="step"{% endif %}>
-                    <span class="est-stepper__bullet" aria-hidden="true" data-step-index="{{ loop.index }}"></span>
-                    <span class="est-stepper__label" data-est-progress-label data-default-label="{{ step.label }}">{{ step.label }}</span>
-                  </li>
-                {% endfor %}
-              </ol>
-            </div>
-          </div>
-          <div class="est-journey" data-est-journey>
-            <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
-          </div>
-        </div>
         <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
+          <div class="est-shell__meta">
+            <div class="est-progresswrap">
+              <div class="est-progress__meta">
+                <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
+                <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
+              </div>
+              <div class="est-progressboard">
+                <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
+                  <div class="est-progress__bar"></div>
+                </div>
+                <ol class="est-stepper" role="list" style="--step-count: {{ progress_steps|length }}">
+                  {% for step in progress_steps %}
+                    <li class="est-stepper__item{% if loop.first %} is-active{% endif %}"
+                        data-est-progress-step="{{ step.id }}"{% if loop.first %} aria-current="step"{% endif %}>
+                      <span class="est-stepper__bullet" aria-hidden="true" data-step-index="{{ loop.index }}"></span>
+                      <span class="est-stepper__label" data-est-progress-label data-default-label="{{ step.label }}">{{ step.label }}</span>
+                    </li>
+                  {% endfor %}
+                </ol>
+              </div>
+            </div>
+            <div class="est-journey" data-est-journey>
+              <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
+            </div>
+          </div>
           <div class="est-convo__body" data-est-body aria-live="polite"></div>
         </section>
       </div>
@@ -646,7 +646,6 @@
         resetState();
         updateProgress('category');
         updateJourney();
-        clearFeed();
         setBusy(false);
         renderOnboarding();
       }
@@ -859,14 +858,10 @@
         clear.addEventListener('click', () => {
           input.value = '';
           filterQuickPick(input.value, chips, filterState);
-
-
           input.focus();
         });
         input.addEventListener('input', () => {
           filterQuickPick(input.value, chips, filterState);
-
-
         });
         searchWrap.appendChild(searchIcon);
         searchWrap.appendChild(input);
@@ -891,15 +886,10 @@
           return chip;
         });
 
-        const tip = document.createElement('p');
-        tip.className = 'est-quickpick__tip';
-        tip.textContent = 'אנחנו שואלים כדי לדייק את הטווח המשוער.';
-
-        const filterState = { empty: emptyState, tip };
+        const filterState = { empty: emptyState };
 
         wrap.appendChild(list);
         wrap.appendChild(emptyState);
-        wrap.appendChild(tip);
         appendBotBubble(wrap, { ensureVisible: false });
 
         filterQuickPick('', chips, filterState);
@@ -1020,16 +1010,7 @@
       }
 
       function renderOnboarding(){
-        const box = document.createElement('div');
-        box.className = 'est-intro';
-        const title = document.createElement('h1');
-        title.textContent = t('ui.greeting');
-        const subtitle = document.createElement('p');
-        subtitle.textContent = t('ui.subtitle');
-        box.appendChild(title);
-        box.appendChild(subtitle);
-        appendBotBubble(box);
-        appendMetaBubble(t('ui.meta_ready_pick') || fallback['ui.meta_ready_pick']);
+        clearFeed();
         renderCategoryQuickPick();
       }
 

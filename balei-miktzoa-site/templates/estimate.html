@@ -175,8 +175,24 @@
         'ui.meta_category_selected': 'התחום כבר נבחר. בואו נמשיך.',
         'ui.meta_restart': 'מתחילים מחדש את החישוב.',
         'ui.meta_add_job': 'בוחרים עבודה נוספת לאותו תחום.',
-        'ui.result_cta_label': 'דברו עם מומחה להתאמת בעל מקצוע',
-        'ui.result_cta_secondary': 'נשמור עבורכם את הטווח ונחזור עם הצעה מדויקת.',
+        'ui.result_cta_label': 'קבלו הצעות מחיר מדויקות מבעלי מקצוע מתאימים',
+        'ui.result_cta_secondary': 'משאירים פרטים פעם אחת, ובעלי מקצוע רלוונטיים חוזרים עם הצעת מחיר מדויקת.',
+        'ui.result_summary_title': 'הטווח המשוער שלכם',
+        'ui.result_mid': 'מחיר ממוצע משוער',
+        'ui.result_includes_title': 'מה כללנו בהערכה',
+        'ui.result_includes_default': 'עבודה סטנדרטית לפי התשובות שסיפקתם, ללא תוספות מיוחדות.',
+        'ui.result_changes_title': 'מה יכול לשנות את המחיר בפועל',
+        'ui.result_changes_default': 'מורכבות בשטח, גישה לעבודה, חומרים שתבחרו ולוחות זמנים דחופים.',
+        'ui.result_next_title': 'מה קורה אחרי הלחיצה?',
+        'ui.result_next_step_1': 'משאירים פרטי קשר קצרים.',
+        'ui.result_next_step_2': 'אנחנו מתאימים את הבקשה לבעלי מקצוע רלוונטיים.',
+        'ui.result_next_step_3': 'הם בודקים את הפרטים וחוזרים עם הצעת מחיר מדויקת.',
+        'ui.result_next_step_4': 'ללא התחייבות — רק אתם מחליטים אם להמשיך.',
+        'ui.result_trust_title': 'למה אפשר להתקדם בביטחון',
+        'ui.result_trust_signal_1': 'הטווח מבוסס על נתוני עבודות אמיתיים מהמערכת.',
+        'ui.result_trust_signal_2': 'המחיר הסופי נקבע רק אחרי שבעל מקצוע בודק את פרטי העבודה.',
+        'ui.result_trust_signal_3': 'אין התחייבות מצדכם בשלב הזה.',
+        'ui.result_secondary_label': 'לערוך תשובות ולחשב מחדש',
         'ui.result_chart_heading': 'איך הטווח שלכם נראה במספרים',
         'ui.result_chart_note': 'התרשים מבוסס על הטווח שחישבנו עבורכם.',
         'ui.result_chart_columns_min': 'טווח נמוך',
@@ -1297,6 +1313,27 @@
 
       }
 
+      function buildResultAssumptions(result){
+        const includesText = (result && (result.assumptions || result.included_scope)) || t('ui.result_includes_default') || fallback['ui.result_includes_default'] || '';
+        const changesText = (result && (result.price_factors || result.exclusions_note || result.not_included)) || t('ui.result_changes_default') || fallback['ui.result_changes_default'] || '';
+        return { includesText, changesText };
+      }
+
+      function createResultInfoBlock(titleText, bodyText){
+        if (!titleText || !bodyText) return null;
+        const block = document.createElement('div');
+        block.className = 'est-resultcard__info-block';
+        const title = document.createElement('h4');
+        title.className = 'est-resultcard__info-title';
+        title.textContent = titleText;
+        const body = document.createElement('p');
+        body.className = 'est-resultcard__desc';
+        body.textContent = bodyText;
+        block.appendChild(title);
+        block.appendChild(body);
+        return block;
+      }
+
       function renderResult(result){
         setBusy(false);
 
@@ -1304,7 +1341,7 @@
         wrap.className = 'est-resultcard';
         const heading = document.createElement('h3');
         heading.className = 'est-resultcard__title';
-        heading.textContent = t('ui.range_label');
+        heading.textContent = t('ui.result_summary_title') || t('ui.range_label');
         wrap.appendChild(heading);
         const priceValue = parseAmount(result.price);
         const minValue = parseAmount(result.price_min);
@@ -1320,12 +1357,12 @@
         range.textContent = priceText || '—';
         wrap.appendChild(range);
         if (Number.isFinite(minValue) && Number.isFinite(maxValue)){
-          const spread = Math.max(maxValue - minValue, 0);
+          const midpoint = Math.round((minValue + maxValue) / 2);
           const breakdown = document.createElement('dl');
           breakdown.className = 'est-resultcard__breakdown';
           const minLabel = t('ui.result_min') || fallback['ui.result_min'];
           const maxLabel = t('ui.result_max') || fallback['ui.result_max'];
-          const spreadLabel = t('ui.result_spread') || fallback['ui.result_spread'];
+          const midLabel = t('ui.result_mid') || fallback['ui.result_mid'];
           const appendBreakdownStat = (labelText, valueText) => {
             const stat = document.createElement('div');
             stat.className = 'est-resultcard__stat';
@@ -1339,7 +1376,7 @@
           };
           appendBreakdownStat(minLabel, formatCurrencyValue(minValue));
           appendBreakdownStat(maxLabel, formatCurrencyValue(maxValue));
-          appendBreakdownStat(spreadLabel, formatCurrencyValue(spread));
+          appendBreakdownStat(midLabel, formatCurrencyValue(midpoint));
           wrap.appendChild(breakdown);
         }
         const noteText = result.result_note || state.resultNote || t('ui.result_note');
@@ -1355,12 +1392,20 @@
           desc.textContent = `${t('ui.details_label')} ${result.description}`;
           wrap.appendChild(desc);
         }
-        const extraCopy = t('ui.add_more');
-        if (extraCopy){
-          const extra = document.createElement('p');
-          extra.className = 'est-resultcard__desc';
-          extra.textContent = extraCopy;
-          wrap.appendChild(extra);
+        const assumptions = buildResultAssumptions(result);
+        const includesBlock = createResultInfoBlock(
+          t('ui.result_includes_title') || fallback['ui.result_includes_title'] || '',
+          assumptions.includesText
+        );
+        if (includesBlock){
+          wrap.appendChild(includesBlock);
+        }
+        const changesBlock = createResultInfoBlock(
+          t('ui.result_changes_title') || fallback['ui.result_changes_title'] || '',
+          assumptions.changesText
+        );
+        if (changesBlock){
+          wrap.appendChild(changesBlock);
         }
         const chartData = buildResultChartData(result);
         const chartNode = createResultChart(chartData);
@@ -1375,6 +1420,52 @@
           ctaNote.className = 'est-resultcard__cta-note';
           ctaNote.textContent = ctaNoteText;
           ctaWrap.appendChild(ctaNote);
+        }
+        const nextTitleText = t('ui.result_next_title') || fallback['ui.result_next_title'] || '';
+        if (nextTitleText){
+          const nextTitle = document.createElement('h4');
+          nextTitle.className = 'est-resultcard__trust-title';
+          nextTitle.textContent = nextTitleText;
+          ctaWrap.appendChild(nextTitle);
+        }
+        const nextSteps = [
+          t('ui.result_next_step_1') || fallback['ui.result_next_step_1'] || '',
+          t('ui.result_next_step_2') || fallback['ui.result_next_step_2'] || '',
+          t('ui.result_next_step_3') || fallback['ui.result_next_step_3'] || '',
+          t('ui.result_next_step_4') || fallback['ui.result_next_step_4'] || ''
+        ].filter(Boolean);
+        if (nextSteps.length){
+          const list = document.createElement('ul');
+          list.className = 'est-resultcard__trust-list';
+          nextSteps.forEach(stepText => {
+            const item = document.createElement('li');
+            item.textContent = stepText;
+            list.appendChild(item);
+          });
+          ctaWrap.appendChild(list);
+        }
+        const trustTitleText = t('ui.result_trust_title') || fallback['ui.result_trust_title'] || '';
+        const trustSignals = [
+          t('ui.result_trust_signal_1') || fallback['ui.result_trust_signal_1'] || '',
+          t('ui.result_trust_signal_2') || fallback['ui.result_trust_signal_2'] || '',
+          t('ui.result_trust_signal_3') || fallback['ui.result_trust_signal_3'] || ''
+        ].filter(Boolean);
+        if (trustTitleText || trustSignals.length){
+          const trustWrap = document.createElement('div');
+          trustWrap.className = 'est-resultcard__trust-signals';
+          if (trustTitleText){
+            const trustHeading = document.createElement('p');
+            trustHeading.className = 'est-resultcard__trust-heading';
+            trustHeading.textContent = trustTitleText;
+            trustWrap.appendChild(trustHeading);
+          }
+          trustSignals.forEach(signalText => {
+            const chip = document.createElement('span');
+            chip.className = 'est-resultcard__trust-chip';
+            chip.textContent = signalText;
+            trustWrap.appendChild(chip);
+          });
+          ctaWrap.appendChild(trustWrap);
         }
         const ctaLabel = t('ui.result_cta_label') || fallback['ui.result_cta_label'] || '';
         if (ctaLabel){
@@ -1397,17 +1488,17 @@
         const resetBtn = document.createElement('button');
         resetBtn.type = 'button';
         resetBtn.className = 'est-btn est-btn--ghost';
-        resetBtn.textContent = t('ui.reset_btn') || fallback['ui.reset_btn'];
+        resetBtn.textContent = t('ui.result_secondary_label') || fallback['ui.result_secondary_label'] || t('ui.reset_btn') || fallback['ui.reset_btn'];
         resetBtn.addEventListener('click', () => {
           appendMetaBubble(t('ui.meta_restart') || fallback['ui.meta_restart']);
           resetFlow();
         });
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
-        addBtn.className = 'est-btn est-btn--primary';
+        addBtn.className = 'est-btn est-btn--ghost est-btn--quiet';
         addBtn.textContent = t('ui.add_job_btn') || fallback['ui.add_job_btn'];
         addBtn.addEventListener('click', () => {
-          appendMetaBubble('בוחרים עבודה נוספת לאותו תחום.');
+          appendMetaBubble(t('ui.meta_add_job') || fallback['ui.meta_add_job']);
           state.job = null;
           state.jobLabel = '';
           state.subtype = null;

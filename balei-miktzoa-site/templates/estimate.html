@@ -26,17 +26,23 @@
   <section class="est-page" aria-label="מחשבון הצעת מחיר">
 
     <header class="est-hero est-hero--compact" data-est-header>
-      <a class="est-hero__back" href="{{ home_url }}">
-        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-        <span>{{ t.get('ui.back_action', 'חזרה לעמוד הבית') }}</span>
-      </a>
-      <h1 class="est-hero__title">{{ t.get('ui.header_title', 'טווח מחיר ראשוני, בצורה ברורה ונעימה') }}</h1>
-      <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'עונים על כמה שאלות קצרות ומקבלים כיוון אמין לפני שפונים לבעל מקצוע.') }}</p>
+      <div class="est-hero__row">
+        <a class="est-hero__back" href="{{ home_url }}">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          <span>{{ t.get('ui.back_action', 'חזרה לעמוד הבית') }}</span>
+        </a>
+        <span class="est-hero__progress" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
+      </div>
+      <div class="est-hero__barwrap">
+        <div class="est-progress est-progress--hero" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress></div>
+      </div>
+      <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'ענו בקצרה ונכוון אתכם לטווח מחיר אמין לעבודה שלכם.') }}</p>
     </header>
 
     <section class="est-resume" data-est-resume hidden aria-label="{{ t.get('ui.resume_aria', 'סיכום בחירות קודמות') }}">
       <p class="est-resume__title">{{ t.get('ui.resume_title', 'התחלנו עבורך לפי מה שכבר בחרת') }}</p>
       <div class="est-resume__chips" data-est-resume-list></div>
+      <button type="button" class="est-resume__btn est-resume__btn--ghost" data-est-resume-clear>{{ t.get('ui.resume_clear', 'ניקוי הכול') }}</button>
       <button type="button" class="est-resume__btn" data-est-resume-continue>{{ t.get('ui.resume_continue', 'ממשיכים לשלב הבא') }}</button>
     </section>
 
@@ -46,26 +52,9 @@
         <section class="est-convo" aria-label="שיחה עם מחשבון ההצעה">
           <div class="est-shell__meta">
             <div class="est-progresswrap">
-              <div class="est-progress__meta">
-                <span class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</span>
-                <span class="est-progress__secondary" data-est-progress-secondary>{{ t.get('ui.progress_step_counter', 'שלב 1 מתוך 4') }}</span>
-              </div>
-              <div class="est-progressboard">
-                <div class="est-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-est-progress>
-                  <div class="est-progress__bar"></div>
-                </div>
-                <ol class="est-stepper" role="list" style="--step-count: {{ progress_steps|length }}">
-                  {% for step in progress_steps %}
-                    <li class="est-stepper__item{% if loop.first %} is-active{% endif %}"
-                        data-est-progress-step="{{ step.id }}"{% if loop.first %} aria-current="step"{% endif %}>
-                      <span class="est-stepper__bullet" aria-hidden="true" data-step-index="{{ loop.index }}"></span>
-                      <span class="est-stepper__label" data-est-progress-label data-default-label="{{ step.label }}">{{ step.label }}</span>
-                    </li>
-                  {% endfor %}
-                </ol>
-              </div>
+              <h1 class="est-progress__primary" data-est-progress-primary>{{ t.get('ui.progress_stage_category', 'בוחרים תחום') }}</h1>
             </div>
-            <div class="est-journey" data-est-journey>
+            <div class="est-journey" data-est-journey aria-live="polite">
               <span class="est-journey__empty">{{ t.get('ui.journey_empty', 'עוד לא בחרתם כלום — נתחיל בבחירת תחום.') }}</span>
             </div>
           </div>
@@ -115,12 +104,12 @@
         progress: Array.from(document.querySelectorAll('[data-est-progress]')),
         progressPrimary: Array.from(document.querySelectorAll('[data-est-progress-primary]')),
         progressSecondary: Array.from(document.querySelectorAll('[data-est-progress-secondary]')),
-        progressSteps: Array.from(document.querySelectorAll('[data-est-progress-step]')),
         journey: document.querySelector('[data-est-journey]'),
         shellCard: document.querySelector('.est-shell__card'),
         resume: document.querySelector('[data-est-resume]'),
         resumeList: document.querySelector('[data-est-resume-list]'),
-        resumeCta: document.querySelector('[data-est-resume-continue]')
+        resumeCta: document.querySelector('[data-est-resume-continue]'),
+        resumeClear: document.querySelector('[data-est-resume-clear]')
       };
       const config = {
         contactUrl: document.querySelector('[data-est-contact]')?.getAttribute('data-est-contact') || ''
@@ -211,10 +200,12 @@
         'ui.resume_aria': 'סיכום בחירות קודמות',
         'ui.resume_title': 'התחלנו עבורך לפי מה שכבר בחרת',
         'ui.resume_continue': 'ממשיכים לשלב הבא',
+        'ui.resume_clear': 'ניקוי הכול',
         'ui.resume_field': 'תחום',
         'ui.resume_area': 'אזור',
         'ui.resume_task': 'מה צריך לעשות',
         'ui.resume_urgency': 'דחיפות',
+        'ui.edit_selection': 'שינוי',
         'ui.prefill_hint_intro': 'התחלנו מהבחירה הקודמת',
         'ui.search_categories_label': 'חיפוש תחום',
         'ui.search_jobs_label': 'חיפוש סוג עבודה',
@@ -226,6 +217,7 @@
         'ui.search_empty_jobs': 'לא מצאנו סוג עבודה שמתאים לחיפוש.',
         'ui.search_empty_subtypes': 'לא מצאנו אפשרות תואמת.',
         'ui.search_empty_question_options': 'לא נמצאו אפשרויות תואמות. נסו ניסוח אחר.',
+        'ui.pick_category_help': 'בחרו את התחום הכי קרוב למה שצריך — נמשיך משם מהר.',
         'ui.support_quick_title': 'איך משתמשים במחשבון במהירות?',
         'ui.support_quick_text': 'בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור ולעדכן תשובות בכל שלב.',
         'ui.support_after_title': 'מה קורה אחרי שרואים את הטווח?',
@@ -417,18 +409,46 @@
       function cleanLabel(text){
         return text ? text.replace(/[:：]\s*$/, '') : '';
       }
+      function jumpToStep(step){
+        if (!step) return;
+        if (step === 'category'){
+          resetFlow();
+          return;
+        }
+        if (step === 'job' && state.category){
+          state.job = null;
+          state.jobLabel = '';
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.answers = {};
+          state.questions = [];
+          updateJourney();
+          updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
+          loadJobs();
+          return;
+        }
+        if (step === 'subtype' && state.category && state.job){
+          state.subtype = null;
+          state.subtypeLabel = '';
+          state.answers = {};
+          state.questions = [];
+          updateJourney();
+          updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
+          loadSubtypes();
+        }
+      }
       function updateJourney(){
         if (!els.journey) return;
         els.journey.innerHTML = '';
         const selections = [];
         if (state.categoryLabel){
-          selections.push({ label: cleanLabel(t('ui.field_label') || fallback['ui.field_label']), value: state.categoryLabel });
+          selections.push({ label: cleanLabel(t('ui.field_label') || fallback['ui.field_label']), value: state.categoryLabel, step: 'category' });
         }
         if (state.jobLabel){
-          selections.push({ label: cleanLabel(t('ui.job_label') || fallback['ui.job_label']), value: state.jobLabel });
+          selections.push({ label: cleanLabel(t('ui.job_label') || fallback['ui.job_label']), value: state.jobLabel, step: 'job' });
         }
         if (state.subtypeLabel && state.subtypeLabel !== state.jobLabel){
-          selections.push({ label: cleanLabel(t('ui.where_label') || fallback['ui.where_label']), value: state.subtypeLabel });
+          selections.push({ label: cleanLabel(t('ui.where_label') || fallback['ui.where_label']), value: state.subtypeLabel, step: 'subtype' });
         }
         if (!selections.length){
           const empty = document.createElement('span');
@@ -444,7 +464,7 @@
         const list = document.createElement('div');
         list.className = 'est-journey__list';
         selections.forEach((item) => {
-          const pill = document.createElement('span');
+          const pill = document.createElement('div');
           pill.className = 'est-journey__item';
           const labelEl = document.createElement('span');
           labelEl.className = 'est-journey__item-label';
@@ -454,6 +474,14 @@
           valueEl.className = 'est-journey__item-value';
           valueEl.textContent = item.value || '';
           pill.appendChild(valueEl);
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'est-journey__edit';
+          editBtn.textContent = t('ui.edit_selection') || fallback['ui.edit_selection'] || '';
+          editBtn.addEventListener('click', () => {
+            jumpToStep(item.step);
+          });
+          pill.appendChild(editBtn);
           list.appendChild(pill);
         });
         els.journey.appendChild(list);
@@ -760,6 +788,19 @@
             scheduleResumeScroll(10);
           });
         }
+        if (els.resumeClear){
+          els.resumeClear.addEventListener('click', () => {
+            const cleanUrl = `${window.location.pathname}`;
+            window.history.replaceState({}, '', cleanUrl);
+            prefillState.category = '';
+            prefillState.area = '';
+            prefillState.task = '';
+            prefillState.urgency = '';
+            prefillState.hintShown = true;
+            els.resume.hidden = true;
+            resetFlow();
+          });
+        }
       }
       function createChip(option, handler){
         const btn = document.createElement('button');
@@ -904,9 +945,13 @@
         heading.className = 'est-quickpick__title';
         heading.textContent = t('ui.ask_category');
         wrap.appendChild(heading);
+        const subheading = document.createElement('p');
+        subheading.className = 'est-quickpick__sub';
+        subheading.textContent = t('ui.pick_category_help') || fallback['ui.pick_category_help'] || '';
+        wrap.appendChild(subheading);
 
         const list = document.createElement('div');
-        list.className = 'est-quickpick__list';
+        list.className = 'est-quickpick__list est-quickpick__list--tiles';
 
 
         const chips = categories.map(cat => {
@@ -1025,30 +1070,6 @@
             total: totalSteps
           });
           setProgressSecondary(counterText);
-        }
-        if (els.progressSteps && els.progressSteps.length){
-          els.progressSteps.forEach((stepEl) => {
-            if (!stepEl) return;
-            const stepName = stepEl.getAttribute('data-est-progress-step');
-            const stepIndex = steps.indexOf(stepName);
-            const labelEl = stepEl.querySelector('[data-est-progress-label]');
-            const defaultLabel = labelEl ? labelEl.getAttribute('data-default-label') : '';
-            const isCurrent = stepIndex === progressIndex;
-            const isComplete = stepIndex > -1 && stepIndex < progressIndex;
-            stepEl.classList.toggle('is-active', isCurrent);
-            stepEl.classList.toggle('is-complete', isComplete);
-            if (isCurrent){
-              stepEl.setAttribute('aria-current', 'step');
-              if (labelEl && typeof desiredLabel === 'string'){
-                labelEl.textContent = desiredLabel;
-              }
-            } else {
-              stepEl.removeAttribute('aria-current');
-              if (labelEl && typeof defaultLabel === 'string'){
-                labelEl.textContent = defaultLabel;
-              }
-            }
-          });
         }
       }
 

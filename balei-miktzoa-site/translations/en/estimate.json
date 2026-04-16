@@ -34,7 +34,7 @@
   "ui.where_exactly": "Where exactly?",
   "ui.where_label": "Where:",
   "ui.header_title": "Get a clear, reliable price range in minutes",
-  "ui.header_tagline": "Answer a few focused questions and get a confident starting range before speaking with a pro.",
+  "ui.header_tagline": "Answer a few quick prompts and get a reliable starting range for your request.",
   "ui.progress_stage_category": "Choose a field",
   "ui.progress_stage_job": "Pick the type of job",
   "ui.progress_stage_subtype": "Refine the job details",
@@ -72,5 +72,8 @@
   "ui.support_quick_title": "How do I use this quickly?",
   "ui.support_quick_text": "Choose a field, answer the active question, and get an immediate starting range. You can always go back and edit answers.",
   "ui.support_after_title": "What happens after I get the range?",
-  "ui.support_after_text": "At the end, you can move directly to a specialist to validate details and receive an accurate quote."
+  "ui.support_after_text": "At the end, you can move directly to a specialist to validate details and receive an accurate quote.",
+  "ui.resume_clear": "Clear all",
+  "ui.edit_selection": "Edit",
+  "ui.pick_category_help": "Pick the closest service field and we’ll narrow it down quickly."
 }

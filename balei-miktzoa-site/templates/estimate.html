@@ -222,9 +222,11 @@
         'ui.search_label_jobs': 'חיפוש סוג עבודה',
         'ui.search_label_subtypes': 'חיפוש תת-סוג',
         'ui.search_label_options': 'חיפוש אפשרויות',
+        'ui.search_label_locations': 'חיפוש אזור או עיר',
         'ui.search_empty_jobs': 'לא נמצאו סוגי עבודה תואמים.',
         'ui.search_empty_subtypes': 'לא נמצאו תתי-סוג תואמים.',
         'ui.search_empty_options': 'לא נמצאו אפשרויות תואמות.',
+        'ui.search_empty_locations': 'לא נמצאו אזורים תואמים.',
         'ui.resume_area': 'אזור',
         'ui.resume_task': 'סוג עבודה',
         'ui.resume_urgency': 'דחיפות',
@@ -245,7 +247,25 @@
         renovation: 'ui.category_hint_renovation',
         locksmith: 'ui.category_hint_locksmith'
       };
+      const searchThresholds = {
+        categories: 5,
+        jobs: 7,
+        subtypes: 5,
+        questionDefault: 6,
+        locationQuestion: 5
+      };
+      const searchExcludedQuestionTokens = [
+        'urgent',
+        'urgency',
+        'supplied',
+        'supply',
+        'weekday',
+        'weekend',
+        'yes/no',
+        'yesno'
+      ];
       let activeBotBubble = null;
+      let nextActionScrollTimer = null;
       const currencyFormatter = (typeof Intl !== 'undefined' && Intl.NumberFormat)
         ? new Intl.NumberFormat(lang === 'he' ? 'he-IL' : 'en-US', {
             style: 'currency',
@@ -334,6 +354,33 @@
             focusFirstInteractive(bubble);
           }
         });
+      }
+      function getStickyHeaderOffset(){
+        const header = document.querySelector('.topbar-rail');
+        return header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+      }
+      function maybeScrollToNextAction(target, options){
+        if (!target || !(target instanceof HTMLElement)) return;
+        if (nextActionScrollTimer){
+          window.clearTimeout(nextActionScrollTimer);
+        }
+        nextActionScrollTimer = window.setTimeout(() => {
+          const rect = target.getBoundingClientRect();
+          const headerOffset = getStickyHeaderOffset();
+          const topSafeZone = headerOffset + 18;
+          const bottomSafeZone = window.innerHeight - 20;
+          const topVisible = rect.top >= topSafeZone && rect.top <= window.innerHeight * 0.66;
+          const bottomVisible = rect.bottom <= bottomSafeZone;
+          if (topVisible && bottomVisible){
+            return;
+          }
+          const scrollTop = Math.max(0, window.scrollY + rect.top - topSafeZone);
+          const prefersReducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+          window.scrollTo({
+            top: scrollTop,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+          });
+        }, options && typeof options.delay === 'number' ? options.delay : 90);
       }
 
       function createBubble(type){
@@ -626,6 +673,7 @@
         } else if (node){
           activeBotBubble.appendChild(node);
         }
+        maybeScrollToNextAction(activeBotBubble);
         return activeBotBubble;
       }
 
@@ -864,13 +912,20 @@
         empty.className = 'est-quickpick__empty';
         empty.textContent = config.emptyText || t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.';
         empty.hidden = true;
+        const syncClearState = () => {
+          const hasValue = input.value.trim().length > 0;
+          clear.disabled = !hasValue;
+          clear.setAttribute('aria-hidden', hasValue ? 'false' : 'true');
+        };
         const filterState = { empty };
         input.addEventListener('input', () => {
           filterQuickPick(input.value, config.items, filterState);
+          syncClearState();
         });
         clear.addEventListener('click', () => {
           input.value = '';
           filterQuickPick(input.value, config.items, filterState);
+          syncClearState();
           input.focus();
         });
         searchWrap.appendChild(searchIcon);
@@ -880,6 +935,7 @@
         container.appendChild(searchWrap);
         container.appendChild(empty);
         filterQuickPick('', config.items, filterState);
+        syncClearState();
         return container;
       }
       function renderCategoryQuickPick(){
@@ -890,48 +946,8 @@
         heading.className = 'est-quickpick__title';
         heading.textContent = t('ui.ask_category');
         wrap.appendChild(heading);
-
-        const searchWrap = document.createElement('div');
-        searchWrap.className = 'est-search est-search--inline';
-        const searchId = 'est-inline-search';
-        const label = document.createElement('label');
-        label.className = 'sr-only';
-        label.setAttribute('for', searchId);
-        label.textContent = t('ui.ask_category');
-        const searchIcon = document.createElement('span');
-        searchIcon.className = 'est-search__leading';
-        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
-        const input = document.createElement('input');
-        input.type = 'search';
-        input.id = searchId;
-        input.className = 'est-search__input';
-        input.placeholder = t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה';
-        input.autocomplete = 'off';
-        const clear = document.createElement('button');
-        clear.type = 'button';
-        clear.className = 'est-search__clear';
-        clear.setAttribute('aria-label', t('ui.search_clear') || 'ניקוי החיפוש');
-        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
         const list = document.createElement('div');
         list.className = 'est-quickpick__list';
-        const emptyState = document.createElement('p');
-        emptyState.className = 'est-quickpick__empty';
-        emptyState.textContent = t('ui.search_empty_category') || 'לא נמצאו תחומים תואמים לחיפוש.';
-        emptyState.hidden = true;
-        clear.addEventListener('click', () => {
-          input.value = '';
-          filterQuickPick(input.value, chips, filterState);
-          input.focus();
-        });
-        input.addEventListener('input', () => {
-          filterQuickPick(input.value, chips, filterState);
-        });
-        searchWrap.appendChild(searchIcon);
-        searchWrap.appendChild(input);
-        searchWrap.appendChild(clear);
-        wrap.appendChild(label);
-        wrap.appendChild(searchWrap);
-
 
         const chips = categories.map(cat => {
           const option = {
@@ -948,17 +964,52 @@
           list.appendChild(chip);
           return chip;
         });
-
-        const filterState = { empty: emptyState };
+        const searchNode = createSearchFilterBlock({
+          scope: 'categories',
+          items: chips,
+          threshold: 0,
+          labelText: t('ui.ask_category'),
+          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+          emptyText: t('ui.search_empty_category') || 'לא נמצאו תחומים תואמים לחיפוש.'
+        });
+        if (searchNode){
+          wrap.appendChild(searchNode);
+        }
 
         wrap.appendChild(list);
-        wrap.appendChild(emptyState);
         appendBotBubble(wrap, { ensureVisible: false });
-
-        filterQuickPick('', chips, filterState);
         maybeApplyPrefillCategory();
         scheduleResumeScroll(180);
 
+      }
+      function shouldShowSearchForQuestion(question, chips){
+        if (!question || !Array.isArray(chips)) return false;
+        if (chips.length < searchThresholds.locationQuestion){
+          return false;
+        }
+        const normalizedQuestionText = normalizeText(
+          typeof question.text === 'string' ? question.text : (question.text && question.text[lang]) || ''
+        );
+        const normalizedId = normalizeText(question.id || '');
+        const normalizedMetaType = normalizeText((question.meta && question.meta.type) || '');
+        const combined = `${normalizedQuestionText} ${normalizedId} ${normalizedMetaType}`.trim();
+        if (searchExcludedQuestionTokens.some(token => combined.includes(token))){
+          return false;
+        }
+        const binaryValues = ['yes', 'no', 'true', 'false', 'כן', 'לא', 'y', 'n', '1', '0'];
+        const isBinaryLike = chips.length <= 3 && chips.every((chip) => {
+          const value = normalizeText(chip.dataset.value || '');
+          return !value || binaryValues.includes(value);
+        });
+        if (isBinaryLike){
+          return false;
+        }
+        const isLocationStep = ['area', 'city', 'location', 'district', 'region', 'zone']
+          .some(token => combined.includes(token));
+        if (isLocationStep){
+          return chips.length >= searchThresholds.locationQuestion;
+        }
+        return chips.length >= searchThresholds.questionDefault;
       }
       function maybeApplyPrefillCategory(){
         if (prefillState.categoryApplied) return;
@@ -1098,6 +1149,7 @@
         updateJourney();
         updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
         loadJobs();
+        maybeScrollToNextAction(activeBotBubble, { delay: 140 });
       }
 
       function showLoading(key){
@@ -1161,7 +1213,7 @@
         const searchNode = createSearchFilterBlock({
           scope: 'jobs',
           items: chips,
-          threshold: 8,
+          threshold: searchThresholds.jobs,
           labelText: t('ui.search_label_jobs') || 'חיפוש סוג עבודה',
           placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
           emptyText: t('ui.search_empty_jobs') || 'לא נמצאו סוגי עבודה תואמים.'
@@ -1212,7 +1264,7 @@
         const searchNode = createSearchFilterBlock({
           scope: 'subtypes',
           items: chips,
-          threshold: 7,
+          threshold: searchThresholds.subtypes,
           labelText: t('ui.search_label_subtypes') || 'חיפוש תת-סוג',
           placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
           emptyText: t('ui.search_empty_subtypes') || 'לא נמצאו תתי-סוג תואמים.'
@@ -1394,6 +1446,7 @@
         updateJourney();
         updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
         loadSubtypes();
+        maybeScrollToNextAction(activeBotBubble, { delay: 140 });
       }
 
       function selectSubtype(sub){
@@ -1407,6 +1460,7 @@
         updateJourney();
         updateProgress('quote', { label: getStageLabel('quote') });
         loadQuestions();
+        maybeScrollToNextAction(activeBotBubble, { delay: 140 });
       }
 
       function loadJobs(){
@@ -1533,6 +1587,7 @@
             finalizeBotBubble(question.text || '', question.meta && question.meta.why ? question.meta.why : '');
             appendUserBubble(option.label);
             askQuestion(index + 1);
+            maybeScrollToNextAction(activeBotBubble, { delay: 140 });
           });
           if (whyId){
             chip.setAttribute('aria-describedby', whyId);
@@ -1543,14 +1598,25 @@
           chips.push(chip);
           grid.appendChild(chip);
         });
-        const searchNode = createSearchFilterBlock({
-          scope: `question-${question.id || index}`,
-          items: chips,
-          threshold: 9,
-          labelText: t('ui.search_label_options') || 'חיפוש אפשרויות',
-          placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
-          emptyText: t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.'
-        });
+        const questionTextForSearch = typeof question.text === 'string'
+          ? question.text
+          : (question.text && question.text[lang]) || '';
+        const isLocationQuestion = ['area', 'city', 'location', 'district', 'region', 'zone']
+          .some(token => normalizeText(`${question.id || ''} ${questionTextForSearch}`).includes(token));
+        const searchNode = shouldShowSearchForQuestion(question, chips)
+          ? createSearchFilterBlock({
+            scope: `question-${question.id || index}`,
+            items: chips,
+            threshold: 0,
+            labelText: isLocationQuestion
+              ? (t('ui.search_label_locations') || 'חיפוש אזור או עיר')
+              : (t('ui.search_label_options') || 'חיפוש אפשרויות'),
+            placeholderText: t('ui.search_placeholder') || 'חפשו תחום או סוג עבודה',
+            emptyText: isLocationQuestion
+              ? (t('ui.search_empty_locations') || 'לא נמצאו אזורים תואמים.')
+              : (t('ui.search_empty_options') || 'לא נמצאו אפשרויות תואמות.')
+          })
+          : null;
         if (searchNode){
           wrap.appendChild(searchNode);
         }

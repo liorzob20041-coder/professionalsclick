@@ -10,6 +10,7 @@
 {% block content %}
   {% set t = i18n_est or {} %}
   {% set contact_url = url_for('contact', lang=g.current_lang or 'he') %}
+  {% set home_url = url_for('home', lang=g.current_lang or 'he') %}
   {% set categories = [
     {"id": "electricity", "emoji": "\u26A1\uFE0E", "label": t.get('categories.electricity', 'חשמל')},
     {"id": "plumbing", "emoji": "\U0001F6B0\uFE0E", "label": t.get('categories.plumbing', 'אינסטלציה')},
@@ -25,14 +26,18 @@
   <section class="est-page" aria-label="מחשבון הצעת מחיר">
 
     <header class="est-hero est-hero--compact" data-est-header>
-      <h1 class="est-hero__title">{{ t.get('ui.header_title', 'קבלו טווח מחיר ראשוני תוך דקה') }}</h1>
-      <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'ענו על כמה שאלות ונחשב סדר גודל לפני שפונים לבעל מקצוע') }}</p>
+      <a class="est-hero__back" href="{{ home_url }}">
+        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        <span>{{ t.get('ui.back_action', 'חזרה לעמוד הבית') }}</span>
+      </a>
+      <h1 class="est-hero__title">{{ t.get('ui.header_title', 'טווח מחיר ראשוני, בצורה ברורה ונעימה') }}</h1>
+      <p class="est-hero__lead">{{ t.get('ui.header_tagline', 'עונים על כמה שאלות קצרות ומקבלים כיוון אמין לפני שפונים לבעל מקצוע.') }}</p>
     </header>
 
-    <section class="est-resume" data-est-resume hidden aria-label="המשך מהבחירה הקודמת">
-      <p class="est-resume__title">הבחירות מהעמוד הראשי נשמרו</p>
+    <section class="est-resume" data-est-resume hidden aria-label="{{ t.get('ui.resume_aria', 'סיכום בחירות קודמות') }}">
+      <p class="est-resume__title">{{ t.get('ui.resume_title', 'התחלנו עבורך לפי מה שכבר בחרת') }}</p>
       <div class="est-resume__chips" data-est-resume-list></div>
-      <button type="button" class="est-resume__btn" data-est-resume-continue>ממשיכים מהשלב הבא</button>
+      <button type="button" class="est-resume__btn" data-est-resume-continue>{{ t.get('ui.resume_continue', 'ממשיכים לשלב הבא') }}</button>
     </section>
 
 
@@ -71,12 +76,12 @@
     <section class="est-content" aria-labelledby="est-support-heading">
       <h2 class="est-content__title est-content__title--sr" id="est-support-heading">מידע ותמיכה</h2>
       <details class="est-support" open>
-        <summary class="est-support__summary">איך להשתמש במחשבון ב-30 שניות</summary>
-        <p class="est-support__text">בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור אחורה ולעדכן תשובות בכל שלב.</p>
+        <summary class="est-support__summary">{{ t.get('ui.support_quick_title', 'איך משתמשים במחשבון במהירות?') }}</summary>
+        <p class="est-support__text">{{ t.get('ui.support_quick_text', 'בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור ולעדכן תשובות בכל שלב.') }}</p>
       </details>
       <details class="est-support">
-        <summary class="est-support__summary">מה קורה אחרי קבלת הטווח?</summary>
-        <p class="est-support__text">בסיום תקבלו כפתור יצירת קשר מהיר עם מומחה כדי לאמת פרטים ולקבל הצעה מדויקת לפרויקט שלכם.</p>
+        <summary class="est-support__summary">{{ t.get('ui.support_after_title', 'מה קורה אחרי שרואים את הטווח?') }}</summary>
+        <p class="est-support__text">{{ t.get('ui.support_after_text', 'בסיום תקבלו מעבר מהיר למומחה כדי לאמת פרטים ולקבל הצעה מדויקת לפרויקט שלכם.') }}</p>
       </details>
     </section>
   </section>
@@ -202,6 +207,29 @@
         'ui.progress_question_counter': 'שאלה {current} מתוך {total}',
         'ui.progress_done': 'החישוב הושלם',
         'ui.progress_final_step': 'שלב אחרון — בדקו את הטווח והמשיכו למומחה',
+        'ui.back_action': 'חזרה לעמוד הבית',
+        'ui.resume_aria': 'סיכום בחירות קודמות',
+        'ui.resume_title': 'התחלנו עבורך לפי מה שכבר בחרת',
+        'ui.resume_continue': 'ממשיכים לשלב הבא',
+        'ui.resume_field': 'תחום',
+        'ui.resume_area': 'אזור',
+        'ui.resume_task': 'מה צריך לעשות',
+        'ui.resume_urgency': 'דחיפות',
+        'ui.prefill_hint_intro': 'התחלנו מהבחירה הקודמת',
+        'ui.search_categories_label': 'חיפוש תחום',
+        'ui.search_jobs_label': 'חיפוש סוג עבודה',
+        'ui.search_subtypes_label': 'חיפוש עבודה מדויקת',
+        'ui.search_question_options_label': 'סינון אפשרויות',
+        'ui.search_placeholder': 'הקלידו כדי לסנן אפשרויות',
+        'ui.search_clear': 'ניקוי חיפוש',
+        'ui.search_empty_categories': 'לא מצאנו תחום שמתאים לחיפוש הזה.',
+        'ui.search_empty_jobs': 'לא מצאנו סוג עבודה שמתאים לחיפוש.',
+        'ui.search_empty_subtypes': 'לא מצאנו אפשרות תואמת.',
+        'ui.search_empty_question_options': 'לא נמצאו אפשרויות תואמות. נסו ניסוח אחר.',
+        'ui.support_quick_title': 'איך משתמשים במחשבון במהירות?',
+        'ui.support_quick_text': 'בחרו תחום, ענו על השאלה הפעילה, וקבלו מיד טווח מחיר ראשוני. אפשר לחזור ולעדכן תשובות בכל שלב.',
+        'ui.support_after_title': 'מה קורה אחרי שרואים את הטווח?',
+        'ui.support_after_text': 'בסיום תקבלו מעבר מהיר למומחה כדי לאמת פרטים ולקבל הצעה מדויקת לפרויקט שלכם.',
         'ui.result_min': 'טווח נמוך',
         'ui.result_max': 'טווח גבוה',
         'ui.result_spread': 'פער בין הקצוות',
@@ -684,7 +712,8 @@
         const chips = [prefillState.area, prefillState.task, prefillState.urgency].filter(Boolean);
         if (!chips.length) return;
         prefillState.hintShown = true;
-        appendMetaBubble(`הבאנו מהעמוד הראשי: ${chips.join(' · ')}.`);
+        const prefix = t('ui.prefill_hint_intro') || fallback['ui.prefill_hint_intro'] || '';
+        appendMetaBubble(`${prefix}: ${chips.join(' · ')}.`);
       }
       function scheduleResumeScroll(delay){
         if (!isHomeResume || !els.body) return;
@@ -711,10 +740,10 @@
           return;
         }
         const rows = [
-          { label: 'תחום', value: prefillState.category },
-          { label: 'אזור', value: prefillState.area },
-          { label: 'סוג עבודה', value: prefillState.task },
-          { label: 'דחיפות', value: prefillState.urgency }
+          { label: t('ui.resume_field') || fallback['ui.resume_field'], value: prefillState.category },
+          { label: t('ui.resume_area') || fallback['ui.resume_area'], value: prefillState.area },
+          { label: t('ui.resume_task') || fallback['ui.resume_task'], value: prefillState.task },
+          { label: t('ui.resume_urgency') || fallback['ui.resume_urgency'], value: prefillState.urgency }
         ].filter(item => item.value);
         if (!rows.length){
           return;
@@ -819,6 +848,54 @@
           options.empty.setAttribute('aria-hidden', showEmpty ? 'false' : 'true');
         }
       }
+      function buildSearchBox(searchId, labelText, emptyText, chips, threshold){
+        if (!Array.isArray(chips) || chips.length < Math.max(2, threshold || 1)){
+          return null;
+        }
+        const holder = document.createElement('div');
+        holder.className = 'est-searchbox';
+        const label = document.createElement('label');
+        label.className = 'est-searchbox__label';
+        label.setAttribute('for', searchId);
+        label.textContent = labelText;
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'est-search est-search--inline';
+        const searchIcon = document.createElement('span');
+        searchIcon.className = 'est-search__leading';
+        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
+        const input = document.createElement('input');
+        input.type = 'search';
+        input.id = searchId;
+        input.className = 'est-search__input';
+        input.placeholder = t('ui.search_placeholder') || fallback['ui.search_placeholder'];
+        input.autocomplete = 'off';
+        const clear = document.createElement('button');
+        clear.type = 'button';
+        clear.className = 'est-search__clear';
+        clear.setAttribute('aria-label', t('ui.search_clear') || fallback['ui.search_clear']);
+        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        const emptyState = document.createElement('p');
+        emptyState.className = 'est-quickpick__empty';
+        emptyState.textContent = emptyText;
+        emptyState.hidden = true;
+        const filterState = { empty: emptyState };
+        clear.addEventListener('click', () => {
+          input.value = '';
+          filterQuickPick('', chips, filterState);
+          input.focus();
+        });
+        input.addEventListener('input', () => {
+          filterQuickPick(input.value, chips, filterState);
+        });
+        searchWrap.appendChild(searchIcon);
+        searchWrap.appendChild(input);
+        searchWrap.appendChild(clear);
+        holder.appendChild(label);
+        holder.appendChild(searchWrap);
+        holder.appendChild(emptyState);
+        filterQuickPick('', chips, filterState);
+        return holder;
+      }
       function renderCategoryQuickPick(){
         const wrap = document.createElement('div');
         wrap.className = 'est-quickpick';
@@ -828,46 +905,8 @@
         heading.textContent = t('ui.ask_category');
         wrap.appendChild(heading);
 
-        const searchWrap = document.createElement('div');
-        searchWrap.className = 'est-search est-search--inline';
-        const searchId = 'est-inline-search';
-        const label = document.createElement('label');
-        label.className = 'sr-only';
-        label.setAttribute('for', searchId);
-        label.textContent = t('ui.ask_category');
-        const searchIcon = document.createElement('span');
-        searchIcon.className = 'est-search__leading';
-        searchIcon.innerHTML = '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>';
-        const input = document.createElement('input');
-        input.type = 'search';
-        input.id = searchId;
-        input.className = 'est-search__input';
-        input.placeholder = '...חיפוש מהיר';
-        input.autocomplete = 'off';
-        const clear = document.createElement('button');
-        clear.type = 'button';
-        clear.className = 'est-search__clear';
-        clear.setAttribute('aria-label', 'ניקוי החיפוש');
-        clear.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
         const list = document.createElement('div');
         list.className = 'est-quickpick__list';
-        const emptyState = document.createElement('p');
-        emptyState.className = 'est-quickpick__empty';
-        emptyState.textContent = 'לא נמצאו תחומים תואמים לחיפוש.';
-        emptyState.hidden = true;
-        clear.addEventListener('click', () => {
-          input.value = '';
-          filterQuickPick(input.value, chips, filterState);
-          input.focus();
-        });
-        input.addEventListener('input', () => {
-          filterQuickPick(input.value, chips, filterState);
-        });
-        searchWrap.appendChild(searchIcon);
-        searchWrap.appendChild(input);
-        searchWrap.appendChild(clear);
-        wrap.appendChild(label);
-        wrap.appendChild(searchWrap);
 
 
         const chips = categories.map(cat => {
@@ -885,14 +924,18 @@
           list.appendChild(chip);
           return chip;
         });
-
-        const filterState = { empty: emptyState };
-
+        const searchBlock = buildSearchBox(
+          'est-inline-search-category',
+          t('ui.search_categories_label') || fallback['ui.search_categories_label'],
+          t('ui.search_empty_categories') || fallback['ui.search_empty_categories'],
+          chips,
+          5
+        );
+        if (searchBlock){
+          wrap.appendChild(searchBlock);
+        }
         wrap.appendChild(list);
-        wrap.appendChild(emptyState);
         appendBotBubble(wrap, { ensureVisible: false });
-
-        filterQuickPick('', chips, filterState);
         maybeApplyPrefillCategory();
         scheduleResumeScroll(180);
 
@@ -1064,7 +1107,7 @@
         setBusy(false);
         updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
         const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
+        wrap.className = 'est-botcard est-botcard--active';
 
         const title = document.createElement('h3');
         title.className = 'est-botcard__title';
@@ -1081,7 +1124,7 @@
         const grid = document.createElement('div');
         grid.className = 'est-botcard__grid';
         grid.setAttribute('role', 'list');
-        jobs.forEach(job => {
+        const chips = jobs.map(job => {
           const option = {
             id: job.id,
             value: job.id,
@@ -1093,7 +1136,18 @@
           chip.classList.add('est-chip--ghost', 'est-chip--full');
 
           grid.appendChild(chip);
+          return chip;
         });
+        const searchBlock = buildSearchBox(
+          'est-inline-search-job',
+          t('ui.search_jobs_label') || fallback['ui.search_jobs_label'],
+          t('ui.search_empty_jobs') || fallback['ui.search_empty_jobs'],
+          chips,
+          7
+        );
+        if (searchBlock){
+          wrap.appendChild(searchBlock);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
         maybeAutoPickByTask(jobs, selectJob);
@@ -1104,7 +1158,7 @@
         updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
 
         const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
+        wrap.className = 'est-botcard est-botcard--active';
         const title = document.createElement('h3');
         title.className = 'est-botcard__title';
         title.textContent = t('ui.where_exactly');
@@ -1120,7 +1174,7 @@
         const grid = document.createElement('div');
         grid.className = 'est-botcard__grid';
         grid.setAttribute('role', 'list');
-        subtypes.forEach(sub => {
+        const chips = subtypes.map(sub => {
           const option = {
             id: sub.id,
             value: sub.id,
@@ -1132,7 +1186,18 @@
           chip.classList.add('est-chip--ghost', 'est-chip--full');
 
           grid.appendChild(chip);
+          return chip;
         });
+        const searchBlock = buildSearchBox(
+          'est-inline-search-subtype',
+          t('ui.search_subtypes_label') || fallback['ui.search_subtypes_label'],
+          t('ui.search_empty_subtypes') || fallback['ui.search_empty_subtypes'],
+          chips,
+          7
+        );
+        if (searchBlock){
+          wrap.appendChild(searchBlock);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
         maybeAutoPickByTask(subtypes, selectSubtype);
@@ -1268,7 +1333,7 @@
         addBtn.className = 'est-btn est-btn--primary';
         addBtn.textContent = t('ui.add_job_btn') || fallback['ui.add_job_btn'];
         addBtn.addEventListener('click', () => {
-          appendMetaBubble('בוחרים עבודה נוספת לאותו תחום.');
+          appendMetaBubble(t('ui.meta_add_job') || fallback['ui.meta_add_job']);
           state.job = null;
           state.jobLabel = '';
           state.subtype = null;
@@ -1375,7 +1440,7 @@
 
         if (!questions.length){
           const wrap = document.createElement('div');
-          wrap.className = 'est-botcard';
+          wrap.className = 'est-botcard est-botcard--active';
           const note = document.createElement('p');
           note.className = 'est-botcard__empty';
           note.textContent = t('ui.no_questions');
@@ -1408,7 +1473,7 @@
           secondary: questionCounter
         });
         const wrap = document.createElement('div');
-        wrap.className = 'est-botcard';
+        wrap.className = 'est-botcard est-botcard--active';
         const title = document.createElement('h3');
         title.className = 'est-botcard__title';
         title.textContent = question.text || '';
@@ -1425,7 +1490,8 @@
         const grid = document.createElement('div');
         grid.className = 'est-botcard__grid';
         grid.setAttribute('role', 'list');
-        (question.options || []).forEach(opt => {
+        const options = question.options || [];
+        const chips = options.map(opt => {
           const option = {
             id: opt.value,
             value: opt.value,
@@ -1453,7 +1519,18 @@
             chip.dataset.hint = opt.hint;
           }
           grid.appendChild(chip);
+          return chip;
         });
+        const searchBlock = buildSearchBox(
+          `est-inline-search-question-${index}`,
+          t('ui.search_question_options_label') || fallback['ui.search_question_options_label'],
+          t('ui.search_empty_question_options') || fallback['ui.search_empty_question_options'],
+          chips,
+          8
+        );
+        if (searchBlock){
+          wrap.appendChild(searchBlock);
+        }
         wrap.appendChild(grid);
         replaceBotBubbleContent(wrap);
       }

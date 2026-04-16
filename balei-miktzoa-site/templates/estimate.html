@@ -248,7 +248,7 @@
         locksmith: 'ui.category_hint_locksmith'
       };
       const searchThresholds = {
-        categories: 7,
+        categories: 5,
         jobs: 7,
         subtypes: 5,
         questionDefault: 6,
@@ -265,6 +265,7 @@
         'yesno'
       ];
       let activeBotBubble = null;
+      let nextActionScrollTimer = null;
       const currencyFormatter = (typeof Intl !== 'undefined' && Intl.NumberFormat)
         ? new Intl.NumberFormat(lang === 'he' ? 'he-IL' : 'en-US', {
             style: 'currency',
@@ -353,6 +354,33 @@
             focusFirstInteractive(bubble);
           }
         });
+      }
+      function getStickyHeaderOffset(){
+        const header = document.querySelector('.topbar-rail');
+        return header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+      }
+      function maybeScrollToNextAction(target, options){
+        if (!target || !(target instanceof HTMLElement)) return;
+        if (nextActionScrollTimer){
+          window.clearTimeout(nextActionScrollTimer);
+        }
+        nextActionScrollTimer = window.setTimeout(() => {
+          const rect = target.getBoundingClientRect();
+          const headerOffset = getStickyHeaderOffset();
+          const topSafeZone = headerOffset + 18;
+          const bottomSafeZone = window.innerHeight - 20;
+          const topVisible = rect.top >= topSafeZone && rect.top <= window.innerHeight * 0.66;
+          const bottomVisible = rect.bottom <= bottomSafeZone;
+          if (topVisible && bottomVisible){
+            return;
+          }
+          const scrollTop = Math.max(0, window.scrollY + rect.top - topSafeZone);
+          const prefersReducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+          window.scrollTo({
+            top: scrollTop,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+          });
+        }, options && typeof options.delay === 'number' ? options.delay : 90);
       }
 
       function createBubble(type){
@@ -645,6 +673,7 @@
         } else if (node){
           activeBotBubble.appendChild(node);
         }
+        maybeScrollToNextAction(activeBotBubble);
         return activeBotBubble;
       }
 
@@ -1120,6 +1149,7 @@
         updateJourney();
         updateProgress('job', { label: t('ui.choose_job') || getStageLabel('job') });
         loadJobs();
+        maybeScrollToNextAction(activeBotBubble, { delay: 140 });
       }
 
       function showLoading(key){
@@ -1416,6 +1446,7 @@
         updateJourney();
         updateProgress('subtype', { label: t('ui.where_exactly') || getStageLabel('subtype') });
         loadSubtypes();
+        maybeScrollToNextAction(activeBotBubble, { delay: 140 });
       }
 
       function selectSubtype(sub){
@@ -1429,6 +1460,7 @@
         updateJourney();
         updateProgress('quote', { label: getStageLabel('quote') });
         loadQuestions();
+        maybeScrollToNextAction(activeBotBubble, { delay: 140 });
       }
 
       function loadJobs(){
@@ -1555,6 +1587,7 @@
             finalizeBotBubble(question.text || '', question.meta && question.meta.why ? question.meta.why : '');
             appendUserBubble(option.label);
             askQuestion(index + 1);
+            maybeScrollToNextAction(activeBotBubble, { delay: 140 });
           });
           if (whyId){
             chip.setAttribute('aria-describedby', whyId);

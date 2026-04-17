@@ -12,7 +12,7 @@
 {% include 'navbar.html' %}
 
 {% block content %}
-{% set hero_teaser = worker.bio_short or worker.tagline or worker.experience_text or '' %}
+{% set hero_teaser = worker.bio_short or worker.tagline or '' %}
 {% set about_body = worker.description or worker.bio_full or worker.about_clean or worker.about %}
 {% set field_txt = worker.title or worker.field_display or worker.field_translated or worker.field %}
 {% set city_txt = worker.city or worker.base_city %}
@@ -30,6 +30,8 @@
 {% set show_price = (price_items and price_items|length > 0) or (fallback_ranges and fallback_ranges|length > 0) %}
 {% set show_info = (_specializations and _specializations|length > 0) or (_areas and _areas|length > 0) or worker.hours or (_schedule and _schedule|length > 0) or (worker.languages and worker.languages|length > 0) %}
 {% set _name = worker.company_name or worker.name or _('worker_name_fallback') %}
+{% set featured_review = reviews_list[0] if reviews_list and reviews_list|length > 0 else None %}
+{% set faq_items = worker.faq if worker.faq is defined and worker.faq is iterable and worker.faq is not string else (worker.faqs if worker.faqs is defined and worker.faqs is iterable and worker.faqs is not string else []) %}
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
 
@@ -76,7 +78,6 @@
       </div>
       <div class="hero-media-foot">
         {% if field_txt %}<span>{{ field_txt }}</span>{% endif %}
-        {% if primary_service_area %}<span>{{ primary_service_area }}</span>{% endif %}
         {% if review_count > 0 %}<span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>{% endif %}
       </div>
     </div>
@@ -100,7 +101,6 @@
 
       <div class="hero-trust-grid" role="list" aria-label="{{ _('badges_aria') }}">
         {% if worker.experience_text %}<span class="trust-chip" role="listitem">{{ worker.experience_text }}</span>{% endif %}
-        {% if primary_service_area %}<span class="trust-chip" role="listitem">{{ _('trust_service_area') }}: {{ primary_service_area }}</span>{% endif %}
         {% if worker.languages and worker.languages|length > 0 %}<span class="trust-chip" role="listitem">{{ _('service_languages_label') }}: {{ worker.languages|join(', ') }}</span>{% endif %}
         {% if availability == 'open' %}<span class="trust-chip trust-chip--state" role="listitem">{{ _('cta_call_open') }}</span>{% elif availability == 'closed' %}<span class="trust-chip trust-chip--state" role="listitem">{{ _('cta_call_closed') }}</span>{% endif %}
         {% if worker.verified %}<span class="trust-chip" role="listitem">{{ _('verified_badge') }}</span>{% endif %}
@@ -134,37 +134,32 @@
     </div>
   </header>
 
-  <section id="reviews" class="profile-section profile-section--proof" aria-label="{{ _('reviews_section_title') }}">
-    <div class="section-head">
-      <h2>{{ _('reviews_section_title') }}</h2>
-      {% if rating_value is not none or review_count > 0 %}
-      <div class="inline-proof">
-        <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0.0)|round(2) }};"></span>
-        <strong>{{ rating_value if rating_value is not none else '—' }}</strong>
-        <span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>
-      </div>
-      {% endif %}
+  {% if about_body %}
+  <section class="profile-section profile-section--about" aria-label="{{ _('about_me_title') }}">
+    <div class="section-head"><h2>{{ _('about_me_title') }}</h2></div>
+    <div class="about-layout">
+      <div class="about-copy">{{ about_body }}</div>
+      <ul class="about-points" role="list">
+        {% if worker.experience_text %}<li>{{ worker.experience_text }}</li>{% endif %}
+        {% if worker.verified %}<li>{{ _('verified_badge') }}</li>{% endif %}
+        {% if worker.languages and worker.languages|length > 0 %}<li>{{ _('service_languages_label') }}: {{ worker.languages|join(', ') }}</li>{% endif %}
+        {% if availability == 'open' %}<li>{{ _('cta_call_open') }}</li>{% elif availability == 'closed' %}<li>{{ _('cta_call_closed') }}</li>{% endif %}
+      </ul>
     </div>
-    {% if reviews_list and reviews_list|length > 0 %}
-      <div class="reviews-preview" role="list">
-        {% for review in reviews_list[:3] %}
-          {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
-          {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
-          {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
-          <article class="review-card" role="listitem">
-            <div class="review-card__top">
-              <span class="review-card__author">{{ rauthor or _('review_author_fallback') }}</span>
-              {% if rr is not none %}<span class="rating-stars" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
-            </div>
-            <p>{{ rtxt }}</p>
-            {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
-          </article>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="worker-empty">{{ _('no_reviews_available') }}</div>
-    {% endif %}
   </section>
+  {% endif %}
+
+  {% if _specializations and _specializations|length > 0 %}
+  <section class="profile-section profile-section--services" aria-label="{{ _('my_services_title') }}">
+    <div class="section-head">
+      <h2>{{ _('my_services_title') }}</h2>
+      <span class="section-kicker">{{ field_txt or _('field_label_fallback') }}</span>
+    </div>
+    <ul class="services-grid" role="list">
+      {% for srv in _specializations[:12] %}{% if srv|string %}<li>{{ srv }}</li>{% endif %}{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
   {% if show_price %}
   <section class="profile-section profile-section--pricing" aria-label="{{ _('price_ranges_title') }}">
@@ -194,30 +189,66 @@
         {% endfor %}
       {% endif %}
     </ul>
-    <a class="profile-btn profile-btn--outline" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('go_to_estimator_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('go_to_estimator_label') }}</a>
   </section>
   {% endif %}
 
-  {% if show_info %}
-  <section class="profile-section profile-section--details" aria-label="{{ _('services_and_areas_aria') }}">
+  <section id="reviews" class="profile-section profile-section--reviews" aria-label="{{ _('reviews_section_title') }}">
+    <div class="section-head">
+      <h2>{{ _('reviews_section_title') }}</h2>
+      {% if review_count > 0 %}
+      <span class="section-kicker">{{ review_count }} {{ _('reviews_count_suffix') }}</span>
+      {% endif %}
+    </div>
+    {% set initial_count = 4 %}
+    {% set chunk_size = 4 %}
+    {% if reviews_list and reviews_list|length > 0 %}
+      {% if featured_review %}
+      {% set frtxt = featured_review.display_text or (featured_review.get('translations', {}).get(g.current_lang) if featured_review.get is defined else None) or (featured_review.get('text') if featured_review.get is defined else featured_review.text if featured_review.text is defined else '') %}
+      {% set frauthor = (featured_review.get('author') if featured_review.get is defined else featured_review.author if featured_review.author is defined else None) %}
+      {% set frr = (featured_review.get('rating') if featured_review.get is defined else featured_review.rating if featured_review.rating is defined else None) %}
+      <article class="featured-review">
+        <div class="featured-review__head">
+          <strong>{{ frauthor or _('review_author_fallback') }}</strong>
+          {% if frr is not none %}<span class="rating-stars" style="--value: {{ (((frr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+        </div>
+        <p>{{ frtxt }}</p>
+      </article>
+      {% endif %}
+      {% if reviews_list|length > initial_count %}
+        <button id="load-more-reviews-btn" class="profile-btn profile-btn--outline" aria-controls="reviews-list" aria-label="{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}" data-initial-count="{{ initial_count }}" data-chunk-size="{{ chunk_size }}" type="button">{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}</button>
+        <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
+      {% endif %}
+      <div class="reviews-list" id="reviews-list">
+        {% for review in reviews_list %}
+          {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
+          {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
+          {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
+          <article class="review-item{% if loop.index > initial_count %} is-hidden{% endif %}" data-index="{{ loop.index }}">
+            <div class="review-item__head">
+              <span>{{ rauthor or _('review_author_fallback') }}</span>
+              {% if rr is not none %}<span class="rating-stars" aria-label="{{ _('review_rating_aria_prefix') }} {{ rr }}" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+            </div>
+            <p>{{ rtxt }}</p>
+            {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="worker-empty">{{ _('no_reviews_available') }}</div>
+    {% endif %}
+  </section>
+
+  {% if show_info or (faq_items and faq_items|length > 0) %}
+  <section class="profile-section profile-section--support" aria-label="{{ _('areas_and_hours_title') }}">
     <div class="section-head">
       <h2>{{ _('areas_and_hours_title') }}</h2>
     </div>
-    <div class="info-grid{% if (_specializations and _areas and (worker.hours or _schedule) and worker.languages) %} info-grid--full{% endif %}">
-      {% if _specializations and _specializations|length > 0 %}
-      <article class="info-block info-block--services">
-        <h3>{{ _('my_services_title') }}</h3>
-        <ul class="chip-list" role="list">
-          {% for srv in _specializations %}{% if srv|string %}<li>{{ srv }}</li>{% endif %}{% endfor %}
-        </ul>
-      </article>
-      {% endif %}
-
+    <div class="support-grid">
       {% if _areas and _areas|length > 0 %}
       <article class="info-block info-block--areas">
         <h3>{{ _('service_areas_title') }}</h3>
         <ul class="line-list" role="list">
-          {% for area in _areas %}{% if area|string %}<li><span>{{ area }}</span></li>{% endif %}{% endfor %}
+          {% for area in _areas[:8] %}{% if area|string %}<li><span>{{ area }}</span></li>{% endif %}{% endfor %}
         </ul>
       </article>
       {% endif %}
@@ -247,11 +278,19 @@
       </article>
       {% endif %}
 
-      {% if worker.languages and worker.languages|length > 0 %}
-      <article class="info-block info-block--languages">
-        <h3>{{ _('service_languages_label') }}</h3>
-        <ul class="chip-list" role="list">
-          {% for L in worker.languages %}<li>{{ L }}</li>{% endfor %}
+      {% if faq_items and faq_items|length > 0 %}
+      <article class="info-block info-block--faq">
+        <h3>{{ _('faq_title') if _('faq_title') else 'FAQ' }}</h3>
+        <ul class="line-list" role="list">
+          {% for item in faq_items[:4] %}
+            {% if item is mapping %}
+              {% set q = item.question if item.question is defined else item.get('question') %}
+              {% set a = item.answer if item.answer is defined else item.get('answer') %}
+              {% if q %}<li><span>{{ q }}</span>{% if a %}<strong>{{ a }}</strong>{% endif %}</li>{% endif %}
+            {% elif item|string %}
+              <li><span>{{ item }}</span></li>
+            {% endif %}
+          {% endfor %}
         </ul>
       </article>
       {% endif %}
@@ -259,40 +298,16 @@
   </section>
   {% endif %}
 
-  {% if about_body %}
-  <section class="profile-section profile-section--about" aria-label="{{ _('about_me_title') }}">
-    <div class="section-head"><h2>{{ _('about_me_title') }}</h2></div>
-    <div class="about-copy">{{ about_body }}</div>
-  </section>
-  {% endif %}
-
-  <section class="profile-section" aria-label="{{ _('reviews_section_title') }}">
-    <div class="section-head"><h2>{{ _('reviews_section_title') }}</h2></div>
-    {% set initial_count = 4 %}
-    {% set chunk_size = 4 %}
-    {% if reviews_list and reviews_list|length > 0 %}
-      {% if reviews_list|length > initial_count %}
-        <button id="load-more-reviews-btn" class="profile-btn profile-btn--outline" aria-controls="reviews-list" aria-label="{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}" data-initial-count="{{ initial_count }}" data-chunk-size="{{ chunk_size }}" type="button">{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}</button>
-        <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
+  <section class="profile-section profile-section--final-cta" aria-label="{{ _('quick_actions_aria') }}">
+    <div class="section-head">
+      <h2>{{ _('cta_quote_specific') }}</h2>
+    </div>
+    <div class="final-cta-actions">
+      <a class="profile-btn profile-btn--primary" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
+      {% if worker.phone_formatted %}
+      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
       {% endif %}
-      <div class="reviews-list" id="reviews-list">
-        {% for review in reviews_list %}
-          {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
-          {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
-          {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
-          <article class="review-item{% if loop.index > initial_count %} is-hidden{% endif %}" data-index="{{ loop.index }}">
-            <div class="review-item__head">
-              <span>{{ rauthor or _('review_author_fallback') }}</span>
-              {% if rr is not none %}<span class="rating-stars" aria-label="{{ _('review_rating_aria_prefix') }} {{ rr }}" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
-            </div>
-            <p>{{ rtxt }}</p>
-            {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
-          </article>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="worker-empty">{{ _('no_reviews_available') }}</div>
-    {% endif %}
+    </div>
   </section>
 
   <div class="worker-sticky-cta" aria-label="{{ _('quick_actions_aria') }}">

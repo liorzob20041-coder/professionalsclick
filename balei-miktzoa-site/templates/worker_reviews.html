@@ -377,8 +377,12 @@
   </section>
 
   <!-- שירותים ואזורי פעילות -->
+  {% set _specializations = worker.specializations or worker.services_list or worker.sub_services or [] %}
+  {% set _areas = worker.service_areas or [] %}
+  {% set _schedule = worker.work_schedule_display or worker.work_blocks or [] %}
+  {% set show_info_panels = (_specializations and _specializations|length > 0) or (_areas and _areas|length > 0) or worker.hours or (_schedule and _schedule|length > 0) or worker.phone_formatted %}
+  {% if show_info_panels %}
   <section class="worker-info-panels" aria-label="{{ _('services_and_areas_aria') }}">
-    {% set _specializations = worker.specializations or worker.services_list or worker.sub_services or [] %}
     <div class="worker-panel worker-panel--services" role="region" aria-labelledby="worker-services-title">
       <div class="worker-panel__header">
         <h2 id="worker-services-title" class="worker-panel__title">{{ _('my_services_title') }}</h2>
@@ -407,7 +411,6 @@
       </div>
       <div class="worker-panel__group" aria-label="{{ _('service_areas_title') }}">
         <h3 class="worker-panel__subtitle">{{ _('service_areas_title') }}</h3>
-        {% set _areas = worker.service_areas or [] %}
         {% if _areas %}
           <ul class="worker-area-list" role="list">
             {% for area in _areas %}
@@ -426,7 +429,6 @@
       </div>
       <div class="worker-panel__group" aria-label="{{ _('working_hours_title') }}">
         <h3 class="worker-panel__subtitle">{{ _('working_hours_title') }}</h3>
-        {% set _schedule = worker.work_schedule_display or worker.work_blocks or [] %}
         {% if worker.hours %}
           <div class="worker-hours-card">{{ worker.hours }}</div>
         {% elif _schedule %}
@@ -500,10 +502,12 @@
       {% endif %}
     </div>
   </section>
+  {% endif %}
   <!-- אודות -->
+  {% set about_txt = about_body %}
+  {% set about_badge = hero_teaser or worker.tagline or worker.experience_text or worker.field %}
+  {% if about_txt or about_badge %}
   <section class="worker-about" aria-label="{{ _('about_me_title') }}">
-    {% set about_txt = about_body %}
-    {% set about_badge = hero_teaser or worker.tagline or worker.experience_text or worker.field %}
     <div class="worker-about-card">
       <div class="worker-about-card__header">
         <h2 class="worker-about-card__title">{{ _('about_me_title') }}</h2>
@@ -524,6 +528,7 @@
       {% endif %}
     </div>
   </section>
+  {% endif %}
 </section>
 {% endblock %}
 

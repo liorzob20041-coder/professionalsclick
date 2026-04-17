@@ -22,6 +22,7 @@
 {% set review_count = worker.reviews_count or (reviews_list|length if reviews_list else 0) %}
 {% set rating_value = (((worker.rating|string)|replace(',', '.')|float)|round(1)) if worker.rating is not none else None %}
 {% set availability = worker.call_to_action.status if worker.call_to_action and worker.call_to_action.status is defined else None %}
+{% set availability_line = worker.call_to_action.subline if worker.call_to_action and worker.call_to_action.subline is defined else None %}
 {% set _specializations = worker.specializations or worker.services_list or worker.sub_services or [] %}
 {% set _areas = worker.service_areas or [] %}
 {% set _schedule = worker.work_schedule_display or worker.work_blocks or [] %}
@@ -30,31 +31,79 @@
 {% set show_price = (price_items and price_items|length > 0) or (fallback_ranges and fallback_ranges|length > 0) %}
 {% set show_info = (_specializations and _specializations|length > 0) or (_areas and _areas|length > 0) or worker.hours or (_schedule and _schedule|length > 0) or (worker.languages and worker.languages|length > 0) %}
 {% set _name = worker.company_name or worker.name or _('worker_name_fallback') %}
+{% set estimate_href = (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) %}
+{% set wa_href = "https://wa.me/" ~ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) if worker.phone_formatted else None %}
 <section class="worker-profile-page">
-  <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
+  <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}">
 
-  <a href="{{ back_url }}" class="profile-back-link" rel="prev" aria-label="{{ _('back_to_list_aria') }}">{{ _('back_label') }}</a>
-
-  <nav class="profile-breadcrumbs" aria-label="{{ _('breadcrumbs_aria') }}">
-    <ol>
-      <li>
-        {% if breadcrumb_ctx and breadcrumb_ctx.home and breadcrumb_ctx.home.href %}
-          <a href="{{ breadcrumb_ctx.home.href }}">{{ breadcrumb_ctx.home.label }}</a>
-        {% else %}
-          {{ breadcrumb_ctx.home.label if breadcrumb_ctx and breadcrumb_ctx.home else _('home_label') }}
-        {% endif %}
-      </li>
-      {% if breadcrumb_ctx and breadcrumb_ctx.cat_city and breadcrumb_ctx.cat_city.label %}
+  <div class="profile-top-nav">
+    <a href="{{ back_url }}" class="profile-back-link" rel="prev" aria-label="{{ _('back_to_list_aria') }}">{{ _('back_label') }}</a>
+    <nav class="profile-breadcrumbs" aria-label="{{ _('breadcrumbs_aria') }}">
+      <ol>
         <li>
-          {% if breadcrumb_ctx.cat_city.href %}<a href="{{ breadcrumb_ctx.cat_city.href }}">{{ breadcrumb_ctx.cat_city.label }}</a>{% else %}{{ breadcrumb_ctx.cat_city.label }}{% endif %}
+          {% if breadcrumb_ctx and breadcrumb_ctx.home and breadcrumb_ctx.home.href %}
+            <a href="{{ breadcrumb_ctx.home.href }}">{{ breadcrumb_ctx.home.label }}</a>
+          {% else %}
+            {{ breadcrumb_ctx.home.label if breadcrumb_ctx and breadcrumb_ctx.home else _('home_label') }}
+          {% endif %}
         </li>
-      {% endif %}
-      <li aria-current="page">{{ breadcrumb_ctx.worker.label if breadcrumb_ctx and breadcrumb_ctx.worker else _name }}</li>
-    </ol>
-  </nav>
+        {% if breadcrumb_ctx and breadcrumb_ctx.cat_city and breadcrumb_ctx.cat_city.label %}
+          <li>
+            {% if breadcrumb_ctx.cat_city.href %}<a href="{{ breadcrumb_ctx.cat_city.href }}">{{ breadcrumb_ctx.cat_city.label }}</a>{% else %}{{ breadcrumb_ctx.cat_city.label }}{% endif %}
+          </li>
+        {% endif %}
+        <li aria-current="page">{{ breadcrumb_ctx.worker.label if breadcrumb_ctx and breadcrumb_ctx.worker else _name }}</li>
+      </ol>
+    </nav>
+  </div>
 
   <header class="profile-hero" aria-label="{{ _('worker_hero_aria') }}">
+    <div class="hero-decision">
+      <p class="hero-kicker">{{ field_txt or _('field_label_fallback') }}</p>
+      <h1>{{ _name }}</h1>
+      <p class="hero-meta">{% if primary_service_area %}{{ _('service_areas_title') }}: {{ primary_service_area }} · {% endif %}{{ worker.experience_text or _('hero_summary_generic_fallback') }}</p>
+
+      {% if rating_value is not none or review_count > 0 %}
+      <div class="hero-rating-panel" aria-label="{{ _('rating_average_aria') }}">
+        <strong class="hero-rating-score">{{ rating_value if rating_value is not none else '—' }}</strong>
+        <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0.0)|round(2) }};"></span>
+        <span class="hero-rating-count">{{ review_count }} {{ _('reviews_count_suffix') }}</span>
+      </div>
+      {% endif %}
+
+      <div class="hero-trust-grid" role="list" aria-label="{{ _('badges_aria') }}">
+        {% if worker.experience_text %}<span class="trust-chip" role="listitem">{{ worker.experience_text }}</span>{% endif %}
+        {% if primary_service_area %}<span class="trust-chip" role="listitem">{{ _('trust_service_area') }}: {{ primary_service_area }}</span>{% endif %}
+        {% if availability == 'open' %}<span class="trust-chip trust-chip--state" role="listitem">{{ _('cta_call_open') }}</span>{% elif availability == 'closed' %}<span class="trust-chip trust-chip--state" role="listitem">{{ _('cta_call_closed') }}</span>{% endif %}
+        {% if worker.languages and worker.languages|length > 0 %}<span class="trust-chip" role="listitem">{{ _('service_languages_label') }}: {{ worker.languages|join(', ') }}</span>{% endif %}
+        {% if worker.verified %}<span class="trust-chip" role="listitem">{{ _('verified_badge') }}</span>{% endif %}
+      </div>
+
+      <p class="hero-value">
+        {% if hero_teaser %}
+          {{ hero_teaser }}
+        {% elif field_txt and primary_service_area %}
+          {{ _('hero_summary_fallback', field=field_txt, area=primary_service_area) }}
+        {% elif field_txt %}
+          {{ _('hero_summary_no_area_fallback', field=field_txt) }}
+        {% else %}
+          {{ _('hero_summary_generic_fallback') }}
+        {% endif %}
+      </p>
+
+      <div class="hero-cta">
+        <a class="profile-btn profile-btn--primary" href="{{ estimate_href }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
+        {% if wa_href %}
+          <a class="profile-btn profile-btn--secondary" href="{{ wa_href }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
+          {% if availability != 'closed' %}
+            <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ _('cta_call_primary') }}</a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
     <div class="hero-media-wrap">
+      <div class="hero-media-label">{{ _('intro_video_aria') if worker.hero_video_src else _('worker_showcase_image_alt') }}</div>
       <div class="hero-media">
         {% if worker.hero_video_src %}
           <video class="worker-hero-video" controls preload="metadata" playsinline aria-label="{{ _('intro_video_aria') }}" {% if worker.hero_poster %}poster="{{ worker.hero_poster }}"{% endif %}>
@@ -66,244 +115,227 @@
           <div class="hero-media-fallback">
             <div class="hero-media-fallback__initial">{{ (_name[:1] if _name else '?')|upper }}</div>
             <p>{{ _('no_media_available') }}</p>
-            <ul>
-              {% if field_txt %}<li>{{ field_txt }}</li>{% endif %}
-              {% if primary_service_area %}<li>{{ primary_service_area }}</li>{% endif %}
-              {% if review_count > 0 %}<li>{{ review_count }} {{ _('reviews_count_suffix') }}</li>{% endif %}
-            </ul>
           </div>
-        {% endif %}
-      </div>
-      <div class="hero-media-foot">
-        {% if field_txt %}<span>{{ field_txt }}</span>{% endif %}
-        {% if primary_service_area %}<span>{{ primary_service_area }}</span>{% endif %}
-        {% if review_count > 0 %}<span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>{% endif %}
-      </div>
-    </div>
-
-    <div class="hero-decision">
-      <div class="hero-title-block">
-        <h1>{{ _name }}</h1>
-        <p class="hero-meta">{{ field_txt or _('field_label_fallback') }}{% if primary_service_area %} · {{ primary_service_area }}{% endif %}</p>
-        <p class="hero-value">
-          {% if hero_teaser %}
-            {{ hero_teaser }}
-          {% elif field_txt and primary_service_area %}
-            {{ _('hero_summary_fallback', field=field_txt, area=primary_service_area) }}
-          {% elif field_txt %}
-            {{ _('hero_summary_no_area_fallback', field=field_txt) }}
-          {% else %}
-            {{ _('hero_summary_generic_fallback') }}
-          {% endif %}
-        </p>
-      </div>
-
-      <div class="hero-trust-grid" role="list" aria-label="{{ _('badges_aria') }}">
-        {% if worker.experience_text %}<span class="trust-chip" role="listitem">{{ worker.experience_text }}</span>{% endif %}
-        {% if primary_service_area %}<span class="trust-chip" role="listitem">{{ _('trust_service_area') }}: {{ primary_service_area }}</span>{% endif %}
-        {% if worker.languages and worker.languages|length > 0 %}<span class="trust-chip" role="listitem">{{ _('service_languages_label') }}: {{ worker.languages|join(', ') }}</span>{% endif %}
-        {% if availability == 'open' %}<span class="trust-chip trust-chip--state" role="listitem">{{ _('cta_call_open') }}</span>{% elif availability == 'closed' %}<span class="trust-chip trust-chip--state" role="listitem">{{ _('cta_call_closed') }}</span>{% endif %}
-        {% if worker.verified %}<span class="trust-chip" role="listitem">{{ _('verified_badge') }}</span>{% endif %}
-      </div>
-
-      {% if rating_value is not none or review_count > 0 %}
-      <div class="hero-rating-panel" aria-label="{{ _('rating_average_aria') }}">
-        <div class="hero-rating-score">{{ rating_value if rating_value is not none else '—' }}</div>
-        <div class="hero-rating-meta">
-          <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0.0)|round(2) }};"></span>
-          <span class="hero-rating-count">{{ review_count }} {{ _('reviews_count_suffix') }}</span>
-        </div>
-      </div>
-      {% endif %}
-
-      <div class="hero-cta">
-        <a class="profile-btn profile-btn--primary" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
-
-        {% if worker.phone_formatted %}
-          <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-
-          {% set cta = worker.call_to_action or {} %}
-          {% set cta_state = cta.status if cta.status is defined else None %}
-          {% if cta_state == 'closed' %}
-            <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta.subline or _('cta_call_closed') }}</button>
-          {% else %}
-            <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ _('cta_call_primary') }}</a>
-          {% endif %}
         {% endif %}
       </div>
     </div>
   </header>
 
-  <section id="reviews" class="profile-section profile-section--proof" aria-label="{{ _('reviews_section_title') }}">
-    <div class="section-head">
-      <h2>{{ _('reviews_section_title') }}</h2>
-      {% if rating_value is not none or review_count > 0 %}
-      <div class="inline-proof">
-        <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0.0)|round(2) }};"></span>
-        <strong>{{ rating_value if rating_value is not none else '—' }}</strong>
-        <span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>
-      </div>
-      {% endif %}
-    </div>
-    {% if reviews_list and reviews_list|length > 0 %}
-      <div class="reviews-preview" role="list">
-        {% for review in reviews_list[:3] %}
-          {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
-          {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
-          {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
-          <article class="review-card" role="listitem">
-            <div class="review-card__top">
-              <span class="review-card__author">{{ rauthor or _('review_author_fallback') }}</span>
-              {% if rr is not none %}<span class="rating-stars" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
-            </div>
-            <p>{{ rtxt }}</p>
-            {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
-          </article>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="worker-empty">{{ _('no_reviews_available') }}</div>
-    {% endif %}
+  <section class="trust-bar" aria-label="נקודות אמון מהירות">
+    {% if worker.experience_text %}<div class="trust-bar-item"><strong>{{ worker.experience_text }}</strong><span>ניסיון מקצועי</span></div>{% endif %}
+    {% if _areas and _areas|length > 0 %}<div class="trust-bar-item"><strong>{{ _areas|length }}</strong><span>אזורי שירות</span></div>{% endif %}
+    {% if show_price %}<div class="trust-bar-item"><strong>{{ _('price_ranges_title') }}</strong><span>טווחי מחיר זמינים</span></div>{% endif %}
+    {% if wa_href %}<div class="trust-bar-item"><strong>WhatsApp</strong><span>מענה נוח ומהיר</span></div>{% endif %}
+    {% if availability_line %}<div class="trust-bar-item"><strong>{{ availability_line }}</strong><span>זמינות</span></div>{% endif %}
   </section>
 
-  {% if show_price %}
-  <section class="profile-section profile-section--pricing" aria-label="{{ _('price_ranges_title') }}">
-    <div class="section-head">
-      <h2>{{ _('price_ranges_title') }}</h2>
-      <span class="section-kicker">{{ _('price_helper_ranges') }}</span>
-    </div>
-    <ul class="price-list" role="list">
-      {% if price_items and price_items|length > 0 %}
-        {% for line in price_items[:6] %}
-          {% set parts = line.split(':') %}
-          {% set name = (parts[0] or '').strip() %}
-          {% set price = (parts[1] or '').strip() %}
-          <li class="price-row">
-            <span>{{ name }}</span>
-            {% if price %}<strong>{{ price }}</strong>{% endif %}
-          </li>
-        {% endfor %}
-      {% else %}
-        {% for pr in fallback_ranges[:6] %}
-          {% set label = pr.name if pr is mapping else (pr.label if pr is defined and pr.label else '') %}
-          {% set range = pr.range if pr is mapping else (pr if pr is string else '') %}
-          <li class="price-row">
-            <span>{{ label or _('common_job_fallback') }}</span>
-            {% if range %}<strong>₪{{ range|replace('₪','') }}</strong>{% endif %}
-          </li>
-        {% endfor %}
+  <section class="profile-main-layout">
+    <main class="profile-primary-col">
+      {% if about_body %}
+      <section class="profile-section profile-section--about" aria-label="{{ _('about_me_title') }}">
+        <div class="section-head">
+          <h2>{{ _('about_me_title') }}</h2>
+          <p>למה לבחור ב{{ _name }}?</p>
+        </div>
+        <p class="about-copy">{{ about_body }}</p>
+        <ul class="value-list" role="list">
+          {% if field_txt %}<li>{{ _('my_services_title') }}: {{ field_txt }}</li>{% endif %}
+          {% if primary_service_area %}<li>{{ _('service_areas_title') }}: {{ primary_service_area }}</li>{% endif %}
+          {% if show_price %}<li>{{ _('price_helper_ranges') }}</li>{% endif %}
+          {% if availability_line %}<li>{{ availability_line }}</li>{% endif %}
+          {% if worker.languages and worker.languages|length > 0 %}<li>{{ _('service_languages_label') }}: {{ worker.languages|join(', ') }}</li>{% endif %}
+        </ul>
+      </section>
       {% endif %}
-    </ul>
-    <a class="profile-btn profile-btn--outline" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('go_to_estimator_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('go_to_estimator_label') }}</a>
-  </section>
-  {% endif %}
 
-  {% if show_info %}
-  <section class="profile-section profile-section--details" aria-label="{{ _('services_and_areas_aria') }}">
-    <div class="section-head">
-      <h2>{{ _('areas_and_hours_title') }}</h2>
-    </div>
-    <div class="info-grid{% if (_specializations and _areas and (worker.hours or _schedule) and worker.languages) %} info-grid--full{% endif %}">
       {% if _specializations and _specializations|length > 0 %}
-      <article class="info-block info-block--services">
-        <h3>{{ _('my_services_title') }}</h3>
-        <ul class="chip-list" role="list">
-          {% for srv in _specializations %}{% if srv|string %}<li>{{ srv }}</li>{% endif %}{% endfor %}
-        </ul>
-      </article>
+      <section class="profile-section" aria-label="{{ _('my_services_title') }}">
+        <div class="section-head"><h2>{{ _('my_services_title') }}</h2></div>
+        <div class="services-grid" role="list">
+          {% for srv in _specializations %}
+            {% if srv|string %}<article class="service-card" role="listitem"><h3>{{ srv }}</h3></article>{% endif %}
+          {% endfor %}
+        </div>
+      </section>
       {% endif %}
 
-      {% if _areas and _areas|length > 0 %}
-      <article class="info-block info-block--areas">
-        <h3>{{ _('service_areas_title') }}</h3>
-        <ul class="line-list" role="list">
-          {% for area in _areas %}{% if area|string %}<li><span>{{ area }}</span></li>{% endif %}{% endfor %}
-        </ul>
-      </article>
-      {% endif %}
+      <section class="profile-section" aria-label="איך מתבצע התהליך">
+        <div class="section-head"><h2>איך מתבצע התהליך?</h2></div>
+        <ol class="process-steps">
+          <li><strong>שולחים פרטים</strong><span>ממלאים בקשה קצרה עם מה שצריך לבצע.</span></li>
+          <li><strong>מקבלים הערכה ראשונית</strong><span>הערכת מחיר ראשונית בהתאם לפרטי העבודה.</span></li>
+          <li><strong>מתאמים ביקור</strong><span>קובעים מועד נוח לפי הזמינות באזור שלכם.</span></li>
+          <li><strong>מבצעים את העבודה</strong><span>תחילת עבודה עם תיאום ציפיות ברור מראש.</span></li>
+        </ol>
+      </section>
 
-      {% if worker.hours or (_schedule and _schedule|length > 0) %}
-      <article class="info-block info-block--hours">
-        <h3>{{ _('working_hours_title') }}</h3>
-        {% if worker.hours %}
-          <p class="hours-plain">{{ worker.hours }}</p>
-        {% else %}
-          <ul class="line-list" role="list">
-            {% for block in _schedule %}
-              {% set _days_raw = block.get('days') %}
-              {% set days_label = block.get('days_display') or (_days_raw or [])|join(' • ') %}
-              {% set start_label = block.get('start_label') or (block.get('start_hour') is not none and '%02d:00' % (block.get('start_hour')|int)) %}
-              {% set end_label = block.get('end_label') or (block.get('end_hour') is not none and '%02d:00' % (block.get('end_hour')|int)) %}
-              {% set time_label = block.get('time_display') or ((start_label or end_label) and ((start_label or '') ~ (start_label and end_label and ' – ' or '') ~ (end_label or ''))) %}
-              {% if days_label or time_label %}
-              <li>
-                {% if days_label %}<span>{{ days_label }}</span>{% endif %}
-                {% if time_label %}<strong>{{ time_label }}</strong>{% endif %}
-              </li>
-              {% endif %}
+      {% if show_price %}
+      <section class="profile-section profile-section--pricing" aria-label="{{ _('price_ranges_title') }}">
+        <div class="section-head">
+          <h2>{{ _('price_ranges_title') }}</h2>
+          <p>המחיר הסופי משתנה לפי היקף עבודה, מורכבות וחומרים.</p>
+        </div>
+        <div class="price-grid" role="list">
+          {% if price_items and price_items|length > 0 %}
+            {% for line in price_items[:8] %}
+              {% set parts = line.split(':') %}
+              {% set name = (parts[0] or '').strip() %}
+              {% set price = (parts[1] or '').strip() %}
+              <article class="price-card" role="listitem">
+                <h3>{{ name or _('common_job_fallback') }}</h3>
+                {% if price %}<strong>{{ price }}</strong>{% endif %}
+              </article>
             {% endfor %}
-          </ul>
+          {% else %}
+            {% for pr in fallback_ranges[:8] %}
+              {% set label = pr.name if pr is mapping else (pr.label if pr is defined and pr.label else '') %}
+              {% set range = pr.range if pr is mapping else (pr if pr is string else '') %}
+              <article class="price-card" role="listitem">
+                <h3>{{ label or _('common_job_fallback') }}</h3>
+                {% if range %}<strong>₪{{ range|replace('₪','') }}</strong>{% endif %}
+              </article>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <small class="price-footnote">הטווחים להערכה בלבד. להצעה מדויקת מומלץ לשלוח פרטים מלאים.</small>
+      </section>
+      {% endif %}
+
+      <section id="reviews" class="profile-section profile-section--reviews" aria-label="{{ _('reviews_section_title') }}">
+        <div class="section-head">
+          <h2>{{ _('reviews_section_title') }}</h2>
+          {% if rating_value is not none or review_count > 0 %}
+          <div class="inline-proof">
+            <strong>{{ rating_value if rating_value is not none else '—' }}</strong>
+            <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0.0)|round(2) }};"></span>
+            <span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if reviews_list and reviews_list|length > 0 %}
+          <div class="reviews-highlight" role="list">
+            {% for review in reviews_list[:2] %}
+              {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
+              {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
+              {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
+              <article class="review-card review-card--featured" role="listitem">
+                <div class="review-card__top">
+                  <span>{{ rauthor or _('review_author_fallback') }}</span>
+                  {% if rr is not none %}<span class="rating-stars" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+                </div>
+                <p>{{ rtxt }}</p>
+                {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
+              </article>
+            {% endfor %}
+          </div>
+
+          {% set initial_count = 4 %}
+          {% set chunk_size = 4 %}
+          {% if reviews_list|length > initial_count %}
+            <button id="load-more-reviews-btn" class="profile-btn profile-btn--outline" aria-controls="reviews-list" aria-label="{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}" data-initial-count="{{ initial_count }}" data-chunk-size="{{ chunk_size }}" type="button">{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}</button>
+            <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
+          {% endif %}
+
+          <div class="reviews-list" id="reviews-list">
+            {% for review in reviews_list %}
+              {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
+              {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
+              {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
+              <article class="review-item{% if loop.index > initial_count %} is-hidden{% endif %}" data-index="{{ loop.index }}">
+                <div class="review-item__head">
+                  <span>{{ rauthor or _('review_author_fallback') }}</span>
+                  {% if rr is not none %}<span class="rating-stars" aria-label="{{ _('review_rating_aria_prefix') }} {{ rr }}" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+                </div>
+                <p>{{ rtxt }}</p>
+                {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="worker-empty">{{ _('no_reviews_available') }}</div>
         {% endif %}
-      </article>
+      </section>
+
+      {% if show_info %}
+      <section class="profile-section profile-section--support" aria-label="{{ _('areas_and_hours_title') }}">
+        <div class="section-head"><h2>{{ _('areas_and_hours_title') }}</h2></div>
+        <div class="support-grid">
+          {% if _areas and _areas|length > 0 %}
+            <article class="info-block">
+              <h3>{{ _('service_areas_title') }}</h3>
+              <ul class="line-list" role="list">
+                {% for area in _areas[:8] %}{% if area|string %}<li><span>{{ area }}</span></li>{% endif %}{% endfor %}
+              </ul>
+            </article>
+          {% endif %}
+
+          {% if worker.hours or (_schedule and _schedule|length > 0) %}
+            <article class="info-block">
+              <h3>{{ _('working_hours_title') }}</h3>
+              {% if worker.hours %}
+                <p class="hours-plain">{{ worker.hours }}</p>
+              {% else %}
+                <ul class="line-list" role="list">
+                  {% for block in _schedule %}
+                    {% set _days_raw = block.get('days') %}
+                    {% set days_label = block.get('days_display') or (_days_raw or [])|join(' • ') %}
+                    {% set start_label = block.get('start_label') or (block.get('start_hour') is not none and '%02d:00' % (block.get('start_hour')|int)) %}
+                    {% set end_label = block.get('end_label') or (block.get('end_hour') is not none and '%02d:00' % (block.get('end_hour')|int)) %}
+                    {% set time_label = block.get('time_display') or ((start_label or end_label) and ((start_label or '') ~ (start_label and end_label and ' – ' or '') ~ (end_label or ''))) %}
+                    {% if days_label or time_label %}
+                    <li>{% if days_label %}<span>{{ days_label }}</span>{% endif %}{% if time_label %}<strong>{{ time_label }}</strong>{% endif %}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </article>
+          {% endif %}
+        </div>
+      </section>
       {% endif %}
 
-      {% if worker.languages and worker.languages|length > 0 %}
-      <article class="info-block info-block--languages">
-        <h3>{{ _('service_languages_label') }}</h3>
-        <ul class="chip-list" role="list">
-          {% for L in worker.languages %}<li>{{ L }}</li>{% endfor %}
+      <section class="profile-section" aria-label="שאלות נפוצות">
+        <div class="section-head"><h2>שאלות נפוצות</h2></div>
+        <div class="faq-list">
+          {% if _areas and _areas|length > 0 %}<details><summary>באילו אזורים ניתן לקבל שירות?</summary><p>{{ _areas|join(', ') }}</p></details>{% endif %}
+          <details><summary>איך מקבלים הצעת מחיר?</summary><p>לוחצים על "{{ _('cta_quote_specific') }}" ושולחים פרטים על העבודה. לאחר מכן אפשר להמשיך גם בוואטסאפ או בטלפון.</p></details>
+          {% if show_price %}<details><summary>מה משפיע על המחיר הסופי?</summary><p>מורכבות העבודה, היקף, מצב התשתית והחומרים הנדרשים.</p></details>{% endif %}
+        </div>
+      </section>
+
+      <section class="bottom-cta" aria-label="קריאה אחרונה לפעולה">
+        <h2>רוצים להתקדם עם {{ _name }}?</h2>
+        <p>שלחו פרטים וקבלו הערכה כתובה בצורה ברורה לפני תחילת העבודה.</p>
+        <div class="bottom-cta-actions">
+          <a class="profile-btn profile-btn--primary" href="{{ estimate_href }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
+          {% if wa_href %}<a class="profile-btn profile-btn--secondary" href="{{ wa_href }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>{% endif %}
+        </div>
+      </section>
+    </main>
+
+    <aside class="profile-sidebar" aria-label="מרכז פעולות">
+      <div class="sticky-card">
+        <h2>יצירת קשר מהירה</h2>
+        <a class="profile-btn profile-btn--primary" href="{{ estimate_href }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
+        {% if wa_href %}<a class="profile-btn profile-btn--secondary" href="{{ wa_href }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>{% endif %}
+        {% if worker.phone_formatted and availability != 'closed' %}<a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ _('cta_call_primary') }}</a>{% endif %}
+
+        <ul class="sidebar-facts" role="list">
+          {% if availability_line %}<li><span>זמינות</span><strong>{{ availability_line }}</strong></li>{% endif %}
+          {% if primary_service_area %}<li><span>{{ _('service_areas_title') }}</span><strong>{{ primary_service_area }}</strong></li>{% endif %}
+          {% if worker.experience_text %}<li><span>ניסיון</span><strong>{{ worker.experience_text }}</strong></li>{% endif %}
+          {% if rating_value is not none %}<li><span>דירוג</span><strong>{{ rating_value }} / 5</strong></li>{% endif %}
         </ul>
-      </article>
-      {% endif %}
-    </div>
-  </section>
-  {% endif %}
-
-  {% if about_body %}
-  <section class="profile-section profile-section--about" aria-label="{{ _('about_me_title') }}">
-    <div class="section-head"><h2>{{ _('about_me_title') }}</h2></div>
-    <div class="about-copy">{{ about_body }}</div>
-  </section>
-  {% endif %}
-
-  <section class="profile-section" aria-label="{{ _('reviews_section_title') }}">
-    <div class="section-head"><h2>{{ _('reviews_section_title') }}</h2></div>
-    {% set initial_count = 4 %}
-    {% set chunk_size = 4 %}
-    {% if reviews_list and reviews_list|length > 0 %}
-      {% if reviews_list|length > initial_count %}
-        <button id="load-more-reviews-btn" class="profile-btn profile-btn--outline" aria-controls="reviews-list" aria-label="{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}" data-initial-count="{{ initial_count }}" data-chunk-size="{{ chunk_size }}" type="button">{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}</button>
-        <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
-      {% endif %}
-      <div class="reviews-list" id="reviews-list">
-        {% for review in reviews_list %}
-          {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
-          {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
-          {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
-          <article class="review-item{% if loop.index > initial_count %} is-hidden{% endif %}" data-index="{{ loop.index }}">
-            <div class="review-item__head">
-              <span>{{ rauthor or _('review_author_fallback') }}</span>
-              {% if rr is not none %}<span class="rating-stars" aria-label="{{ _('review_rating_aria_prefix') }} {{ rr }}" style="--value: {{ (((rr|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
-            </div>
-            <p>{{ rtxt }}</p>
-            {% if review.get is defined and review.get('job_done') %}<small>{{ _('review_job_done_label') }}: {{ review.get('job_done') }}</small>{% endif %}
-          </article>
-        {% endfor %}
       </div>
-    {% else %}
-      <div class="worker-empty">{{ _('no_reviews_available') }}</div>
-    {% endif %}
+    </aside>
   </section>
 
   <div class="worker-sticky-cta" aria-label="{{ _('quick_actions_aria') }}">
-    <a class="profile-btn profile-btn--primary" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
-    {% if worker.phone_formatted %}
-      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-      {% set _cta = worker.call_to_action or {} %}
-      {% set _state = _cta.status if _cta.status is defined else None %}
-      {% if _state != 'closed' %}
-      <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ _('cta_call_primary') }}</a>
-      {% endif %}
+    <a class="profile-btn profile-btn--primary" href="{{ estimate_href }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
+    {% if wa_href %}
+      <a class="profile-btn profile-btn--secondary" href="{{ wa_href }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
+      {% if availability != 'closed' %}<a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ _('cta_call_primary') }}</a>{% endif %}
     {% endif %}
   </div>
   <div class="worker-sticky-cta-space" aria-hidden="true"></div>

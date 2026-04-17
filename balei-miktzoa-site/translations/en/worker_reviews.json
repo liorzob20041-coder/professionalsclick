@@ -51,5 +51,14 @@
   "reviews_added_prefix": "Added",
   "reviews_added_suffix": "reviews",
   "service_languages_label": "Service languages",
-  "worker_showcase_image_alt": "Showcase image of"
+  "worker_showcase_image_alt": "Showcase image of",
+  "cta_call_primary": "Call for immediate service",
+  "cta_whatsapp_specific": "Message on WhatsApp",
+  "cta_quote_specific": "Request written estimate",
+  "trust_service_area": "Service area",
+  "trust_languages": "Languages",
+  "hero_summary_fallback": "Trusted {field} services in {area}.",
+  "hero_summary_no_area_fallback": "Trusted {field} services with local response.",
+  "hero_summary_generic_fallback": "Reliable local professional with transparent details and real customer feedback.",
+  "media_fallback_copy": "No showcase media yet. Contact now for recent project examples and availability."
 }

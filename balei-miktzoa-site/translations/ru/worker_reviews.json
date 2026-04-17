@@ -51,5 +51,14 @@
   "reviews_added_prefix": "Добавлено",
   "reviews_added_suffix": "отзывов",
   "service_languages_label": "Языки обслуживания",
-  "worker_showcase_image_alt": "Показательное фото"
+  "worker_showcase_image_alt": "Показательное фото",
+  "cta_call_primary": "Позвонить для быстрого сервиса",
+  "cta_whatsapp_specific": "Написать в WhatsApp",
+  "cta_quote_specific": "Запросить письменную смету",
+  "trust_service_area": "Зона обслуживания",
+  "trust_languages": "Языки",
+  "hero_summary_fallback": "Надёжные услуги по {field} в районе {area}.",
+  "hero_summary_no_area_fallback": "Надёжные услуги по {field} с локальным выездом.",
+  "hero_summary_generic_fallback": "Надёжный местный специалист с прозрачным профилем и реальными отзывами.",
+  "media_fallback_copy": "Пока нет витрины фото/видео. Свяжитесь, чтобы получить свежие примеры работ и уточнить доступность."
 }

@@ -193,12 +193,12 @@
               {% if review_count > 0 %}<p class="empty-media-proof">{{ review_count }} {{ _('reviews_count_suffix') }}</p>{% endif %}
             </div>
           {% endif %}
+        </div>
 
-          <div class="hero-name-float">
-            <div class="hero-name-title">{{ _name }}</div>
-            {% if _field %}<div class="hero-name-sub">{{ _field }}</div>{% endif %}
-            {% if primary_service_area %}<div class="hero-name-sub hero-name-sub--area">{{ _('trust_service_area') }}: {{ primary_service_area }}</div>{% endif %}
-          </div>
+        <div class="worker-media-meta" aria-label="{{ _('worker_hero_aria') }}">
+          <span class="worker-media-meta__name">{{ _name }}</span>
+          {% if _field %}<span class="worker-media-meta__sep">•</span><span>{{ _field }}</span>{% endif %}
+          {% if primary_service_area %}<span class="worker-media-meta__sep">•</span><span>{{ primary_service_area }}</span>{% endif %}
         </div>
       </div>
     </div>

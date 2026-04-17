@@ -1423,3 +1423,194 @@ body{ background: var(--background); color: var(--foreground); }
   .worker-about-card{ border-radius:14px; padding:14px; }
   .price-row{ align-items:flex-start; flex-direction:column; }
 }
+
+/* ===== Worker detail redesign v3: cohesive product page ===== */
+.worker-profile-section{
+  --wd-page:#eef3fa;
+  --wd-surface:#fff;
+  --wd-surface-muted:#f7faff;
+  --wd-border:#d5dfed;
+  --wd-border-strong:#bccbe0;
+  --wd-text:#0f172a;
+  --wd-sub:#475569;
+  --wd-primary:#103a70;
+  --wd-primary-2:#1d4ed8;
+  --wd-ok:#0f766e;
+  --wd-radius-lg:20px;
+  --wd-radius-md:14px;
+  --wd-shadow:0 14px 34px rgb(15 23 42 / 8%);
+  background:linear-gradient(180deg,#f6f9ff 0%,#f0f5fc 100%);
+  border-radius:26px;
+  padding-top:8px;
+}
+
+.worker-profile-section .worker-hero-layout,
+.worker-profile-section .worker-reviews-summary,
+.worker-profile-section .worker-price-link,
+.worker-profile-section .worker-panel,
+.worker-profile-section .worker-about-card{
+  background:var(--wd-surface);
+  border:1px solid var(--wd-border);
+  border-radius:var(--wd-radius-lg);
+  box-shadow:var(--wd-shadow);
+}
+
+.worker-profile-section .worker-hero-layout{
+  grid-template-columns:1fr;
+  gap:18px;
+  padding:clamp(16px,2.2vw,26px);
+}
+.worker-profile-section .worker-hero-main{ gap:16px; }
+.worker-profile-section .worker-hero-headline-row{ gap:12px; }
+.worker-profile-section .worker-hero-avatar{ border-radius:18px; }
+.worker-profile-section .worker-hero-title{ font-size:clamp(1.45rem,2.5vw,2.25rem); }
+.worker-profile-section .worker-hero-summary{ font-size:1rem; }
+
+.worker-profile-section .worker-rating-trust-row{
+  grid-template-columns:1fr;
+  gap:10px;
+}
+.worker-profile-section .hero-rating-card{
+  width:100%;
+  max-width:280px;
+}
+.worker-profile-section .worker-hero-badges{ gap:7px; }
+.worker-profile-section .worker-badge{ font-weight:700; }
+
+.worker-profile-section .worker-hero-cta-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:10px;
+}
+.worker-profile-section .worker-btn{
+  min-height:48px;
+  justify-content:center;
+  border-radius:12px;
+  border:1px solid var(--wd-border-strong);
+}
+.worker-profile-section .worker-btn--primary{ order:1; }
+.worker-profile-section .worker-btn--quote{ order:2; }
+.worker-profile-section .worker-btn--wa{ order:3; }
+.worker-profile-section .worker-btn--call,
+.worker-profile-section .worker-btn--estimator,
+.worker-profile-section .worker-panel__cta,
+.worker-profile-section .worker-sticky-cta .worker-btn--call{
+  background:var(--wd-primary);
+  border-color:var(--wd-primary);
+  color:#fff;
+}
+.worker-profile-section .worker-btn--quote,
+.worker-profile-section .worker-sticky-cta .worker-btn--quote{
+  background:var(--wd-primary-2);
+  border-color:var(--wd-primary-2);
+  color:#fff;
+}
+.worker-profile-section .worker-btn--wa{
+  background:#fff;
+  border-color:#b9d8c8;
+  color:#166534;
+}
+
+.worker-profile-section .worker-hero-media{ display:grid; gap:10px; }
+.worker-profile-section .hero-name-float{ display:none !important; }
+.worker-profile-section .media-card.hero-image-block{
+  padding:0;
+  border-radius:16px;
+  overflow:hidden;
+  min-height:230px;
+  background:#dbe6f7;
+}
+.worker-profile-section .worker-hero-video,
+.worker-profile-section .hero-main-image,
+.worker-profile-section .worker-hero-gallery--empty{
+  border-radius:0;
+  min-height:230px;
+}
+.worker-profile-section .worker-hero-video{
+  display:block;
+  width:100%;
+  background:#000;
+}
+.worker-profile-section .worker-media-meta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+  color:#3c4f67;
+  font-size:.88rem;
+  padding-inline:4px;
+}
+.worker-profile-section .worker-media-meta__name{ font-weight:700; color:#1e2f45; }
+.worker-profile-section .worker-media-meta__sep{ color:#8ea2be; }
+
+.worker-profile-section .worker-reviews-summary,
+.worker-profile-section .worker-price-link,
+.worker-profile-section .worker-info-panels,
+.worker-profile-section .worker-about{ margin-top:16px; }
+.worker-profile-section .worker-reviews-summary,
+.worker-profile-section .worker-price-link{ padding:18px; }
+.worker-profile-section .worker-reviews-summary h2,
+.worker-profile-section .worker-price-link h2,
+.worker-profile-section .worker-panel__title,
+.worker-profile-section .worker-about-card__title{
+  font-size:1.15rem;
+  margin-bottom:12px;
+}
+
+.worker-profile-section .review-item,
+.worker-profile-section .price-row,
+.worker-profile-section .worker-service-card,
+.worker-profile-section .worker-area-item,
+.worker-profile-section .worker-hours-item{
+  border:1px solid var(--wd-border);
+  border-radius:var(--wd-radius-md);
+  background:var(--wd-surface-muted);
+}
+
+.worker-profile-section .worker-price-link{ background:var(--wd-surface); }
+.worker-profile-section .price-row{
+  padding:11px 13px;
+}
+.worker-profile-section .price-row__amount{ font-size:1.03rem; }
+.worker-profile-section .price-helper{ margin-top:10px; }
+
+.worker-profile-section .worker-info-panels{
+  display:grid;
+  gap:12px;
+}
+.worker-profile-section .worker-panel{
+  border-radius:18px;
+  padding:16px;
+}
+.worker-profile-section .worker-panel__group + .worker-panel__group{ margin-top:8px; }
+.worker-profile-section .worker-panel__subtitle{ margin:0 0 8px; }
+
+.worker-profile-section .worker-about-card{ padding:18px; }
+.worker-profile-section .worker-about-card__body{ max-width:75ch; }
+
+.worker-profile-section .worker-sticky-cta{
+  background:#fff;
+  border-top:1px solid var(--wd-border);
+}
+
+@media (width >= 980px){
+  .worker-profile-section .worker-hero-layout{
+    grid-template-columns:minmax(0,1.2fr) minmax(0,0.95fr);
+    align-items:start;
+  }
+  .worker-profile-section .worker-hero-cta-row{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  }
+  .worker-profile-section .worker-btn--primary{ grid-column:1 / -1; }
+  .worker-profile-section .worker-info-panels{ grid-template-columns:1fr 1fr; }
+}
+
+@media (width <= 720px){
+  .worker-profile-section{ border-radius:0; padding-top:0; }
+  .worker-profile-section .worker-hero-layout,
+  .worker-profile-section .worker-reviews-summary,
+  .worker-profile-section .worker-price-link,
+  .worker-profile-section .worker-panel,
+  .worker-profile-section .worker-about-card{ border-radius:14px; }
+  .worker-profile-section .worker-media-meta{ font-size:.82rem; }
+}

@@ -51,5 +51,14 @@
   "reviews_added_prefix": "נוספו",
   "reviews_added_suffix": "ביקורות",
   "service_languages_label": "שפות שירות",
-  "worker_showcase_image_alt": "תמונת תצוגה של"
+  "worker_showcase_image_alt": "תמונת תצוגה של",
+  "cta_call_primary": "שיחה מהירה לקבלת שירות",
+  "cta_whatsapp_specific": "שליחה בוואטסאפ",
+  "cta_quote_specific": "בקשת הצעת מחיר כתובה",
+  "trust_service_area": "אזור שירות",
+  "trust_languages": "שפות",
+  "hero_summary_fallback": "שירותי {field} אמינים באזור {area}.",
+  "hero_summary_no_area_fallback": "שירותי {field} אמינים עם מענה מקומי.",
+  "hero_summary_generic_fallback": "בעל מקצוע מקומי עם פרופיל שקוף וביקורות לקוחות אמיתיות.",
+  "media_fallback_copy": "עדיין לא הועלו מדיה לתצוגה. אפשר ליצור קשר לקבלת דוגמאות עדכניות וזמינות."
 }

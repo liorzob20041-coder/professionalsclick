@@ -254,6 +254,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-top: 4px;
+  padding: 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 85%) 0%, rgb(242 248 255 / 95%) 100%);
+  border: 1px solid #d3e2f5;
 }
 
 .profile-btn {
@@ -282,9 +286,10 @@
 }
 
 .profile-btn--secondary {
-  background: #fff;
-  border-color: #b7dfca;
-  color: var(--profile-success);
+  background: linear-gradient(180deg, #fff 0%, #f4fff8 100%);
+  border-color: #8fd0ae;
+  color: #187a4b;
+  box-shadow: 0 8px 18px rgb(27 141 87 / 14%);
 }
 
 .profile-btn--tertiary,
@@ -292,6 +297,21 @@
   background: #fff;
   border-color: var(--profile-border);
   color: var(--profile-ink);
+}
+
+.hero-cta .profile-btn--tertiary,
+.final-cta-actions .profile-btn--tertiary,
+.worker-sticky-cta .profile-btn--tertiary {
+  background: linear-gradient(180deg, #23466f 0%, #122a46 100%);
+  border-color: #10243b;
+  color: #fff;
+  box-shadow: 0 14px 24px rgb(16 36 59 / 24%);
+}
+
+.hero-cta .profile-btn--secondary,
+.final-cta-actions .profile-btn--secondary,
+.worker-sticky-cta .profile-btn--secondary {
+  font-weight: 750;
 }
 
 .profile-btn.is-disabled,

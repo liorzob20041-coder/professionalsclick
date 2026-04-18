@@ -94,9 +94,9 @@
           {% if hero_teaser %}
             {{ hero_teaser }}
           {% elif field_txt and primary_service_area %}
-            {{ _('hero_summary_fallback', field=field_txt, area=primary_service_area) }}
+            {{ (_('hero_summary_fallback')|string)|replace('{field}', field_txt|string)|replace('{area}', primary_service_area|string) }}
           {% elif field_txt %}
-            {{ _('hero_summary_no_area_fallback', field=field_txt) }}
+            {{ (_('hero_summary_no_area_fallback')|string)|replace('{field}', field_txt|string) }}
           {% else %}
             {{ _('hero_summary_generic_fallback') }}
           {% endif %}
@@ -122,13 +122,13 @@
 
       {% if worker.phone_formatted %}
       <div class="hero-cta">
-        <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-
         {% if cta_state == 'closed' %}
           <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
         {% else %}
           <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
         {% endif %}
+
+        <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
       </div>
       {% endif %}
     </div>
@@ -304,22 +304,22 @@
       <h2>{{ _('quick_actions_aria') }}</h2>
     </div>
     <div class="final-cta-actions">
-      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
       {% if cta_state == 'closed' %}
         <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
       {% else %}
         <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
       {% endif %}
+      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
     </div>
   </section>
   {% endif %}
 
   {% if worker.phone_formatted %}
   <div class="worker-sticky-cta" aria-label="{{ _('quick_actions_aria') }}">
-      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
       {% if cta_state != 'closed' %}
       <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
       {% endif %}
+      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
   </div>
   <div class="worker-sticky-cta-space" aria-hidden="true"></div>
   {% endif %}

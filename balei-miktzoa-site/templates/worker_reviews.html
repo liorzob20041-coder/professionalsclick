@@ -22,6 +22,10 @@
 {% set review_count = worker.reviews_count or (reviews_list|length if reviews_list else 0) %}
 {% set rating_value = (((worker.rating|string)|replace(',', '.')|float)|round(1)) if worker.rating is not none else None %}
 {% set availability = worker.call_to_action.status if worker.call_to_action and worker.call_to_action.status is defined else None %}
+{% set cta_data = worker.call_to_action if worker.call_to_action else {} %}
+{% set cta_state = cta_data.status if cta_data and cta_data.status is defined else availability %}
+{% set cta_next_open = cta_data.next_open_label if cta_data and cta_data.next_open_label is defined else (cta_data.next_open if cta_data and cta_data.next_open is defined else None) %}
+{% set phone_cta_label = _('cta_call_now') if cta_state == 'open' else (_('cta_call_next_prefix') ~ cta_next_open if cta_next_open else _('cta_call_during_hours')) %}
 {% set _specializations = worker.specializations or worker.services_list or worker.sub_services or [] %}
 {% set _areas = worker.service_areas or [] %}
 {% set _schedule = worker.work_schedule_display or worker.work_blocks or [] %}
@@ -90,9 +94,9 @@
           {% if hero_teaser %}
             {{ hero_teaser }}
           {% elif field_txt and primary_service_area %}
-            {{ _('hero_summary_fallback', field=field_txt, area=primary_service_area) }}
+            {{ (_('hero_summary_fallback')|string)|replace('{field}', field_txt|string)|replace('{area}', primary_service_area|string) }}
           {% elif field_txt %}
-            {{ _('hero_summary_no_area_fallback', field=field_txt) }}
+            {{ (_('hero_summary_no_area_fallback')|string)|replace('{field}', field_txt|string) }}
           {% else %}
             {{ _('hero_summary_generic_fallback') }}
           {% endif %}
@@ -118,15 +122,13 @@
 
       {% if worker.phone_formatted %}
       <div class="hero-cta">
-        <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-
-        {% set cta = worker.call_to_action or {} %}
-        {% set cta_state = cta.status if cta.status is defined else None %}
         {% if cta_state == 'closed' %}
-          <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta.subline or _('cta_call_closed') }}</button>
+          <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
         {% else %}
-          <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ _('cta_call_primary') }}</a>
+          <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
         {% endif %}
+
+        <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
       </div>
       {% endif %}
     </div>
@@ -200,6 +202,7 @@
     {% set initial_count = 4 %}
     {% set chunk_size = 4 %}
     {% if reviews_list and reviews_list|length > 0 %}
+      {% set rendered_reviews = reviews_list[1:] if featured_review else reviews_list %}
       {% if featured_review %}
       {% set frtxt = featured_review.display_text or (featured_review.get('translations', {}).get(g.current_lang) if featured_review.get is defined else None) or (featured_review.get('text') if featured_review.get is defined else featured_review.text if featured_review.text is defined else '') %}
       {% set frauthor = (featured_review.get('author') if featured_review.get is defined else featured_review.author if featured_review.author is defined else None) %}
@@ -212,12 +215,12 @@
         <p>{{ frtxt }}</p>
       </article>
       {% endif %}
-      {% if reviews_list|length > initial_count %}
+      {% if rendered_reviews|length > initial_count %}
         <button id="load-more-reviews-btn" class="profile-btn profile-btn--outline" aria-controls="reviews-list" aria-label="{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}" data-initial-count="{{ initial_count }}" data-chunk-size="{{ chunk_size }}" type="button">{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}</button>
         <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
       {% endif %}
       <div class="reviews-list" id="reviews-list">
-        {% for review in reviews_list %}
+        {% for review in rendered_reviews %}
           {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
           {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
           {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}
@@ -302,26 +305,22 @@
       <h2>{{ _('quick_actions_aria') }}</h2>
     </div>
     <div class="final-cta-actions">
-      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-      {% set final_cta = worker.call_to_action or {} %}
-      {% set final_state = final_cta.status if final_cta.status is defined else None %}
-      {% if final_state == 'closed' %}
-        <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ final_cta.subline or _('cta_call_closed') }}</button>
+      {% if cta_state == 'closed' %}
+        <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
       {% else %}
-        <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if final_state %}data-availability="{{ final_state }}"{% endif %}>{{ _('cta_call_primary') }}</a>
+        <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
       {% endif %}
+      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
     </div>
   </section>
   {% endif %}
 
   {% if worker.phone_formatted %}
   <div class="worker-sticky-cta" aria-label="{{ _('quick_actions_aria') }}">
-      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-      {% set _cta = worker.call_to_action or {} %}
-      {% set _state = _cta.status if _cta.status is defined else None %}
-      {% if _state != 'closed' %}
-      <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ _('cta_call_primary') }}</a>
+      {% if cta_state != 'closed' %}
+      <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
       {% endif %}
+      <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
   </div>
   <div class="worker-sticky-cta-space" aria-hidden="true"></div>
   {% endif %}

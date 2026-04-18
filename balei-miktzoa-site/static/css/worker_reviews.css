@@ -344,6 +344,11 @@
   border: 0;
 }
 
+.profile-section--reviews {
+  max-width: 900px;
+  margin-inline: auto;
+}
+
 .profile-section--pricing {
   background: linear-gradient(180deg, #f9fbff 0%, #f0f6ff 100%);
   border: 1px solid #d9e6f7;
@@ -408,7 +413,7 @@
   border-top: 1px solid #e2eaf5;
   background: transparent;
   border-radius: 0;
-  padding: 14px 2px;
+  padding: 13px 6px 12px;
 }
 
 .review-item__head {
@@ -419,16 +424,28 @@
   margin-bottom: 9px;
 }
 
+.review-item__head > span:first-child {
+  font-weight: 700;
+  color: #1e3958;
+  letter-spacing: -0.01em;
+}
+
 .review-item p {
   margin: 0;
-  line-height: 1.55;
+  line-height: 1.6;
   color: #314865;
+  max-width: 68ch;
 }
 
 .review-item small {
   display: block;
-  margin-top: 8px;
+  margin-top: 10px;
+  font-size: 0.83rem;
   color: var(--profile-muted);
+}
+
+.review-item:nth-child(odd) {
+  background: linear-gradient(90deg, rgb(246 250 255 / 60%) 0%, rgb(255 255 255 / 0%) 55%);
 }
 
 .featured-review {
@@ -437,18 +454,32 @@
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 14px;
+  position: relative;
+}
+
+.featured-review::before {
+  content: "“";
+  position: absolute;
+  top: 6px;
+  inset-inline-start: 12px;
+  font-size: 2rem;
+  line-height: 1;
+  color: #c3d4ea;
 }
 
 .featured-review__head {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  padding-inline-start: 18px;
 }
 
 .featured-review p {
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.68;
+  padding-inline-start: 18px;
+  color: #2f4766;
 }
 
 .price-list {
@@ -555,6 +586,7 @@
   display: grid;
   gap: 0;
   margin-top: 10px;
+  border-top: 1px solid #e3ebf6;
 }
 
 .worker-empty {
@@ -639,6 +671,10 @@
   .profile-section--pricing,
   .profile-section--about {
     padding: 14px;
+  }
+
+  .profile-section--reviews {
+    max-width: 100%;
   }
 
   .profile-section--services {

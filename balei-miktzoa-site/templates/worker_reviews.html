@@ -202,6 +202,7 @@
     {% set initial_count = 4 %}
     {% set chunk_size = 4 %}
     {% if reviews_list and reviews_list|length > 0 %}
+      {% set rendered_reviews = reviews_list[1:] if featured_review else reviews_list %}
       {% if featured_review %}
       {% set frtxt = featured_review.display_text or (featured_review.get('translations', {}).get(g.current_lang) if featured_review.get is defined else None) or (featured_review.get('text') if featured_review.get is defined else featured_review.text if featured_review.text is defined else '') %}
       {% set frauthor = (featured_review.get('author') if featured_review.get is defined else featured_review.author if featured_review.author is defined else None) %}
@@ -214,12 +215,12 @@
         <p>{{ frtxt }}</p>
       </article>
       {% endif %}
-      {% if reviews_list|length > initial_count %}
+      {% if rendered_reviews|length > initial_count %}
         <button id="load-more-reviews-btn" class="profile-btn profile-btn--outline" aria-controls="reviews-list" aria-label="{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}" data-initial-count="{{ initial_count }}" data-chunk-size="{{ chunk_size }}" type="button">{{ _('reviews_load_more_prefix') }} {{ chunk_size }} {{ _('reviews_load_more_suffix') }}</button>
         <div id="reviews-live-region" aria-live="polite" class="is-hidden"></div>
       {% endif %}
       <div class="reviews-list" id="reviews-list">
-        {% for review in reviews_list %}
+        {% for review in rendered_reviews %}
           {% set rtxt = review.display_text or (review.get('translations', {}).get(g.current_lang) if review.get is defined else None) or (review.get('text') if review.get is defined else review.text if review.text is defined else '') %}
           {% set rr = (review.get('rating') if review.get is defined else review.rating if review.rating is defined else None) %}
           {% set rauthor = (review.get('author') if review.get is defined else review.author if review.author is defined else None) %}

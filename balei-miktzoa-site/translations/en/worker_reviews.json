@@ -63,5 +63,14 @@
   "hero_summary_fallback": "Trusted {field} services in {area}.",
   "hero_summary_no_area_fallback": "Trusted {field} services with local response.",
   "hero_summary_generic_fallback": "Reliable local professional with transparent details and real customer feedback.",
-  "media_fallback_copy": "No showcase media yet. Contact now for recent project examples and availability."
+  "media_fallback_copy": "No showcase media yet. Contact now for recent project examples and availability.",
+  "faq_title": "FAQ",
+  "profile_jump_nav": "Quick profile navigation",
+  "profile_overview_kicker": "Why customers choose this pro",
+  "profile_services_more": "Show more services",
+  "profile_media_title": "Work samples",
+  "profile_media_subtitle": "Photos and videos from real jobs",
+  "profile_get_exact_quote": "Get an accurate quote",
+  "profile_final_cta": "Contact now to confirm availability and a tailored price.",
+  "profile_sidebar_title": "Quick contact"
 }

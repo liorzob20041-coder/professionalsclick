@@ -63,5 +63,14 @@
   "hero_summary_fallback": "שירותי {field} אמינים באזור {area}.",
   "hero_summary_no_area_fallback": "שירותי {field} אמינים עם מענה מקומי.",
   "hero_summary_generic_fallback": "בעל מקצוע מקומי עם פרופיל שקוף וביקורות לקוחות אמיתיות.",
-  "media_fallback_copy": "עדיין לא הועלו מדיה לתצוגה. אפשר ליצור קשר לקבלת דוגמאות עדכניות וזמינות."
+  "media_fallback_copy": "עדיין לא הועלו מדיה לתצוגה. אפשר ליצור קשר לקבלת דוגמאות עדכניות וזמינות.",
+  "faq_title": "שאלות נפוצות",
+  "profile_jump_nav": "ניווט מהיר בפרופיל",
+  "profile_overview_kicker": "למה לבחור בבעל המקצוע הזה",
+  "profile_services_more": "הצגת שירותים נוספים",
+  "profile_media_title": "דוגמאות עבודה",
+  "profile_media_subtitle": "תמונות וסרטונים מהשטח",
+  "profile_get_exact_quote": "לקבלת הצעת מחיר מדויקת",
+  "profile_final_cta": "צרו קשר עכשיו לקבלת זמינות ומחיר מותאם לעבודה שלכם.",
+  "profile_sidebar_title": "יצירת קשר מהירה"
 }

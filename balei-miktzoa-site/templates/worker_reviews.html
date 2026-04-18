@@ -116,21 +116,19 @@
       </div>
       {% endif %}
 
+      {% if worker.phone_formatted %}
       <div class="hero-cta">
-        <a class="profile-btn profile-btn--primary" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
+        <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
 
-        {% if worker.phone_formatted %}
-          <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-
-          {% set cta = worker.call_to_action or {} %}
-          {% set cta_state = cta.status if cta.status is defined else None %}
-          {% if cta_state == 'closed' %}
-            <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta.subline or _('cta_call_closed') }}</button>
-          {% else %}
-            <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ _('cta_call_primary') }}</a>
-          {% endif %}
+        {% set cta = worker.call_to_action or {} %}
+        {% set cta_state = cta.status if cta.status is defined else None %}
+        {% if cta_state == 'closed' %}
+          <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ cta.subline or _('cta_call_closed') }}</button>
+        {% else %}
+          <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ _('cta_call_primary') }}</a>
         {% endif %}
       </div>
+      {% endif %}
     </div>
   </header>
 
@@ -298,30 +296,35 @@
   </section>
   {% endif %}
 
+  {% if worker.phone_formatted %}
   <section class="profile-section profile-section--final-cta" aria-label="{{ _('quick_actions_aria') }}">
     <div class="section-head">
-      <h2>{{ _('cta_quote_specific') }}</h2>
+      <h2>{{ _('quick_actions_aria') }}</h2>
     </div>
     <div class="final-cta-actions">
-      <a class="profile-btn profile-btn--primary" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
-      {% if worker.phone_formatted %}
       <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
+      {% set final_cta = worker.call_to_action or {} %}
+      {% set final_state = final_cta.status if final_cta.status is defined else None %}
+      {% if final_state == 'closed' %}
+        <button type="button" class="profile-btn profile-btn--tertiary is-disabled" aria-disabled="true" disabled>{{ final_cta.subline or _('cta_call_closed') }}</button>
+      {% else %}
+        <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if final_state %}data-availability="{{ final_state }}"{% endif %}>{{ _('cta_call_primary') }}</a>
       {% endif %}
     </div>
   </section>
+  {% endif %}
 
+  {% if worker.phone_formatted %}
   <div class="worker-sticky-cta" aria-label="{{ _('quick_actions_aria') }}">
-    <a class="profile-btn profile-btn--primary" href="{{ (url_for_lang('estimate', worker_id=worker.worker_id) if url_for_lang is defined else url_for('estimate', worker_id=worker.worker_id, lang=(g.current_lang if g.current_lang is defined else request.view_args.get('lang')))) }}" aria-label="{{ _('cta_quote_aria') }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('cta_quote_specific') }}</a>
-    {% if worker.phone_formatted %}
       <a class="profile-btn profile-btn--secondary" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
       {% set _cta = worker.call_to_action or {} %}
       {% set _state = _cta.status if _cta.status is defined else None %}
       {% if _state != 'closed' %}
       <a class="profile-btn profile-btn--tertiary" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ _('cta_call_primary') }}</a>
       {% endif %}
-    {% endif %}
   </div>
   <div class="worker-sticky-cta-space" aria-hidden="true"></div>
+  {% endif %}
 </section>
 {% endblock %}
 

@@ -24,6 +24,7 @@
 {% set cta_data = worker.call_to_action if worker.call_to_action else {} %}
 {% set cta_state = cta_data.status if cta_data and cta_data.status is defined else None %}
 {% set cta_next_open = cta_data.next_open_label if cta_data and cta_data.next_open_label is defined else (cta_data.next_open if cta_data and cta_data.next_open is defined else None) %}
+{% set availability_line = cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else None %}
 {% set phone_cta_label = _('cta_call_now') if cta_state == 'open' else (_('cta_call_next_prefix') ~ cta_next_open if cta_next_open else _('cta_call_during_hours')) %}
 {% set phone_cta_label_mobile = _('cta_call_now') if cta_state == 'open' else _('cta_call') %}
 {% set _specializations = worker.specializations or worker.services_list or worker.sub_services or [] %}
@@ -34,10 +35,9 @@
 {% set fallback_ranges = worker.price_ranges if worker.price_ranges is defined else [] %}
 {% set show_price = (price_items and price_items|length > 0) or (fallback_ranges and fallback_ranges|length > 0) %}
 {% set _name = worker.company_name or worker.name or _('worker_name_fallback') %}
-{% set featured_review = reviews_list[0] if reviews_list and reviews_list|length > 0 else None %}
 {% set has_media = worker.hero_video_src or worker.image_url or worker.image_filename %}
-{% set more_services = _specializations[8:] if _specializations and _specializations|length > 8 else [] %}
-{% set jump_count = (1 if about_body else 0) + (1 if _specializations and _specializations|length > 0 else 0) + (1 if show_price else 0) + (1 if review_count > 0 else 0) + (1 if _areas and _areas|length > 0 else 0) + (1 if worker.hours or (_schedule and _schedule|length > 0) else 0) %}
+{% set more_services = _specializations[10:] if _specializations and _specializations|length > 10 else [] %}
+{% set jump_count = (1 if about_body else 0) + (1 if _specializations and _specializations|length > 0 else 0) + (1 if show_price else 0) + (1 if review_count > 0 else 0) + (1 if (_areas and _areas|length > 0) or worker.hours or (_schedule and _schedule|length > 0) else 0) %}
 
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
@@ -63,7 +63,7 @@
       </ol>
     </nav>
 
-    <header class="profile-hero" aria-label="{{ _('worker_hero_aria') }}">
+    <header class="profile-hero" id="profile-hero" aria-label="{{ _('worker_hero_aria') }}">
       <div class="hero-main">
         <p class="hero-eyebrow">{{ field_txt or _('field_label_fallback') }}{% if primary_service_area %} · {{ primary_service_area }}{% endif %}</p>
         <h1>{{ _name }}</h1>
@@ -89,20 +89,19 @@
           {% endif %}
 
           {% if worker.experience_text %}<span class="hero-pill">{{ worker.experience_text }}</span>{% endif %}
-          {% if _languages and _languages|length > 0 %}<span class="hero-pill">{{ _('service_languages_label') }}: {{ _languages|join(', ') }}</span>{% endif %}
           {% if cta_state == 'open' %}<span class="hero-pill hero-pill--state">{{ _('cta_call_open') }}</span>{% elif cta_state == 'closed' %}<span class="hero-pill hero-pill--state">{{ _('cta_call_closed') }}</span>{% endif %}
-          {% if worker.verified %}<span class="hero-pill">{{ _('verified_badge') }}</span>{% endif %}
         </div>
 
         {% if worker.phone_formatted %}
         <div class="hero-cta">
           {% if cta_state == 'closed' %}
-            <button type="button" class="profile-btn profile-btn--call is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
+            <button type="button" class="profile-btn profile-btn--call is-disabled" aria-disabled="true" disabled>{{ phone_cta_label }}</button>
           {% else %}
             <a class="profile-btn profile-btn--call" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
           {% endif %}
           <a class="profile-btn profile-btn--wa" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" aria-label="{{ _('cta_whatsapp_aria_prefix') }}{{ _name }}" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
         </div>
+        {% if availability_line %}<p class="hero-availability">{{ availability_line }}</p>{% endif %}
         {% endif %}
       </div>
 
@@ -127,11 +126,10 @@
     </header>
 
     <div class="trust-strip" role="list" aria-label="{{ _('badges_aria') }}">
-      {% if worker.experience_text %}<span role="listitem">{{ worker.experience_text }}</span>{% endif %}
-      {% if cta_data and cta_data.subline is defined and cta_data.subline %}<span role="listitem">{{ cta_data.subline }}</span>{% endif %}
       {% if worker.verified %}<span role="listitem">{{ _('verified_badge') }}</span>{% endif %}
-      {% if _areas and _areas|length > 0 %}<span role="listitem">{{ _('service_areas_title') }}: {{ _areas[:2]|join(' · ') }}{% if _areas|length > 2 %} +{{ _areas|length - 2 }}{% endif %}</span>{% endif %}
       {% if _languages and _languages|length > 0 %}<span role="listitem">{{ _('service_languages_label') }}: {{ _languages|join(', ') }}</span>{% endif %}
+      {% if _areas and _areas|length > 0 %}<span role="listitem">{{ _('service_areas_title') }}: {{ _areas[:2]|join(' · ') }}{% if _areas|length > 2 %} +{{ _areas|length - 2 }}{% endif %}</span>{% endif %}
+      {% if availability_line %}<span role="listitem">{{ availability_line }}</span>{% endif %}
     </div>
 
     {% if jump_count >= 4 %}
@@ -140,37 +138,30 @@
       {% if _specializations and _specializations|length > 0 %}<a href="#services">{{ _('my_services_title') }}</a>{% endif %}
       {% if show_price %}<a href="#prices">{{ _('price_ranges_title') }}</a>{% endif %}
       <a href="#reviews">{{ _('reviews_section_title') }}</a>
-      {% if (_areas and _areas|length > 0) or worker.hours or (_schedule and _schedule|length > 0) %}<a href="#areas-hours">{{ _('areas_and_hours_title') }}</a>{% endif %}
+      <a href="#areas-hours">{{ _('areas_and_hours_title') }}</a>
     </nav>
     {% endif %}
 
     <div class="profile-layout">
       <main class="profile-main">
         {% if about_body %}
-        <section id="overview" class="profile-section">
+        <section id="overview" class="profile-section profile-section--overview">
           <div class="section-head">
             <h2>{{ _('about_me_title') }}</h2>
             <span class="section-kicker">{{ _('profile_overview_kicker') }}</span>
           </div>
-          <div class="overview-grid">
-            <p class="about-copy">{{ about_body }}</p>
-            <ul class="overview-points" role="list">
-              {% if field_txt %}<li>{{ field_txt }}</li>{% endif %}
-              {% if primary_service_area %}<li>{{ primary_service_area }}</li>{% endif %}
-              {% if worker.experience_text %}<li>{{ worker.experience_text }}</li>{% endif %}
-              {% if worker.verified %}<li>{{ _('verified_badge') }}</li>{% endif %}
-            </ul>
-          </div>
+          <p class="about-copy">{{ about_body }}</p>
         </section>
         {% endif %}
 
         {% if _specializations and _specializations|length > 0 %}
-        <section id="services" class="profile-section">
+        <section id="services" class="profile-section profile-section--services">
           <div class="section-head">
             <h2>{{ _('my_services_title') }}</h2>
+            <span class="section-kicker">{{ _specializations|length }}</span>
           </div>
           <ul class="services-grid" role="list">
-            {% for srv in _specializations[:8] %}{% if srv|string %}<li>{{ srv }}</li>{% endif %}{% endfor %}
+            {% for srv in _specializations[:10] %}{% if srv|string %}<li>{{ srv }}</li>{% endif %}{% endfor %}
           </ul>
           {% if more_services and more_services|length > 0 %}
           <details class="services-more">
@@ -184,7 +175,7 @@
         {% endif %}
 
         {% if has_media %}
-        <section id="media" class="profile-section">
+        <section id="media" class="profile-section profile-section--media">
           <div class="section-head">
             <h2>{{ _('profile_media_title') }}</h2>
             <span class="section-kicker">{{ _('profile_media_subtitle') }}</span>
@@ -207,7 +198,7 @@
         {% endif %}
 
         {% if show_price %}
-        <section id="prices" class="profile-section">
+        <section id="prices" class="profile-section profile-section--prices">
           <div class="section-head">
             <h2>{{ _('price_ranges_title') }}</h2>
             <span class="section-kicker">{{ _('price_helper_ranges') }}</span>
@@ -242,7 +233,7 @@
         </section>
         {% endif %}
 
-        <section id="reviews" class="profile-section" aria-label="{{ _('reviews_section_title') }}">
+        <section id="reviews" class="profile-section profile-section--reviews" aria-label="{{ _('reviews_section_title') }}">
           <div class="section-head">
             <h2>{{ _('reviews_section_title') }}</h2>
             {% if review_count > 0 %}
@@ -259,6 +250,10 @@
               {% set one_author = (one.get('author') if one.get is defined else one.author if one.author is defined else None) %}
               {% set one_rate = (one.get('rating') if one.get is defined else one.rating if one.rating is defined else None) %}
               <article class="single-review">
+                <div class="single-review__summary">
+                  {% if rating_value is not none %}<span class="single-review__score">{{ rating_value }}</span>{% endif %}
+                  <span class="single-review__meta">{{ review_count }} {{ _('reviews_count_suffix') }}</span>
+                </div>
                 <div class="single-review__head">
                   <strong>{{ one_author or _('review_author_fallback') }}</strong>
                   {% if one_rate is not none %}<span class="rating-stars" style="--value: {{ (((one_rate|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
@@ -294,7 +289,7 @@
         </section>
 
         {% if (_areas and _areas|length > 0) or worker.hours or (_schedule and _schedule|length > 0) %}
-        <section id="areas-hours" class="profile-section">
+        <section id="areas-hours" class="profile-section profile-section--support">
           <div class="section-head">
             <h2>{{ _('areas_and_hours_title') }}</h2>
           </div>
@@ -342,7 +337,7 @@
           <p>{{ _('profile_final_cta') }}</p>
           <div class="final-cta-actions">
             {% if cta_state == 'closed' %}
-              <button type="button" class="profile-btn profile-btn--call is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
+              <button type="button" class="profile-btn profile-btn--call is-disabled" aria-disabled="true" disabled>{{ phone_cta_label }}</button>
             {% else %}
               <a class="profile-btn profile-btn--call" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label }}</a>
             {% endif %}
@@ -355,7 +350,18 @@
       {% if worker.phone_formatted %}
       <aside class="profile-sidebar">
         <div class="sticky-contact-card">
-          <h2>{{ _('profile_sidebar_title') }}</h2>
+          <div class="sidebar-mini-profile">
+            {% if worker.image_url or worker.image_filename %}
+              <img src="{{ worker.image_url or url_for('static', filename='upload_pending/' ~ worker.image_filename) }}" alt="{{ _('worker_showcase_image_alt') }} {{ _name }}" loading="lazy">
+            {% else %}
+              <span>{{ (_name[:1] if _name else '?')|upper }}</span>
+            {% endif %}
+            <div>
+              <strong>{{ _name }}</strong>
+              {% if primary_service_area %}<small>{{ primary_service_area }}</small>{% endif %}
+            </div>
+          </div>
+
           {% if rating_value is not none or review_count > 0 %}
           <div class="sidebar-rating">
             <strong>{{ rating_value if rating_value is not none else '—' }}</strong>
@@ -366,16 +372,11 @@
           </div>
           {% endif %}
 
-          <ul class="sidebar-trust" role="list">
-            {% if worker.experience_text %}<li>{{ worker.experience_text }}</li>{% endif %}
-            {% if primary_service_area %}<li>{{ primary_service_area }}</li>{% endif %}
-            {% if _languages and _languages|length > 0 %}<li>{{ _('service_languages_label') }}: {{ _languages|join(', ') }}</li>{% endif %}
-            {% if cta_data and cta_data.subline is defined and cta_data.subline %}<li>{{ cta_data.subline }}</li>{% endif %}
-          </ul>
+          {% if availability_line %}<p class="sidebar-availability">{{ availability_line }}</p>{% endif %}
 
           <div class="sidebar-actions">
             {% if cta_state == 'closed' %}
-              <button type="button" class="profile-btn profile-btn--call is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data and cta_data.subline is defined and cta_data.subline else phone_cta_label }}</button>
+              <button type="button" class="profile-btn profile-btn--call is-disabled" aria-disabled="true" disabled>{{ phone_cta_label }}</button>
             {% else %}
               <a class="profile-btn profile-btn--call" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
             {% endif %}
@@ -388,6 +389,30 @@
   </div>
 
   {% if worker.phone_formatted %}
+  <div class="floating-contact-rail" id="floating-contact-rail" aria-hidden="true">
+    <div class="floating-contact-rail__identity">
+      {% if worker.image_url or worker.image_filename %}
+        <img src="{{ worker.image_url or url_for('static', filename='upload_pending/' ~ worker.image_filename) }}" alt="{{ _('worker_showcase_image_alt') }} {{ _name }}" loading="lazy">
+      {% else %}
+        <span>{{ (_name[:1] if _name else '?')|upper }}</span>
+      {% endif %}
+      <div>
+        <strong>{{ _name }}</strong>
+        {% if primary_service_area %}<small>{{ primary_service_area }}</small>{% endif %}
+      </div>
+    </div>
+    <div class="floating-contact-rail__meta">
+      {% if rating_value is not none %}<span>{{ rating_value }}</span>{% endif %}
+      <small>{{ review_count }} {{ _('reviews_count_suffix') }}</small>
+    </div>
+    <div class="floating-contact-rail__actions">
+      {% if cta_state != 'closed' %}
+      <a class="profile-btn profile-btn--call" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label_mobile }}</a>
+      {% endif %}
+      <a class="profile-btn profile-btn--wa" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
+    </div>
+  </div>
+
   <div class="worker-sticky-cta" aria-label="{{ _('quick_actions_aria') }}">
     {% if cta_state != 'closed' %}
       <a class="profile-btn profile-btn--call" href="tel:{{ worker.phone_formatted }}" aria-label="{{ _('cta_call_aria_prefix') }}{{ _name }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label_mobile }}</a>
@@ -480,6 +505,35 @@
           btn.remove();
         }
       });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var rail = document.getElementById('floating-contact-rail');
+      var hero = document.getElementById('profile-hero');
+      if (!rail || !hero || !('IntersectionObserver' in window)) return;
+      var mq = window.matchMedia('(min-width: 1500px)');
+
+      function updateMode() {
+        if (!mq.matches) {
+          rail.classList.remove('is-visible');
+          rail.setAttribute('aria-hidden', 'true');
+        }
+      }
+      updateMode();
+      mq.addEventListener('change', updateMode);
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!mq.matches) return;
+          var showRail = !entry.isIntersecting;
+          rail.classList.toggle('is-visible', showRail);
+          rail.setAttribute('aria-hidden', showRail ? 'false' : 'true');
+        });
+      }, { threshold: 0.08 });
+
+      observer.observe(hero);
     })();
   </script>
 {% endblock %}

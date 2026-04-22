@@ -114,24 +114,13 @@
   margin: 0 0 14px;
   font-size: clamp(1.2rem, 1.7vw, 1.45rem);
   color: #0f274a;
-  position: relative;
-  padding-inline-start: 14px;
-}
-.profile-section h2::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 4px;
-  border-radius: 4px;
-  background: #d9a441;
+  letter-spacing: 0.01em;
 }
 .section-note { margin: 0 0 16px; color: #64748b; }
 .about-copy { margin: 0 0 14px; white-space: pre-line; line-height: 1.8; }
 .profile-section--about {
-  border-color: #cfdcf0;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-color: #d5dfec;
+  background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
 }
 .about-layout {
   display: grid;
@@ -150,13 +139,13 @@
   border-radius: 10px;
 }
 .about-highlights {
-  background: #fffdf7;
-  border: 1px solid #efd9a8;
-  border-inline-start: 3px solid #d9a441;
+  background: #ffffff;
+  border: 1px solid #dce6f3;
+  border-inline-start: 3px solid #294b79;
   border-radius: 10px;
   padding: 12px 14px;
 }
-.about-highlights h3 { margin: 0 0 12px; font-size: 1rem; color: #7a5616; }
+.about-highlights h3 { margin: 0 0 12px; font-size: 1rem; color: #1f3555; }
 .about-strengths { display: grid; gap: 8px; }
 
 .services-list {
@@ -165,8 +154,8 @@
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 .profile-section--pricing {
-  border-color: #d7e2ef;
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border-color: #d0dbe8;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
 }
 
 .price-table { display: grid; gap: 8px; }
@@ -184,14 +173,14 @@
   background: #0f274a;
   color: #fff;
   border-color: #0f274a;
-  box-shadow: 0 6px 16px rgba(15, 39, 74, 0.14);
+  box-shadow: 0 6px 16px rgba(15, 39, 74, 0.1);
 }
 .inline-cta { margin-top: 18px; }
 
 .reviews-list { display: grid; gap: 12px; }
 .profile-section--reviews {
   border-color: #d8e1f0;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fdfefe 100%);
 }
 .review-card {
   border: 1px solid #e2e8f0;
@@ -200,13 +189,13 @@
   background: #fdfefe;
 }
 .review-card--featured {
-  background: linear-gradient(180deg, #fffef9 0%, #fffaf0 100%);
-  border-color: #eed8a6;
-  box-shadow: 0 10px 20px rgba(191, 143, 43, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  border-color: #d4e0f2;
+  box-shadow: 0 10px 20px rgba(15, 39, 74, 0.06);
 }
 .review-card header { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
 .review-card p { margin: 0; line-height: 1.6; }
-.review-card--featured .review-kicker { color: #8a6120; font-size: .83rem; font-weight: 700; letter-spacing: .02em; }
+.review-card--featured .review-kicker { color: #35598b; font-size: .83rem; font-weight: 700; letter-spacing: .02em; }
 .review-card--featured p {
   font-size: 1.05rem;
   line-height: 1.8;
@@ -219,7 +208,7 @@
   position: absolute;
   inset-inline-start: 0;
   top: -2px;
-  color: #c7983e;
+  color: #d9a441;
   font-size: 1.25rem;
   font-weight: 700;
 }
@@ -234,7 +223,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 14px;
-  background: #fff;
+  background: #fbfdff;
 }
 .info-block h3 { margin: 0 0 10px; font-size: 1.05rem; }
 .info-sub { margin: -4px 0 10px; color: #64748b; font-size: .92rem; }
@@ -244,18 +233,17 @@
 
 .profile-section--final-cta {
   text-align: center;
-  background: linear-gradient(135deg, #0f274a 0%, #173766 100%);
-  border-color: #0f274a;
-  color: #f8fbff;
+  background: linear-gradient(180deg, #f8fbff 0%, #edf3fb 100%);
+  border-color: #cfdcf0;
+  color: #13233d;
 }
-.profile-section--final-cta h2 { color: #fff; }
-.profile-section--final-cta h2::before { background: #e3b257; }
-.profile-section--final-cta p { margin: 0 0 16px; color: #d8e6ff; }
+.profile-section--final-cta h2 { color: #0f274a; }
+.profile-section--final-cta p { margin: 0 0 16px; color: #435d80; max-width: 58ch; margin-inline: auto; }
 .profile-section--final-cta .hero-cta { justify-content: center; margin-bottom: 0; }
 .profile-section--final-cta .profile-btn--primary {
-  background: #e3b257;
-  border-color: #e3b257;
-  color: #13233d;
+  background: #0f274a;
+  border-color: #0f274a;
+  color: #fff;
 }
 .profile-btn--whatsapp {
   border-color: #1fa460;

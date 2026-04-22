@@ -32,16 +32,17 @@
 
 .profile-hero {
   display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 20px;
-  align-items: stretch;
+  grid-template-columns: 170px 1fr;
+  gap: 22px;
+  align-items: start;
 }
 
 .hero-media {
   border-radius: 12px;
   overflow: hidden;
   background: #f3f5f9;
-  min-height: 240px;
+  min-height: 170px;
+  max-height: 210px;
   display: flex;
 }
 .hero-image { width: 100%; height: 100%; object-fit: cover; }
@@ -58,11 +59,12 @@
   font-size: 2rem;
 }
 
-.hero-main h1 { margin: 0; font-size: clamp(1.5rem, 2.2vw, 2rem); }
+.hero-main h1 { margin: 0; font-size: clamp(1.55rem, 2.2vw, 2.1rem); }
 .hero-meta { margin: 8px 0; color: #596173; }
 .hero-value { margin: 10px 0 14px; color: #273142; line-height: 1.6; }
 .hero-rating { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0; }
 .hero-rating strong { font-size: 1.25rem; }
+.hero-facts { margin: 4px 0 0; color: #475569; font-size: .93rem; }
 
 .rating-stars {
   --percent: calc(var(--value) / 5 * 100%);
@@ -95,27 +97,16 @@
 .profile-btn--outline { background: #f8fafc; color: #1e293b; border-color: #cbd5e1; }
 .profile-btn.is-disabled { opacity: .6; cursor: not-allowed; }
 
-.hero-trust,
-.trust-row,
 .about-strengths,
 .services-list,
 .line-list { list-style: none; margin: 0; padding: 0; }
-
-.hero-trust,
-.trust-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.hero-trust li,
-.trust-row li,
 .about-strengths li,
 .services-list li {
   border: 1px solid #d7deea;
   background: #f8fafc;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: .92rem;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: .93rem;
 }
 
 .profile-section h2 {
@@ -124,6 +115,20 @@
 }
 .section-note { margin: 0 0 12px; color: #64748b; }
 .about-copy { margin: 0 0 12px; white-space: pre-line; line-height: 1.7; }
+.about-layout {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 18px;
+  align-items: start;
+}
+.about-highlights {
+  background: #f8fbff;
+  border: 1px solid #dbe7f8;
+  border-radius: 12px;
+  padding: 12px;
+}
+.about-highlights h3 { margin: 0 0 10px; font-size: 1rem; color: #1f3555; }
+.about-strengths { display: grid; gap: 8px; }
 
 .services-list {
   display: grid;
@@ -151,6 +156,9 @@
 .review-card--featured { background: #f8fbff; border-color: #cfdef4; }
 .review-card header { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
 .review-card p { margin: 0; line-height: 1.6; }
+.review-card--featured .review-kicker { color: #35598b; font-size: .83rem; font-weight: 700; letter-spacing: .02em; }
+.review-card--featured p { font-size: 1.04rem; line-height: 1.75; color: #1f2937; }
+.review-card--featured footer { margin-top: 10px; color: #475569; font-weight: 600; }
 
 .support-grid {
   display: grid;
@@ -164,6 +172,7 @@
   background: #fff;
 }
 .info-block h3 { margin: 0 0 10px; font-size: 1.05rem; }
+.info-sub { margin: -4px 0 10px; color: #64748b; font-size: .92rem; }
 .line-list { display: grid; gap: 8px; }
 .line-list strong { color: #1f2937; }
 
@@ -180,6 +189,7 @@
 
 @media (max-width: 900px) {
   .profile-hero { grid-template-columns: 1fr; }
-  .hero-media { min-height: 180px; }
+  .hero-media { min-height: 150px; max-height: 190px; }
+  .about-layout { grid-template-columns: 1fr; }
   .support-grid { grid-template-columns: 1fr; }
 }

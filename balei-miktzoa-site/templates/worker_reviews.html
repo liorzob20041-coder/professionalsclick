@@ -110,14 +110,23 @@
   </header>
 
   {% if about_body %}
-  <section class="profile-section">
+  <section class="profile-section profile-section--about">
     <h2>{{ _('about_me_title') }}</h2>
+    <p class="section-note">{{ _('about_expectation_note') if _('about_expectation_note') != 'about_expectation_note' else _('hero_summary_generic_fallback') }}</p>
     <div class="about-layout">
-      <p class="about-copy">{{ about_body }}</p>
+      <div class="about-main">
+        <p class="about-copy">{{ about_body }}</p>
+        {% if specializations and specializations|length > 0 %}
+        <p class="about-focus">
+          <strong>{{ _('focus_services_label') if _('focus_services_label') != 'focus_services_label' else _('my_services_title') }}:</strong>
+          {{ specializations[:3]|join(' • ') }}
+        </p>
+        {% endif %}
+      </div>
       {% set strengths = [] %}
+      {% if worker.experience_text %}{% set __dummy = strengths.append(worker.experience_text) %}{% endif %}
       {% if worker_languages %}{% set __dummy = strengths.append(_('service_languages_label') ~ ': ' ~ (worker_languages[:2]|join(', '))) %}{% endif %}
-      {% if specializations and specializations|length > 0 %}{% set __dummy = strengths.append((specializations|length) ~ ' ' ~ _('my_services_title')) %}{% endif %}
-      {% if service_areas and service_areas|length > 0 %}{% set __dummy = strengths.append((service_areas|length) ~ ' ' ~ _('service_areas_title')) %}{% endif %}
+      {% if cta_state == 'open' %}{% set __dummy = strengths.append(_('cta_call_open')) %}{% elif cta_state == 'closed' %}{% set __dummy = strengths.append(_('cta_call_during_hours')) %}{% endif %}
       {% if strengths %}
       <aside class="about-highlights" aria-label="{{ _('why_choose_me_title') if _('why_choose_me_title') != 'why_choose_me_title' else _('about_me_title') }}">
         <h3>{{ _('why_choose_me_title') if _('why_choose_me_title') != 'why_choose_me_title' else _('about_me_title') }}</h3>
@@ -129,7 +138,7 @@
   {% endif %}
 
   {% if specializations %}
-  <section class="profile-section">
+  <section class="profile-section profile-section--services">
     <h2>{{ _('my_services_title') }}</h2>
     <ul class="services-list" role="list">
       {% for srv in specializations[:12] %}{% if srv|string|trim %}<li>{{ srv }}</li>{% endif %}{% endfor %}
@@ -138,7 +147,7 @@
   {% endif %}
 
   {% if has_pricing %}
-  <section class="profile-section">
+  <section class="profile-section profile-section--pricing">
     <h2>{{ _('price_ranges_title') }}</h2>
     <p class="section-note">{{ _('price_helper_ranges') }}</p>
     <div class="price-table" role="list">
@@ -174,7 +183,7 @@
   </section>
   {% endif %}
 
-  <section id="reviews" class="profile-section" aria-label="{{ _('reviews_section_title') }}">
+  <section id="reviews" class="profile-section profile-section--reviews" aria-label="{{ _('reviews_section_title') }}">
     <h2>{{ _('reviews_section_title') }}</h2>
     {% if review_count > 0 %}<p class="section-note">{{ review_count }} {{ _('reviews_count_suffix') }}</p>{% endif %}
     {% if reviews_list %}
@@ -184,7 +193,7 @@
         {% set author = (review.get('author') if review is mapping else '') %}
         {% set score = (review.get('rating') if review is mapping else none) %}
         <article class="review-card review-card--featured">
-          <header><span class="review-kicker">{{ _('reviews_section_title') }}</span>{% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}</header>
+          <header><span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>{% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}</header>
           <p>{{ text }}</p>
           <footer>{{ author or _('review_author_fallback') }}</footer>
         </article>

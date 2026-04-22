@@ -29,6 +29,7 @@
   border-radius: 16px;
   padding: 20px;
 }
+.profile-section { box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02); }
 
 .profile-hero {
   display: grid;
@@ -115,11 +116,22 @@
 }
 .section-note { margin: 0 0 12px; color: #64748b; }
 .about-copy { margin: 0 0 12px; white-space: pre-line; line-height: 1.7; }
+.profile-section--about {
+  border-color: #d9e3f3;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
 .about-layout {
   display: grid;
   grid-template-columns: 1.2fr .8fr;
   gap: 18px;
   align-items: start;
+}
+.about-main { max-width: 65ch; }
+.about-focus {
+  margin: 0;
+  color: #334155;
+  font-size: .95rem;
+  line-height: 1.65;
 }
 .about-highlights {
   background: #f8fbff;
@@ -135,6 +147,10 @@
   gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
+.profile-section--pricing {
+  border-color: #dce5d6;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdf9 100%);
+}
 
 .price-table { display: grid; gap: 8px; }
 .price-row {
@@ -147,6 +163,10 @@
 .inline-cta { margin-top: 14px; }
 
 .reviews-list { display: grid; gap: 12px; }
+.profile-section--reviews {
+  border-color: #d6e3f7;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+}
 .review-card {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -157,7 +177,22 @@
 .review-card header { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
 .review-card p { margin: 0; line-height: 1.6; }
 .review-card--featured .review-kicker { color: #35598b; font-size: .83rem; font-weight: 700; letter-spacing: .02em; }
-.review-card--featured p { font-size: 1.04rem; line-height: 1.75; color: #1f2937; }
+.review-card--featured p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #1f2937;
+  padding-inline-start: 16px;
+  position: relative;
+}
+.review-card--featured p::before {
+  content: "“";
+  position: absolute;
+  inset-inline-start: 0;
+  top: -2px;
+  color: #7aa0d6;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
 .review-card--featured footer { margin-top: 10px; color: #475569; font-weight: 600; }
 
 .support-grid {
@@ -174,6 +209,7 @@
 .info-block h3 { margin: 0 0 10px; font-size: 1.05rem; }
 .info-sub { margin: -4px 0 10px; color: #64748b; font-size: .92rem; }
 .line-list { display: grid; gap: 8px; }
+.line-list li { line-height: 1.55; }
 .line-list strong { color: #1f2937; }
 
 .profile-section--final-cta { text-align: center; }

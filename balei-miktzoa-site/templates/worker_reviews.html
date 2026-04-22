@@ -33,6 +33,8 @@
 {% set cta_next_open = cta_data.next_open_label if cta_data is mapping and cta_data.get('next_open_label') else (cta_data.next_open if cta_data is mapping and cta_data.get('next_open') else none) %}
 {% set phone_cta_label = _('cta_call_now') if cta_state == 'open' else (_('cta_call_next_prefix') ~ cta_next_open if cta_next_open else _('cta_call_during_hours')) %}
 {% set estimate_url = url_for('estimate', lang=lang, category=(field_txt if field_txt else none), worker_id=worker.worker_id) %}
+{% set about_highlights_title = _('why_choose_me_title') if _('why_choose_me_title') != 'why_choose_me_title' else ('למה לבחור בי' if lang == 'he' else ('Why choose this pro' if lang == 'en' else 'Почему выбрать этого специалиста')) %}
+{% set pricing_cta_label = _('estimate_cta') if _('estimate_cta') != 'estimate_cta' else ('למחשבון מחיר' if lang == 'he' else ('Open price calculator' if lang == 'en' else 'К калькулятору цены')) %}
 
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
@@ -112,7 +114,7 @@
   {% if about_body %}
   <section class="profile-section profile-section--about">
     <h2>{{ _('about_me_title') }}</h2>
-    <p class="section-note">{{ _('about_expectation_note') if _('about_expectation_note') != 'about_expectation_note' else _('hero_summary_generic_fallback') }}</p>
+    <p class="section-note">{{ _('about_expectation_note') if _('about_expectation_note') != 'about_expectation_note' else ('מה חשוב לדעת לפני שפונים?' if lang == 'he' else ('What to expect when you contact this pro' if lang == 'en' else 'Что важно знать перед обращением')) }}</p>
     <div class="about-layout">
       <div class="about-main">
         <p class="about-copy">{{ about_body }}</p>
@@ -127,9 +129,10 @@
       {% if worker.experience_text %}{% set __dummy = strengths.append(worker.experience_text) %}{% endif %}
       {% if worker_languages %}{% set __dummy = strengths.append(_('service_languages_label') ~ ': ' ~ (worker_languages[:2]|join(', '))) %}{% endif %}
       {% if cta_state == 'open' %}{% set __dummy = strengths.append(_('cta_call_open')) %}{% elif cta_state == 'closed' %}{% set __dummy = strengths.append(_('cta_call_during_hours')) %}{% endif %}
+      {% if review_count > 0 %}{% set __dummy = strengths.append(review_count ~ ' ' ~ _('reviews_count_suffix')) %}{% endif %}
       {% if strengths %}
-      <aside class="about-highlights" aria-label="{{ _('why_choose_me_title') if _('why_choose_me_title') != 'why_choose_me_title' else _('about_me_title') }}">
-        <h3>{{ _('why_choose_me_title') if _('why_choose_me_title') != 'why_choose_me_title' else _('about_me_title') }}</h3>
+      <aside class="about-highlights" aria-label="{{ about_highlights_title }}">
+        <h3>{{ about_highlights_title }}</h3>
         <ul class="about-strengths" role="list">{% for item in strengths[:3] %}<li>{{ item }}</li>{% endfor %}</ul>
       </aside>
       {% endif %}
@@ -178,7 +181,7 @@
       {% endif %}
     </div>
     <div class="inline-cta">
-      <a class="profile-btn profile-btn--outline" href="{{ estimate_url }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ _('homepage.quick.estimate_nav') if _('homepage.quick.estimate_nav') != 'homepage.quick.estimate_nav' else _('price_helper_ranges') }}</a>
+      <a class="profile-btn profile-btn--outline" href="{{ estimate_url }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ pricing_cta_label }}</a>
     </div>
   </section>
   {% endif %}

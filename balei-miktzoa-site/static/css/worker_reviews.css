@@ -1,8 +1,8 @@
 .worker-profile-page {
   width: min(1100px, 100% - 32px);
-  margin: 24px auto 48px;
+  margin: 28px auto 56px;
   display: grid;
-  gap: 18px;
+  gap: 24px;
 }
 
 .profile-back-link,
@@ -27,7 +27,7 @@
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px;
 }
 .profile-section { box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02); }
 
@@ -111,11 +111,11 @@
 }
 
 .profile-section h2 {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   font-size: clamp(1.2rem, 1.7vw, 1.45rem);
 }
-.section-note { margin: 0 0 12px; color: #64748b; }
-.about-copy { margin: 0 0 12px; white-space: pre-line; line-height: 1.7; }
+.section-note { margin: 0 0 16px; color: #64748b; }
+.about-copy { margin: 0 0 14px; white-space: pre-line; line-height: 1.8; }
 .profile-section--about {
   border-color: #d9e3f3;
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
@@ -123,7 +123,7 @@
 .about-layout {
   display: grid;
   grid-template-columns: 1.2fr .8fr;
-  gap: 18px;
+  gap: 22px;
   align-items: start;
 }
 .about-main { max-width: 65ch; }
@@ -135,11 +135,11 @@
 }
 .about-highlights {
   background: #f8fbff;
-  border: 1px solid #dbe7f8;
-  border-radius: 12px;
-  padding: 12px;
+  border-inline-start: 3px solid #bfd4f3;
+  border-radius: 10px;
+  padding: 12px 14px;
 }
-.about-highlights h3 { margin: 0 0 10px; font-size: 1rem; color: #1f3555; }
+.about-highlights h3 { margin: 0 0 12px; font-size: 1rem; color: #1f3555; }
 .about-strengths { display: grid; gap: 8px; }
 
 .services-list {
@@ -160,7 +160,7 @@
   border-bottom: 1px solid #e6ebf2;
   padding: 8px 0;
 }
-.inline-cta { margin-top: 14px; }
+.inline-cta { margin-top: 18px; }
 
 .reviews-list { display: grid; gap: 12px; }
 .profile-section--reviews {
@@ -170,7 +170,7 @@
 .review-card {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
   background: #fdfefe;
 }
 .review-card--featured { background: #f8fbff; border-color: #cfdef4; }
@@ -197,7 +197,7 @@
 
 .support-grid {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .info-block {
@@ -213,7 +213,7 @@
 .line-list strong { color: #1f2937; }
 
 .profile-section--final-cta { text-align: center; }
-.profile-section--final-cta p { margin: 0 0 12px; color: #64748b; }
+.profile-section--final-cta p { margin: 0 0 16px; color: #64748b; }
 .profile-section--final-cta .hero-cta { justify-content: center; margin-bottom: 0; }
 .worker-empty {
   border: 1px dashed #cbd5e1;
@@ -224,6 +224,7 @@
 }
 
 @media (max-width: 900px) {
+  .worker-profile-page { gap: 18px; }
   .profile-hero { grid-template-columns: 1fr; }
   .hero-media { min-height: 150px; max-height: 190px; }
   .about-layout { grid-template-columns: 1fr; }

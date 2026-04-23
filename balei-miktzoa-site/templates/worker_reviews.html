@@ -32,9 +32,14 @@
 {% set cta_state = cta_data.status if cta_data is mapping and cta_data.get('status') else none %}
 {% set cta_next_open = cta_data.next_open_label if cta_data is mapping and cta_data.get('next_open_label') else (cta_data.next_open if cta_data is mapping and cta_data.get('next_open') else none) %}
 {% set phone_cta_label = _('cta_call_now') if cta_state == 'open' else (_('cta_call_next_prefix') ~ cta_next_open if cta_next_open else _('cta_call_during_hours')) %}
+{% set has_whatsapp = worker.phone_formatted %}
 {% set estimate_url = url_for('estimate', lang=lang, category=(field_txt if field_txt else none), worker_id=worker.worker_id) %}
-{% set about_highlights_title = _('why_choose_me_title') if _('why_choose_me_title') != 'why_choose_me_title' else ('למה לבחור בי' if lang == 'he' else ('Why choose this pro' if lang == 'en' else 'Почему выбрать этого специалиста')) %}
+{% set about_section_title = _('about_business_title') if _('about_business_title') != 'about_business_title' else ('על העסק' if lang == 'he' else ('About the business' if lang == 'en' else 'О специалисте')) %}
+{% set about_highlights_title = _('more_details_title') if _('more_details_title') != 'more_details_title' else ('פרטים נוספים' if lang == 'he' else ('More details' if lang == 'en' else 'Дополнительно')) %}
+{% set pricing_section_title = _('pricing_examples_title') if _('pricing_examples_title') != 'pricing_examples_title' else ('טווחי מחירים לדוגמה' if lang == 'he' else ('Typical price ranges' if lang == 'en' else 'Примеры диапазонов цен')) %}
+{% set pricing_disclaimer = _('pricing_examples_disclaimer') if _('pricing_examples_disclaimer') != 'pricing_examples_disclaimer' else ('המחירים להמחשה בלבד ויכולים להשתנות לפי היקף העבודה, מצב קיים, חומרים וגישה.' if lang == 'he' else ('Prices are examples only and may vary by scope, current condition, materials and access.' if lang == 'en' else 'Цены приведены для примера и могут меняться в зависимости от объёма работ, текущего состояния, материалов и доступа.')) %}
 {% set pricing_cta_label = _('estimate_cta') if _('estimate_cta') != 'estimate_cta' else ('למחשבון מחיר' if lang == 'he' else ('Open price calculator' if lang == 'en' else 'К калькулятору цены')) %}
+{% set reviews_label = ('ביקורת' if review_count == 1 else 'ביקורות') if lang == 'he' else _('reviews_count_suffix') %}
 
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
@@ -78,18 +83,6 @@
         <span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>
       </div>
       {% endif %}
-      <p class="hero-value">
-        {% if hero_teaser %}
-          {{ hero_teaser }}
-        {% elif field_txt and primary_area %}
-          {{ (_('hero_summary_fallback')|string)|replace('{field}', field_txt|string)|replace('{area}', primary_area|string) }}
-        {% elif field_txt %}
-          {{ (_('hero_summary_no_area_fallback')|string)|replace('{field}', field_txt|string) }}
-        {% else %}
-          {{ _('hero_summary_generic_fallback') }}
-        {% endif %}
-      </p>
-
       {% if worker.phone_formatted %}
       <div class="hero-cta">
         {% if cta_state == 'closed' %}
@@ -97,7 +90,9 @@
         {% else %}
           <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
         {% endif %}
+        {% if has_whatsapp %}
         <a class="profile-btn profile-btn--secondary profile-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
+        {% endif %}
       </div>
       {% endif %}
 
@@ -108,13 +103,16 @@
       {% if hero_facts %}
       <p class="hero-facts">{{ hero_facts[:3]|join(' • ') }}</p>
       {% endif %}
+
+      {% if hero_teaser %}
+      <p class="hero-value">{{ hero_teaser }}</p>
+      {% endif %}
     </div>
   </header>
 
-  {% if about_body %}
+  {% if about_body and about_body|length > 25 %}
   <section class="profile-section profile-section--about">
-    <h2>{{ _('about_me_title') }}</h2>
-    <p class="section-note">{{ _('about_expectation_note') if _('about_expectation_note') != 'about_expectation_note' else ('מה חשוב לדעת לפני שפונים?' if lang == 'he' else ('What to expect when you contact this pro' if lang == 'en' else 'Что важно знать перед обращением')) }}</p>
+    <h2>{{ about_section_title }}</h2>
     <div class="about-layout">
       <div class="about-main">
         <p class="about-copy">{{ about_body }}</p>
@@ -126,13 +124,11 @@
         {% endif %}
       </div>
       {% set strengths = [] %}
-      {% if worker.experience_text %}{% set __dummy = strengths.append(worker.experience_text) %}{% endif %}
-      {% if worker_languages %}{% set __dummy = strengths.append(_('service_languages_label') ~ ': ' ~ (worker_languages[:2]|join(', '))) %}{% endif %}
-      {% if cta_state == 'open' %}{% set __dummy = strengths.append(_('cta_call_open')) %}{% elif cta_state == 'closed' %}{% set __dummy = strengths.append(_('cta_call_during_hours')) %}{% endif %}
-      {% if review_count > 0 %}{% set __dummy = strengths.append(review_count ~ ' ' ~ _('reviews_count_suffix')) %}{% endif %}
+      {% if worker_languages %}{% set __dummy = strengths.append(_('service_languages_label') ~ ': ' ~ (worker_languages[:3]|join(', '))) %}{% endif %}
+      {% if review_count > 0 and rating_value is not none %}{% set __dummy = strengths.append(rating_value ~ ' ★ מתוך 5') %}{% endif %}
       {% if strengths %}
       <aside class="about-highlights" aria-label="{{ about_highlights_title }}">
-        <h3>{{ about_highlights_title }}</h3>
+        <h3>{{ _('more_details_title') if _('more_details_title') != 'more_details_title' else ('פרטים נוספים' if lang == 'he' else ('More details' if lang == 'en' else 'Дополнительно')) }}</h3>
         <ul class="about-strengths" role="list">{% for item in strengths[:3] %}<li>{{ item }}</li>{% endfor %}</ul>
       </aside>
       {% endif %}
@@ -151,8 +147,8 @@
 
   {% if has_pricing %}
   <section class="profile-section profile-section--pricing">
-    <h2>{{ _('price_ranges_title') }}</h2>
-    <p class="section-note">{{ _('price_helper_ranges') }}</p>
+    <h2>{{ pricing_section_title }}</h2>
+    <p class="section-note">{{ pricing_disclaimer }}</p>
     <div class="price-table" role="list">
       {% if pricing_items %}
         {% for line in pricing_items[:6] %}
@@ -188,7 +184,7 @@
 
   <section id="reviews" class="profile-section profile-section--reviews" aria-label="{{ _('reviews_section_title') }}">
     <h2>{{ _('reviews_section_title') }}</h2>
-    {% if review_count > 0 %}<p class="section-note">{{ review_count }} {{ _('reviews_count_suffix') }}</p>{% endif %}
+    {% if review_count > 0 %}<p class="section-note">{{ review_count }} {{ reviews_label }}</p>{% endif %}
     {% if reviews_list %}
       {% if reviews_list|length == 1 %}
         {% set review = reviews_list[0] %}
@@ -227,7 +223,6 @@
       {% if has_areas %}
       <article class="info-block">
         <h3>{{ _('service_areas_title') }}</h3>
-        <p class="info-sub">{{ _('service_areas_intro') if _('service_areas_intro') != 'service_areas_intro' else _('field_label_fallback') }}</p>
         <ul class="line-list" role="list">{% for area in service_areas[:10] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
       </article>
       {% endif %}
@@ -235,7 +230,6 @@
       {% if has_hours %}
       <article class="info-block">
         <h3>{{ _('working_hours_title') }}</h3>
-        <p class="info-sub">{{ _('availability_note') if _('availability_note') != 'availability_note' else _('cta_call_during_hours') }}</p>
         {% if worker.hours %}
           <p>{{ worker.hours }}</p>
         {% else %}
@@ -258,21 +252,30 @@
     </div>
   </section>
   {% endif %}
-
-  {% if worker.phone_formatted %}
-  <section class="profile-section profile-section--final-cta" aria-label="{{ _('quick_actions_aria') }}">
-    <h2>{{ _('quick_actions_aria') }}</h2>
-    <p>{{ _('final_cta_text') if _('final_cta_text') != 'final_cta_text' else ('מענה מהיר ותיאום עבודה לפי הצורך.' if lang == 'he' else ('Fast response and clear next steps.' if lang == 'en' else 'Быстрый ответ и понятный следующий шаг.')) }}</p>
-    <div class="hero-cta">
-      {% if cta_state == 'closed' %}
-        <button type="button" class="profile-btn profile-btn--primary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data is mapping and cta_data.get('subline') else phone_cta_label }}</button>
-      {% else %}
-        <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label }}</a>
-      {% endif %}
-    </div>
-  </section>
-  {% endif %}
 </section>
+
+{% if worker.phone_formatted %}
+<div class="contact-dock" id="contact-dock" aria-label="{{ _('quick_actions_aria') }}">
+  <div class="contact-dock__meta">
+    <strong>{{ worker_name }}</strong>
+    <span>
+      {% if rating_value is not none %}{{ rating_value }} ★ · {% endif %}
+      {% if review_count > 0 %}{{ review_count }} {{ reviews_label }} · {% endif %}
+      {% if cta_state == 'open' %}{{ _('cta_call_open') }}{% elif cta_state == 'closed' %}{{ cta_data.subline if cta_data is mapping and cta_data.get('subline') else _('cta_call_closed') }}{% endif %}
+    </span>
+  </div>
+  <div class="contact-dock__actions">
+    {% if cta_state == 'closed' %}
+      <button type="button" class="profile-btn profile-btn--primary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data is mapping and cta_data.get('subline') else phone_cta_label }}</button>
+    {% else %}
+      <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label }}</a>
+    {% endif %}
+    {% if has_whatsapp %}
+      <a class="profile-btn profile-btn--secondary profile-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp') }}</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_scripts %}
@@ -281,6 +284,9 @@
     (function () {
       var meta = document.getElementById('worker-meta');
       var workerId = meta ? meta.getAttribute('data-worker-id') : null;
+      var hero = document.querySelector('.profile-hero');
+      var dock = document.getElementById('contact-dock');
+      var footer = document.querySelector('footer');
       if (typeof window.trackEvent !== 'function') {
         window.trackEvent = function (eventName, wid) {
           if (!eventName || !wid) return;
@@ -303,6 +309,18 @@
         }, { capture: true });
       }
       if (workerId) { window.trackEvent('view', workerId); }
+
+      if (!hero || !dock) return;
+      var updateDock = function () {
+        var heroRect = hero.getBoundingClientRect();
+        var footerRect = footer ? footer.getBoundingClientRect() : null;
+        var shouldShow = heroRect.bottom < 32;
+        var touchingFooter = footerRect ? footerRect.top < (window.innerHeight - dock.offsetHeight - 12) : false;
+        dock.classList.toggle('is-visible', shouldShow && !touchingFooter);
+      };
+      updateDock();
+      window.addEventListener('scroll', updateDock, { passive: true });
+      window.addEventListener('resize', updateDock);
     })();
   </script>
 {% endblock %}

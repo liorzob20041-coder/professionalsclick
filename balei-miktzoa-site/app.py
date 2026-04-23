@@ -3857,7 +3857,7 @@ def worker_reviews(lang, worker_id):
     if isinstance(exp, (int, float)):
         exp_int = int(exp)
         # Suppress suspicious/default values to avoid trust-damaging claims.
-        if 1 <= exp_int <= 50:
+        if 1 <= exp_int <= 30:
             years = exp_int
     if years is not None:
         worker['experience_text'] = (

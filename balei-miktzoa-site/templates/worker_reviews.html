@@ -31,14 +31,14 @@
 {% set cta_data = worker.call_to_action if worker.call_to_action is defined and worker.call_to_action else {} %}
 {% set cta_state = cta_data.status if cta_data is mapping and cta_data.get('status') else none %}
 {% set cta_next_open = cta_data.next_open_label if cta_data is mapping and cta_data.get('next_open_label') else (cta_data.next_open if cta_data is mapping and cta_data.get('next_open') else none) %}
-{% set phone_cta_label = _('cta_call_now') if cta_state == 'open' else (_('cta_call_next_prefix') ~ cta_next_open if cta_next_open else _('cta_call_during_hours')) %}
+{% set phone_cta_label = _('cta_call_now') if cta_state == 'open' else (_('cta_call') if _('cta_call') != 'cta_call' else ('התקשרו' if lang == 'he' else ('Call now' if lang == 'en' else 'Позвонить'))) %}
+{% set phone_cta_support = (_('cta_call_next_prefix') ~ cta_next_open) if cta_next_open else (_('cta_call_during_hours') if cta_state == 'closed' else none) %}
 {% set has_whatsapp = worker.phone_formatted %}
 {% set estimate_url = url_for('estimate', lang=lang, category=(field_txt if field_txt else none), worker_id=worker.worker_id) %}
 {% set about_section_title = _('about_business_title') if _('about_business_title') != 'about_business_title' else ('על העסק' if lang == 'he' else ('About the business' if lang == 'en' else 'О специалисте')) %}
-{% set about_highlights_title = _('more_details_title') if _('more_details_title') != 'more_details_title' else ('פרטים נוספים' if lang == 'he' else ('More details' if lang == 'en' else 'Дополнительно')) %}
 {% set pricing_section_title = _('pricing_examples_title') if _('pricing_examples_title') != 'pricing_examples_title' else ('טווחי מחירים לדוגמה' if lang == 'he' else ('Typical price ranges' if lang == 'en' else 'Примеры диапазонов цен')) %}
 {% set pricing_disclaimer = _('pricing_examples_disclaimer') if _('pricing_examples_disclaimer') != 'pricing_examples_disclaimer' else ('המחירים להמחשה בלבד ויכולים להשתנות לפי היקף העבודה, מצב קיים, חומרים וגישה.' if lang == 'he' else ('Prices are examples only and may vary by scope, current condition, materials and access.' if lang == 'en' else 'Цены приведены для примера и могут меняться в зависимости от объёма работ, текущего состояния, материалов и доступа.')) %}
-{% set pricing_cta_label = _('estimate_cta') if _('estimate_cta') != 'estimate_cta' else ('למחשבון מחיר' if lang == 'he' else ('Open price calculator' if lang == 'en' else 'К калькулятору цены')) %}
+{% set pricing_cta_label = _('estimate_cta') if _('estimate_cta') != 'estimate_cta' else ('לחשב הערכת מחיר' if lang == 'he' else ('Calculate estimate' if lang == 'en' else 'Рассчитать стоимость')) %}
 {% set reviews_label = ('ביקורת' if review_count == 1 else 'ביקורות') if lang == 'he' else _('reviews_count_suffix') %}
 
 <section class="worker-profile-page">
@@ -80,20 +80,19 @@
       <div class="hero-rating" aria-label="{{ _('rating_average_aria') }}">
         <strong>{{ rating_value if rating_value is not none else '—' }}</strong>
         <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0)|round(2) }};"></span>
-        <span>{{ review_count }} {{ _('reviews_count_suffix') }}</span>
+        <span>{{ review_count }} {{ reviews_label }}</span>
       </div>
       {% endif %}
       {% if worker.phone_formatted %}
       <div class="hero-cta">
-        {% if cta_state == 'closed' %}
-          <button type="button" class="profile-btn profile-btn--primary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data is mapping and cta_data.get('subline') else phone_cta_label }}</button>
-        {% else %}
-          <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
-        {% endif %}
+        <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
         {% if has_whatsapp %}
         <a class="profile-btn profile-btn--secondary profile-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
         {% endif %}
       </div>
+      {% if phone_cta_support %}
+      <p class="hero-cta-support">{{ phone_cta_support }}</p>
+      {% endif %}
       {% endif %}
 
       {% set hero_facts = [] %}
@@ -123,14 +122,8 @@
         </p>
         {% endif %}
       </div>
-      {% set strengths = [] %}
-      {% if worker_languages %}{% set __dummy = strengths.append(_('service_languages_label') ~ ': ' ~ (worker_languages[:3]|join(', '))) %}{% endif %}
-      {% if review_count > 0 and rating_value is not none %}{% set __dummy = strengths.append(rating_value ~ ' ★ מתוך 5') %}{% endif %}
-      {% if strengths %}
-      <aside class="about-highlights" aria-label="{{ about_highlights_title }}">
-        <h3>{{ _('more_details_title') if _('more_details_title') != 'more_details_title' else ('פרטים נוספים' if lang == 'he' else ('More details' if lang == 'en' else 'Дополнительно')) }}</h3>
-        <ul class="about-strengths" role="list">{% for item in strengths[:3] %}<li>{{ item }}</li>{% endfor %}</ul>
-      </aside>
+      {% if worker_languages %}
+      <p class="about-focus"><strong>{{ _('service_languages_label') }}:</strong> {{ worker_languages[:3]|join(', ') }}</p>
       {% endif %}
     </div>
   </section>
@@ -177,7 +170,11 @@
       {% endif %}
     </div>
     <div class="inline-cta">
-      <a class="profile-btn profile-btn--outline profile-btn--estimate" href="{{ estimate_url }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ pricing_cta_label }}</a>
+      <article class="calculator-callout" aria-label="{{ pricing_cta_label }}">
+        <h3>{{ _('pricing_calculator_heading') if _('pricing_calculator_heading') != 'pricing_calculator_heading' else ('רוצים הערכת מחיר מהירה?' if lang == 'he' else ('Need a quick price estimate?' if lang == 'en' else 'Нужна быстрая оценка цены?')) }}</h3>
+        <p>{{ _('pricing_calculator_helper') if _('pricing_calculator_helper') != 'pricing_calculator_helper' else ('מחשבון קצר שיעזור להבין סדר גודל לפי סוג העבודה והדחיפות.' if lang == 'he' else ('A short calculator to understand likely costs by job type and urgency.' if lang == 'en' else 'Короткий калькулятор для оценки стоимости по типу задачи и срочности.')) }}</p>
+        <a class="profile-btn profile-btn--outline profile-btn--estimate" href="{{ estimate_url }}" data-track="click_estimate" data-worker="{{ worker.worker_id }}">{{ pricing_cta_label }}</a>
+      </article>
     </div>
   </section>
   {% endif %}
@@ -191,7 +188,7 @@
         {% set text = (review.display_text if review.display_text is defined else '') or (review.get('display_text') if review is mapping else '') or (review.get('text') if review is mapping else '') %}
         {% set author = (review.get('author') if review is mapping else '') %}
         {% set score = (review.get('rating') if review is mapping else none) %}
-        <article class="review-card review-card--featured">
+        <article class="review-card review-card--featured review-card--single">
           <header><span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>{% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}</header>
           <p>{{ text }}</p>
           <footer>{{ author or _('review_author_fallback') }}</footer>
@@ -261,15 +258,11 @@
     <span>
       {% if rating_value is not none %}{{ rating_value }} ★ · {% endif %}
       {% if review_count > 0 %}{{ review_count }} {{ reviews_label }} · {% endif %}
-      {% if cta_state == 'open' %}{{ _('cta_call_open') }}{% elif cta_state == 'closed' %}{{ cta_data.subline if cta_data is mapping and cta_data.get('subline') else _('cta_call_closed') }}{% endif %}
+      {% if cta_state == 'open' %}{{ _('cta_call_open') }}{% elif cta_state == 'closed' %}{{ phone_cta_support or _('cta_call_closed') }}{% endif %}
     </span>
   </div>
   <div class="contact-dock__actions">
-    {% if cta_state == 'closed' %}
-      <button type="button" class="profile-btn profile-btn--primary is-disabled" aria-disabled="true" disabled>{{ cta_data.subline if cta_data is mapping and cta_data.get('subline') else phone_cta_label }}</button>
-    {% else %}
-      <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label }}</a>
-    {% endif %}
+    <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}">{{ phone_cta_label }}</a>
     {% if has_whatsapp %}
       <a class="profile-btn profile-btn--secondary profile-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp') }}</a>
     {% endif %}

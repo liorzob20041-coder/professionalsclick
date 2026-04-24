@@ -95,12 +95,21 @@
       {% endif %}
       {% endif %}
 
-      {% set hero_facts = [] %}
-      {% if worker.experience_text %}{% set __dummy = hero_facts.append(worker.experience_text) %}{% endif %}
-      {% if worker.verified %}{% set __dummy = hero_facts.append(_('verified_badge')) %}{% endif %}
-      {% if cta_state == 'open' %}{% set __dummy = hero_facts.append(_('cta_call_open')) %}{% elif cta_state == 'closed' %}{% set __dummy = hero_facts.append(_('cta_call_closed')) %}{% endif %}
-      {% if hero_facts %}
-      <p class="hero-facts">{{ hero_facts[:3]|join(' • ') }}</p>
+      {% set trust_chips = [] %}
+      {% if primary_area %}{% set __dummy = trust_chips.append({'label': primary_area, 'kind': 'area'}) %}{% endif %}
+      {% if worker.experience_text %}{% set __dummy = trust_chips.append({'label': worker.experience_text, 'kind': 'experience'}) %}{% endif %}
+      {% if review_count > 0 %}{% set __dummy = trust_chips.append({'label': review_count ~ ' ' ~ reviews_label, 'kind': 'reviews'}) %}{% endif %}
+      {% if cta_state == 'open' %}
+        {% set __dummy = trust_chips.append({'label': _('cta_call_open'), 'kind': 'status-open'}) %}
+      {% elif cta_state == 'closed' %}
+        {% set __dummy = trust_chips.append({'label': phone_cta_support or _('cta_call_closed'), 'kind': 'status-closed'}) %}
+      {% endif %}
+      {% if trust_chips %}
+      <ul class="hero-trust-chips" role="list">
+        {% for chip in trust_chips[:4] %}
+        <li class="chip chip--{{ chip.kind }}">{{ chip.label }}</li>
+        {% endfor %}
+      </ul>
       {% endif %}
 
       {% if hero_teaser %}
@@ -179,7 +188,7 @@
   </section>
   {% endif %}
 
-  <section id="reviews" class="profile-section profile-section--reviews" aria-label="{{ _('reviews_section_title') }}">
+  <section id="reviews" class="profile-section profile-section--reviews {% if reviews_list|length == 1 %}is-single{% endif %}" aria-label="{{ _('reviews_section_title') }}">
     <h2>{{ _('reviews_section_title') }}</h2>
     {% if review_count > 0 %}<p class="section-note">{{ review_count }} {{ reviews_label }}</p>{% endif %}
     {% if reviews_list %}
@@ -189,9 +198,15 @@
         {% set author = (review.get('author') if review is mapping else '') %}
         {% set score = (review.get('rating') if review is mapping else none) %}
         <article class="review-card review-card--featured review-card--single">
-          <header><span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>{% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}</header>
+          <header>
+            <div>
+              <span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>
+              {% if score is not none %}<strong class="review-score">{{ (((score|string)|replace(',', '.')|float)|round(1)) }}/5</strong>{% endif %}
+            </div>
+            {% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+          </header>
           <p>{{ text }}</p>
-          <footer>{{ author or _('review_author_fallback') }}</footer>
+          <footer>— {{ author or _('review_author_fallback') }}</footer>
         </article>
       {% else %}
         <div class="reviews-list" id="reviews-list">
@@ -220,7 +235,7 @@
       {% if has_areas %}
       <article class="info-block">
         <h3>{{ _('service_areas_title') }}</h3>
-        <ul class="line-list" role="list">{% for area in service_areas[:10] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
+        <ul class="area-chips" role="list">{% for area in service_areas[:10] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
       </article>
       {% endif %}
 
@@ -228,18 +243,18 @@
       <article class="info-block">
         <h3>{{ _('working_hours_title') }}</h3>
         {% if worker.hours %}
-          <p>{{ worker.hours }}</p>
+          <div class="hours-table"><div class="hours-row"><span>{{ _('working_hours_title') }}</span><strong>{{ worker.hours }}</strong></div></div>
         {% else %}
-          <ul class="line-list" role="list">
+          <ul class="hours-table" role="list">
             {% for block in schedule_items %}
               {% if block is mapping %}
                 {% set days = block.get('days_display') or ((block.get('days') or [])|join(' • ')) %}
                 {% set start_label = block.get('start_label') or (block.get('start_hour') is not none and '%02d:00' % (block.get('start_hour')|int)) %}
                 {% set end_label = block.get('end_label') or (block.get('end_hour') is not none and '%02d:00' % (block.get('end_hour')|int)) %}
                 {% set time_text = block.get('time_display') or ((start_label or end_label) and ((start_label or '') ~ (start_label and end_label and ' – ' or '') ~ (end_label or ''))) %}
-                {% if days or time_text %}<li>{{ days }}{% if time_text %} — <strong>{{ time_text }}</strong>{% endif %}</li>{% endif %}
+                {% if days or time_text %}<li class="hours-row"><span>{{ days }}</span>{% if time_text %}<strong>{{ time_text }}</strong>{% endif %}</li>{% endif %}
               {% elif block|string|trim %}
-                <li>{{ block }}</li>
+                <li class="hours-row"><span>{{ block }}</span></li>
               {% endif %}
             {% endfor %}
           </ul>

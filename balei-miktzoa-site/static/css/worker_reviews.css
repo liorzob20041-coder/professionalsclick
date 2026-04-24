@@ -35,7 +35,7 @@
 .profile-hero {
   display: grid;
   grid-template-columns: 170px 1fr;
-  gap: 22px;
+  gap: 18px;
   align-items: start;
 }
 
@@ -66,7 +66,25 @@
 .hero-value { margin: 4px 0 0; color: #273142; line-height: 1.6; font-size: .96rem; }
 .hero-rating { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0; }
 .hero-rating strong { font-size: 1.25rem; }
-.hero-facts { margin: 4px 0 0; color: #475569; font-size: .93rem; }
+.hero-trust-chips {
+  list-style: none;
+  margin: 8px 0 2px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hero-trust-chips .chip {
+  border: 1px solid #d7deea;
+  background: #f8fafc;
+  color: #24334d;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: .86rem;
+  font-weight: 600;
+}
+.hero-trust-chips .chip--status-open { border-color: #b8e0cc; background: #edf9f2; color: #1f6946; }
+.hero-trust-chips .chip--status-closed { border-color: #e7d4ae; background: #fff7ea; color: #815f1f; }
 
 .rating-stars {
   --percent: calc(var(--value) / 5 * 100%);
@@ -181,6 +199,7 @@
 .profile-section--reviews {
   border-color: #d8e1f0;
   background: linear-gradient(180deg, #ffffff 0%, #fdfefe 100%);
+  padding-bottom: 18px;
 }
 .review-card {
   border: 1px solid #e2e8f0;
@@ -214,10 +233,16 @@
 }
 .review-card--featured footer { margin-top: 10px; color: #475569; font-weight: 600; }
 .review-card--single {
-  max-width: 720px;
-  padding: 12px 14px;
+  width: 100%;
+  padding: 14px 16px;
 }
-.review-card--single p { font-size: 1rem; line-height: 1.7; }
+.profile-section--reviews.is-single { padding-bottom: 14px; }
+.review-card--single header > div { display: grid; gap: 2px; }
+.review-card--single .review-score { font-size: .9rem; color: #385882; font-weight: 700; }
+.review-card--single .review-kicker { font-size: .8rem; }
+.review-card--single footer { margin-top: 8px; font-size: .92rem; }
+.review-card--single .rating-stars { font-size: 1.05rem; }
+.review-card--single p { margin-top: 6px; font-size: 1rem; line-height: 1.65; }
 
 .support-grid {
   display: grid;
@@ -235,6 +260,40 @@
 .line-list { display: grid; gap: 6px; }
 .line-list li { line-height: 1.4; font-size: .94rem; }
 .line-list strong { color: #1f2937; }
+.area-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.area-chips li {
+  border: 1px solid #d6e0ed;
+  background: #f6f9fe;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: .86rem;
+  color: #2d425f;
+}
+.hours-table {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 7px 9px;
+  background: #fff;
+}
+.hours-row span { color: #334155; font-size: .9rem; }
+.hours-row strong { color: #0f274a; font-size: .9rem; }
 .profile-btn--whatsapp {
   border-color: #1fa460;
   color: #1a7d4b;

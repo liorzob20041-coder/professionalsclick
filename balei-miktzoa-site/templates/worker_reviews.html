@@ -76,33 +76,18 @@
     <div class="hero-main">
       <h1>{{ worker_name }}</h1>
       <p class="hero-meta">{{ field_txt or _('field_label_fallback') }}{% if primary_area %} · {{ primary_area }}{% endif %}</p>
-      {% if rating_value is not none or review_count > 0 %}
-      <div class="hero-rating" aria-label="{{ _('rating_average_aria') }}">
-        <strong>{{ rating_value if rating_value is not none else '—' }}</strong>
-        <span class="rating-stars" style="--value: {{ (((worker.rating|string)|replace(',', '.')|float) if worker.rating is not none else 0)|round(2) }};"></span>
-        <span>{{ review_count }} {{ reviews_label }}</span>
-      </div>
-      {% endif %}
-      {% if worker.phone_formatted %}
-      <div class="hero-cta">
-        <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
-        {% if has_whatsapp %}
-        <a class="profile-btn profile-btn--secondary profile-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
-        {% endif %}
-      </div>
-      {% if phone_cta_support %}
-      <p class="hero-cta-support">{{ phone_cta_support }}</p>
-      {% endif %}
-      {% endif %}
-
       {% set trust_chips = [] %}
+      {% if rating_value is not none %}
+        {% set __dummy = trust_chips.append({'label': '★ ' ~ rating_value ~ (review_count > 0 and (' (' ~ review_count ~ ' ' ~ reviews_label ~ ')') or ''), 'kind': 'rating'}) %}
+      {% elif review_count > 0 %}
+        {% set __dummy = trust_chips.append({'label': review_count ~ ' ' ~ reviews_label, 'kind': 'reviews'}) %}
+      {% endif %}
       {% if primary_area %}{% set __dummy = trust_chips.append({'label': primary_area, 'kind': 'area'}) %}{% endif %}
       {% if worker.experience_text %}{% set __dummy = trust_chips.append({'label': worker.experience_text, 'kind': 'experience'}) %}{% endif %}
-      {% if review_count > 0 %}{% set __dummy = trust_chips.append({'label': review_count ~ ' ' ~ reviews_label, 'kind': 'reviews'}) %}{% endif %}
       {% if cta_state == 'open' %}
-        {% set __dummy = trust_chips.append({'label': _('cta_call_open'), 'kind': 'status-open'}) %}
+        {% set __dummy = trust_chips.append({'label': _('cta_call_open'), 'kind': 'status'}) %}
       {% elif cta_state == 'closed' %}
-        {% set __dummy = trust_chips.append({'label': phone_cta_support or _('cta_call_closed'), 'kind': 'status-closed'}) %}
+        {% set __dummy = trust_chips.append({'label': phone_cta_support or _('cta_call_closed'), 'kind': 'status'}) %}
       {% endif %}
       {% if trust_chips %}
       <ul class="hero-trust-chips" role="list">
@@ -114,6 +99,15 @@
 
       {% if hero_teaser %}
       <p class="hero-value">{{ hero_teaser }}</p>
+      {% endif %}
+
+      {% if worker.phone_formatted %}
+      <div class="hero-cta">
+        <a class="profile-btn profile-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
+        {% if has_whatsapp %}
+        <a class="profile-btn profile-btn--secondary profile-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
+        {% endif %}
+      </div>
       {% endif %}
     </div>
   </header>
@@ -197,13 +191,13 @@
         {% set text = (review.display_text if review.display_text is defined else '') or (review.get('display_text') if review is mapping else '') or (review.get('text') if review is mapping else '') %}
         {% set author = (review.get('author') if review is mapping else '') %}
         {% set score = (review.get('rating') if review is mapping else none) %}
+        {% set score_num = (((score|string)|replace(',', '.')|float)|round(1)) if score is not none else none %}
         <article class="review-card review-card--featured review-card--single">
-          <header>
-            <div>
-              <span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>
-              {% if score is not none %}<strong class="review-score">{{ (((score|string)|replace(',', '.')|float)|round(1)) }}/5</strong>{% endif %}
-            </div>
-            {% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+          <header class="review-head">
+            <span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>
+            {% if score is not none %}
+              <span class="review-rating-inline"><span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span><strong>{{ score_num }}</strong></span>
+            {% endif %}
           </header>
           <p>{{ text }}</p>
           <footer>— {{ author or _('review_author_fallback') }}</footer>

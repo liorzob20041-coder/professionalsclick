@@ -75,26 +75,22 @@
 
     <div class="hero-main">
       <h1>{{ worker_name }}</h1>
-      <p class="hero-meta">{{ field_txt or _('field_label_fallback') }}{% if primary_area %} · {{ primary_area }}{% endif %}</p>
-      {% set trust_chips = [] %}
+      <p class="hero-meta">{{ field_txt or _('field_label_fallback') }}</p>
+      {% set trust_items = [] %}
       {% if rating_value is not none %}
-        {% set __dummy = trust_chips.append({'label': '★ ' ~ rating_value ~ (review_count > 0 and (' (' ~ review_count ~ ' ' ~ reviews_label ~ ')') or ''), 'kind': 'rating'}) %}
+        {% set __dummy = trust_items.append('★ ' ~ rating_value ~ (review_count > 0 and (' (' ~ review_count ~ ' ' ~ reviews_label ~ ')') or '')) %}
       {% elif review_count > 0 %}
-        {% set __dummy = trust_chips.append({'label': review_count ~ ' ' ~ reviews_label, 'kind': 'reviews'}) %}
+        {% set __dummy = trust_items.append(review_count ~ ' ' ~ reviews_label) %}
       {% endif %}
-      {% if primary_area %}{% set __dummy = trust_chips.append({'label': primary_area, 'kind': 'area'}) %}{% endif %}
-      {% if worker.experience_text %}{% set __dummy = trust_chips.append({'label': worker.experience_text, 'kind': 'experience'}) %}{% endif %}
+      {% if worker.experience_text %}{% set __dummy = trust_items.append(worker.experience_text) %}{% endif %}
+      {% if primary_area %}{% set __dummy = trust_items.append(primary_area) %}{% endif %}
       {% if cta_state == 'open' %}
-        {% set __dummy = trust_chips.append({'label': _('cta_call_open'), 'kind': 'status'}) %}
+        {% set __dummy = trust_items.append(_('cta_call_open')) %}
       {% elif cta_state == 'closed' %}
-        {% set __dummy = trust_chips.append({'label': phone_cta_support or _('cta_call_closed'), 'kind': 'status'}) %}
+        {% set __dummy = trust_items.append(phone_cta_support or _('cta_call_closed')) %}
       {% endif %}
-      {% if trust_chips %}
-      <ul class="hero-trust-chips" role="list">
-        {% for chip in trust_chips[:4] %}
-        <li class="chip chip--{{ chip.kind }}">{{ chip.label }}</li>
-        {% endfor %}
-      </ul>
+      {% if trust_items %}
+      <p class="hero-trust-row">{{ trust_items[:4]|join(' | ') }}</p>
       {% endif %}
 
       {% if hero_teaser %}
@@ -194,7 +190,6 @@
         {% set score_num = (((score|string)|replace(',', '.')|float)|round(1)) if score is not none else none %}
         <article class="review-card review-card--featured review-card--single">
           <header class="review-head">
-            <span class="review-kicker">{{ _('review_highlight_label') if _('review_highlight_label') != 'review_highlight_label' else _('reviews_section_title') }}</span>
             {% if score is not none %}
               <span class="review-rating-inline"><span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span><strong>{{ score_num }}</strong></span>
             {% endif %}
@@ -229,7 +224,8 @@
       {% if has_areas %}
       <article class="info-block">
         <h3>{{ _('service_areas_title') }}</h3>
-        <ul class="area-chips" role="list">{% for area in service_areas[:10] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
+        <p class="info-context">{{ _('service_areas_context') if _('service_areas_context') != 'service_areas_context' else ('נותן שירות ב:' if lang == 'he' else ('Service available in:' if lang == 'en' else 'Обслуживает районы:')) }}</p>
+        <ul class="area-list" role="list">{% for area in service_areas[:10] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
       </article>
       {% endif %}
 

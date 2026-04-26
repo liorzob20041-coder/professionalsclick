@@ -43,6 +43,11 @@
 {% set reviews_label = ('ביקורת' if review_count == 1 else 'ביקורות') if lang == 'he' else _('reviews_count_suffix') %}
 {% set hero_service_line = worker.service_region_summary or worker.service_summary or (service_areas and ('נותן שירות ב' ~ (service_areas[:3]|join(', '))) or none) %}
 {% set about_fallback = (worker_name ~ ' מספקים שירותי ' ~ (field_txt or _('field_label_fallback')) ~ (primary_area and (' באזור ' ~ primary_area) or '') ~ ' עם דגש על שירות אישי.') if lang == 'he' else (worker_name ~ ' provides ' ~ (field_txt or _('field_label_fallback')) ~ (primary_area and (' in ' ~ primary_area) or '') ~ '.') %}
+{% set trust_stats = [] %}
+{% if worker.experience_text %}{% set __dummy = trust_stats.append({'label': (_('experience_label') if _('experience_label') != 'experience_label' else ('ניסיון' if lang == 'he' else 'Experience')), 'value': worker.experience_text}) %}{% endif %}
+{% set availability_text = _('cta_call_open') if cta_state == 'open' else (_('cta_call_closed') if cta_state == 'closed' else _('cta_call_during_hours')) %}
+{% if availability_text %}{% set __dummy = trust_stats.append({'label': (_('availability_label') if _('availability_label') != 'availability_label' else ('זמינות' if lang == 'he' else 'Availability')), 'value': availability_text}) %}{% endif %}
+{% if service_areas %}{% set __dummy = trust_stats.append({'label': _('service_areas_title'), 'value': service_areas|length}) %}{% endif %}
 
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
@@ -96,7 +101,6 @@
       </div>
 
       <div class="worker-hero__chips">
-        {% if worker.experience_text %}<span class="worker-chip">{{ worker.experience_text }}</span>{% endif %}
         {% if cta_state == 'open' %}<span class="worker-chip worker-chip--open">{{ _('cta_call_open') }}</span>{% elif cta_state == 'closed' %}<span class="worker-chip worker-chip--closed">{{ phone_cta_support or _('cta_call_closed') }}</span>{% endif %}
         {% if hero_service_line %}<span class="worker-chip">{{ hero_service_line }}</span>{% endif %}
       </div>
@@ -112,23 +116,16 @@
     </div>
   </header>
 
+  {% if trust_stats|length >= 2 %}
   <section class="worker-trust-strip" aria-label="{{ _('worker_trust_aria') if _('worker_trust_aria') != 'worker_trust_aria' else 'נתוני אמון' }}">
-    {% if rating_value is not none %}
-    <article class="trust-item"><span>{{ _('rating_label') if _('rating_label') != 'rating_label' else ('דירוג' if lang == 'he' else 'Rating') }}</span><strong>{{ rating_value }} / 5</strong></article>
-    {% endif %}
-    <article class="trust-item"><span>{{ _('reviews_section_title') }}</span><strong>{{ review_count }} {{ reviews_label }}</strong></article>
-    {% if worker.experience_text %}
-    <article class="trust-item"><span>{{ _('experience_label') if _('experience_label') != 'experience_label' else ('ניסיון' if lang == 'he' else 'Experience') }}</span><strong>{{ worker.experience_text }}</strong></article>
-    {% endif %}
-    <article class="trust-item"><span>{{ _('availability_label') if _('availability_label') != 'availability_label' else ('זמינות' if lang == 'he' else 'Availability') }}</span><strong>{% if cta_state == 'open' %}{{ _('cta_call_open') }}{% elif cta_state == 'closed' %}{{ _('cta_call_closed') }}{% else %}{{ _('cta_call_during_hours') }}{% endif %}</strong></article>
-    {% if service_areas %}
-    <article class="trust-item"><span>{{ _('service_areas_title') }}</span><strong>{{ service_areas|length }}</strong></article>
-    {% endif %}
+    {% for item in trust_stats[:4] %}
+      <article class="trust-item"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></article>
+    {% endfor %}
   </section>
+  {% endif %}
 
   <section class="worker-section worker-section--about">
     <h2>{{ about_section_title }}</h2>
-    <p class="worker-section__helper">{{ _('about_business_helper') if _('about_business_helper') != 'about_business_helper' else ('מידע קצר שיעזור להכיר את בעל המקצוע לפני יצירת קשר.' if lang == 'he' else 'A quick summary to help you evaluate this professional before contacting.') }}</p>
     <p class="worker-about__copy">{{ about_body if about_body else about_fallback }}</p>
     {% if worker_languages %}<p class="worker-about__meta"><strong>{{ _('service_languages_label') }}:</strong> {{ worker_languages[:4]|join(', ') }}</p>{% endif %}
   </section>
@@ -136,7 +133,6 @@
   {% if specializations %}
   <section class="worker-section worker-section--services">
     <h2>{{ services_section_title }}</h2>
-    <p class="worker-section__helper">{{ _('services_helper') if _('services_helper') != 'services_helper' else ('אלו סוגי העבודות שבעל המקצוע מציין שהוא מבצע.' if lang == 'he' else 'These are the jobs this professional says they handle.') }}</p>
     <ul class="worker-services" role="list">
       {% for srv in specializations[:14] %}{% if srv|string|trim %}<li>{{ srv }}</li>{% endif %}{% endfor %}
     </ul>
@@ -146,7 +142,6 @@
   {% if has_pricing %}
   <section class="worker-section worker-section--pricing">
     <h2>{{ pricing_section_title }}</h2>
-    <p class="worker-section__helper">{{ pricing_disclaimer }}</p>
     <div class="worker-pricing" role="list">
       {% if pricing_items %}
         {% for line in pricing_items[:8] %}
@@ -174,6 +169,7 @@
         {% endfor %}
       {% endif %}
     </div>
+    <p class="worker-pricing__note">{{ pricing_disclaimer }}</p>
 
     <article class="worker-pricing__cta" aria-label="{{ pricing_cta_label }}">
       <h3>{{ _('pricing_calculator_heading') if _('pricing_calculator_heading') != 'pricing_calculator_heading' else ('רוצים הערכת מחיר מהירה?' if lang == 'he' else ('Need a quick price estimate?' if lang == 'en' else 'Нужна быстрая оценка цены?')) }}</h3>
@@ -184,16 +180,10 @@
   {% endif %}
 
   <section id="reviews" class="worker-section worker-section--reviews" aria-label="{{ _('reviews_section_title') }}">
-    <h2>{{ _('reviews_section_title') }}</h2>
-    <p class="worker-section__helper">{{ _('reviews_based_on') if _('reviews_based_on') != 'reviews_based_on' else ('מבוסס על ' ~ review_count ~ ' ' ~ reviews_label if lang == 'he' else 'Based on ' ~ review_count ~ ' reviews') }}</p>
-
-    {% if rating_value is not none %}
-      <div class="reviews-summary">
-        <strong>{{ rating_value }}</strong>
-        <span class="rating-stars" style="--value: {{ rating_value }};"></span>
-        <span>{{ review_count }} {{ reviews_label }}</span>
-      </div>
-    {% endif %}
+    <div class="worker-section__header">
+      <h2>{{ _('reviews_section_title') }}</h2>
+      {% if rating_value is not none %}<p class="reviews-inline-summary">{{ rating_value }} · {{ review_count }} {{ reviews_label }}</p>{% endif %}
+    </div>
 
     {% if reviews_list %}
       <div class="reviews-grid" id="reviews-list">
@@ -201,7 +191,16 @@
           {% set text = (review.display_text if review.display_text is defined else '') or (review.get('display_text') if review is mapping else '') or (review.get('text') if review is mapping else '') %}
           {% set author = (review.get('author') if review is mapping else '') %}
           {% set score = (review.get('rating') if review is mapping else none) %}
-          {% set date_text = (review.get('date_display') if review is mapping else '') or (review.get('date') if review is mapping else '') %}
+          {% set date_raw = (review.get('date_display') if review is mapping else '') or (review.get('date') if review is mapping else '') %}
+          {% if date_raw and 'T' in date_raw %}
+            {% set date_raw = date_raw.split('T')[0] %}
+          {% endif %}
+          {% if date_raw and '-' in date_raw and date_raw|length == 10 %}
+            {% set parts = date_raw.split('-') %}
+            {% set date_text = parts[2] ~ '.' ~ parts[1] ~ '.' ~ parts[0] if parts|length == 3 else date_raw %}
+          {% else %}
+            {% set date_text = date_raw %}
+          {% endif %}
           {% set service_text = (review.get('service') if review is mapping else '') or (review.get('job_type') if review is mapping else '') or (review.get('category') if review is mapping else '') %}
           {% set review_city = (review.get('city') if review is mapping else '') %}
           <article class="review-card">
@@ -233,7 +232,6 @@
       {% if has_areas %}
       <article class="worker-support-card">
         <h2>{{ _('service_areas_title') }}</h2>
-        <p class="worker-section__helper">{{ _('service_areas_context') if _('service_areas_context') != 'service_areas_context' else ('בעל המקצוע נותן שירות באזורים הבאים:' if lang == 'he' else 'This professional serves the following areas:') }}</p>
         <ul class="worker-areas" role="list">{% for area in service_areas[:14] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
       </article>
       {% endif %}

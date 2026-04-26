@@ -42,6 +42,10 @@
 {% set pricing_cta_label = _('estimate_cta') if _('estimate_cta') != 'estimate_cta' else ('לחשב הערכת מחיר' if lang == 'he' else ('Calculate estimate' if lang == 'en' else 'Рассчитать стоимость')) %}
 {% set reviews_label = ('ביקורת' if review_count == 1 else 'ביקורות') if lang == 'he' else _('reviews_count_suffix') %}
 {% set about_fallback = (worker_name ~ ' מספקים שירותי ' ~ (field_txt or _('field_label_fallback')) ~ (primary_area and (' באזור ' ~ primary_area) or '') ~ ' עם דגש על שירות אישי.') if lang == 'he' else (worker_name ~ ' provides ' ~ (field_txt or _('field_label_fallback')) ~ (primary_area and (' in ' ~ primary_area) or '') ~ '.') %}
+{% set about_highlights = [] %}
+{% if specializations and specializations|length > 0 %}{% set __dummy = about_highlights.append((specializations[0] if specializations[0] else ('עבודות מקצועיות' if lang == 'he' else 'Professional work'))) %}{% endif %}
+{% set __dummy = about_highlights.append(('זמינות ושירות אישי' if lang == 'he' else 'Personal and responsive service')) %}
+{% if worker.experience_text %}{% set __dummy = about_highlights.append(worker.experience_text) %}{% else %}{% set __dummy = about_highlights.append(('עמידה בזמנים' if lang == 'he' else 'On-time delivery')) %}{% endif %}
 
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
@@ -80,7 +84,6 @@
       <p class="worker-hero__field">{{ field_txt or _('field_label_fallback') }}</p>
       <h1>{{ worker_name }}</h1>
       {% if primary_area %}<p class="worker-hero__location">{{ primary_area }}</p>{% endif %}
-      {% if hero_teaser %}<p class="worker-hero__teaser">{{ hero_teaser }}</p>{% endif %}
 
       <div class="worker-hero__rating" aria-label="{{ _('rating_label') if _('rating_label') != 'rating_label' else 'דירוג' }}">
         {% if rating_value is not none %}
@@ -97,16 +100,19 @@
       <div class="worker-hero__chips">
         {% if cta_state == 'open' %}<span class="worker-chip worker-chip--open">{{ _('cta_call_open') }}</span>{% elif cta_state == 'closed' %}<span class="worker-chip worker-chip--closed">{{ phone_cta_support or _('cta_call_closed') }}</span>{% endif %}
       </div>
+    </div>
 
-      {% if worker.phone_formatted %}
+    {% if worker.phone_formatted %}
+    <aside class="worker-hero__action-panel" aria-label="{{ _('quick_actions_aria') }}">
+      {% if cta_state == 'open' %}<p class="worker-hero__availability">{{ _('cta_call_open') }}</p>{% elif cta_state == 'closed' %}<p class="worker-hero__availability">{{ phone_cta_support or _('cta_call_closed') }}</p>{% endif %}
       <div class="worker-hero__cta">
         <a class="worker-btn worker-btn--primary" href="tel:{{ worker.phone_formatted }}" data-track="click_call" data-worker="{{ worker.worker_id }}" {% if cta_state %}data-availability="{{ cta_state }}"{% endif %}>{{ phone_cta_label }}</a>
         {% if has_whatsapp %}
         <a class="worker-btn worker-btn--whatsapp" href="https://wa.me/{{ (worker.phone_formatted|replace('+','')|replace('-','')|replace(' ','')) }}" target="_blank" rel="noopener" data-track="click_whatsapp" data-worker="{{ worker.worker_id }}">{{ _('cta_whatsapp_specific') }}</a>
         {% endif %}
       </div>
-      {% endif %}
-    </div>
+    </aside>
+    {% endif %}
   </header>
 
   <nav class="worker-profile-tabs" aria-label="{{ _('profile_jump_nav_aria') if _('profile_jump_nav_aria') != 'profile_jump_nav_aria' else ('ניווט בעמוד הפרופיל' if lang == 'he' else 'Profile section navigation') }}">
@@ -122,6 +128,9 @@
   <section id="profile-about" class="worker-section worker-profile-section worker-section--about">
     <h2>{{ about_section_title }}</h2>
     <p class="worker-about__copy">{{ about_body if about_body else about_fallback }}</p>
+    <ul class="worker-about__highlights" role="list">
+      {% for highlight in about_highlights[:3] %}{% if highlight %}<li>{{ highlight }}</li>{% endif %}{% endfor %}
+    </ul>
     {% if worker_languages %}<p class="worker-about__meta"><strong>{{ _('service_languages_label') }}:</strong> {{ worker_languages[:4]|join(', ') }}</p>{% endif %}
   </section>
 
@@ -200,17 +209,19 @@
           {% set review_city = (review.get('city') if review is mapping else '') %}
           <article class="review-card">
             <header class="review-card__head">
-              <strong>{{ author or _('review_author_fallback') }}</strong>
-              {% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+              <div class="review-card__identity">
+                <strong>{{ author or _('review_author_fallback') }}</strong>
+                {% if score is not none %}<span class="rating-stars" style="--value: {{ (((score|string)|replace(',', '.')|float)|round(2)) }};"></span>{% endif %}
+              </div>
             </header>
             {% if text %}<p class="review-card__text">{{ text }}</p>{% endif %}
-            {% if service_text or review_city or date_text %}
+            {% if service_text or review_city %}
             <footer class="review-card__meta">
               {% if service_text %}<span>{{ service_text }}</span>{% endif %}
               {% if review_city %}<span>{{ review_city }}</span>{% endif %}
-              {% if date_text %}<span>{{ date_text }}</span>{% endif %}
             </footer>
             {% endif %}
+            {% if date_text %}<time class="review-card__date">{{ date_text }}</time>{% endif %}
           </article>
         {% endfor %}
       </div>

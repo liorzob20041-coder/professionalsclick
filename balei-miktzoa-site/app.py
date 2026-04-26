@@ -3853,8 +3853,13 @@ def worker_reviews(lang, worker_id):
 
     # ניסיון (טקסט קצר לפי שפה)
     exp = worker.get('experience')
-    if isinstance(exp, (int, float)) and exp:
-        years = int(exp)
+    years = None
+    if isinstance(exp, (int, float)):
+        exp_int = int(exp)
+        # Suppress suspicious/default values to avoid trust-damaging claims.
+        if 1 <= exp_int <= 30:
+            years = exp_int
+    if years is not None:
         worker['experience_text'] = (
             f"{years} שנות ניסיון" if lang == 'he'
             else f"{years} years of experience" if lang == 'en'

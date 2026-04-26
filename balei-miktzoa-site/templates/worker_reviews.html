@@ -41,13 +41,7 @@
 {% set pricing_disclaimer = _('pricing_examples_disclaimer') if _('pricing_examples_disclaimer') != 'pricing_examples_disclaimer' else ('המחירים להמחשה בלבד ויכולים להשתנות לפי היקף העבודה, מצב קיים, חומרים וגישה.' if lang == 'he' else ('Prices are examples only and may vary by scope, current condition, materials and access.' if lang == 'en' else 'Цены приведены для примера и могут меняться в зависимости от объёма работ, текущего состояния, материалов и доступа.')) %}
 {% set pricing_cta_label = _('estimate_cta') if _('estimate_cta') != 'estimate_cta' else ('לחשב הערכת מחיר' if lang == 'he' else ('Calculate estimate' if lang == 'en' else 'Рассчитать стоимость')) %}
 {% set reviews_label = ('ביקורת' if review_count == 1 else 'ביקורות') if lang == 'he' else _('reviews_count_suffix') %}
-{% set hero_service_line = worker.service_region_summary or worker.service_summary or (service_areas and ('נותן שירות ב' ~ (service_areas[:3]|join(', '))) or none) %}
 {% set about_fallback = (worker_name ~ ' מספקים שירותי ' ~ (field_txt or _('field_label_fallback')) ~ (primary_area and (' באזור ' ~ primary_area) or '') ~ ' עם דגש על שירות אישי.') if lang == 'he' else (worker_name ~ ' provides ' ~ (field_txt or _('field_label_fallback')) ~ (primary_area and (' in ' ~ primary_area) or '') ~ '.') %}
-{% set trust_stats = [] %}
-{% if worker.experience_text %}{% set __dummy = trust_stats.append({'label': (_('experience_label') if _('experience_label') != 'experience_label' else ('ניסיון' if lang == 'he' else 'Experience')), 'value': worker.experience_text}) %}{% endif %}
-{% set availability_text = _('cta_call_open') if cta_state == 'open' else (_('cta_call_closed') if cta_state == 'closed' else _('cta_call_during_hours')) %}
-{% if availability_text %}{% set __dummy = trust_stats.append({'label': (_('availability_label') if _('availability_label') != 'availability_label' else ('זמינות' if lang == 'he' else 'Availability')), 'value': availability_text}) %}{% endif %}
-{% if service_areas %}{% set __dummy = trust_stats.append({'label': _('service_areas_title'), 'value': service_areas|length}) %}{% endif %}
 
 <section class="worker-profile-page">
   <meta id="worker-meta" data-worker-id="{{ worker.worker_id }}"/>
@@ -102,7 +96,6 @@
 
       <div class="worker-hero__chips">
         {% if cta_state == 'open' %}<span class="worker-chip worker-chip--open">{{ _('cta_call_open') }}</span>{% elif cta_state == 'closed' %}<span class="worker-chip worker-chip--closed">{{ phone_cta_support or _('cta_call_closed') }}</span>{% endif %}
-        {% if hero_service_line %}<span class="worker-chip">{{ hero_service_line }}</span>{% endif %}
       </div>
 
       {% if worker.phone_formatted %}
@@ -116,15 +109,15 @@
     </div>
   </header>
 
-  {% if trust_stats|length >= 2 %}
-  <section class="worker-trust-strip" aria-label="{{ _('worker_trust_aria') if _('worker_trust_aria') != 'worker_trust_aria' else 'נתוני אמון' }}">
-    {% for item in trust_stats[:4] %}
-      <article class="trust-item"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></article>
-    {% endfor %}
-  </section>
-  {% endif %}
+  <nav class="worker-profile-jumpnav" aria-label="{{ _('profile_jump_nav_aria') if _('profile_jump_nav_aria') != 'profile_jump_nav_aria' else ('ניווט בפרופיל' if lang == 'he' else 'Profile navigation') }}">
+    <a href="#profile-about">{{ about_section_title }}</a>
+    {% if has_pricing %}<a href="#profile-pricing">{{ ('מחירים' if lang == 'he' else ('Pricing' if lang == 'en' else 'Цены')) }}</a>{% endif %}
+    <a href="#profile-reviews">{{ _('reviews_section_title') }}</a>
+    {% if service_areas %}<a href="#profile-areas">{{ _('service_areas_title') }}</a>{% endif %}
+    {% if worker.hours or (schedule_items|length > 0) %}<a href="#profile-hours">{{ _('working_hours_title') }}</a>{% endif %}
+  </nav>
 
-  <section class="worker-section worker-section--about">
+  <section id="profile-about" class="worker-section worker-profile-section worker-section--about">
     <h2>{{ about_section_title }}</h2>
     <p class="worker-about__copy">{{ about_body if about_body else about_fallback }}</p>
     {% if worker_languages %}<p class="worker-about__meta"><strong>{{ _('service_languages_label') }}:</strong> {{ worker_languages[:4]|join(', ') }}</p>{% endif %}
@@ -140,7 +133,7 @@
   {% endif %}
 
   {% if has_pricing %}
-  <section class="worker-section worker-section--pricing">
+  <section id="profile-pricing" class="worker-section worker-profile-section worker-section--pricing">
     <h2>{{ pricing_section_title }}</h2>
     <div class="worker-pricing" role="list">
       {% if pricing_items %}
@@ -179,7 +172,7 @@
   </section>
   {% endif %}
 
-  <section id="reviews" class="worker-section worker-section--reviews" aria-label="{{ _('reviews_section_title') }}">
+  <section id="profile-reviews" class="worker-section worker-profile-section worker-section--reviews" aria-label="{{ _('reviews_section_title') }}">
     <div class="worker-section__header">
       <h2>{{ _('reviews_section_title') }}</h2>
       {% if rating_value is not none %}<p class="reviews-inline-summary">{{ rating_value }} · {{ review_count }} {{ reviews_label }}</p>{% endif %}
@@ -227,17 +220,17 @@
   {% set has_areas = service_areas|length > 0 %}
   {% set has_hours = worker.hours or (schedule_items|length > 0) %}
   {% if has_areas or has_hours %}
-  <section class="worker-section worker-section--support" aria-label="{{ _('areas_and_hours_title') }}">
+  <section class="worker-section worker-profile-section worker-section--support" aria-label="{{ _('areas_and_hours_title') }}">
     <div class="support-grid">
       {% if has_areas %}
-      <article class="worker-support-card">
+      <article id="profile-areas" class="worker-support-card worker-profile-areas">
         <h2>{{ _('service_areas_title') }}</h2>
         <ul class="worker-areas" role="list">{% for area in service_areas[:14] %}{% if area|string|trim %}<li>{{ area }}</li>{% endif %}{% endfor %}</ul>
       </article>
       {% endif %}
 
       {% if has_hours %}
-      <article class="worker-support-card">
+      <article id="profile-hours" class="worker-support-card worker-profile-hours">
         <h2>{{ _('working_hours_title') }}</h2>
         <p class="worker-hours__state {% if cta_state == 'open' %}is-open{% elif cta_state == 'closed' %}is-closed{% endif %}">
           {% if cta_state == 'open' %}{{ _('cta_call_open') }}{% elif cta_state == 'closed' %}{{ phone_cta_support or _('cta_call_closed') }}{% else %}{{ _('cta_call_during_hours') }}{% endif %}

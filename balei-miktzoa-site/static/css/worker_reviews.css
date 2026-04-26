@@ -236,38 +236,78 @@
   color: #fff;
 }
 
-.worker-profile-jumpnav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.worker-profile-tabs {
+  margin-top: 2px;
+  border: 1px solid #d9e3f1;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 14px rgba(15, 39, 74, 0.06);
   padding: 8px;
-  border: 1px solid #dbe4f1;
-  border-radius: 999px;
-  background: #f9fbff;
 }
 
-.worker-profile-jumpnav a {
-  color: #29446d;
+.worker-profile-tabs__inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.worker-profile-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 8px 13px;
+  border-radius: 12px;
+  border: 1px solid #e4ebf6;
+  background: #f8fbff;
+  color: #203b61;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 700;
-  padding: 7px 12px;
-  border-radius: 999px;
-  transition: background-color 0.18s ease, color 0.18s ease;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
-.worker-profile-jumpnav a:hover {
-  background: #ecf3ff;
-  color: #193d75;
+.worker-profile-tab::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d1d9e7;
+  flex: 0 0 auto;
 }
 
-.worker-profile-jumpnav a:focus-visible {
-  outline: 2px solid #f0b14a;
+.worker-profile-tab:hover {
+  background: #edf4ff;
+  border-color: #c9d8ee;
+  color: #143d73;
+  transform: translateY(-1px);
+}
+
+.worker-profile-tab:hover::before {
+  background: #2a5b9b;
+}
+
+.worker-profile-tab:focus-visible {
+  outline: 3px solid #f0b14a;
   outline-offset: 1px;
 }
 
-.worker-profile-jumpnav::-webkit-scrollbar {
-  height: 0;
+.worker-profile-tab__label {
+  line-height: 1.2;
+}
+
+.worker-profile-tab__badge {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #e7eefc;
+  color: #1c3d70;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 6px;
 }
 
 .worker-trust-strip,
@@ -513,14 +553,25 @@
 }
 
 @media (max-width: 1024px) {
-  .worker-profile-jumpnav {
+  .worker-profile-tabs {
+    padding: 6px;
+  }
+
+  .worker-profile-tabs__inner {
     overflow-x: auto;
     flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
-  .worker-profile-jumpnav a {
+  .worker-profile-tabs__inner::-webkit-scrollbar {
+    height: 0;
+  }
+
+  .worker-profile-tab {
     white-space: nowrap;
+    min-height: 40px;
+    padding: 7px 11px;
   }
 }
 

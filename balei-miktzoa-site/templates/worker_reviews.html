@@ -109,12 +109,14 @@
     </div>
   </header>
 
-  <nav class="worker-profile-jumpnav" aria-label="{{ _('profile_jump_nav_aria') if _('profile_jump_nav_aria') != 'profile_jump_nav_aria' else ('ניווט בפרופיל' if lang == 'he' else 'Profile navigation') }}">
-    <a href="#profile-about">{{ about_section_title }}</a>
-    {% if has_pricing %}<a href="#profile-pricing">{{ ('מחירים' if lang == 'he' else ('Pricing' if lang == 'en' else 'Цены')) }}</a>{% endif %}
-    <a href="#profile-reviews">{{ _('reviews_section_title') }}</a>
-    {% if service_areas %}<a href="#profile-areas">{{ _('service_areas_title') }}</a>{% endif %}
-    {% if worker.hours or (schedule_items|length > 0) %}<a href="#profile-hours">{{ _('working_hours_title') }}</a>{% endif %}
+  <nav class="worker-profile-tabs" aria-label="{{ _('profile_jump_nav_aria') if _('profile_jump_nav_aria') != 'profile_jump_nav_aria' else ('ניווט בעמוד הפרופיל' if lang == 'he' else 'Profile section navigation') }}">
+    <div class="worker-profile-tabs__inner">
+      <a class="worker-profile-tab" href="#profile-about"><span class="worker-profile-tab__label">{{ about_section_title }}</span></a>
+      {% if has_pricing %}<a class="worker-profile-tab" href="#profile-pricing"><span class="worker-profile-tab__label">{{ ('מחירים' if lang == 'he' else ('Pricing' if lang == 'en' else 'Цены')) }}</span></a>{% endif %}
+      <a class="worker-profile-tab" href="#profile-reviews"><span class="worker-profile-tab__label">{{ _('reviews_section_title') }}</span>{% if review_count > 0 %}<span class="worker-profile-tab__badge">{{ review_count }}</span>{% endif %}</a>
+      {% if service_areas %}<a class="worker-profile-tab" href="#profile-areas"><span class="worker-profile-tab__label">{{ _('service_areas_title') }}</span><span class="worker-profile-tab__badge">{{ service_areas|length }}</span></a>{% endif %}
+      {% if worker.hours or (schedule_items|length > 0) %}<a class="worker-profile-tab" href="#profile-hours"><span class="worker-profile-tab__label">{{ _('working_hours_title') }}</span></a>{% endif %}
+    </div>
   </nav>
 
   <section id="profile-about" class="worker-section worker-profile-section worker-section--about">
